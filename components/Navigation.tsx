@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useState } from 'react'
@@ -24,8 +24,7 @@ export default function Navigation() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="text-[#d4a853] text-xl font-bold tracking-tight">Watch</span>
-          <span className="text-white text-xl font-bold tracking-tight">Versus</span>
+          <span className="text-[#d4a853] text-xl font-bold tracking-tight">Watch</span><span className="text-white text-xl font-bold tracking-tight">Vs</span><span className="text-[#d4a853] text-xl font-bold tracking-tight">Watch</span>
         </Link>
 
         {/* Desktop nav */}

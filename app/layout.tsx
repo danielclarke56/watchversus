@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
@@ -12,21 +12,21 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'WatchVersus — Head-to-Head Watch Comparisons & Reviews',
-    template: '%s | WatchVersus',
+    default: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
+    template: '%s | WatchVsWatch',
   },
   description:
     'Community-driven watch comparisons, honest reviews, and personalized recommendations. Compare any two watches side-by-side with real community ratings.',
   keywords: ['watch comparison', 'watch reviews', 'best watches', 'rolex vs omega', 'watch recommendations'],
   openGraph: {
     type: 'website',
-    siteName: 'WatchVersus',
-    title: 'WatchVersus — Head-to-Head Watch Comparisons & Reviews',
+    siteName: 'WatchVsWatch',
+    title: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WatchVersus — Head-to-Head Watch Comparisons & Reviews',
+    title: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
   },
 }

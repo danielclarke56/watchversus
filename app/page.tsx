@@ -1,11 +1,11 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { watches, getAllReviews, popularComparisons, getWatchBySlug, formatPrice } from '@/lib/watches'
 import WatchCard from '@/components/WatchCard'
 import ReviewCard from '@/components/ReviewCard'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'WatchVersus — Find Your Perfect Watch',
+  title: 'WatchVsWatch — Find Your Perfect Watch',
   description:
     'Compare any two watches head-to-head, read community reviews, and take our quiz to find your perfect watch. Honest, community-driven insights.',
 }
@@ -69,7 +69,7 @@ export default function HomePage() {
 
       {/* How it works */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <h2 className="text-2xl font-bold text-white mb-8 text-center">How WatchVersus Works</h2>
+        <h2 className="text-2xl font-bold text-white mb-8 text-center">How WatchVsWatch Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {

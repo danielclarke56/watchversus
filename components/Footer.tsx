@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 
 export default function Footer() {
   return (
@@ -7,15 +7,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <div className="flex items-center gap-1 mb-3">
-              <span className="text-[#d4a853] text-lg font-bold">Watch</span>
-              <span className="text-white text-lg font-bold">Versus</span>
+              <span className="text-[#d4a853] text-lg font-bold">Watch</span><span className="text-white text-lg font-bold">Vs</span><span className="text-[#d4a853] text-lg font-bold">Watch</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
               Community-driven watch comparisons, reviews, and recommendations.
               We help you find the perfect watch through honest, expert community insights.
             </p>
             <p className="text-slate-500 text-xs mt-4">
-              <strong className="text-slate-400">Affiliate Disclosure:</strong> WatchVersus participates
+              <strong className="text-slate-400">Affiliate Disclosure:</strong> WatchVsWatch participates
               in affiliate programs. When you click our links and make a purchase, we may earn a
               small commission at no extra cost to you. This helps support the site.
             </p>
@@ -60,7 +59,7 @@ export default function Footer() {
 
         <div className="border-t border-[#334155] mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-slate-500 text-xs">
-            © {new Date().getFullYear()} WatchVersus. All rights reserved.
+            © {new Date().getFullYear()} WatchVsWatch. All rights reserved.
           </p>
           <div className="flex gap-5">
             <Link href="/about" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">About</Link>

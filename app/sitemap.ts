@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { watches, popularComparisons } from '@/lib/watches'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://watchversus.com'
+  const base = 'https://watchvswatch.com'
 
   const staticPages = [
     { url: base, priority: 1.0 },
