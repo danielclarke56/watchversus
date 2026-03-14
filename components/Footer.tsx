@@ -1,0 +1,74 @@
+import Link from 'next/link'
+
+export default function Footer() {
+  return (
+    <footer className="bg-[#1e293b] border-t border-[#334155] mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-1 mb-3">
+              <span className="text-[#d4a853] text-lg font-bold">Watch</span>
+              <span className="text-white text-lg font-bold">Versus</span>
+            </div>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              Community-driven watch comparisons, reviews, and recommendations.
+              We help you find the perfect watch through honest, expert community insights.
+            </p>
+            <p className="text-slate-500 text-xs mt-4">
+              <strong className="text-slate-400">Affiliate Disclosure:</strong> WatchVersus participates
+              in affiliate programs. When you click our links and make a purchase, we may earn a
+              small commission at no extra cost to you. This helps support the site.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Explore</h4>
+            <ul className="space-y-2">
+              {[
+                { href: '/watches', label: 'Watch Index' },
+                { href: '/compare', label: 'Compare Watches' },
+                { href: '/reviews', label: 'Community Reviews' },
+                { href: '/quiz', label: 'Find My Watch Quiz' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-slate-400 hover:text-[#d4a853] text-sm transition-colors">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Popular Comparisons</h4>
+            <ul className="space-y-2">
+              {[
+                { href: '/compare/rolex-submariner-41-vs-tudor-black-bay-58', label: 'Sub 41 vs BB58' },
+                { href: '/compare/rolex-gmt-master-ii-pepsi-vs-tudor-black-bay-gmt', label: 'GMT-II vs BB GMT' },
+                { href: '/compare/tissot-prx-40-vs-hamilton-khaki-field-auto-38', label: 'PRX vs Khaki Field' },
+                { href: '/compare/ap-royal-oak-15500-vs-patek-philippe-nautilus-5711', label: 'Royal Oak vs Nautilus' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-slate-400 hover:text-[#d4a853] text-sm transition-colors">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-[#334155] mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-slate-500 text-xs">
+            © {new Date().getFullYear()} WatchVersus. All rights reserved.
+          </p>
+          <div className="flex gap-5">
+            <Link href="/about" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">About</Link>
+            <Link href="/about#contact" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">Contact</Link>
+            <Link href="/about#affiliate" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">Affiliate Policy</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}

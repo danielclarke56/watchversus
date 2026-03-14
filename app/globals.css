@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+}
+
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@layer components {
+  .btn-gold {
+    @apply bg-[#d4a853] text-[#0f172a] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#e4c07a] transition-colors duration-200 text-sm inline-block;
+  }
+
+  .btn-outline {
+    @apply border border-[#d4a853] text-[#d4a853] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#d4a853] hover:text-[#0f172a] transition-colors duration-200 text-sm inline-block;
+  }
+
+  .card {
+    @apply bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4a853;
+}
