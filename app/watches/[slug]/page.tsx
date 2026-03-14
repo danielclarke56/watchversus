@@ -17,9 +17,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: `${watch.brand} ${watch.name} Review & Specs`,
     description: `Read community reviews, full specs, and pricing for the ${watch.brand} ${watch.name} (${watch.reference}). ${watch.description.slice(0, 120)}...`,
+    alternates: {
+      canonical: `https://watchvswatch.com/watches/${watch.slug}`,
+    },
     openGraph: {
-      title: `${watch.brand} ${watch.name} — WatchVersus`,
+      title: `${watch.brand} ${watch.name} Review & Specs | WatchVsWatch`,
       description: watch.description,
+      url: `https://watchvswatch.com/watches/${watch.slug}`,
+      type: 'website',
     },
   }
 }
@@ -44,7 +49,56 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
     .filter((c) => c.slug1 === watch.slug || c.slug2 === watch.slug)
     .slice(0, 4)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Product',
+        name: `${watch.brand} ${watch.name}`,
+        description: watch.description,
+        sku: watch.reference,
+        brand: {
+          '@type': 'Brand',
+          name: watch.brand,
+        },
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'USD',
+          lowPrice: watch.price_new_usd.min,
+          highPrice: watch.price_new_usd.max,
+          offerCount: 3,
+          availability: 'https://schema.org/InStock',
+          url: `https://watchvswatch.com/watches/${watch.slug}`,
+        },
+        ...(overallRating && reviews.length > 0
+          ? {
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: overallRating.toFixed(1),
+                reviewCount: reviews.length,
+                bestRating: '5',
+                worstRating: '1',
+              },
+            }
+          : {}),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchvswatch.com' },
+          { '@type': 'ListItem', position: 2, name: 'Watches', item: 'https://watchvswatch.com/watches' },
+          { '@type': 'ListItem', position: 3, name: `${watch.brand} ${watch.name}`, item: `https://watchvswatch.com/watches/${watch.slug}` },
+        ],
+      },
+    ],
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Breadcrumb */}
       <nav className="text-sm text-slate-500 mb-6 flex items-center gap-2">
@@ -164,36 +218,6 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
             </div>
           )}
 
-          {/* Buy buttons */}
-          <div className="card p-5">
-            <h3 className="text-white font-semibold mb-4">Buy This Watch</h3>
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-slate-500 mb-1">New: {formatPrice(watch.price_new_usd)}</p>
-                <p className="text-xs text-slate-500 mb-3">Pre-owned: {formatPrice(watch.price_preowned_usd)}</p>
-              </div>
-              <a
-                href={watch.chrono24_url}
-                className="block w-full text-center bg-[#d4a853] text-[#0f172a] font-semibold px-4 py-2.5 rounded-lg hover:bg-[#e4c07a] transition-colors text-sm"
-              >
-                Buy on Chrono24 ↗
-              </a>
-              <a
-                href={watch.watchbox_url}
-                className="block w-full text-center border border-[#334155] text-slate-300 font-medium px-4 py-2.5 rounded-lg hover:border-[#d4a853]/40 hover:text-white transition-colors text-sm"
-              >
-                Buy on WatchBox ↗
-              </a>
-              <a
-                href={watch.jomashop_url}
-                className="block w-full text-center border border-[#334155] text-slate-300 font-medium px-4 py-2.5 rounded-lg hover:border-[#d4a853]/40 hover:text-white transition-colors text-sm"
-              >
-                Buy on Jomashop ↗
-              </a>
-              <p className="text-xs text-slate-600 text-center pt-1">Affiliate links — we may earn a commission</p>
-            </div>
-          </div>
-
           {/* Compare CTA */}
           <div className="card p-5">
             <h3 className="text-white font-semibold mb-3">Compare with Another Watch</h3>
@@ -229,5 +253,6 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
         </div>
       </div>
     </div>
+    </>
   )
 }

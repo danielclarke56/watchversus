@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'About WatchVsWatch',
-  description: 'Learn about WatchVsWatch — our mission, how reviews work, and our affiliate policy.',
+  description: 'Learn about WatchVsWatch — our mission, how community reviews work, and our watch database.',
 }
 
 export default function AboutPage() {
@@ -74,34 +74,10 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Affiliate disclosure */}
-        <section id="affiliate" className="card p-7 border-[#d4a853]/20">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#d4a853]/20 border border-[#d4a853]/30 flex items-center justify-center text-[#d4a853] text-sm font-bold shrink-0">03</span>
-            Affiliate Disclosure
-          </h2>
-          <div className="text-slate-300 space-y-3 leading-relaxed">
-            <p>
-              WatchVsWatch participates in affiliate programs with watch marketplaces including Chrono24, WatchBox, and
-              Jomashop. When you click an affiliate link on our site and make a purchase, we may receive a small
-              commission at no additional cost to you.
-            </p>
-            <p>
-              This commission helps fund the development and maintenance of WatchVsWatch. Our editorial decisions,
-              ratings, and recommendations are never influenced by affiliate relationships. We link to platforms
-              based on what&apos;s most useful for our community, not what generates the most revenue.
-            </p>
-            <p>
-              All affiliate links are marked where possible. If you have questions about our affiliate relationships,
-              please contact us.
-            </p>
-          </div>
-        </section>
-
         {/* Data */}
         <section className="card p-7">
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#d4a853]/20 border border-[#d4a853]/30 flex items-center justify-center text-[#d4a853] text-sm font-bold shrink-0">04</span>
+            <span className="w-8 h-8 rounded-lg bg-[#d4a853]/20 border border-[#d4a853]/30 flex items-center justify-center text-[#d4a853] text-sm font-bold shrink-0">03</span>
             Our Watch Database
           </h2>
           <div className="text-slate-300 space-y-3 leading-relaxed">
@@ -120,19 +96,19 @@ export default function AboutPage() {
         {/* Contact */}
         <section id="contact" className="card p-7">
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#d4a853]/20 border border-[#d4a853]/30 flex items-center justify-center text-[#d4a853] text-sm font-bold shrink-0">05</span>
+            <span className="w-8 h-8 rounded-lg bg-[#d4a853]/20 border border-[#d4a853]/30 flex items-center justify-center text-[#d4a853] text-sm font-bold shrink-0">04</span>
             Contact
           </h2>
           <div className="text-slate-300 space-y-3">
             <p>
-              For partnership inquiries, watch additions, corrections, or general feedback:
+              For watch additions, corrections, or general feedback:
             </p>
             <p>
               <strong className="text-white">Email:</strong>{' '}
               <span className="text-[#d4a853]">hello@WatchVsWatch.com</span>
             </p>
             <p className="text-slate-400 text-sm">
-              We read every email and respond to partnership and content inquiries within 48 hours.
+              We read every email and respond to content inquiries within 48 hours.
             </p>
           </div>
         </section>

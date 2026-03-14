@@ -21,10 +21,8 @@
     "price_preowned_usd": { "min": 12000, "max": 16000 },
     "style": ["dive", "sport", "luxury"],
     "description": "The Rolex Submariner 41 is the quintessential dive watch, refined over decades into a near-perfect tool watch. Its updated Cal. 3235 movement delivers class-leading accuracy and a 70-hour power reserve. The larger 41mm case modernizes the icon without sacrificing its legendary proportions.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "2",
@@ -48,10 +46,8 @@
     "price_preowned_usd": { "min": 18000, "max": 24000 },
     "style": ["gmt", "sport", "luxury"],
     "description": "The GMT-Master II 'Pepsi' is one of the most coveted sports watches in the world, combining a red-and-blue ceramic bezel with Rolex's celebrated Jubilee bracelet. Its GMT complication allows simultaneous tracking of two time zones, making it the ultimate traveler's watch. Market premiums reflect its extraordinary demand.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "3",
@@ -75,10 +71,8 @@
     "price_preowned_usd": { "min": 7000, "max": 10000 },
     "style": ["dress", "casual", "luxury"],
     "description": "The Rolex Datejust 36 is the archetypal elegant daily wearer, balancing versatility with understated luxury. Its cyclops date lens and fluted bezel options make it instantly recognizable while its 36mm diameter suits a wide range of wrist sizes. A true lifetime watch that transcends trends.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "4",
@@ -102,10 +96,8 @@
     "price_preowned_usd": { "min": 8000, "max": 11000 },
     "style": ["sport", "field", "luxury"],
     "description": "The Explorer 36 is Rolex's most elemental sports watch — a clean, no-nonsense dial with just the essential indices and no date complication to interrupt its purity. Returned to its original 36mm size in 2021, it's the perfect statement for those who appreciate restraint. Its simple elegance makes it arguably the most wearable Rolex for any occasion.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "5",
@@ -129,10 +121,8 @@
     "price_preowned_usd": { "min": 35000, "max": 55000 },
     "style": ["dress", "luxury"],
     "description": "The Day-Date 40 is Rolex's flagship dress watch, exclusively made in precious metals and nicknamed 'The President's Watch.' Its distinctive President bracelet and the addition of a full day display alongside the date make it the definitive statement of horological prestige. Only those who know, know.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "6",
@@ -156,10 +146,8 @@
     "price_preowned_usd": { "min": 3000, "max": 3800 },
     "style": ["dive", "sport", "vintage"],
     "description": "The Black Bay 58 is Tudor's most popular model, combining vintage-inspired aesthetics with modern movement technology in a wear-anywhere 39mm package. Its in-house MT5402 movement is COSC-certified and paired with a handsome riveted steel bracelet that evokes classic 1950s dive watch references. Outstanding value for a COSC-certified tool watch.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "7",
@@ -183,10 +171,8 @@
     "price_preowned_usd": { "min": 3500, "max": 4200 },
     "style": ["gmt", "sport", "dive"],
     "description": "The Tudor Black Bay GMT brings a true bi-directional 24-hour bezel GMT function to an accessible price point with Tudor's in-house movement. The pepsi-colored insert on a robust stainless case offers compelling value versus its Rolex sibling. Its 41mm diameter and integrated bracelet give it a modern, sporty presence.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "8",
@@ -210,10 +196,8 @@
     "price_preowned_usd": { "min": 3800, "max": 4400 },
     "style": ["dive", "sport"],
     "description": "The Pelagos 39 represents Tudor's titanium dive watch expertise in a more wearable 39mm package. Its featherlight titanium case combined with 500m water resistance makes it a legitimate professional dive tool that disappears on the wrist. The helium escape valve and bi-directional ratcheted bezel are serious dive watch credentials at a fraction of luxury pricing.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "9",
@@ -237,10 +221,8 @@
     "price_preowned_usd": { "min": 4500, "max": 5500 },
     "style": ["dive", "sport"],
     "description": "The Omega Seamaster 300m is the world's most famous dive watch thanks to its Bond movie credentials and the legendary wave-pattern dial. Its Master Chronometer-certified Cal. 8800 delivers outstanding accuracy and magnetic resistance up to 15,000 gauss. The ceramic wave-pattern dial is a genuine design statement that stands apart from the crowd.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "10",
@@ -264,10 +246,8 @@
     "price_preowned_usd": { "min": 5500, "max": 7000 },
     "style": ["sport", "casual"],
     "description": "The Omega Speedmaster Professional Moonwatch is the only watch ever worn on the moon, and its 2021 update finally added a Co-Axial escapement to the legendary 321 architecture. The stepped dial and hesalite crystal pay homage to the original moonwatch while modern Cal. 3861 brings Master Chronometer certification. An irreplaceable piece of horological history.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "11",
@@ -291,10 +271,8 @@
     "price_preowned_usd": { "min": 4200, "max": 5000 },
     "style": ["dress", "sport", "casual"],
     "description": "The Omega Aqua Terra 38 is the brand's understated everyday luxury watch, bridging formal elegance and casual sport wear effortlessly. Its horizontal teak-pattern dial adds subtle texture that separates it from plain dress watches, and the 38mm size makes it genuinely versatile on any wrist. Master Chronometer certification at this price is exceptional.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "12",
@@ -318,10 +296,8 @@
     "price_preowned_usd": { "min": 3500, "max": 4800 },
     "style": ["sport", "casual"],
     "description": "The TAG Heuer Carrera is the definitive Swiss sports chronograph, rooted in motorsport heritage and refined over 60 years. The in-house Heuer 02 movement offers an impressive 80-hour power reserve and column-wheel chronograph mechanism usually found at twice the price. A serious driver's chronograph with pedigree.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "13",
@@ -345,10 +321,8 @@
     "price_preowned_usd": { "min": 1400, "max": 2000 },
     "style": ["dive", "sport"],
     "description": "The TAG Heuer Aquaracer 300 is one of the best value propositions in Swiss dive watches, delivering Swiss-made automatic movement and 300m water resistance at an accessible price. The 2021 redesign cleaned up the proportions significantly with a more refined case and faceted bezel. An excellent entry point into Swiss tool watches.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "14",
@@ -372,10 +346,8 @@
     "price_preowned_usd": { "min": 550, "max": 750 },
     "style": ["dive", "sport"],
     "description": "The Seiko Prospex SPB143 is a modern evolution of the legendary 62MAS reference, blending vintage Seiko dive watch heritage with contemporary finishing and a modern 6R35 movement. The textured chapter ring and applied indices create a dial with surprising depth for its price. At this price point the specifications are nearly unbeatable.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "15",
@@ -399,10 +371,8 @@
     "price_preowned_usd": { "min": 500, "max": 700 },
     "style": ["dive", "sport"],
     "description": "The Seiko SBDC101 'Sumo' is a pure Japanese domestic market dive watch that has achieved cult status internationally for its bold proportions and value. Its cushion case and prominent crown-guarding shoulders give it a distinctive aggressive silhouette. The 6R35 movement with 70-hour power reserve makes it a supremely practical daily wearer.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "16",
@@ -426,10 +396,8 @@
     "price_preowned_usd": { "min": 180, "max": 280 },
     "style": ["sport", "casual", "dive"],
     "description": "The Seiko 5 Sports SRPE55 is one of the best gateway watches in horology — a legitimate automatic dive-style watch with day/date at a price that makes it an easy buy. The 2019 redesign brought a much more coherent overall look and a versatile sports aesthetic. For anyone starting their watch journey, this is the obvious choice.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "17",
@@ -453,10 +421,8 @@
     "price_preowned_usd": { "min": 500, "max": 700 },
     "style": ["dress", "casual"],
     "description": "The Seiko Presage SPB165 is a Japan-made dress watch that punches far above its price class with its stunning enamel dial and refined case finishing. The cocktail-inspired dial series showcases traditional Japanese craftsmanship in a watch that can genuinely compete with offerings at twice the price. An excellent entry into serious dress watches.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "18",
@@ -480,10 +446,8 @@
     "price_preowned_usd": { "min": 5000, "max": 6000 },
     "style": ["dress", "casual", "luxury"],
     "description": "The Grand Seiko Snowflake is arguably the most breathtaking dial in watchmaking at any price — its hand-crafted textured white lacquer evokes freshly fallen snow on the mountains of Shinshu. The titanium case with Zaratsu-polished surfaces showcases finishing that rivals watches costing five times more. For those who appreciate Japanese craftsmanship over Swiss prestige, this is the pinnacle.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "19",
@@ -507,10 +471,8 @@
     "price_preowned_usd": { "min": 3800, "max": 4500 },
     "style": ["dress", "luxury"],
     "description": "The Grand Seiko SBGW231 is a purist's dress watch — manual wind, 37mm, with a white lacquer dial and the impeccable Zaratsu case finishing that Grand Seiko is famous for. Its understated elegance and perfect proportions make it a watch you can wear for decades without it feeling dated. A hidden gem in the dress watch world.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "20",
@@ -534,10 +496,8 @@
     "price_preowned_usd": { "min": 3200, "max": 4000 },
     "style": ["field", "casual", "dress"],
     "description": "The IWC Pilot's Mark XVIII is a modern interpretation of the classic aviation watch formula — legible Arabic numerals, a clean black dial, and a slim profile that slides under a cuff with ease. Its soft-iron inner case provides excellent magnetic protection, a key original feature from pilot's watches. An elegant everyday watch that doesn't shout luxury.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "21",
@@ -561,10 +521,8 @@
     "price_preowned_usd": { "min": 5500, "max": 6500 },
     "style": ["dress", "luxury"],
     "description": "The IWC Portugieser 40 is a refined masterpiece of minimalist dress watch design, with railway track chapter ring, slim Dauphine hands, and an in-house movement delivering 60 hours of power reserve. Its scaled-down 40mm interpretation of the classic Portugieser makes it more daily wearable while retaining all the elegance. The definitive IWC dresser.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "22",
@@ -588,10 +546,8 @@
     "price_preowned_usd": { "min": 7000, "max": 9000 },
     "style": ["dive", "sport", "luxury"],
     "description": "The Panerai Luminor PAM01312 is a statement watch for those who embrace bold, oversized Italian design. The iconic crown-protecting bridge mechanism and cushion-shaped case are unmistakably Panerai. Its in-house P.9010 movement with 72-hour power reserve and 300m water resistance make it a capable tool watch despite its dramatic proportions.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "23",
@@ -615,10 +571,8 @@
     "price_preowned_usd": { "min": 6000, "max": 7500 },
     "style": ["dress", "sport", "luxury"],
     "description": "The Cartier Santos is the world's first wristwatch for men, celebrating over 100 years of heritage since Alberto Santos-Dumont needed a watch he could read while flying. The 2018 redesign added the innovative QuickSwitch interchangeable strap system, making the Santos the most versatile high-end watch available. An art object with legitimate historical significance.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "24",
@@ -642,10 +596,8 @@
     "price_preowned_usd": { "min": 2400, "max": 3000 },
     "style": ["dress", "luxury", "casual"],
     "description": "The Cartier Tank Must is an accessible entry into the Cartier universe, offering the iconic Tank silhouette with a solar-powered quartz movement. Its rectangular case and the Roman numerals are a timeless expression of Parisian elegance. The Tank Must proves that quartz can still be deeply desirable when housed in a design this perfect.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "25",
@@ -669,10 +621,8 @@
     "price_preowned_usd": { "min": 35000, "max": 50000 },
     "style": ["sport", "luxury", "dress"],
     "description": "The Audemars Piguet Royal Oak 15500 is the ultimate expression of the luxury sports watch that Gerald Genta designed in 1972 — its octagonal bezel, exposed screws, and Grande Tapisserie dial are icons of modern watchmaking. The 41mm update to the 15202 brings a new in-house movement with 60-hour power reserve and refined finishing. Market premiums dwarf the retail price.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "26",
@@ -696,10 +646,8 @@
     "price_preowned_usd": { "min": 90000, "max": 150000 },
     "style": ["sport", "luxury", "dress"],
     "description": "The Patek Philippe Nautilus 5711 is arguably the most coveted watch in the world — production ended in 2021 yet secondary market prices remain astronomical. Designed by Gerald Genta with a porthole-inspired bezel and horizontally striped dial, it represents the pinnacle of the luxury sports watch genre. Its impossibility makes it the ultimate grail watch.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "27",
@@ -723,10 +671,8 @@
     "price_preowned_usd": { "min": 22000, "max": 30000 },
     "style": ["sport", "luxury", "dress"],
     "description": "The Vacheron Constantin Overseas 4500V is the most underappreciated luxury sports watch — a three-bracelet system, in-house movement, and the Maltese cross of one of watchmaking's oldest manufactures. Its refined case edges and integrated bracelet achieve an elegance the Royal Oak and Nautilus lack. For connoisseurs, the Overseas is the apex of good taste.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "28",
@@ -750,10 +696,8 @@
     "price_preowned_usd": { "min": 7000, "max": 9000 },
     "style": ["sport", "casual"],
     "description": "The Breitling Navitimer B01 42 is the ultimate pilot's chronograph — its circular slide rule bezel can calculate airspeed, fuel consumption, and climb rates, making it a genuine instrument for aviation professionals. The in-house Caliber 01 is COSC-certified with 70-hour power reserve and column-wheel construction. Aviation history on your wrist.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "29",
@@ -777,10 +721,8 @@
     "price_preowned_usd": { "min": 3000, "max": 3800 },
     "style": ["dive", "sport"],
     "description": "The Breitling Superocean 42 is a serious professional dive watch with a bold aesthetic that stands out from the typical Swiss dive watch crowd. Its lightweight unidirectional bezel and 300m water resistance make it genuine tool watch territory, while the bold Breitling dial adds character. The price has come down significantly with the heritage relaunch strategy.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "30",
@@ -804,10 +746,8 @@
     "price_preowned_usd": { "min": 1400, "max": 1900 },
     "style": ["casual", "dress"],
     "description": "The Nomos Club Campus is a masterclass in Bauhaus minimalism — clean lines, legible dial, and German precision at a price that competes with nothing else in the in-house automatic segment. Made entirely in Glashütte, Germany, its DUW 3001 movement is a point of pride for the brand. The ideal first serious watch for someone who values substance over logos.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "31",
@@ -831,10 +771,8 @@
     "price_preowned_usd": { "min": 1200, "max": 1700 },
     "style": ["dress", "casual"],
     "description": "The Nomos Tangente is the purest expression of the brand's Bauhaus design philosophy — German-made, hand-wound, with a dial so clean it approaches perfection. Its 37.5mm size and slim 6.9mm profile slides under any cuff, making it the ideal dress watch for those who've grown tired of Swiss conservatism. Remarkable engineering presented with absolute simplicity.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "32",
@@ -858,10 +796,8 @@
     "price_preowned_usd": { "min": 900, "max": 1200 },
     "style": ["dive", "sport"],
     "description": "The Longines HydroConquest is the best Swiss dive watch under $1,500 — COSC-certified, 300m water resistance, sapphire crystal, with the excellent L888.4 movement offering 72 hours of power reserve. The brand's 'Elegance is an Attitude' positioning is sometimes overlooked for dive watches, but the HydroConquest proves Longines still makes genuinely serious tool watches.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "33",
@@ -885,10 +821,8 @@
     "price_preowned_usd": { "min": 1100, "max": 1700 },
     "style": ["dress", "casual"],
     "description": "The Longines Master Collection delivers genuine Swiss elegance with COSC certification at a price that routinely surprises. Its moonphase and seconds sub-dial offer traditional dress watch complications without the luxury tax. An honest, well-made dress watch from a brand with 185 years of heritage that doesn't charge for the name.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "34",
@@ -912,10 +846,8 @@
     "price_preowned_usd": { "min": 500, "max": 650 },
     "style": ["field", "casual", "sport"],
     "description": "The Hamilton Khaki Field Auto is one of the genuine bargains of Swiss watchmaking — Swiss-made, sapphire crystal, and an 80-hour power reserve at a price most watches with 40-hour reserves aspire to. Its field watch aesthetic and clean Arabic numerals have a rugged practicality that resonates with people who actually wear their watches. Interstellar made it famous; ownership makes you a convert.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "35",
@@ -939,10 +871,8 @@
     "price_preowned_usd": { "min": 550, "max": 750 },
     "style": ["dress", "casual"],
     "description": "The Hamilton Jazzmaster 40 is a Swiss-made dress watch that competes with watches at twice its price with its slim profile, beautiful sunray dials, and H-10 movement with an exceptional 80-hour power reserve. The wide dial aperture and elegant Dauphine hands give it genuine presence at formal occasions. Hamilton's best kept secret.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "36",
@@ -966,10 +896,8 @@
     "price_preowned_usd": { "min": 400, "max": 550 },
     "style": ["sport", "casual", "dress"],
     "description": "The Tissot PRX is the value disruption of the decade — a Swiss-made integrated bracelet sports watch with 80-hour power reserve for under $600. It captures the luxury sports watch aesthetic at a fraction of the price and has been backordered since launch. Its sapphire crystal and Powermatic 80 movement make it technically superior to many watches at 3× the price.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "37",
@@ -993,10 +921,8 @@
     "price_preowned_usd": { "min": 450, "max": 650 },
     "style": ["dive", "sport"],
     "description": "The Tissot Seastar 1000 is the no-nonsense Swiss dive watch for those who need serious water resistance without breaking the bank. Its 300m water resistance, sapphire crystal, and Powermatic 80 movement make it technically competitive with watches at twice the price. The large 45.5mm case is bold — this isn't a watch that hides.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "38",
@@ -1020,10 +946,8 @@
     "price_preowned_usd": { "min": 400, "max": 530 },
     "style": ["dive", "sport", "vintage"],
     "description": "The Baltic Aquascaphe is the French microbrand that made the watch world sit up and notice independent watchmaking. Its vintage-inspired bi-compax dial layout and domed sapphire crystal evoke 1960s dive watches in a package with modern specifications. The Miyota movement is honest for the price, and the overall quality feels far more expensive.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "39",
@@ -1047,10 +971,8 @@
     "price_preowned_usd": { "min": 700, "max": 900 },
     "style": ["sport", "casual", "vintage"],
     "description": "The Baltic Bicompax 001 is a vintage-inspired chronograph that channels the spirit of 1960s racing chronographs at a remarkable price. Its bi-compax dial layout with 30-minute and 12-hour sub-registers creates a beautifully balanced aesthetic. Powered by the proven Valjoux 7750, it offers accessible entry into mechanical chronograph ownership.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "40",
@@ -1074,10 +996,8 @@
     "price_preowned_usd": { "min": 700, "max": 900 },
     "style": ["dive", "sport", "vintage"],
     "description": "The Halios Seaforth is a Canadian microbrand's love letter to vintage dive watches — its Sellita SW200 movement, 300m water resistance, and meticulous case finishing make it remarkable value. The slightly domed sapphire crystal and vintage-style dial give it a depth and character that production watches rarely achieve. Limited availability makes it a cult piece.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "41",
@@ -1101,10 +1021,8 @@
     "price_preowned_usd": { "min": 600, "max": 800 },
     "style": ["dive", "sport", "casual"],
     "description": "The Halios Tropik takes the Canadian brand's signature attention to detail and applies it to a more modern sports watch aesthetic with tropical color options. Its Sellita SW200 movement and 200m water resistance make it a genuine daily wearer, while the colorful dial options keep it fun and casual. A watch that makes you smile.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "42",
@@ -1128,10 +1046,8 @@
     "price_preowned_usd": { "min": 550, "max": 750 },
     "style": ["dive", "sport", "vintage"],
     "description": "The Christopher Ward C65 Trident is the British brand's vintage-inspired dive watch that's been praised by professional watch journalists for legitimately competing with Swiss watches at twice the price. Its in-house SH21 movement with 60-hour power reserve is genuinely impressive for the money. The balanced case proportions and vintage lug design make it one of the best-looking affordable dive watches.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "43",
@@ -1155,10 +1071,8 @@
     "price_preowned_usd": { "min": 900, "max": 1200 },
     "style": ["dress", "casual"],
     "description": "The Seiko Presage SPB167 brings a GMT complication to the cocktail-inspired Presage collection with a beautiful dual-tone dial and steel bracelet. Its Japan-made movement and finishing quality exceed what most brands offer at this price. A versatile, elegant watch that works from boardroom to bar.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "44",
@@ -1182,10 +1096,8 @@
     "price_preowned_usd": { "min": 3800, "max": 4800 },
     "style": ["dress", "luxury", "casual"],
     "description": "The Omega Constellation 39 is one of watchmaking's most recognized dress watches with its distinctive claws holding the sapphire crystal and pie-pan dial design. The Master Chronometer Cal. 8800 with anti-magnetic properties makes it technically one of the most advanced dress movements available. Understated luxury that rewards those who look closely.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "45",
@@ -1209,10 +1121,8 @@
     "price_preowned_usd": { "min": 13000, "max": 17000 },
     "style": ["sport", "luxury", "dive"],
     "description": "The Rolex Yacht-Master 40 in Rolesium (steel case with platinum bezel) is one of Rolex's most underrated models — sophisticated enough for the yacht club yet sporty enough for active wear. Its bidirectional rotatable bezel and 100m water resistance make it a practical companion. The platinum bezel develops a uniquely tactile feel and subtle sheen.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "46",
@@ -1236,10 +1146,8 @@
     "price_preowned_usd": { "min": 5500, "max": 7000 },
     "style": ["dress", "luxury"],
     "description": "The Jaeger-LeCoultre Reverso Classic is the Art Deco icon that has defined JLC for 90 years — its reversible rectangular case was designed for polo players who needed to protect the dial. Its slim mechanical movement and the signature swiveling case make it one of watchmaking's most ingenious complications. Timeless in every sense of the word.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "47",
@@ -1263,10 +1171,8 @@
     "price_preowned_usd": { "min": 6500, "max": 8000 },
     "style": ["sport", "casual"],
     "description": "The Zenith El Primero Chronomaster Original houses the world's first automatic chronograph movement, still running at its original 36,000 bph high-frequency rate for 1/10th second accuracy. The tri-color panda dial with red, blue, and black registers is an icon of watch design. At 38mm, the 2021 reissue offers a proportionally perfect vintage chronograph.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "48",
@@ -1290,10 +1196,8 @@
     "price_preowned_usd": { "min": 650, "max": 950 },
     "style": ["dress", "casual"],
     "description": "Frédérique Constant's Classics Automatic offers Swiss-made elegance with an in-house movement at a remarkable price. The open-heart dial option reveals the escapement through a small aperture, adding horological interest to a traditional dress watch aesthetic. Their manufacturing independence gives them an advantage most brands in this segment lack.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "49",
@@ -1317,10 +1221,8 @@
     "price_preowned_usd": { "min": 550, "max": 750 },
     "style": ["dive", "sport", "vintage"],
     "description": "The Mido Ocean Star Tribute is a vintage-inspired dive watch with ETA/Mido's excellent 80-hour silicon hairspring movement, combining reliability with longevity in a handsome retro package. Its Swatch Group heritage gives it access to excellent movement technology at an accessible price. One of the best under-the-radar dive watch values.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   },
   {
     "id": "50",
@@ -1344,9 +1246,8 @@
     "price_preowned_usd": { "min": 60, "max": 120 },
     "style": ["casual", "sport"],
     "description": "The Swatch Sistem51 is an engineering marvel — an automatic watch assembled entirely by robots with just 51 components (typical automatics have 130+) and a 90-hour power reserve that shames Swiss watches at ten times the price. Its sealed movement and plastic case make it maintenance-free. Proof that watchmaking can be both democratic and technically innovative.",
-    "chrono24_url": "#affiliate-chrono24",
-    "watchbox_url": "#affiliate-watchbox",
-    "jomashop_url": "#affiliate-jomashop",
-    "image_placeholder": true
+"watchbox_url": "#affiliate-watchbox",
+"image_placeholder": true
   }
 ]
+

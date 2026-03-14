@@ -189,9 +189,6 @@ export default function QuizClient({ watches }: Props) {
                 <Link href={`/watches/${watch.slug}`} className="btn-gold text-sm flex-1 text-center">
                   View Full Specs
                 </Link>
-                <a href={watch.chrono24_url} className="btn-outline text-sm flex-1 text-center">
-                  Buy on Chrono24
-                </a>
               </div>
             </div>
           ))}

@@ -16,11 +16,6 @@ export default function Navigation() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur border-b border-[#334155]">
-      {/* Affiliate banner */}
-      <div className="bg-[#1e293b] text-center py-1.5 px-4 text-xs text-slate-400">
-        This site uses affiliate links. We may earn a commission at no extra cost to you.
-      </div>
-
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">

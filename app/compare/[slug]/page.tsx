@@ -18,11 +18,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const w2 = getWatchBySlug(parts[1])
   if (!w1 || !w2) return {}
   return {
-    title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}`,
+    title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Full Comparison`,
     description: `Head-to-head comparison: ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}. Full specs, community ratings, and pricing compared side-by-side.`,
+    alternates: {
+      canonical: `https://watchvswatch.com/compare/${parts[0]}-vs-${parts[1]}`,
+    },
     openGraph: {
-      title: `${w1.name} vs ${w2.name} — WatchVersus`,
-      description: `Which is better? Full head-to-head comparison with community ratings.`,
+      title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} | WatchVsWatch`,
+      description: `Which is better? ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — full head-to-head comparison with specs, community ratings, and pricing.`,
+      url: `https://watchvswatch.com/compare/${parts[0]}-vs-${parts[1]}`,
+      type: 'website',
     },
   }
 }
@@ -75,7 +80,88 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
     .slice(0, 4)
 
+  const faqItems = [
+    {
+      question: `Which is better: ${w1.brand} ${w1.name} or ${w2.brand} ${w2.name}?`,
+      answer: `Both are excellent watches with different strengths. The ${w1.brand} ${w1.name} offers ${w1.case_diameter_mm === w2.case_diameter_mm ? 'comparable sizing' : w1.case_diameter_mm < w2.case_diameter_mm ? 'a more compact size' : 'a larger case'} and costs ${w1.price_new_usd.min < w2.price_new_usd.min ? 'less' : 'more'} new. The ${w2.brand} ${w2.name} excels in ${w2.water_resistance_m > w1.water_resistance_m ? 'water resistance' : 'overall construction'}. The best choice depends on your wrist size, budget, and preferred aesthetic.`,
+    },
+    {
+      question: `What's the price difference?`,
+      answer: `The ${w1.brand} ${w1.name} retails for ${formatPrice(w1.price_new_usd)}, while the ${w2.brand} ${w2.name} is priced at ${formatPrice(w2.price_new_usd)}. Pre-owned, expect ${formatPrice(w1.price_preowned_usd)} and ${formatPrice(w2.price_preowned_usd)} respectively. Actual secondary market prices vary based on condition and demand.`,
+    },
+    {
+      question: `How do the case sizes compare?`,
+      answer: `The ${w1.brand} ${w1.name} has a ${w1.case_diameter_mm}mm case diameter with ${w1.case_thickness_mm}mm thickness, while the ${w2.brand} ${w2.name} measures ${w2.case_diameter_mm}mm × ${w2.case_thickness_mm}mm. Both have lug-to-lug measurements of ${w1.lug_to_lug_mm}mm and ${w2.lug_to_lug_mm}mm respectively. Consider your wrist size and wear style when deciding.`,
+    },
+    {
+      question: `Which has better water resistance?`,
+      answer: `The ${w1.brand} ${w1.name} is water-resistant to ${w1.water_resistance_m}m, while the ${w2.brand} ${w2.name} offers ${w2.water_resistance_m}m. Both are suitable for swimming and snorkeling at their respective depths. For professional diving, verify the rating exceeds 300m and includes a screw-down crown.`,
+    },
+    {
+      question: `How do the movements compare?`,
+      answer: `The ${w1.brand} ${w1.name} uses a ${w1.movement_type} ${w1.movement_caliber} with ${w1.power_reserve_hours ? `${w1.power_reserve_hours} hours` : 'quartz'} power reserve. The ${w2.brand} ${w2.name} features a ${w2.movement_type} ${w2.movement_caliber}${w2.power_reserve_hours ? ` with ${w2.power_reserve_hours} hours` : ''} power reserve. ${w1.movement_type !== 'quartz' && w2.movement_type !== 'quartz' ? 'Both offer traditional mechanical craftsmanship.' : 'Check movement specifications for specific features like chronograph or GMT functionality.'}`,
+    },
+    {
+      question: `Which holds value better?`,
+      answer: `${w1.brand} and ${w2.brand} both command strong secondary markets. Pre-owned pricing shows an estimated resale value of ${formatPrice(w1.price_preowned_usd)} for the ${w1.name} and ${formatPrice(w2.price_preowned_usd)} for the ${w2.name}. Condition, service history, and box/papers significantly impact resale value for both models.`,
+    },
+  ]
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchvswatch.com' },
+          { '@type': 'ListItem', position: 2, name: 'Compare', item: 'https://watchvswatch.com/compare' },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}`,
+            item: `https://watchvswatch.com/compare/${slug1}-vs-${slug2}`,
+          },
+        ],
+      },
+      {
+        '@type': 'ItemList',
+        name: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} Comparison`,
+        description: `Head-to-head specs, community ratings, and pricing for ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}.`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: `${w1.brand} ${w1.name}`,
+            url: `https://watchvswatch.com/watches/${w1.slug}`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: `${w2.brand} ${w2.name}`,
+            url: `https://watchvswatch.com/watches/${w2.slug}`,
+          },
+        ],
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.answer,
+          },
+        })),
+      },
+    ],
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Breadcrumb */}
       <nav className="text-sm text-slate-500 mb-6 flex items-center gap-2">
@@ -172,26 +258,18 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
         </div>
       )}
 
-      {/* Buy links */}
+      {/* FAQ Section */}
       <div className="mb-10">
-        <h2 className="text-xl font-bold text-white mb-5">Where to Buy</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {[w1, w2].map((w) => (
-            <div key={w.id} className="card p-5">
-              <h3 className="text-white font-semibold mb-1">{w.brand} {w.name}</h3>
-              <p className="text-slate-400 text-sm mb-4">New: {formatPrice(w.price_new_usd)} · Pre-owned: {formatPrice(w.price_preowned_usd)}</p>
-              <div className="space-y-2">
-                <a href={w.chrono24_url} className="block text-center text-sm bg-[#d4a853] text-[#0f172a] font-semibold px-4 py-2 rounded-lg hover:bg-[#e4c07a] transition-colors">
-                  Chrono24 ↗
-                </a>
-                <a href={w.watchbox_url} className="block text-center text-sm border border-[#334155] text-slate-400 px-4 py-2 rounded-lg hover:border-[#d4a853]/40 hover:text-white transition-colors">
-                  WatchBox ↗
-                </a>
-                <a href={w.jomashop_url} className="block text-center text-sm border border-[#334155] text-slate-400 px-4 py-2 rounded-lg hover:border-[#d4a853]/40 hover:text-white transition-colors">
-                  Jomashop ↗
-                </a>
-              </div>
-            </div>
+        <h2 className="text-xl font-bold text-white mb-5">Frequently Asked Questions</h2>
+        <div className="space-y-4">
+          {faqItems.map((item, i) => (
+            <details key={i} className="card p-5 group cursor-pointer">
+              <summary className="text-white font-semibold flex justify-between items-center list-none">
+                <span>{item.question}</span>
+                <span className="text-[#d4a853] group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p className="text-slate-400 text-sm mt-4 leading-relaxed">{item.answer}</p>
+            </details>
           ))}
         </div>
       </div>
@@ -234,5 +312,6 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
         </Link>
       </div>
     </div>
+    </>
   )
 }

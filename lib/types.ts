@@ -20,9 +20,6 @@ export interface Watch {
   price_preowned_usd: { min: number; max: number }
   style: string[]
   description: string
-  chrono24_url: string
-  watchbox_url: string
-  jomashop_url: string
   image_placeholder: boolean
 }
 

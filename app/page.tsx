@@ -86,9 +86,9 @@ export default function HomePage() {
             },
             {
               step: '03',
-              title: 'Buy',
-              desc: 'Find the best price across Chrono24, WatchBox, and Jomashop with one click.',
-              path: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
+              title: 'Decide',
+              desc: 'Use honest comparisons and community ratings to confidently choose the right watch.',
+              path: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
             },
           ].map((item) => (
             <div key={item.step} className="card p-6 text-center">

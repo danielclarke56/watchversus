@@ -13,11 +13,7 @@ export default function Footer() {
               Community-driven watch comparisons, reviews, and recommendations.
               We help you find the perfect watch through honest, expert community insights.
             </p>
-            <p className="text-slate-500 text-xs mt-4">
-              <strong className="text-slate-400">Affiliate Disclosure:</strong> WatchVsWatch participates
-              in affiliate programs. When you click our links and make a purchase, we may earn a
-              small commission at no extra cost to you. This helps support the site.
-            </p>
+
           </div>
 
           <div>
@@ -64,7 +60,7 @@ export default function Footer() {
           <div className="flex gap-5">
             <Link href="/about" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">About</Link>
             <Link href="/about#contact" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">Contact</Link>
-            <Link href="/about#affiliate" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">Affiliate Policy</Link>
+
           </div>
         </div>
       </div>

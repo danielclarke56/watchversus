@@ -109,19 +109,6 @@ function WatchColumn({ watch }: { watch: Watch }) {
         )}
       </div>
 
-      {/* Buy buttons */}
-      <div className="space-y-2 mb-6">
-        <a href={watch.chrono24_url} className="block text-center text-xs bg-[#d4a853] text-[#0f172a] font-semibold px-3 py-2 rounded-lg hover:bg-[#e4c07a] transition-colors">
-          Chrono24 ↗
-        </a>
-        <a href={watch.watchbox_url} className="block text-center text-xs border border-[#334155] text-slate-400 px-3 py-2 rounded-lg hover:border-[#d4a853]/40 hover:text-white transition-colors">
-          WatchBox ↗
-        </a>
-        <a href={watch.jomashop_url} className="block text-center text-xs border border-[#334155] text-slate-400 px-3 py-2 rounded-lg hover:border-[#d4a853]/40 hover:text-white transition-colors">
-          Jomashop ↗
-        </a>
-      </div>
-
       {/* Community ratings */}
       {avgRatings && (
         <div className="space-y-2">
