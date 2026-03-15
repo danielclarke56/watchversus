@@ -8,10 +8,22 @@ import type { Watch } from '@/lib/types'
 
 export const revalidate = 86400 // Revalidate Reddit data every 24h
 
+const WATCH_SUBREDDITS = [
+  'Watches',
+  'WatchHorology',
+  'rolex',
+  'OmegaWatches',
+  'Tudor',
+  'seiko',
+  'Watchexchange',
+  'watchcollecting',
+]
+
 async function getRedditMentions(query: string): Promise<number> {
   try {
+    const subredditParam = WATCH_SUBREDDITS.join('+')
     const res = await fetch(
-      `https://www.reddit.com/r/Watches/search.json?q=${encodeURIComponent(query)}&sort=relevance&t=year&limit=100&restrict_sr=1`,
+      `https://www.reddit.com/r/${subredditParam}/search.json?q=${encodeURIComponent(query)}&sort=relevance&t=year&limit=100&restrict_sr=1`,
       {
         headers: { 'User-Agent': 'watchvswatch-bot/1.0 (watchvswatch.com)' },
         next: { revalidate: 86400 },
@@ -331,7 +343,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
         {/* Forum buzz */}
         <div className="border-t border-[#334155] pt-4">
-          <p className="text-xs text-slate-500 mb-3 uppercase tracking-wider">r/Watches Forum Buzz · Last 12 months</p>
+          <p className="text-xs text-slate-500 mb-3 uppercase tracking-wider">Reddit Watch Community Buzz · Last 12 months</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-[#0f172a] rounded-lg p-3 text-center">
               <div className="text-xl font-bold text-white">{reddit1 > 0 ? reddit1 : '—'}</div>
@@ -357,7 +369,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               </div>
             </div>
           )}
-          <p className="text-xs text-slate-600 mt-2 text-center">Data refreshed daily · Source: reddit.com/r/Watches</p>
+          <p className="text-xs text-slate-600 mt-2 text-center">Data refreshed daily · Source: r/Watches, r/WatchHorology, r/rolex, r/OmegaWatches + more</p>
         </div>
       </div>
 
