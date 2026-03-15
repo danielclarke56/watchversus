@@ -62,24 +62,28 @@ const QUESTIONS = [
   },
 ]
 
-function inBudget(watch: Watch, budget: string): boolean {
-  const midPrice = (watch.price_new_usd.min + watch.price_new_usd.max) / 2
-  if (budget === 'u500') return midPrice < 500
-  if (budget === '500-2000') return midPrice >= 500 && midPrice <= 2000
-  if (budget === '2000-5000') return midPrice > 2000 && midPrice <= 5000
-  if (budget === '5000p') return midPrice > 5000
+function budgetMatches(watch: Watch, budget: string): boolean {
+  const min = watch.price_new_usd.min
+  const max = watch.price_new_usd.max
+  // A watch qualifies if its minimum price is within the selected budget tier
+  // (we use min so watches straddling a boundary lean toward lower tier)
+  if (budget === 'u500') return min < 500
+  if (budget === '500-2000') return min >= 400 && min <= 2500
+  if (budget === '2000-5000') return min >= 1500 && min <= 6000
+  if (budget === '5000p') return max >= 5000
   return true
 }
 
 function scoreWatch(watch: Watch, answers: Record<string, string>): number {
   let score = 0
 
-  // Budget — hard match only; out-of-budget watches are pre-filtered before scoring
+  // Budget — hard-filtered before scoring, but still reward exact matches
   const midPrice = (watch.price_new_usd.min + watch.price_new_usd.max) / 2
   if (answers.budget === 'u500' && midPrice < 500) score += 30
   else if (answers.budget === '500-2000' && midPrice >= 500 && midPrice <= 2000) score += 30
-  else if (answers.budget === '2000-5000' && midPrice > 2000 && midPrice <= 5000) score += 30
-  else if (answers.budget === '5000p' && midPrice > 5000) score += 30
+  else if (answers.budget === '2000-5000' && midPrice >= 2000 && midPrice <= 5000) score += 30
+  else if (answers.budget === '5000p' && midPrice >= 5000) score += 30
+  else score += 5 // edge-of-range bonus (won't appear unless no exact-match candidates)
 
   // Style
   if (answers.style && watch.style.includes(answers.style)) score += 25
@@ -134,22 +138,14 @@ export default function QuizClient({ watches }: Props) {
 
   const results = showResults
     ? (() => {
-        const budget = answers.budget
-        // Hard filter: only score watches within the selected budget tier
-        const inRange = watches.filter((w) => !budget || inBudget(w, budget))
-        const scored = inRange
+        // Hard-filter by budget — never show watches outside the selected range
+        const pool = answers.budget
+          ? watches.filter((w) => budgetMatches(w, answers.budget))
+          : watches
+        return pool
           .map((w) => ({ watch: w, score: scoreWatch(w, answers) }))
           .sort((a, b) => b.score - a.score)
-        // If fewer than 3 in range, pad with closest-priced out-of-range watches
-        if (scored.length < 3) {
-          const inRangeIds = new Set(inRange.map((w) => w.id))
-          const extras = watches
-            .filter((w) => !inRangeIds.has(w.id))
-            .map((w) => ({ watch: w, score: scoreWatch(w, answers) }))
-            .sort((a, b) => b.score - a.score)
-          return [...scored, ...extras].slice(0, 3)
-        }
-        return scored.slice(0, 3)
+          .slice(0, 3)
       })()
     : []
 
