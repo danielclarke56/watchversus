@@ -64,13 +64,13 @@ const QUESTIONS = [
 
 function budgetMatches(watch: Watch, budget: string): boolean {
   const min = watch.price_new_usd.min
-  const max = watch.price_new_usd.max
-  // A watch qualifies if its minimum price is within the selected budget tier
-  // (we use min so watches straddling a boundary lean toward lower tier)
+  // Use minimum price as the canonical tier assignment for a watch.
+  // This ensures each watch belongs to exactly one tier and future watches
+  // auto-categorize correctly without overlap.
   if (budget === 'u500') return min < 500
-  if (budget === '500-2000') return min >= 400 && min <= 2500
-  if (budget === '2000-5000') return min >= 1500 && min <= 6000
-  if (budget === '5000p') return max >= 5000
+  if (budget === '500-2000') return min >= 500 && min < 2000
+  if (budget === '2000-5000') return min >= 2000 && min < 5000
+  if (budget === '5000p') return min >= 5000
   return true
 }
 
