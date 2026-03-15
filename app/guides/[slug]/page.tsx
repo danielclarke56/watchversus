@@ -65,7 +65,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       },
       {
         '@type': 'FAQPage',
-        mainEntity: guide.faq.map((item) => ({
+        mainEntity: [...guide.faq, ...(guide.paa ?? [])].map((item) => ({
           '@type': 'Question',
           name: item.question,
           acceptedAnswer: {
@@ -219,6 +219,24 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   </Link>
                 )
               })}
+            </div>
+          </section>
+        )}
+
+        {/* People Also Ask */}
+        {guide.paa && guide.paa.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6">People Also Ask</h2>
+            <div className="space-y-3">
+              {guide.paa.map((item, i) => (
+                <details key={i} className="card p-5 group cursor-pointer">
+                  <summary className="text-white font-semibold flex justify-between items-center list-none">
+                    <span>{item.question}</span>
+                    <span className="text-[#d4a853] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                  </summary>
+                  <p className="text-slate-400 text-sm mt-3 leading-relaxed">{item.answer}</p>
+                </details>
+              ))}
             </div>
           </section>
         )}

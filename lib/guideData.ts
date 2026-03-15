@@ -22,6 +22,7 @@ export interface Guide {
   recommendations: GuideRecommendation[]
   buyingGuide: GuideSection[]
   faq: GuideFAQ[]
+  paa?: GuideFAQ[]
   conclusion: string
 }
 
@@ -31,7 +32,7 @@ export const guides: Guide[] = [
     title: "Best Watches Under $500 in 2026 — Expert Picks",
     description: "The best automatic and quartz watches under $500 in 2026. Expert picks from Seiko, Tissot, Baltic, Hamilton, and more — reviewed and compared.",
     h1: "Best Watches Under $500 in 2026",
-    intro: "The $500 price point is one of the most exciting tiers in modern watchmaking. A few years ago, buying a serious automatic watch for under $500 meant accepting significant compromises — noisy movements, mineral crystals, poor lume. Today, that is no longer true. Japanese and Swiss manufacturers have pushed extraordinary technology down the price ladder, delivering sapphire crystals, COSC-comparable movements, and genuine design character at prices that would have seemed impossible a decade ago.\n\nWhether you want a gateway automatic that will convert you to the hobby for life, a robust daily beater that can take genuine abuse, or a dive watch capable of real depth, the sub-$500 segment delivers. This guide covers the best options across categories — from Seiko's legendary Sport and Prospex lines to the Tissot PRX, a watch that genuinely disrupted the integrated bracelet market when it launched. We have also included picks available new just above $500 that consistently appear in excellent preowned condition well below the threshold, giving you more ways to find something that genuinely excites you.",
+    intro: "The best watches under $500 in 2026 come from Seiko, Tissot, and Hamilton — brands that deliver Swiss or Japanese movements without the luxury markup. Top picks:\n\nThe $500 price point is one of the most exciting tiers in modern watchmaking. A few years ago, buying a serious automatic watch for under $500 meant accepting significant compromises — noisy movements, mineral crystals, poor lume. Today, that is no longer true. Japanese and Swiss manufacturers have pushed extraordinary technology down the price ladder, delivering sapphire crystals, COSC-comparable movements, and genuine design character at prices that would have seemed impossible a decade ago.\n\nWhether you want a gateway automatic that will convert you to the hobby for life, a robust daily beater that can take genuine abuse, or a dive watch capable of real depth, the sub-$500 segment delivers. This guide covers the best options across categories — from Seiko's legendary Sport and Prospex lines to the Tissot PRX, a watch that genuinely disrupted the integrated bracelet market when it launched. We have also included picks available new just above $500 that consistently appear in excellent preowned condition well below the threshold, giving you more ways to find something that genuinely excites you.",
     recommendations: [
       {
         slug: "seiko-5-sports-srpe55",
@@ -98,6 +99,24 @@ export const guides: Guide[] = [
         answer: "Seiko dominates at the entry level — the 5 Sports is the benchmark. Swatch's Sistem51 is an engineering marvel at $100-150. Tissot (PRX preowned) and Hamilton (Khaki Field preowned) offer Swiss-made quality. In the microbrand space, Baltic and Halios deliver remarkable quality at accessible prices. For a pure Japanese automatic under $200, it is hard to beat Seiko. For Swiss-made quality under $500 preowned, Hamilton and Tissot are the names to know.",
       },
     ],
+    paa: [
+      {
+        question: "What is the best automatic watch under $500?",
+        answer: "The Seiko 5 Sports SRPE55 ($250–350) is the top pick — reliable 4R36 movement, 100m water resistance, and day/date display. The Tissot PRX regularly appears preowned under $450 and offers Swiss manufacturing and an 80-hour movement.",
+      },
+      {
+        question: "Is Seiko or Tissot better under $500?",
+        answer: "Seiko wins on raw value and ruggedness; the Tissot PRX (preowned under $450) wins on design and Swiss manufacturing. Both are excellent choices at their respective price points.",
+      },
+      {
+        question: "Can you get a Swiss-made watch under $500?",
+        answer: "Yes, preowned. The Tissot PRX and Hamilton Khaki Field Auto regularly appear in excellent condition under $500 on platforms like Chrono24 and WatchBox. Buying preowned is the best way to access Swiss quality at this budget.",
+      },
+      {
+        question: "What is the best first mechanical watch?",
+        answer: "The Seiko 5 Sports is the most recommended first automatic watch worldwide — genuine automatic movement, day/date complication, and 100m water resistance at $250–350. Many collectors who own Rolex still reach for their Seiko 5 on beach days.",
+      },
+    ],
     conclusion: "The under-$500 watch market is proof that great watchmaking is accessible to everyone. Whether you start with a Seiko 5 Sports as your gateway into mechanical watches or stretch to a preowned Tissot PRX for its integrated bracelet charm, you will find that watches in this range can genuinely satisfy — not as compromises, but as excellent products on their own terms. Compare your favourites side-by-side on our comparison tool to see how the specs stack up before you buy.",
   },
 
@@ -106,7 +125,7 @@ export const guides: Guide[] = [
     title: "Best Watches Under $1,000 in 2026 — Top Swiss & Japanese Picks",
     description: "The best automatic watches under $1,000 in 2026. Swiss-made, Japanese excellence, and top microbrands reviewed and compared by category.",
     h1: "Best Watches Under $1,000 in 2026",
-    intro: "The $500-$1,000 bracket is arguably the most rewarding tier in watchmaking. This is where Swiss-made automatics become genuinely accessible, movement quality takes a meaningful leap, and design ambition increases substantially. You are no longer choosing between good and great — you are navigating different kinds of excellent.\n\nHamilton's exceptional 80-hour movement appears in both the Khaki Field and Jazzmaster at under $900. Seiko's professional Prospex line delivers 70-hour power reserves and sapphire crystals under $900. Baltic's cult-status Aquascaphe, the Christopher Ward C65 Trident with its in-house movement, and the Halios Tropik round out a microbrand tier that delivers remarkable value. This guide highlights the best automatic watches available new under $1,000, with a focus on what matters most: movement quality, build honesty, long-term wearability, and the likelihood you will still love it in ten years.",
+    intro: "Under $1,000, you can get genuine sapphire crystal, in-house movements, and 100m+ water resistance. Best options:\n\nThe $500-$1,000 bracket is arguably the most rewarding tier in watchmaking. This is where Swiss-made automatics become genuinely accessible, movement quality takes a meaningful leap, and design ambition increases substantially. You are no longer choosing between good and great — you are navigating different kinds of excellent.\n\nHamilton's exceptional 80-hour movement appears in both the Khaki Field and Jazzmaster at under $900. Seiko's professional Prospex line delivers 70-hour power reserves and sapphire crystals under $900. Baltic's cult-status Aquascaphe, the Christopher Ward C65 Trident with its in-house movement, and the Halios Tropik round out a microbrand tier that delivers remarkable value. This guide highlights the best automatic watches available new under $1,000, with a focus on what matters most: movement quality, build honesty, long-term wearability, and the likelihood you will still love it in ten years.",
     recommendations: [
       {
         slug: "seiko-prospex-spb143",
@@ -181,6 +200,24 @@ export const guides: Guide[] = [
         answer: "Both matter, but in different ways. A high-quality movement (long power reserve, COSC accuracy, established caliber) ensures the watch remains accurate and serviceable for decades. Design determines whether you reach for it every day. The good news: at $500-$1,000, you no longer have to compromise — watches like the Tissot PRX, Hamilton Khaki Field, and Seiko Prospex SPB143 deliver excellent movements in genuinely beautiful designs. Prioritize the combination that excites you most, because enthusiasm leads to daily wear, which is what makes a watch worthwhile.",
       },
     ],
+    paa: [
+      {
+        question: "What is the best Swiss automatic watch under $1,000?",
+        answer: "The Tissot PRX ($550–625), Hamilton Khaki Field Auto ($650–750), and Christopher Ward C65 Trident ($700–900) are the top Swiss options under $1,000 — all featuring sapphire crystal and high-quality movements.",
+      },
+      {
+        question: "Is Hamilton a good watch brand?",
+        answer: "Yes. Hamilton is Swiss-made under Swatch Group, uses genuine in-house movements, and delivers excellent build quality from $650–$900 — one of the best values in Swiss watchmaking.",
+      },
+      {
+        question: "What watch should I buy as my first $1,000 mechanical watch?",
+        answer: "The Tissot PRX at $550–625 is widely recommended — sapphire crystal, 80-hour Powermatic 80 movement, and an integrated bracelet that looks twice the price. For a tool watch, the Seiko Prospex SPB143 at $700–900 is unmatched.",
+      },
+      {
+        question: "Are Baltic and Halios watches reliable?",
+        answer: "Yes. Both Baltic (France) and Halios (Canada) use proven Miyota and Sellita movements and have strong reputations among enthusiasts for finishing quality that shames established brands at the same price.",
+      },
+    ],
     conclusion: "The under-$1,000 watch market rewards the informed buyer. From Swiss manufacturing icons like Hamilton and Tissot to Japanese precision from Seiko Prospex and French microbrand artistry from Baltic, this price range covers more ground than any other tier in modern watchmaking. Use our comparison tool to put your shortlist head-to-head — see exactly how the specs, pricing, and community ratings compare before you decide.",
   },
 
@@ -189,7 +226,7 @@ export const guides: Guide[] = [
     title: "Best Dive Watches in 2026 — From Budget to Luxury",
     description: "The best dive watches in 2026 across every budget. From Seiko Prospex under $900 to Rolex Submariner, reviewed and compared with full specs.",
     h1: "Best Dive Watches in 2026",
-    intro: "The dive watch is the most versatile category in horology. Born in the 1950s as a professional tool for military divers, it evolved into watchmaking's most popular genre — worn everywhere from ocean floors to board meetings. A true dive watch meets ISO 6425 standards: minimum 100m water resistance, luminescent markers, unidirectional elapsed-time bezel, and legibility underwater. The best go much further.\n\nToday's dive watch market spans from sub-$350 Seiko automatics to five-figure Rolex icons, and the remarkable thing is that the best values often sit far from both extremes. This guide ranks the best options across budgets — from the Baltic Aquascaphe's microbrand excellence to the Omega Seamaster's Bond-grade credibility. Whether you actually dive or simply want a watch that handles everything life throws at it, a quality dive watch is the most practical choice in any collection.",
+    intro: "The best dive watches offer at minimum 200m water resistance, a screw-down crown, and a uni-directional bezel. Our top picks are:\n\nThe dive watch is the most versatile category in horology. Born in the 1950s as a professional tool for military divers, it evolved into watchmaking's most popular genre — worn everywhere from ocean floors to board meetings. A true dive watch meets ISO 6425 standards: minimum 100m water resistance, luminescent markers, unidirectional elapsed-time bezel, and legibility underwater. The best go much further.\n\nToday's dive watch market spans from sub-$350 Seiko automatics to five-figure Rolex icons, and the remarkable thing is that the best values often sit far from both extremes. This guide ranks the best options across budgets — from the Baltic Aquascaphe's microbrand excellence to the Omega Seamaster's Bond-grade credibility. Whether you actually dive or simply want a watch that handles everything life throws at it, a quality dive watch is the most practical choice in any collection.",
     recommendations: [
       {
         slug: "rolex-submariner-41",
@@ -264,6 +301,24 @@ export const guides: Guide[] = [
         answer: "Yes — and many collectors prefer it. The Rolex Submariner's versatility is legendary: its clean 40-41mm stainless case and black dial pair as well with a suit as with a wetsuit. The Omega Seamaster 300m on a leather strap reads as dress-adjacent. More overtly sporty options (Tudor Pelagos in titanium, Breitling Superocean with rubber strap) work better with business casual. For black-tie events, a dive watch on a leather strap is generally more appropriate than rubber.",
       },
     ],
+    paa: [
+      {
+        question: "What water resistance do I need for scuba diving?",
+        answer: "At least 200m (20 ATM) for recreational scuba diving. 300m is recommended for professional diving. Recreational dives rarely exceed 40m, so a 200m-rated watch with ISO 6425 certification provides ample safety margin.",
+      },
+      {
+        question: "Is Seiko or Citizen better for dive watches?",
+        answer: "Seiko's SKX and Prospex line are more popular for dive watches and have a larger enthusiast following. Citizen's Promaster Marine is a solid alternative with Eco-Drive solar charging — no battery changes required. Both are reliable choices.",
+      },
+      {
+        question: "What is the best dive watch under $500?",
+        answer: "The Seiko Prospex SRP777 and Citizen Promaster Marine are top choices under $500. For pure value, the Seiko 5 Sports SRPE55 at $250–350 offers 100m water resistance and automatic movement — entry-level dive capability at a budget price.",
+      },
+      {
+        question: "Do I need a dive computer instead of a dive watch?",
+        answer: "For recreational diving, a dive computer tracks decompression data far more precisely than a watch. A dive watch serves as a trusted backup timer. Most serious divers use both — the watch as a backup and style statement, the computer for safety data.",
+      },
+    ],
     conclusion: "From the sub-$400 Seiko 5 Sports to the aspirational Rolex Submariner, the dive watch category offers the most complete spectrum of options in modern watchmaking. Whether you need a genuine tool watch for the ocean or the most versatile everyday watch in your collection, the right dive watch is here at every budget. Use our comparison pages to put your shortlist head-to-head with full specs and community ratings.",
   },
 
@@ -272,7 +327,7 @@ export const guides: Guide[] = [
     title: "Best Dress Watches in 2026 — Elegance at Every Budget",
     description: "The best dress watches in 2026 from Nomos, Cartier, Grand Seiko, IWC, Longines, and more. Expert picks with full specs and honest reviews.",
     h1: "Best Dress Watches in 2026",
-    intro: "A great dress watch is the quiet counterpoint to the sports watch revolution. While integrated-bracelet icons dominate watchmaking conversation, the dress watch endures as the most sophisticated choice in a collection — and the one that rewards long-term ownership most deeply. The hallmarks are universal: slim profile that disappears under a cuff, restrained dial design, meticulous case finishing, and a movement worthy of the craft surrounding it.\n\nFrom Nomos's Bauhaus minimalism to Grand Seiko's ethereal dial artistry, from Cartier's century-long elegance to Longines's remarkable Swiss value, the dress watch market offers unparalleled variety. This guide covers the best options from under $1,000 to the pinnacle of high watchmaking — watches that transcend trends, pair effortlessly with formal wear, and carry genuine cultural weight. Whatever your budget, we would recommend any of these without hesitation.",
+    intro: "The best dress watches are slim (under 10mm), classically styled, and pair well with formal wear. Our picks:\n\nA great dress watch is the quiet counterpoint to the sports watch revolution. While integrated-bracelet icons dominate watchmaking conversation, the dress watch endures as the most sophisticated choice in a collection — and the one that rewards long-term ownership most deeply. The hallmarks are universal: slim profile that disappears under a cuff, restrained dial design, meticulous case finishing, and a movement worthy of the craft surrounding it.\n\nFrom Nomos's Bauhaus minimalism to Grand Seiko's ethereal dial artistry, from Cartier's century-long elegance to Longines's remarkable Swiss value, the dress watch market offers unparalleled variety. This guide covers the best options from under $1,000 to the pinnacle of high watchmaking — watches that transcend trends, pair effortlessly with formal wear, and carry genuine cultural weight. Whatever your budget, we would recommend any of these without hesitation.",
     recommendations: [
       {
         slug: "grand-seiko-sbga211-snowflake",
@@ -351,6 +406,24 @@ export const guides: Guide[] = [
         answer: "Different propositions. Nomos Tangente ($1,700-2,000): German manufacturing, hand-wound Alpha movement, Bauhaus design, slim profile — ideal for someone who wants a pure, intellectually satisfying dress watch. Longines Master Collection ($1,600-2,000): Swiss manufacturing, COSC-certified automatic movement, traditional complications (moonphase, sub-seconds), more conventional elegance. Choose Nomos if you want something distinctive and appreciate German craftsmanship. Choose Longines if you want COSC-certified Swiss automatic with traditional complications at an honest price.",
       },
     ],
+    paa: [
+      {
+        question: "What makes a watch a dress watch?",
+        answer: "Slim profile (typically under 10mm), restrained dial, leather strap, and a case under 40mm. Dress watches prioritize elegance and understatement over technical specification — they are designed to disappear under a shirt cuff.",
+      },
+      {
+        question: "What is the best dress watch under $1,000?",
+        answer: "The Hamilton Jazzmaster Auto (approx. $700–900) offers Swiss movement, clean proportions, and dress-appropriate styling at an honest price. The Nomos Club Campus starts at $1,900 for genuine in-house German movement quality.",
+      },
+      {
+        question: "Can you wear a dress watch every day?",
+        answer: "Yes, if it has at least 50m water resistance and sapphire crystal. Avoid subjecting dress watches to sport or heavy manual activity — their slimmer cases offer less shock resistance than sport watches.",
+      },
+      {
+        question: "Are Grand Seiko dress watches worth the price?",
+        answer: "For collectors who value dial artistry and hand-finishing, yes. The Grand Seiko Snowflake ($5,700–6,200) delivers hand-textured dials and Zaratsu-polished cases that rival Swiss watches at twice the price.",
+      },
+    ],
     conclusion: "The dress watch category rewards patience and consideration more than any other. A great dress watch is a lifetime companion — the watch you pass on rather than trade. From the accessible Hamilton Jazzmaster at under $1,000 to the ethereal Grand Seiko Snowflake, each recommendation here stands on its own merits at its price point. Compare your shortlist on our side-by-side tool and discover exactly what separates them.",
   },
 
@@ -359,7 +432,7 @@ export const guides: Guide[] = [
     title: "Best Field Watches in 2026 — Military Heritage, Modern Performance",
     description: "Best field watches in 2026: Hamilton Khaki Field, IWC Pilot, Rolex Explorer, and more reviewed across every budget. Expert picks with specs.",
     h1: "Best Field Watches in 2026",
-    intro: "The field watch is watchmaking's most honest genre. Descended from military specification watches issued to soldiers in WWI and WWII, a field watch prioritizes one thing above all else: legibility under any condition. Clear Arabic numerals, high-contrast dial, robust case, reliable movement, and enough water resistance to survive whatever the field throws at it — these are the fundamentals that have defined the category for over a century.\n\nUnlike dive watches, field watches are typically slim enough to wear under a cuff. Unlike dress watches, they are made to take genuine abuse. The Hamilton Khaki Field — directly inspired by the Hamilton watches issued to U.S. military — is the modern benchmark. But the category spans from affordable Seiko daily beaters to IWC Pilots and Rolex Explorers that carry field watch DNA in luxury packaging. This guide delivers the best field watches across budgets, from exceptional Swiss value to serious collector pieces that honour the tool watch tradition.",
+    intro: "The best field watches are legible, durable, and unpretentious. Key features: anti-magnetic, shock resistant, easy-to-read dial. Top options:\n\nThe field watch is watchmaking's most honest genre. Descended from military specification watches issued to soldiers in WWI and WWII, a field watch prioritizes one thing above all else: legibility under any condition. Clear Arabic numerals, high-contrast dial, robust case, reliable movement, and enough water resistance to survive whatever the field throws at it — these are the fundamentals that have defined the category for over a century.\n\nUnlike dive watches, field watches are typically slim enough to wear under a cuff. Unlike dress watches, they are made to take genuine abuse. The Hamilton Khaki Field — directly inspired by the Hamilton watches issued to U.S. military — is the modern benchmark. But the category spans from affordable Seiko daily beaters to IWC Pilots and Rolex Explorers that carry field watch DNA in luxury packaging. This guide delivers the best field watches across budgets, from exceptional Swiss value to serious collector pieces that honour the tool watch tradition.",
     recommendations: [
       {
         slug: "hamilton-khaki-field-auto-38",
@@ -430,6 +503,24 @@ export const guides: Guide[] = [
         answer: "Field watches in the 36-40mm range suit most wrist sizes. The Hamilton Khaki Field at 38mm is near-universally flattering — on a 6 inch wrist it reads clean and compact; on a 7.5 inch wrist it reads properly proportionate. The IWC Pilot Mark XVIII at 40mm suits average to larger wrists (6.5 inches+). The Rolex Explorer at 36mm is the contemporary vintage size — genuinely flattering on smaller wrists and reads classic on larger ones.",
       },
     ],
+    paa: [
+      {
+        question: "What is a field watch?",
+        answer: "A military-inspired watch built for legibility and durability — typically 36–42mm, Arabic numerals, high-visibility lume, and 100m+ water resistance. The category descends from watches issued to soldiers in WWI and WWII.",
+      },
+      {
+        question: "Hamilton or Seiko for a field watch?",
+        answer: "Hamilton Khaki Field Auto ($650–750) is the Swiss benchmark with an 80-hour in-house movement. Seiko SNK809 (~$85) is the budget king. For Swiss quality, Hamilton; for entry-level value, Seiko.",
+      },
+      {
+        question: "Are field watches good for everyday wear?",
+        answer: "Yes — their practical design, 100m+ water resistance, and durable construction make field watches excellent daily wearers across casual and business-casual settings. Their slim profiles also make them easy to wear under a shirt cuff.",
+      },
+      {
+        question: "What is the most iconic field watch?",
+        answer: "The Hamilton Khaki Field, based on actual WWII military contracts Hamilton held with the U.S. Army, is the modern benchmark. The Seiko SNK809 is the most popular affordable field watch worldwide.",
+      },
+    ],
     conclusion: "The field watch is the watch that works harder than any other. From the $250 Seiko 5 Sports that starts thousands of collecting journeys to the Rolex Explorer that ends them, the field watch category rewards those who prioritize function over decoration. Compare any watches in this guide head-to-head using our comparison tool — see exactly how specifications, community ratings, and pricing differ before you make your choice.",
   },
 
@@ -438,7 +529,7 @@ export const guides: Guide[] = [
     title: "Best GMT Watches in 2026 — Track Two Time Zones in Style",
     description: "Best GMT watches in 2026: Rolex GMT-Master II, Tudor Black Bay GMT, Seiko Presage, and more. Expert picks with full specs and buying advice.",
     h1: "Best GMT Watches in 2026",
-    intro: "A GMT watch — named for Greenwich Mean Time — is the essential complication for anyone who crosses time zones regularly or coordinates with colleagues and family across continents. The complication adds a fourth hand that completes one rotation every 24 hours, readable against a 24-hour bezel or ring to display a second time zone simultaneously while the three-hand display keeps perfect local time.\n\nThe Rolex GMT-Master II established the gold standard in 1955, originally developed with Pan American Airways for pilots navigating transatlantic routes. Today the category extends from the iconic Rolex Pepsi to Tudor's exceptional value proposition and Seiko's accessible GMT Presage — genuinely different watches at genuinely different prices. Whether you are a frequent flier who genuinely uses the GMT function or simply appreciate the added utility and visual drama of a 24-hour bezel, these are the GMT watches worth serious consideration.",
+    intro: "The best GMT watches track two time zones with a dedicated 24-hour hand or bezel. Most useful for frequent travelers. Top picks:\n\nA GMT watch — named for Greenwich Mean Time — is the essential complication for anyone who crosses time zones regularly or coordinates with colleagues and family across continents. The complication adds a fourth hand that completes one rotation every 24 hours, readable against a 24-hour bezel or ring to display a second time zone simultaneously while the three-hand display keeps perfect local time.\n\nThe Rolex GMT-Master II established the gold standard in 1955, originally developed with Pan American Airways for pilots navigating transatlantic routes. Today the category extends from the iconic Rolex Pepsi to Tudor's exceptional value proposition and Seiko's accessible GMT Presage — genuinely different watches at genuinely different prices. Whether you are a frequent flier who genuinely uses the GMT function or simply appreciate the added utility and visual drama of a 24-hour bezel, these are the GMT watches worth serious consideration.",
     recommendations: [
       {
         slug: "rolex-gmt-master-ii-pepsi",
@@ -499,6 +590,24 @@ export const guides: Guide[] = [
       {
         question: "Can a GMT watch replace a dress watch for business travel?",
         answer: "Yes, with the right GMT watch. The Rolex GMT-Master II on its Jubilee bracelet reads sophisticated enough for most business occasions. The Tudor Black Bay GMT on its integrated bracelet is smart-casual to business casual. The Seiko Presage SPB167's cocktail-inspired aesthetic makes it the most versatile — it transitions well between business formal and travel casual. For black-tie events, GMT watches generally read too sporty.",
+      },
+    ],
+    paa: [
+      {
+        question: "What is a GMT watch used for?",
+        answer: "Displaying two time zones simultaneously using a 24-hour hand readable against a bezel or ring — essential for travelers, pilots, and anyone coordinating across time zones without checking a phone.",
+      },
+      {
+        question: "What is the best GMT watch under $1,000?",
+        answer: "The Seiko Presage SPB167 ($1,100–1,400) is the closest quality GMT option near this budget. True Swiss GMT automatics under $1,000 are rare. The Tudor Black Bay GMT at $4,150–4,500 is widely considered the best value GMT above $1,000.",
+      },
+      {
+        question: "What is the difference between a true GMT and a traveler's GMT?",
+        answer: "A true GMT (e.g., Rolex GMT-Master II) independently sets the local hour hand without stopping the movement. A traveler's GMT (e.g., Tudor Black Bay GMT) jumps the local hour hand in one-hour increments only — simpler but less precise.",
+      },
+      {
+        question: "Do I need a GMT watch if I rarely travel?",
+        answer: "Not necessarily. For occasional travel, your phone handles time zones easily. A GMT watch is most valuable if you travel frequently or regularly coordinate with colleagues across multiple time zones.",
       },
     ],
     conclusion: "The GMT complication transforms a watch from a simple timekeeping tool into a genuine instrument of global navigation — and the watches that do it best are among the most desirable in all of horology. Whether you choose the iconic Rolex GMT-Master II Pepsi, the exceptional-value Tudor Black Bay GMT, or the accessible Seiko Presage SPB167, compare them side-by-side on our tool to see exactly how specs, pricing, and community ratings differ.",

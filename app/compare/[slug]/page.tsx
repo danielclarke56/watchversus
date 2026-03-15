@@ -4,6 +4,48 @@ import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
+import type { Watch } from '@/lib/types'
+
+function generateVerdict(w1: Watch, w2: Watch): string {
+  const sentences: string[] = []
+  const p1 = w1.price_new_usd.min
+  const p2 = w2.price_new_usd.min
+  const priceDiff = Math.abs(p1 - p2) / Math.min(p1, p2)
+
+  if (priceDiff > 0.5) {
+    const cheaper = p1 < p2 ? w1 : w2
+    const dearer = p1 < p2 ? w2 : w1
+    sentences.push(`${cheaper.brand} ${cheaper.name} is the value winner at ${formatPrice(cheaper.price_new_usd)} — over 50% cheaper than the ${dearer.brand} ${dearer.name} (${formatPrice(dearer.price_new_usd)}).`)
+  } else {
+    sentences.push(`Both sit in a similar price range: ${w1.brand} ${w1.name} at ${formatPrice(w1.price_new_usd)} vs ${w2.brand} ${w2.name} at ${formatPrice(w2.price_new_usd)} — choose based on use case and style preference.`)
+  }
+
+  if (w1.movement_type !== w2.movement_type) {
+    const mech = w1.movement_type !== 'quartz' ? w1 : w2
+    const qtz = w1.movement_type !== 'quartz' ? w2 : w1
+    sentences.push(`${mech.brand} ${mech.name} offers ${mech.movement_type} craftsmanship; ${qtz.brand} ${qtz.name} runs quartz for higher accuracy and lower maintenance.`)
+  }
+
+  const wrDiff = Math.abs(w1.water_resistance_m - w2.water_resistance_m)
+  if (wrDiff >= 50) {
+    const better = w1.water_resistance_m > w2.water_resistance_m ? w1 : w2
+    const other = w1.water_resistance_m > w2.water_resistance_m ? w2 : w1
+    if (better.water_resistance_m >= 200) {
+      sentences.push(`Choose ${better.brand} ${better.name} (${better.water_resistance_m}m WR) for diving; ${other.brand} ${other.name} (${other.water_resistance_m}m) suits everyday wear.`)
+    } else {
+      sentences.push(`${better.brand} ${better.name} edges ahead on water resistance: ${better.water_resistance_m}m vs ${other.water_resistance_m}m.`)
+    }
+  }
+
+  const caseDiff = Math.abs(w1.case_diameter_mm - w2.case_diameter_mm)
+  if (caseDiff >= 2 && sentences.length < 3) {
+    const larger = w1.case_diameter_mm > w2.case_diameter_mm ? w1 : w2
+    const smaller = w1.case_diameter_mm > w2.case_diameter_mm ? w2 : w1
+    sentences.push(`Case size: ${larger.brand} ${larger.name} at ${larger.case_diameter_mm}mm suits larger wrists; ${smaller.brand} ${smaller.name} at ${smaller.case_diameter_mm}mm is the more compact option.`)
+  }
+
+  return sentences.slice(0, 3).join(' ')
+}
 
 export async function generateStaticParams() {
   return popularComparisons.map((c) => ({
@@ -218,6 +260,12 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
             </div>
           )
         })}
+      </div>
+
+      {/* Quick Verdict */}
+      <div className="bg-amber-50 border-l-4 border-amber-500 p-4 my-6 rounded-r-lg">
+        <h2 className="font-bold text-lg mb-2 text-amber-900">Quick Verdict</h2>
+        <p className="text-amber-800 text-sm leading-relaxed">{generateVerdict(w1, w2)}</p>
       </div>
 
       {/* Spec comparison table */}
