@@ -21,6 +21,8 @@ export interface Watch {
   style: string[]
   description: string
   image_placeholder: boolean
+  image?: string
+  imageAlt?: string
 }
 
 export interface ReviewRatings {

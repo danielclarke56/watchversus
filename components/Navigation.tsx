@@ -6,6 +6,8 @@ import { useState } from 'react'
 const navLinks = [
   { href: '/watches', label: 'Watches' },
   { href: '/compare', label: 'Compare' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/brands', label: 'Brands' },
   { href: '/reviews', label: 'Reviews' },
   { href: '/quiz', label: 'Find My Watch' },
   { href: '/about', label: 'About' },

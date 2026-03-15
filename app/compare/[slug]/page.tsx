@@ -185,11 +185,20 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
           const revCount = i === 0 ? reviews1.length : reviews2.length
           return (
             <div key={w.id} className="card p-6 text-center">
-              <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-xl border border-[#334155] aspect-square max-w-32 mx-auto flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-[#334155]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="9" strokeWidth="1" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 7v5l3 3" />
-                </svg>
+              <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-xl border border-[#334155] aspect-square max-w-32 mx-auto flex items-center justify-center mb-4 overflow-hidden">
+                {w.image ? (
+                  <img
+                    src={w.image}
+                    alt={w.imageAlt ?? `${w.brand} ${w.name}`}
+                    className="w-full h-full object-contain p-2"
+                    loading="eager"
+                  />
+                ) : (
+                  <svg className="w-8 h-8 text-[#334155]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" strokeWidth="1" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 7v5l3 3" />
+                  </svg>
+                )}
               </div>
               <p className="text-xs text-[#d4a853] font-bold uppercase tracking-wider mb-1">{w.brand}</p>
               <h2 className="text-lg font-bold text-white mb-1">{w.name}</h2>

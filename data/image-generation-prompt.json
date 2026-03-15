@@ -1,0 +1,74 @@
+{
+  "style_name": "Watch product render on transparent background",
+  "description": "Clean studio product photography/render style for a wristwatch, centered and isolated on a transparent or pure black background, with crisp edges, symmetrical front-facing composition, soft controlled reflections, and high-detail material texture. If a brand name or logo appears on the dial, remove it completely.",
+  "category": "product_photography",
+  "subject": {
+    "type": "wristwatch",
+    "framing": "full product visible",
+    "orientation": "vertical",
+    "angle": "straight-on front view",
+    "composition": "perfectly centered, symmetrical"
+  },
+  "background": {
+    "type": "transparent",
+    "fallback": "solid black",
+    "texture": "none",
+    "distraction_level": "none"
+  },
+  "lighting": {
+    "setup": "soft studio lighting",
+    "style": "diffused, controlled, clean commercial lighting",
+    "highlights": "soft linear highlights on case, bracelet, crystal, and strap",
+    "shadows": "minimal and very soft",
+    "contrast": "medium",
+    "reflection_control": "high"
+  },
+  "camera": {
+    "lens_look": "short telephoto product lens",
+    "perspective": "flat, low distortion",
+    "focus": "full product sharp",
+    "depth_of_field": "deep",
+    "crop": "tight with balanced negative space"
+  },
+  "materials_rendering": {
+    "metal": "accurate brushed or polished metal texture when applicable",
+    "glass": "clean crystal with subtle reflection",
+    "dial": "rich dial texture with preserved fine pattern detail, with any visible brand text or logo removed entirely",
+    "strap": "accurate material detail for bracelet, leather, rubber, fabric, or other strap types",
+    "edges": "sharp and well-defined"
+  },
+  "color_palette": {
+    "primary": ["true-to-product materials and dial colors"],
+    "accent": ["white", "soft gray"],
+    "saturation": "moderate",
+    "white_balance": "neutral-cool"
+  },
+  "post_processing": {
+    "retouching": "high-end commercial cleanup",
+    "clarity": "high",
+    "sharpening": "controlled and crisp",
+    "noise": "none",
+    "background_cleanup": "perfect isolation",
+    "branding_treatment": "remove any visible brand name or logo from the watch entirely"
+  },
+  "mood": [
+    "clean",
+    "minimal",
+    "technical",
+    "elegant",
+    "modern"
+  ],
+  "keywords": [
+    "watch product photography",
+    "watch render",
+    "isolated product shot",
+    "transparent background",
+    "front-facing symmetry",
+    "studio lighting",
+    "high detail",
+    "clean commercial look",
+    "no branding",
+    "logo removed"
+  ],
+  "prompt_template": "A wristwatch photographed in a clean studio product style, straight-on front view, perfectly centered and symmetrical, isolated on a transparent background, soft diffused studio lighting, accurate material textures, subtle reflections, deep sharp focus, high-end commercial retouching, minimal shadow, ultra-clean edges, realistic product render, with any visible brand name or logo on the dial removed completely."
+}

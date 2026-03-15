@@ -15,17 +15,26 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
 
   return (
     <div className="card hover:border-[#d4a853]/40 transition-colors group flex flex-col">
-      {/* Image placeholder */}
-      <div className="relative bg-gradient-to-br from-[#1e293b] to-[#0f172a] aspect-[4/3] flex items-center justify-center">
-        <div className="text-center px-4">
-          <div className="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-[#334155] flex items-center justify-center">
-            <svg className="w-7 h-7 text-[#334155]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
-            </svg>
+      {/* Watch image */}
+      <div className="relative bg-gradient-to-br from-[#1e293b] to-[#0f172a] aspect-[4/3] flex items-center justify-center overflow-hidden">
+        {watch.image ? (
+          <img
+            src={watch.image}
+            alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+            className="w-full h-full object-contain p-2"
+            loading="lazy"
+          />
+        ) : (
+          <div className="text-center px-4">
+            <div className="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-[#334155] flex items-center justify-center">
+              <svg className="w-7 h-7 text-[#334155]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
+              </svg>
+            </div>
+            <p className="text-[10px] text-slate-600 uppercase tracking-widest">Image Coming Soon</p>
           </div>
-          <p className="text-[10px] text-slate-600 uppercase tracking-widest">Image Coming Soon</p>
-        </div>
+        )}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
           {watch.style.slice(0, 2).map((s) => (
             <span key={s} className="text-[10px] uppercase tracking-wider bg-[#0f172a]/80 text-[#d4a853] px-2 py-0.5 rounded-full border border-[#d4a853]/30">

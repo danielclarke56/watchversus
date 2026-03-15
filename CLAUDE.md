@@ -11,7 +11,8 @@ Read this before doing anything.
 
 ## Hard Rules
 - NO affiliate links, no affiliate URLs, no partner CTAs — anywhere in the codebase
-- NO images yet — image generation is deferred until R explicitly says otherwise
+- Images: use official manufacturer press images. Download to `/public/images/watches/{slug}.jpg`. Wire into components.
+- Image fallback: if press image cannot be found, generate using the AI prompt in `data/image-generation-prompt.json`. Style: clean studio render, transparent/black background, brand logo removed from dial.
 - TypeScript strict mode: no implicit any, movement_type must be `"automatic" | "manual" | "quartz"`
 - PowerShell environment: use `;` not `&&` between commands
 
@@ -29,6 +30,5 @@ Read this before doing anything.
 - SEO: canonical URLs, OG tags, JSON-LD structured data, sitemap
 
 ## DO NOT
-- Ask about watch images — deferred, R will bring it up when ready
 - Ask about domain setup — already live at watchvswatch.com
 - Re-suggest affiliate links

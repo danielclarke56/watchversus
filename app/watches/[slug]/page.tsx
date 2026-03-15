@@ -125,17 +125,26 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
             <p className="text-slate-300 leading-relaxed">{watch.description}</p>
           </div>
 
-          {/* Image placeholder */}
-          <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-xl border border-[#334155] aspect-video flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-3 rounded-full border-2 border-[#334155] flex items-center justify-center">
-                <svg className="w-10 h-10 text-[#334155]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
-                </svg>
+          {/* Watch image */}
+          <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-xl border border-[#334155] aspect-video flex items-center justify-center overflow-hidden">
+            {watch.image ? (
+              <img
+                src={watch.image}
+                alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+                className="w-full h-full object-contain p-4"
+                loading="eager"
+              />
+            ) : (
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto mb-3 rounded-full border-2 border-[#334155] flex items-center justify-center">
+                  <svg className="w-10 h-10 text-[#334155]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
+                  </svg>
+                </div>
+                <p className="text-slate-600 text-sm">Watch image coming soon</p>
               </div>
-              <p className="text-slate-600 text-sm">Watch image coming soon</p>
-            </div>
+            )}
           </div>
 
           {/* Specs table */}
