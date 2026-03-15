@@ -6,11 +6,7 @@ import { useState } from 'react'
 const navLinks = [
   { href: '/watches', label: 'Watches' },
   { href: '/compare', label: 'Compare' },
-  { href: '/guides', label: 'Guides' },
-  { href: '/brands', label: 'Brands' },
   { href: '/reviews', label: 'Reviews' },
-  { href: '/quiz', label: 'Find My Watch' },
-  { href: '/about', label: 'About' },
 ]
 
 export default function Navigation() {
@@ -39,8 +35,8 @@ export default function Navigation() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/compare" className="btn-gold text-xs px-4 py-2">
-            Compare Watches
+          <Link href="/quiz" className="btn-gold text-xs px-4 py-2">
+            Find My Watch
           </Link>
         </div>
 
@@ -78,11 +74,11 @@ export default function Navigation() {
             </Link>
           ))}
           <Link
-            href="/compare"
+            href="/quiz"
             onClick={() => setMenuOpen(false)}
             className="btn-gold mt-4 text-center block"
           >
-            Compare Watches
+            Find My Watch
           </Link>
         </div>
       )}
