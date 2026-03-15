@@ -6,36 +6,7 @@ import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
 
-export const revalidate = 86400 // Revalidate Reddit data every 24h
 
-const WATCH_SUBREDDITS = [
-  'Watches',
-  'WatchHorology',
-  'rolex',
-  'OmegaWatches',
-  'Tudor',
-  'seiko',
-  'Watchexchange',
-  'watchcollecting',
-]
-
-async function getRedditMentions(query: string): Promise<number> {
-  try {
-    const subredditParam = WATCH_SUBREDDITS.join('+')
-    const res = await fetch(
-      `https://www.reddit.com/r/${subredditParam}/search.json?q=${encodeURIComponent(query)}&sort=relevance&t=year&limit=100&restrict_sr=1`,
-      {
-        headers: { 'User-Agent': 'watchvswatch-bot/1.0 (watchvswatch.com)' },
-        next: { revalidate: 86400 },
-      }
-    )
-    if (!res.ok) return 0
-    const json = await res.json()
-    return json?.data?.dist ?? json?.data?.children?.length ?? 0
-  } catch {
-    return 0
-  }
-}
 
 function generateVerdict(w1: Watch, w2: Watch): string {
   const sentences: string[] = []
@@ -155,14 +126,6 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
     : 50
   const pref2 = 100 - pref1
   const preferredWatch = pref1 > pref2 ? w1 : pref2 > pref1 ? w2 : null
-
-  // Reddit buzz (parallel, daily ISR)
-  const [reddit1, reddit2] = await Promise.all([
-    getRedditMentions(`${w1.brand} ${w1.name}`),
-    getRedditMentions(`${w2.brand} ${w2.name}`),
-  ])
-  const totalReddit = reddit1 + reddit2
-  const redditPref1 = totalReddit > 0 ? Math.round((reddit1 / totalReddit) * 100) : 50
 
   const relatedComparisons = popularComparisons
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
@@ -341,36 +304,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           </div>
         </div>
 
-        {/* Forum buzz */}
-        <div className="border-t border-[#334155] pt-4">
-          <p className="text-xs text-slate-500 mb-3 uppercase tracking-wider">Reddit Watch Community Buzz · Last 12 months</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#0f172a] rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-white">{reddit1 > 0 ? reddit1 : '—'}</div>
-              <div className="text-xs text-slate-500 mt-0.5">posts / mentions</div>
-              <div className="text-xs text-[#d4a853] font-medium mt-1 truncate">{w1.brand} {w1.name}</div>
-            </div>
-            <div className="bg-[#0f172a] rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-white">{reddit2 > 0 ? reddit2 : '—'}</div>
-              <div className="text-xs text-slate-500 mt-0.5">posts / mentions</div>
-              <div className="text-xs text-[#d4a853] font-medium mt-1 truncate">{w2.brand} {w2.name}</div>
-            </div>
-          </div>
-          {totalReddit > 0 && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs mb-1.5">
-                <span className="text-slate-400">{w1.name}</span>
-                <span className="text-slate-500">Forum Split</span>
-                <span className="text-slate-400">{w2.name}</span>
-              </div>
-              <div className="flex h-1.5 rounded-full overflow-hidden bg-[#334155]">
-                <div className="bg-orange-400 transition-all" style={{ width: `${redditPref1}%` }} />
-                <div className="bg-slate-600 transition-all" style={{ width: `${100 - redditPref1}%` }} />
-              </div>
-            </div>
-          )}
-          <p className="text-xs text-slate-600 mt-2 text-center">Data refreshed daily · Source: r/Watches, r/WatchHorology, r/rolex, r/OmegaWatches + more</p>
-        </div>
+
       </div>
 
       {/* Spec comparison table */}
