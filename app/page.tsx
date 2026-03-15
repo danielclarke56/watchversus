@@ -25,8 +25,8 @@ export default function HomePage() {
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#d4a853] opacity-5 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#d4a853] opacity-5 blur-3xl" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-          <div className="max-w-3xl">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 flex items-center gap-12">
+          <div className="max-w-3xl flex-1">
             <div className="inline-flex items-center gap-2 bg-[#d4a853]/10 border border-[#d4a853]/20 rounded-full px-4 py-1.5 text-sm text-[#d4a853] mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d4a853] animate-pulse inline-block" />
               Community-Driven Watch Intelligence
@@ -46,6 +46,24 @@ export default function HomePage() {
                 Compare Watches
               </Link>
             </div>
+          </div>
+          {/* Hero watch showcase — desktop only */}
+          <div className="hidden md:flex flex-col shrink-0 gap-4">
+            <div className="flex gap-4">
+              {[w1, w2].map((w) => (
+                <div key={w.id} className="bg-[#1e293b] rounded-2xl border border-[#334155] p-4 flex flex-col items-center" style={{ boxShadow: '0 0 24px 2px rgba(212,168,83,0.10)' }}>
+                  <div className="w-36 h-36 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] overflow-hidden mb-3">
+                    <img
+                      src={w.image}
+                      alt={w.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <p className="text-white text-xs font-semibold text-center leading-snug max-w-[9rem]">{w.name}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-center text-xs text-[#d4a853] tracking-wider font-semibold">VS</p>
           </div>
         </div>
       </section>
@@ -120,6 +138,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
             {[w1, w2].map((w) => (
               <div key={w.id} className="bg-[#0f172a] rounded-xl p-5 border border-[#334155]">
+                <div className="w-full h-40 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#1e293b] to-[#0f172a] mb-4 overflow-hidden">
+                  <img
+                    src={w.image}
+                    alt={w.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
                 <span className="text-xs text-[#d4a853] font-bold uppercase tracking-wider">{w.brand}</span>
                 <h3 className="text-white text-xl font-bold mt-1 mb-3">{w.name}</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm mb-4">
@@ -171,6 +196,19 @@ export default function HomePage() {
                 href={`/compare/${c.slug1}-vs-${c.slug2}`}
                 className="card p-4 hover:border-[#d4a853]/40 transition-colors group"
               >
+                <div className="flex justify-center gap-3 mb-3">
+                  {[wa, wb].map((w) => (
+                    <div key={w.id} className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center overflow-hidden border border-[#334155]">
+                      {w.image ? (
+                        <img src={w.image} alt={w.name} className="w-full h-full object-contain" />
+                      ) : (
+                        <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-slate-500">{wa.brand}</p>
