@@ -263,9 +263,12 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
       </div>
 
       {/* Quick Verdict */}
-      <div className="bg-amber-50 border-l-4 border-amber-500 p-4 my-6 rounded-r-lg">
-        <h2 className="font-bold text-lg mb-2 text-amber-900">Quick Verdict</h2>
-        <p className="text-amber-800 text-sm leading-relaxed">{generateVerdict(w1, w2)}</p>
+      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border border-[#d4a853]/40 rounded-xl p-5 my-6 shadow-lg">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[#d4a853] text-lg">⚖️</span>
+          <h2 className="font-bold text-lg text-[#d4a853] tracking-wide">Quick Verdict</h2>
+        </div>
+        <p className="text-slate-200 text-sm leading-relaxed">{generateVerdict(w1, w2)}</p>
       </div>
 
       {/* Spec comparison table */}
