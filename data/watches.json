@@ -31,7 +31,7 @@
       "luxury"
     ],
     "description": "The Rolex Submariner 41 is the quintessential dive watch, refined over decades into a near-perfect tool watch. Its updated Cal. 3235 movement delivers class-leading accuracy and a 70-hour power reserve. The larger 41mm case modernizes the icon without sacrificing its legendary proportions.",
-    "image": "/images/watches/rolex-submariner-41.svg",
+    "image": "/images/watches/rolex-submariner-41.png",
     "imageAlt": "Rolex Submariner 41 official product image"
   },
   {
@@ -66,7 +66,7 @@
       "luxury"
     ],
     "description": "The GMT-Master II 'Pepsi' is one of the most coveted sports watches in the world, combining a red-and-blue ceramic bezel with Rolex's celebrated Jubilee bracelet. Its GMT complication allows simultaneous tracking of two time zones, making it the ultimate traveler's watch. Market premiums reflect its extraordinary demand.",
-    "image": "/images/watches/rolex-gmt-master-ii-pepsi.svg",
+    "image": "/images/watches/rolex-gmt-master-ii-pepsi.png",
     "imageAlt": "Rolex GMT-Master II Pepsi official product image"
   },
   {
@@ -101,7 +101,7 @@
       "luxury"
     ],
     "description": "The Rolex Datejust 36 is the archetypal elegant daily wearer, balancing versatility with understated luxury. Its cyclops date lens and fluted bezel options make it instantly recognizable while its 36mm diameter suits a wide range of wrist sizes. A true lifetime watch that transcends trends.",
-    "image": "/images/watches/rolex-datejust-36.svg",
+    "image": "/images/watches/rolex-datejust-36.png",
     "imageAlt": "Rolex Datejust 36 official product image"
   },
   {
@@ -136,7 +136,7 @@
       "luxury"
     ],
     "description": "The Explorer 36 is Rolex's most elemental sports watch — a clean, no-nonsense dial with just the essential indices and no date complication to interrupt its purity. Returned to its original 36mm size in 2021, it's the perfect statement for those who appreciate restraint. Its simple elegance makes it arguably the most wearable Rolex for any occasion.",
-    "image": "/images/watches/rolex-explorer-36.svg",
+    "image": "/images/watches/rolex-explorer-36.png",
     "imageAlt": "Rolex Explorer 36 official product image"
   },
   {
@@ -170,7 +170,7 @@
       "luxury"
     ],
     "description": "The Day-Date 40 is Rolex's flagship dress watch, exclusively made in precious metals and nicknamed 'The President's Watch.' Its distinctive President bracelet and the addition of a full day display alongside the date make it the definitive statement of horological prestige. Only those who know, know.",
-    "image": "/images/watches/rolex-day-date-40.svg",
+    "image": "/images/watches/rolex-day-date-40.png",
     "imageAlt": "Rolex Day-Date 40 official product image"
   },
   {
@@ -790,7 +790,7 @@
       "luxury"
     ],
     "description": "The Cartier Santos is the world's first wristwatch for men, celebrating over 100 years of heritage since Alberto Santos-Dumont needed a watch he could read while flying. The 2018 redesign added the innovative QuickSwitch interchangeable strap system, making the Santos the most versatile high-end watch available. An art object with legitimate historical significance.",
-    "image": "/images/watches/cartier-santos.svg",
+    "image": "/images/watches/cartier-santos.png",
     "imageAlt": "Cartier Santos de Cartier official product image"
   },
   {
@@ -825,7 +825,7 @@
       "casual"
     ],
     "description": "The Cartier Tank Must is an accessible entry into the Cartier universe, offering the iconic Tank silhouette with a solar-powered quartz movement. Its rectangular case and the Roman numerals are a timeless expression of Parisian elegance. The Tank Must proves that quartz can still be deeply desirable when housed in a design this perfect.",
-    "image": "/images/watches/cartier-tank-must.svg",
+    "image": "/images/watches/cartier-tank-must.png",
     "imageAlt": "Cartier Tank Must official product image"
   },
   {
@@ -1066,7 +1066,7 @@
       "casual"
     ],
     "description": "The Nomos Tangente is the purest expression of the brand's Bauhaus design philosophy — German-made, hand-wound, with a dial so clean it approaches perfection. Its 37.5mm size and slim 6.9mm profile slides under any cuff, making it the ideal dress watch for those who've grown tired of Swiss conservatism. Remarkable engineering presented with absolute simplicity.",
-    "image": "/images/watches/nomos-tangente-38.svg",
+    "image": "/images/watches/nomos-tangente-38.png",
     "imageAlt": "Nomos Glashütte Tangente 38 official product image"
   },
   {
@@ -1342,7 +1342,7 @@
       "vintage"
     ],
     "description": "The Baltic Bicompax 001 is a vintage-inspired chronograph that channels the spirit of 1960s racing chronographs at a remarkable price. Its bi-compax dial layout with 30-minute and 12-hour sub-registers creates a beautifully balanced aesthetic. Powered by the proven Valjoux 7750, it offers accessible entry into mechanical chronograph ownership.",
-    "image": "/images/watches/baltic-bicompax-001.svg",
+    "image": "/images/watches/baltic-bicompax-001.png",
     "imageAlt": "Baltic Bicompax 001 official product image"
   },
   {
@@ -1377,7 +1377,7 @@
       "vintage"
     ],
     "description": "The Halios Seaforth is a Canadian microbrand's love letter to vintage dive watches — its Sellita SW200 movement, 300m water resistance, and meticulous case finishing make it remarkable value. The slightly domed sapphire crystal and vintage-style dial give it a depth and character that production watches rarely achieve. Limited availability makes it a cult piece.",
-    "image": "/images/watches/halios-seaforth.svg",
+    "image": "/images/watches/halios-seaforth.png",
     "imageAlt": "Halios Seaforth official product image"
   },
   {
@@ -1412,7 +1412,7 @@
       "casual"
     ],
     "description": "The Halios Tropik takes the Canadian brand's signature attention to detail and applies it to a more modern sports watch aesthetic with tropical color options. Its Sellita SW200 movement and 200m water resistance make it a genuine daily wearer, while the colorful dial options keep it fun and casual. A watch that makes you smile.",
-    "image": "/images/watches/halios-tropik.svg",
+    "image": "/images/watches/halios-tropik.png",
     "imageAlt": "Halios Tropik official product image"
   },
   {
@@ -1551,7 +1551,7 @@
       "dive"
     ],
     "description": "The Rolex Yacht-Master 40 in Rolesium (steel case with platinum bezel) is one of Rolex's most underrated models — sophisticated enough for the yacht club yet sporty enough for active wear. Its bidirectional rotatable bezel and 100m water resistance make it a practical companion. The platinum bezel develops a uniquely tactile feel and subtle sheen.",
-    "image": "/images/watches/rolex-yacht-master-40.svg",
+    "image": "/images/watches/rolex-yacht-master-40.png",
     "imageAlt": "Rolex Yacht-Master 40 official product image"
   },
   {
@@ -1619,7 +1619,7 @@
       "casual"
     ],
     "description": "The Zenith El Primero Chronomaster Original houses the world's first automatic chronograph movement, still running at its original 36,000 bph high-frequency rate for 1/10th second accuracy. The tri-color panda dial with red, blue, and black registers is an icon of watch design. At 38mm, the 2021 reissue offers a proportionally perfect vintage chronograph.",
-    "image": "/images/watches/zenith-el-primero-chronomaster.svg",
+    "image": "/images/watches/zenith-el-primero-chronomaster.png",
     "imageAlt": "Zenith El Primero Chronomaster Original official product image"
   },
   {
@@ -1653,7 +1653,7 @@
       "casual"
     ],
     "description": "Frédérique Constant's Classics Automatic offers Swiss-made elegance with an in-house movement at a remarkable price. The open-heart dial option reveals the escapement through a small aperture, adding horological interest to a traditional dress watch aesthetic. Their manufacturing independence gives them an advantage most brands in this segment lack.",
-    "image": "/images/watches/frederique-constant-classics-auto.svg",
+    "image": "/images/watches/frederique-constant-classics-auto.png",
     "imageAlt": "Frédérique Constant Classics Automatic official product image"
   },
   {
