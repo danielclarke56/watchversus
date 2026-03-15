@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
@@ -86,17 +87,17 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Breadcrumb */}
-        <nav className="text-sm text-slate-500 mb-6 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#d4a853] transition-colors">Home</Link>
+        <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
+          <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/guides" className="hover:text-[#d4a853] transition-colors">Guides</Link>
+          <Link href="/guides" className="hover:text-[#b8860b] transition-colors">Guides</Link>
           <span>/</span>
-          <span className="text-white">{guide.h1}</span>
+          <span className="text-[#0f172a]">{guide.h1}</span>
         </nav>
 
         {/* H1 + Intro */}
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">{guide.h1}</h1>
-        <div className="text-slate-300 leading-relaxed mb-10 space-y-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-6">{guide.h1}</h1>
+        <div className="text-[#475569] leading-relaxed mb-10 space-y-4">
           {guide.intro.split('\n\n').map((para, i) => (
             <p key={i}>{para.trim()}</p>
           ))}
@@ -104,30 +105,35 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
         {/* Recommendations */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Our Picks</h2>
+          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Our Picks</h2>
           <div className="space-y-6">
             {recommendedWatches.map(({ rec, watch }, index) => (
               <div key={watch.slug} className="card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 bg-[#d4a853]/20 border border-[#d4a853]/40 rounded-full flex items-center justify-center">
-                    <span className="text-[#d4a853] font-bold text-sm">{index + 1}</span>
+                  <div className="shrink-0 w-10 h-10 bg-[#b8860b]/20 border border-[#b8860b]/40 rounded-full flex items-center justify-center">
+                    <span className="text-[#b8860b] font-bold text-sm">{index + 1}</span>
                   </div>
+                  {!watch.image.endsWith('.svg') && (
+                    <div className="shrink-0 w-20 h-20 rounded-lg bg-white border border-[#e2e8f0] overflow-hidden">
+                      <Image src={watch.image} alt={watch.name} width={80} height={80} className="w-20 h-20 object-contain" />
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="text-xs text-[#d4a853] font-bold uppercase tracking-wider">{watch.brand}</span>
-                      <span className="text-white font-bold text-lg">{watch.name}</span>
+                      <span className="text-xs text-[#b8860b] font-bold uppercase tracking-wider">{watch.brand}</span>
+                      <span className="text-[#0f172a] font-bold text-lg">{watch.name}</span>
                     </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-slate-500 mb-3">
+                    <div className="flex flex-wrap gap-3 text-xs text-[#94a3b8] mb-3">
                       <span>{watch.case_diameter_mm}mm</span>
                       <span>{watch.movement_type}</span>
                       <span>{formatPrice(watch.price_new_usd)} new</span>
                       {watch.water_resistance_m >= 100 && <span>{watch.water_resistance_m}m WR</span>}
                     </div>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-4">{rec.highlight}</p>
+                    <p className="text-[#475569] text-sm leading-relaxed mb-4">{rec.highlight}</p>
                     <div className="flex flex-wrap gap-3">
                       <Link
                         href={`/watches/${watch.slug}`}
-                        className="text-xs text-[#d4a853] hover:underline"
+                        className="text-xs text-[#b8860b] hover:underline"
                       >
                         Full specs →
                       </Link>
@@ -142,7 +148,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                         return (
                           <Link
                             href={`/compare/${comp.slug1}-vs-${comp.slug2}`}
-                            className="text-xs text-slate-400 hover:text-[#d4a853] hover:underline transition-colors"
+                            className="text-xs text-[#475569] hover:text-[#b8860b] hover:underline transition-colors"
                           >
                             Compare vs {otherWatch.brand} {otherWatch.name} →
                           </Link>
@@ -158,12 +164,12 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
         {/* Buying Guide */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Buying Guide</h2>
+          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Buying Guide</h2>
           <div className="space-y-6">
             {guide.buyingGuide.map((section) => (
               <div key={section.heading} className="card p-6">
-                <h3 className="text-white font-semibold text-lg mb-3">{section.heading}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{section.content}</p>
+                <h3 className="text-[#0f172a] font-semibold text-lg mb-3">{section.heading}</h3>
+                <p className="text-[#475569] text-sm leading-relaxed">{section.content}</p>
               </div>
             ))}
           </div>
@@ -171,29 +177,29 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
         {/* FAQ */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {guide.faq.map((item, i) => (
               <details key={i} className="card p-5 group cursor-pointer">
-                <summary className="text-white font-semibold flex justify-between items-center list-none">
+                <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
                   <span>{item.question}</span>
-                  <span className="text-[#d4a853] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                  <span className="text-[#b8860b] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
                 </summary>
-                <p className="text-slate-400 text-sm mt-4 leading-relaxed">{item.answer}</p>
+                <p className="text-[#475569] text-sm mt-4 leading-relaxed">{item.answer}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* Conclusion */}
-        <section className="mb-12 bg-[#1e293b] border border-[#334155] rounded-xl p-6">
-          <p className="text-slate-300 text-sm leading-relaxed">{guide.conclusion}</p>
+        <section className="mb-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
+          <p className="text-[#475569] text-sm leading-relaxed">{guide.conclusion}</p>
         </section>
 
         {/* Related Comparisons */}
         {relatedComparisons.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-xl font-bold text-white mb-5">Related Comparisons</h2>
+            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Related Comparisons</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {relatedComparisons.map((c) => {
                 const wa = watches.find((w) => w.slug === c.slug1)
@@ -203,17 +209,17 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-[#d4a853]/40 transition-colors group"
+                    className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-slate-500 uppercase">{wa.brand}</p>
-                        <p className="text-white text-xs font-semibold truncate">{wa.name}</p>
+                        <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
+                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wa.name}</p>
                       </div>
-                      <div className="text-[#d4a853] font-bold text-xs shrink-0">VS</div>
+                      <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
                       <div className="flex-1 min-w-0 text-right">
-                        <p className="text-[10px] text-slate-500 uppercase">{wb.brand}</p>
-                        <p className="text-white text-xs font-semibold truncate">{wb.name}</p>
+                        <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
+                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wb.name}</p>
                       </div>
                     </div>
                   </Link>
@@ -226,15 +232,15 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         {/* People Also Ask */}
         {guide.paa && guide.paa.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">People Also Ask</h2>
+            <h2 className="text-2xl font-bold text-[#0f172a] mb-6">People Also Ask</h2>
             <div className="space-y-3">
               {guide.paa.map((item, i) => (
                 <details key={i} className="card p-5 group cursor-pointer">
-                  <summary className="text-white font-semibold flex justify-between items-center list-none">
+                  <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
                     <span>{item.question}</span>
-                    <span className="text-[#d4a853] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                    <span className="text-[#b8860b] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
                   </summary>
-                  <p className="text-slate-400 text-sm mt-3 leading-relaxed">{item.answer}</p>
+                  <p className="text-[#475569] text-sm mt-3 leading-relaxed">{item.answer}</p>
                 </details>
               ))}
             </div>
@@ -242,9 +248,9 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         )}
 
         {/* CTA */}
-        <div className="text-center bg-[#1e293b] border border-[#334155] rounded-xl p-8">
-          <h3 className="text-white font-semibold text-lg mb-2">Compare Any Two Watches</h3>
-          <p className="text-slate-400 text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
+        <div className="text-center bg-white border border-[#e2e8f0] rounded-xl p-8">
+          <h3 className="text-[#0f172a] font-semibold text-lg mb-2">Compare Any Two Watches</h3>
+          <p className="text-[#475569] text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
           <Link href="/compare" className="btn-gold">
             Start a Comparison
           </Link>
