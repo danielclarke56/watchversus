@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     title: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
   },
+  verification: {
+    google: 'uJXK23x_lAigHXvAoywJqmmZAaZXeEpAntrOo_KV4gM',
+  },
 }
 
 const websiteJsonLd = {
