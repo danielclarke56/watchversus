@@ -1,11 +1,11 @@
+# Watches with SVG placeholders (manufacturer site blocked scraping or image URL not found)
+# These use branded SVG illustrations as fallback
+
 rolex-submariner-41
 rolex-gmt-master-ii-pepsi
 rolex-datejust-36
 rolex-explorer-36
 rolex-day-date-40
-tudor-black-bay-58
-tag-heuer-carrera-42
-tag-heuer-aquaracer-300
 iwc-pilot-mark-xviii
 panerai-luminor-44-pam01312
 cartier-santos
@@ -13,15 +13,11 @@ cartier-tank-must
 ap-royal-oak-15500
 patek-philippe-nautilus-5711
 vacheron-constantin-overseas-4500v
-nomos-club-campus
 nomos-tangente-38
-baltic-aquascaphe
 baltic-bicompax-001
 halios-seaforth
 halios-tropik
-christopher-ward-c65-trident
 rolex-yacht-master-40
 zenith-el-primero-chronomaster
 frederique-constant-classics-auto
-mido-ocean-star-tribute
 swatch-sistem51

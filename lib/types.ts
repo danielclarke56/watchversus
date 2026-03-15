@@ -20,7 +20,6 @@ export interface Watch {
   price_preowned_usd: { min: number; max: number }
   style: string[]
   description: string
-  image_placeholder: boolean
   image?: string
   imageAlt?: string
 }
