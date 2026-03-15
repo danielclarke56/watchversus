@@ -11,8 +11,11 @@ Read this before doing anything.
 
 ## Hard Rules
 - NO affiliate links, no affiliate URLs, no partner CTAs — anywhere in the codebase
-- Images: use official manufacturer press images. Download to `/public/images/watches/{slug}.jpg`. Wire into components.
-- Image fallback: if press image cannot be found, generate using the AI prompt in `data/image-generation-prompt.json`. Style: clean studio render, transparent/black background, brand logo removed from dial.
+- Images: 
+  - **Press photos** (if available): Use official manufacturer press images. Currently 30 watches have JPGs. Keep these.
+  - **AI renders** (for gap-fill): For the 32 watches with SVG placeholders, generate AI renders via OpenAI gpt-image-1. Save as `/public/images/watches/{slug}.png`. Transparent background, no logos/text on dial.
+  - **User uploads** (future value): Users can submit their own watch photos via watch detail pages. Store in `/public/images/user-uploads/{slug}/`. Display in a "Community Photos" gallery below the main image.
+- Only add more press photos if the brand explicitly grants permission in writing.
 - TypeScript strict mode: no implicit any, movement_type must be `"automatic" | "manual" | "quartz"`
 - PowerShell environment: use `;` not `&&` between commands
 

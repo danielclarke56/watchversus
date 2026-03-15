@@ -5,6 +5,7 @@ import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRati
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
+import VoteSection from './VoteSection'
 
 
 
@@ -291,7 +292,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         <div className="mb-5">
           <div className="flex justify-between text-xs mb-2">
             <span className="font-semibold text-white">{w1.name}</span>
-            <span className="text-slate-400">Community Ratings</span>
+            <span className="text-slate-400">Internet Community Rating</span>
             <span className="font-semibold text-white">{w2.name}</span>
           </div>
           <div className="flex h-2.5 rounded-full overflow-hidden bg-[#334155]">
@@ -304,6 +305,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           </div>
         </div>
 
+        <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} />
 
       </div>
 
