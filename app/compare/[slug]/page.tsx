@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!w1 || !w2) return {}
   return {
     title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Full Comparison`,
-    description: `Head-to-head comparison: ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}. Full specs, community ratings, and pricing compared side-by-side.`,
+    description: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: ${w1.brand} ${w1.name} has a ${w1.case_diameter_mm}mm case at ${formatPrice(w1.price_new_usd)}, ${w2.brand} ${w2.name} at ${w2.case_diameter_mm}mm for ${formatPrice(w2.price_new_usd)}. Compare movement, water resistance, and full specs side-by-side.`,
     alternates: {
       canonical: `https://watchvswatch.com/compare/${parts[0]}-vs-${parts[1]}`,
     },

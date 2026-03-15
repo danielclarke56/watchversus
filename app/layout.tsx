@@ -45,7 +45,7 @@ const websiteJsonLd = {
   '@type': 'WebSite',
   name: 'WatchVsWatch',
   url: 'https://watchvswatch.com',
-  description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
+  description: 'Compare watches side-by-side with full specs, expert verdicts, and detailed analysis.',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
