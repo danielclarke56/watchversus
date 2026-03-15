@@ -6,6 +6,25 @@ import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
 
+export const revalidate = 86400 // Revalidate Reddit data every 24h
+
+async function getRedditMentions(query: string): Promise<number> {
+  try {
+    const res = await fetch(
+      `https://www.reddit.com/r/Watches/search.json?q=${encodeURIComponent(query)}&sort=relevance&t=year&limit=100&restrict_sr=1`,
+      {
+        headers: { 'User-Agent': 'watchvswatch-bot/1.0 (watchvswatch.com)' },
+        next: { revalidate: 86400 },
+      }
+    )
+    if (!res.ok) return 0
+    const json = await res.json()
+    return json?.data?.dist ?? json?.data?.children?.length ?? 0
+  } catch {
+    return 0
+  }
+}
+
 function generateVerdict(w1: Watch, w2: Watch): string {
   const sentences: string[] = []
   const p1 = w1.price_new_usd.min
@@ -99,7 +118,7 @@ const RATING_LABELS: Record<string, string> = {
   resale_strength: 'Resale Strength',
 }
 
-export default function ComparisonPage({ params }: { params: { slug: string } }) {
+export default async function ComparisonPage({ params }: { params: { slug: string } }) {
   const vsIndex = params.slug.indexOf('-vs-')
   if (vsIndex === -1) notFound()
 
@@ -117,6 +136,21 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
   const avg2 = calcAverageRatings(reviews2)
   const overall1 = avg1 ? calcOverallRating(avg1) : null
   const overall2 = avg2 ? calcOverallRating(avg2) : null
+
+  // Community preference from ratings
+  const pref1 = (overall1 && overall2)
+    ? Math.round((overall1 / (overall1 + overall2)) * 100)
+    : 50
+  const pref2 = 100 - pref1
+  const preferredWatch = pref1 > pref2 ? w1 : pref2 > pref1 ? w2 : null
+
+  // Reddit buzz (parallel, daily ISR)
+  const [reddit1, reddit2] = await Promise.all([
+    getRedditMentions(`${w1.brand} ${w1.name}`),
+    getRedditMentions(`${w2.brand} ${w2.name}`),
+  ])
+  const totalReddit = reddit1 + reddit2
+  const redditPref1 = totalReddit > 0 ? Math.round((reddit1 / totalReddit) * 100) : 50
 
   const relatedComparisons = popularComparisons
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
@@ -262,13 +296,69 @@ export default function ComparisonPage({ params }: { params: { slug: string } })
         })}
       </div>
 
-      {/* Quick Verdict */}
-      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border border-[#d4a853]/40 rounded-xl p-5 my-6 shadow-lg">
-        <div className="flex items-center gap-2 mb-3">
+      {/* Quick Verdict — Enhanced */}
+      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border border-[#d4a853]/40 rounded-xl p-6 my-6 shadow-lg">
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-4">
           <span className="text-[#d4a853] text-lg">⚖️</span>
           <h2 className="font-bold text-lg text-[#d4a853] tracking-wide">Quick Verdict</h2>
+          {preferredWatch && (
+            <span className="ml-auto text-xs bg-[#d4a853]/20 text-[#d4a853] border border-[#d4a853]/40 px-2 py-0.5 rounded-full font-semibold">
+              Community Pick: {preferredWatch.name}
+            </span>
+          )}
         </div>
-        <p className="text-slate-200 text-sm leading-relaxed">{generateVerdict(w1, w2)}</p>
+
+        {/* Verdict text */}
+        <p className="text-slate-200 text-sm leading-relaxed mb-5">{generateVerdict(w1, w2)}</p>
+
+        {/* Community ratings preference bar */}
+        <div className="mb-5">
+          <div className="flex justify-between text-xs mb-2">
+            <span className="font-semibold text-white">{w1.name}</span>
+            <span className="text-slate-400">Community Ratings</span>
+            <span className="font-semibold text-white">{w2.name}</span>
+          </div>
+          <div className="flex h-2.5 rounded-full overflow-hidden bg-[#334155]">
+            <div className="bg-[#d4a853] transition-all" style={{ width: `${pref1}%` }} />
+            <div className="bg-[#475569] transition-all" style={{ width: `${pref2}%` }} />
+          </div>
+          <div className="flex justify-between text-xs mt-1.5">
+            <span className="text-[#d4a853] font-bold">{pref1}%</span>
+            <span className="text-slate-500 font-bold">{pref2}%</span>
+          </div>
+        </div>
+
+        {/* Forum buzz */}
+        <div className="border-t border-[#334155] pt-4">
+          <p className="text-xs text-slate-500 mb-3 uppercase tracking-wider">r/Watches Forum Buzz · Last 12 months</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-[#0f172a] rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-white">{reddit1 > 0 ? reddit1 : '—'}</div>
+              <div className="text-xs text-slate-500 mt-0.5">posts / mentions</div>
+              <div className="text-xs text-[#d4a853] font-medium mt-1 truncate">{w1.brand} {w1.name}</div>
+            </div>
+            <div className="bg-[#0f172a] rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-white">{reddit2 > 0 ? reddit2 : '—'}</div>
+              <div className="text-xs text-slate-500 mt-0.5">posts / mentions</div>
+              <div className="text-xs text-[#d4a853] font-medium mt-1 truncate">{w2.brand} {w2.name}</div>
+            </div>
+          </div>
+          {totalReddit > 0 && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="text-slate-400">{w1.name}</span>
+                <span className="text-slate-500">Forum Split</span>
+                <span className="text-slate-400">{w2.name}</span>
+              </div>
+              <div className="flex h-1.5 rounded-full overflow-hidden bg-[#334155]">
+                <div className="bg-orange-400 transition-all" style={{ width: `${redditPref1}%` }} />
+                <div className="bg-slate-600 transition-all" style={{ width: `${100 - redditPref1}%` }} />
+              </div>
+            </div>
+          )}
+          <p className="text-xs text-slate-600 mt-2 text-center">Data refreshed daily · Source: reddit.com/r/Watches</p>
+        </div>
       </div>
 
       {/* Spec comparison table */}
