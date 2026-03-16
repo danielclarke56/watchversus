@@ -6,6 +6,8 @@ import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
+const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
 const inter = Inter({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
@@ -57,34 +59,43 @@ const websiteJsonLd = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={inter.variable}>
-        <head>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-          />
-        </head>
-        <body className="bg-[#f8fafc] text-[#0f172a] antialiased min-h-screen flex flex-col">
-          <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
-            strategy="afterInteractive"
-          />
-          <Script id="ga4-init" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-T077JWH4E5');
-            `}
-          </Script>
-          <Navigation />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={inter.variable}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
+      <body className="bg-[#f8fafc] text-[#0f172a] antialiased min-h-screen flex flex-col">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-T077JWH4E5');
+          `}
+        </Script>
+        <Navigation />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </body>
+    </html>
   )
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  if (hasClerk) {
+    return (
+      <ClerkProvider>
+        <Shell>{children}</Shell>
+      </ClerkProvider>
+    )
+  }
+  return <Shell>{children}</Shell>
 }
