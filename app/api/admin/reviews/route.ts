@@ -16,7 +16,7 @@ function checkAdmin(userId: string): boolean {
   return userId === adminUserId
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

@@ -55,7 +55,7 @@ export default function HomePage() {
                 <div key={w.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-4 flex flex-col items-center" style={{ boxShadow: '0 0 24px 2px rgba(184,134,11,0.08)' }}>
                   <div className="w-36 h-36 flex items-center justify-center rounded-xl bg-[#f8fafc] overflow-hidden mb-3">
                     <Image
-                      src={w.image}
+                      src={w.image!}
                       alt={w.name}
                       width={144}
                       height={144}
@@ -143,7 +143,7 @@ export default function HomePage() {
               <div key={w.id} className="bg-[#f8fafc] rounded-xl p-5 border border-[#e2e8f0]">
                 <div className="relative w-full h-40 flex items-center justify-center rounded-lg bg-white border border-[#e2e8f0] mb-4 overflow-hidden">
                   <Image
-                    src={w.image}
+                    src={w.image!}
                     alt={w.name}
                     fill
                     className="object-contain"
@@ -183,7 +183,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-[#0f172a]">Popular Comparisons</h2>
-            <p className="text-[#475569] text-sm mt-1">Community's most-viewed head-to-heads</p>
+            <p className="text-[#475569] text-sm mt-1">Community&apos;s most-viewed head-to-heads</p>
           </div>
           <Link href="/compare" className="text-sm text-[#b8860b] hover:text-[#d4a853] hidden sm:block">
             Create your own →
@@ -204,7 +204,7 @@ export default function HomePage() {
                   {[wa, wb].map((w) => (
                     <div key={w.id} className="w-12 h-12 rounded-lg bg-[#f8fafc] flex items-center justify-center overflow-hidden border border-[#e2e8f0]">
                       {w.image ? (
-                        <Image src={w.image} alt={w.name} width={48} height={48} className="w-full h-full object-contain" />
+                        <Image src={w.image!} alt={w.name} width={48} height={48} className="w-full h-full object-contain" />
                       ) : (
                         <svg className="w-6 h-6 text-[#e2e8f0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -282,7 +282,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
           <h2 className="text-3xl font-bold text-[#0f172a] mb-3">Not Sure Where to Start?</h2>
           <p className="text-[#475569] text-lg mb-7 max-w-xl mx-auto">
-            Answer 5 quick questions and we'll recommend your perfect watch from our database.
+            Answer 5 quick questions and we&apos;ll recommend your perfect watch from our database.
           </p>
           <Link href="/quiz" className="btn-gold text-base px-8 py-3">
             Take the 2-Minute Quiz →

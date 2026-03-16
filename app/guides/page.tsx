@@ -47,7 +47,7 @@ export default function GuidesPage() {
           if (!guide) return null
           const previewWatches = guide.recommendations
             .map((rec) => watches.find((w) => w.slug === rec.slug))
-            .filter((w): w is NonNullable<typeof w> => !!w && !w.image.endsWith('.svg'))
+            .filter((w): w is NonNullable<typeof w> & { image: string } => !!w && typeof w.image === 'string' && !w.image.endsWith('.svg'))
             .slice(0, 3)
           return (
             <Link
@@ -59,7 +59,7 @@ export default function GuidesPage() {
                 <div className="flex gap-1 mb-3">
                   {previewWatches.map((w) => (
                     <div key={w.slug} className="h-14 w-14 rounded-lg bg-white border border-[#e2e8f0] overflow-hidden shrink-0">
-                      <Image src={w.image} alt={w.name} width={56} height={56} className="h-14 w-14 object-contain" />
+                      <Image src={w.image!} alt={w.name} width={56} height={56} className="h-14 w-14 object-contain" />
                     </div>
                   ))}
                 </div>
