@@ -4,6 +4,8 @@ description: "A clear-eyed comparison of automatic and quartz movements — how 
 date: "2025-03-15"
 slug: "automatic-vs-quartz-watch"
 tags: ["automatic watch", "quartz watch", "watch movement", "buying guide", "watch comparison"]
+heroImage: '/images/watches/rolex-submariner-41.png'
+readingTime: '6 min read'
 ---
 
 # Automatic vs Quartz Watch: Which Is Better?

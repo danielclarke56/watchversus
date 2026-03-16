@@ -4,6 +4,8 @@ description: "Which watch brands and models hold value best over time? A clear l
 date: "2025-03-15"
 slug: "watch-investment-value-retention"
 tags: ["watch investment", "value retention", "Rolex", "Patek Philippe", "Audemars Piguet", "luxury watches", "watch market"]
+heroImage: '/images/watches/rolex-day-date-40.png'
+readingTime: '6 min read'
 ---
 
 # Which Watches Hold Their Value Best?

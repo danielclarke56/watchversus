@@ -4,6 +4,8 @@ description: "A thorough review of the Rolex Submariner — its history, specifi
 date: "2025-03-15"
 slug: "rolex-submariner-review"
 tags: ["Rolex Submariner", "watch review", "dive watch", "luxury watch", "Rolex", "value retention"]
+heroImage: '/images/watches/rolex-submariner-41.png'
+readingTime: '9 min read'
 ---
 
 # Rolex Submariner Review: Is It Still Worth It in 2025?

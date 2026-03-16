@@ -4,6 +4,8 @@ description: "Everything you need to know to choose the right dive watch — wat
 date: "2025-03-15"
 slug: "how-to-choose-a-dive-watch"
 tags: ["dive watch", "buying guide", "Rolex Submariner", "Tudor Black Bay", "Seiko", "water resistance"]
+heroImage: '/images/watches/omega-seamaster-300m.jpg'
+readingTime: '7 min read'
 ---
 
 # How to Choose a Dive Watch: The Complete Buyer's Guide

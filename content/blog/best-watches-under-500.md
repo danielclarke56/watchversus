@@ -4,6 +4,8 @@ description: "The best watches you can buy for under $500 — automatic and quar
 date: "2025-03-15"
 slug: "best-watches-under-500"
 tags: ["best watches under 500", "affordable watches", "watch buying guide", "Seiko", "Orient", "Tissot", "budget watches"]
+heroImage: '/images/watches/seiko-5-sports-srpe55.jpg'
+readingTime: '8 min read'
 ---
 
 # Best Watches Under $500 in 2025

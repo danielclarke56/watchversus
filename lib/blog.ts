@@ -10,6 +10,8 @@ export interface BlogPost {
   description: string
   date: string
   tags: string[]
+  heroImage: string
+  readingTime: string
   content: string
 }
 
@@ -27,6 +29,8 @@ export function getAllPosts(): BlogPost[] {
       description: data.description as string,
       date: data.date as string,
       tags: (data.tags as string[]) ?? [],
+      heroImage: (data.heroImage as string) ?? '',
+      readingTime: (data.readingTime as string) ?? '',
       content,
     }
   })
@@ -47,6 +51,8 @@ export function getPostBySlug(slug: string): BlogPost | null {
     description: data.description as string,
     date: data.date as string,
     tags: (data.tags as string[]) ?? [],
+    heroImage: (data.heroImage as string) ?? '',
+    readingTime: (data.readingTime as string) ?? '',
     content,
   }
 }
