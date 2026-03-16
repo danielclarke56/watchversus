@@ -1,15 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { useUser, SignInButton } from '@clerk/nextjs'
+
+const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 interface Props {
   watchId: string
   watchName: string
 }
 
+function useClerkUser() {
+  if (!hasClerk) return { isSignedIn: false, isLoaded: true }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+  const { useUser } = require('@clerk/nextjs')
+  return useUser() as { isSignedIn: boolean; isLoaded: boolean }
+}
+
 export default function ReviewForm({ watchId, watchName }: Props) {
-  const { isSignedIn, isLoaded } = useUser()
+  const { isSignedIn, isLoaded } = useClerkUser()
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [title, setTitle] = useState('')
@@ -58,9 +66,21 @@ export default function ReviewForm({ watchId, watchName }: Props) {
       <div className="card p-6 text-center">
         <h3 className="text-[#0f172a] font-semibold mb-2">Write a Review</h3>
         <p className="text-[#475569] text-sm mb-4">Sign in to share your experience with the {watchName}.</p>
-        <SignInButton mode="modal">
-          <button className="btn-outline px-6 py-2 text-sm">Sign In to Review</button>
-        </SignInButton>
+        {hasClerk ? (
+          (() => {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+            const { SignInButton } = require('@clerk/nextjs')
+            return (
+              <SignInButton mode="modal">
+                <button className="btn-outline px-6 py-2 text-sm">Sign In to Review</button>
+              </SignInButton>
+            )
+          })()
+        ) : (
+          <button className="btn-outline px-6 py-2 text-sm opacity-50 cursor-not-allowed" disabled>
+            Sign In to Review
+          </button>
+        )}
       </div>
     )
   }

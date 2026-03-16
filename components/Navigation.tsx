@@ -2,7 +2,35 @@
 
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import dynamic from 'next/dynamic'
+
+const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+/* Lazy-load Clerk components only when the key is present */
+const ClerkAuth = hasClerk
+  ? dynamic(() =>
+      import('@clerk/nextjs').then((mod) => {
+        const { SignedIn, SignedOut, SignInButton, UserButton } = mod
+        return {
+          default: ({ avatarSize }: { avatarSize?: string }) => (
+            <>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="text-sm text-[#475569] hover:text-[#b8860b] transition-colors font-medium">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton appearance={avatarSize ? { elements: { avatarBox: avatarSize } } : undefined} />
+              </SignedIn>
+            </>
+          ),
+        }
+      }),
+      { ssr: false }
+    )
+  : () => null
 
 type DropdownItem = { href: string; label: string; desc: string }
 type NavGroup = { label: string; items: DropdownItem[] }
@@ -112,16 +140,7 @@ export default function Navigation() {
           >
             Compare Now
           </Link>
-          <SignedOut>
-            <SignInButton mode="modal">
-              <button className="text-sm text-[#475569] hover:text-[#b8860b] transition-colors font-medium">
-                Sign In
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
-          </SignedIn>
+          <ClerkAuth avatarSize="w-8 h-8" />
         </div>
 
         {/* Mobile hamburger */}
@@ -166,16 +185,7 @@ export default function Navigation() {
             <Link href="/compare" className="btn-gold text-xs px-4 py-2 rounded-lg font-semibold">
               Compare Now
             </Link>
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="text-sm text-[#475569] hover:text-[#b8860b] transition-colors font-medium">
-                  Sign In
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            <ClerkAuth />
           </div>
         </div>
       )}
