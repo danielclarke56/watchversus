@@ -113,7 +113,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   <div className="shrink-0 w-10 h-10 bg-[#b8860b]/20 border border-[#b8860b]/40 rounded-full flex items-center justify-center">
                     <span className="text-[#b8860b] font-bold text-sm">{index + 1}</span>
                   </div>
-                  {!watch.image.endsWith('.svg') && (
+                  {watch.image && !watch.image.endsWith('.svg') && (
                     <div className="shrink-0 w-20 h-20 rounded-lg bg-white border border-[#e2e8f0] overflow-hidden">
                       <Image src={watch.image} alt={watch.name} width={80} height={80} className="w-20 h-20 object-contain" />
                     </div>
