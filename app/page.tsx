@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { watches, getAllReviews, popularComparisons, getWatchBySlug, formatPrice } from '@/lib/watches'
 import WatchCard from '@/components/WatchCard'
 import ReviewCard from '@/components/ReviewCard'
@@ -53,9 +54,11 @@ export default function HomePage() {
               {[w1, w2].map((w) => (
                 <div key={w.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-4 flex flex-col items-center" style={{ boxShadow: '0 0 24px 2px rgba(184,134,11,0.08)' }}>
                   <div className="w-36 h-36 flex items-center justify-center rounded-xl bg-[#f8fafc] overflow-hidden mb-3">
-                    <img
+                    <Image
                       src={w.image}
                       alt={w.name}
+                      width={144}
+                      height={144}
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -138,11 +141,12 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
             {[w1, w2].map((w) => (
               <div key={w.id} className="bg-[#f8fafc] rounded-xl p-5 border border-[#e2e8f0]">
-                <div className="w-full h-40 flex items-center justify-center rounded-lg bg-white border border-[#e2e8f0] mb-4 overflow-hidden">
-                  <img
+                <div className="relative w-full h-40 flex items-center justify-center rounded-lg bg-white border border-[#e2e8f0] mb-4 overflow-hidden">
+                  <Image
                     src={w.image}
                     alt={w.name}
-                    className="w-full h-full object-contain"
+                    fill
+                    className="object-contain"
                   />
                 </div>
                 <span className="text-xs text-[#b8860b] font-bold uppercase tracking-wider">{w.brand}</span>
@@ -200,7 +204,7 @@ export default function HomePage() {
                   {[wa, wb].map((w) => (
                     <div key={w.id} className="w-12 h-12 rounded-lg bg-[#f8fafc] flex items-center justify-center overflow-hidden border border-[#e2e8f0]">
                       {w.image ? (
-                        <img src={w.image} alt={w.name} className="w-full h-full object-contain" />
+                        <Image src={w.image} alt={w.name} width={48} height={48} className="w-full h-full object-contain" />
                       ) : (
                         <svg className="w-6 h-6 text-[#e2e8f0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

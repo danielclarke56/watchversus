@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Watch } from '@/lib/types'
 import { formatPrice, calcAverageRatings, calcOverallRating, getReviewsForWatch } from '@/lib/watches'
 import StarRating from './StarRating'
@@ -18,11 +19,11 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
       {/* Watch image */}
       <div className="relative bg-[#f8fafc] h-56 flex items-center justify-center overflow-hidden">
         {watch.image ? (
-          <img
+          <Image
             src={watch.image}
             alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
-            className="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
+            fill
+            className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="text-center px-4">

@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const watch = getWatchBySlug(params.slug)
   if (!watch) return {}
   return {
-    title: `${watch.brand} ${watch.name} Review & Specs`,
+    title: `${watch.brand} ${watch.name} Review | WatchVsWatch`,
     description: `Read community reviews, full specs, and pricing for the ${watch.brand} ${watch.name} (${watch.reference}). ${watch.description.slice(0, 120)}...`,
     alternates: {
       canonical: `https://watchvswatch.com/watches/${watch.slug}`,
@@ -59,6 +59,7 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
         name: `${watch.brand} ${watch.name}`,
         description: watch.description,
         sku: watch.reference,
+        image: watch.image ? `https://watchvswatch.com${watch.image}` : undefined,
         brand: {
           '@type': 'Brand',
           name: watch.brand,
@@ -219,6 +220,30 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
 
           {/* Review form */}
           <ReviewForm watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
+
+          {/* Compare this watch — same brand */}
+          {(() => {
+            const sameBrand = watches.filter((w) => w.brand === watch.brand && w.slug !== watch.slug)
+            if (sameBrand.length === 0) return null
+            return (
+              <div>
+                <h2 className="text-xl font-bold text-[#0f172a] mb-4">Compare {watch.name} with Other {watch.brand} Watches</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {sameBrand.map((other) => (
+                    <Link
+                      key={other.slug}
+                      href={`/compare/${watch.slug}-vs-${other.slug}`}
+                      className="card p-4 hover:border-[#b8860b]/40 transition-colors"
+                    >
+                      <p className="text-xs text-[#b8860b] font-semibold uppercase tracking-wider">{other.brand}</p>
+                      <p className="text-[#0f172a] font-medium">{other.name}</p>
+                      <p className="text-xs text-[#94a3b8] mt-1">{watch.name} vs {other.name} →</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
         </div>
 
         {/* Right sidebar */}

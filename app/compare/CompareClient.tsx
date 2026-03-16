@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import type { Watch } from '@/lib/types'
 import { calcAverageRatings, calcOverallRating, getReviewsForWatch, formatPrice, popularComparisons, getWatchBySlug } from '@/lib/watches'
 import RatingBar from '@/components/RatingBar'
@@ -97,11 +98,12 @@ function WatchColumn({ watch }: { watch: Watch }) {
       <div className="text-center mb-6">
         <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] aspect-square max-w-48 mx-auto flex items-center justify-center mb-4 overflow-hidden">
           {watch.image ? (
-            <img
+            <Image
               src={watch.image}
               alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+              width={192}
+              height={192}
               className="w-full h-full object-contain p-3"
-              loading="lazy"
             />
           ) : (
             <svg className="w-12 h-12 text-[#e2e8f0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
