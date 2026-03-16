@@ -259,7 +259,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-[#0f172a]">Explore Watches</h2>
-            <p className="text-[#475569] text-sm mt-1">50 watches across every category and budget</p>
+            <p className="text-[#475569] text-sm mt-1">Every category and budget covered</p>
           </div>
           <Link href="/watches" className="text-sm text-[#b8860b] hover:text-[#d4a853] hidden sm:block">
             Browse all 50 →
@@ -282,7 +282,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
           <h2 className="text-3xl font-bold text-[#0f172a] mb-3">Not Sure Where to Start?</h2>
           <p className="text-[#475569] text-lg mb-7 max-w-xl mx-auto">
-            Answer 5 quick questions and we&apos;ll recommend your perfect watch from our database.
+            Answer 5 quick questions and we&apos;ll recommend your perfect watch based on your needs.
           </p>
           <Link href="/quiz" className="btn-gold text-base px-8 py-3">
             Take the 2-Minute Quiz →

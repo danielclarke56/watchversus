@@ -1,7 +1,7 @@
 ---
 title: "Which Watches Hold Their Value Best? A Data-Driven Guide"
 description: "Which watch brands and models hold value best over time? A clear look at Rolex, Patek Philippe, Audemars Piguet, and the specific references that have proven to retain — and grow — their value."
-date: "2025-03-15"
+date: "2026-03-15"
 slug: "watch-investment-value-retention"
 tags: ["watch investment", "value retention", "Rolex", "Patek Philippe", "Audemars Piguet", "luxury watches", "watch market"]
 heroImage: '/images/watches/rolex-day-date-40.png'

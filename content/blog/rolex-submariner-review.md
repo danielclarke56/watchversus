@@ -1,16 +1,16 @@
 ---
-title: "Rolex Submariner Review: Is It Still Worth It in 2025?"
+title: "Rolex Submariner Review: Is It Still Worth It in 2026?"
 description: "A thorough review of the Rolex Submariner — its history, specifications, movement quality, value retention, and how it compares to alternatives at the price point."
-date: "2025-03-15"
+date: "2026-03-15"
 slug: "rolex-submariner-review"
 tags: ["Rolex Submariner", "watch review", "dive watch", "luxury watch", "Rolex", "value retention"]
 heroImage: '/images/watches/rolex-submariner-41.png'
 readingTime: '9 min read'
 ---
 
-# Rolex Submariner Review: Is It Still Worth It in 2025?
+# Rolex Submariner Review: Is It Still Worth It in 2026?
 
-The Rolex Submariner doesn't need an introduction. It's the watch that defined what a dive watch looks like — the reference image that every other brand orients around, even when they're trying to be different. Since 1953, it has been the standard. The question worth asking in 2025 isn't whether it's iconic. It's whether it's worth buying now, at current prices, for a new buyer.
+The Rolex Submariner doesn't need an introduction. It's the watch that defined what a dive watch looks like — the reference image that every other brand orients around, even when they're trying to be different. Since 1953, it has been the standard. The question worth asking in 2026 isn't whether it's iconic. It's whether it's worth buying now, at current prices, for a new buyer.
 
 The short answer: yes. The longer answer follows.
 
