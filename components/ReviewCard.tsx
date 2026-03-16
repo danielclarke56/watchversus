@@ -25,15 +25,15 @@ export default function ReviewCard({ review, showWatch = true }: Props) {
       )}
 
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h4 className="font-semibold text-white text-sm leading-snug">{review.title}</h4>
+        <h4 className="font-semibold text-[#0f172a] text-sm leading-snug">{review.title}</h4>
         <StarRating rating={overallRating} size="sm" showNumber />
       </div>
 
-      <p className="text-slate-400 text-sm leading-relaxed line-clamp-3 mb-3">{review.body}</p>
+      <p className="text-[#475569] text-sm leading-relaxed line-clamp-3 mb-3">{review.body}</p>
 
-      <div className="flex items-center justify-between text-xs text-slate-500">
+      <div className="flex items-center justify-between text-xs text-[#94a3b8]">
         <span>
-          <span className="text-slate-300 font-medium">{review.reviewer_name}</span>
+          <span className="text-[#0f172a] font-medium">{review.reviewer_name}</span>
           {' · '}
           {new Date(review.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>

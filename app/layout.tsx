@@ -1,6 +1,7 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -14,7 +15,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://watchvswatch.com'),
   title: {
-    default: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
+    default: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
     template: '%s | WatchVsWatch',
   },
   description:
@@ -26,13 +27,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'WatchVsWatch',
-    title: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
+    title: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
     url: 'https://watchvswatch.com',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WatchVsWatch — Head-to-Head Watch Comparisons & Reviews',
+    title: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
   },
   verification: {
@@ -58,30 +59,32 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
-      </head>
-      <body className="bg-[#0f172a] text-white antialiased min-h-screen flex flex-col">
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
-          strategy="afterInteractive"
-        />
-        <Script id="ga4-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-T077JWH4E5');
-          `}
-        </Script>
-        <Navigation />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={inter.variable}>
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          />
+        </head>
+        <body className="bg-[#f8fafc] text-[#0f172a] antialiased min-h-screen flex flex-col">
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
+            strategy="afterInteractive"
+          />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-T077JWH4E5');
+            `}
+          </Script>
+          <Navigation />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

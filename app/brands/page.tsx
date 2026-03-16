@@ -39,14 +39,14 @@ const tiers = [
 export default function BrandsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <nav className="text-sm text-slate-500 mb-6 flex items-center gap-2">
-        <Link href="/" className="hover:text-[#d4a853] transition-colors">Home</Link>
+      <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
+        <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
         <span>/</span>
-        <span className="text-white">Brands</span>
+        <span className="text-[#0f172a]">Brands</span>
       </nav>
 
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Watch Brands</h1>
-      <p className="text-slate-400 mb-10 leading-relaxed">
+      <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-4">Watch Brands</h1>
+      <p className="text-[#475569] mb-10 leading-relaxed">
         Brand overviews, model listings from our database, and popular head-to-head comparisons — organized by tier.
       </p>
 
@@ -58,20 +58,20 @@ export default function BrandsPage() {
 
           return (
             <div key={tier.label}>
-              <h2 className="text-xs text-slate-500 uppercase tracking-widest mb-4 font-semibold">{tier.label}</h2>
+              <h2 className="text-xs text-[#94a3b8] uppercase tracking-widest mb-4 font-semibold">{tier.label}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {tierBrands.map((brand) => (
                   <Link
                     key={brand.slug}
                     href={`/brands/${brand.slug}`}
-                    className="card p-5 hover:border-[#d4a853]/40 transition-colors group"
+                    className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-bold group-hover:text-[#d4a853] transition-colors mb-1">
+                        <h3 className="text-[#0f172a] font-bold group-hover:text-[#b8860b] transition-colors mb-1">
                           {brand.name}
                         </h3>
-                        <p className="text-slate-500 text-xs">{brand.country} · Est. {brand.founded}</p>
+                        <p className="text-[#94a3b8] text-xs">{brand.country} · Est. {brand.founded}</p>
                       </div>
                     </div>
                   </Link>
@@ -82,9 +82,9 @@ export default function BrandsPage() {
         })}
       </div>
 
-      <div className="mt-12 text-center bg-[#1e293b] border border-[#334155] rounded-xl p-8">
-        <h3 className="text-white font-semibold text-lg mb-2">Compare Any Two Watches</h3>
-        <p className="text-slate-400 text-sm mb-5">Full specs, community ratings, and pricing side by side</p>
+      <div className="mt-12 text-center bg-white border border-[#e2e8f0] rounded-xl p-8">
+        <h3 className="text-[#0f172a] font-semibold text-lg mb-2">Compare Any Two Watches</h3>
+        <p className="text-[#475569] text-sm mb-5">Full specs, community ratings, and pricing side by side</p>
         <Link href="/compare" className="btn-gold">
           Compare Watches
         </Link>

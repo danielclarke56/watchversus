@@ -62,24 +62,24 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
   return (
     <div
       className="rounded-xl p-5 mt-2"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', border: '1px solid rgba(212,168,83,0.3)' }}
+      style={{ background: '#fffbf0', border: '1px solid rgba(184,134,11,0.3)' }}
     >
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-[#d4a853] text-sm">🗳️</span>
-        <span className="text-xs font-semibold text-white uppercase tracking-wide">WatchVsWatch Community Vote</span>
+        <span className="text-[#b8860b] text-sm">🗳️</span>
+        <span className="text-xs font-semibold text-[#0f172a] uppercase tracking-wide">WatchVsWatch Community Vote</span>
         {votes.total > 0 && (
-          <span className="ml-auto text-xs text-slate-400">{votes.total.toLocaleString()} vote{votes.total !== 1 ? 's' : ''}</span>
+          <span className="ml-auto text-xs text-[#475569]">{votes.total.toLocaleString()} vote{votes.total !== 1 ? 's' : ''}</span>
         )}
       </div>
 
       {voted && votedName && (
-        <p className="text-xs text-[#d4a853] font-semibold mb-3 mt-1">
+        <p className="text-xs text-[#b8860b] font-semibold mb-3 mt-1">
           You voted for {votedName}
         </p>
       )}
 
       {loading ? (
-        <div className="text-xs text-slate-500 py-2">Loading...</div>
+        <div className="text-xs text-[#94a3b8] py-2">Loading...</div>
       ) : (
         <div className="grid grid-cols-2 gap-3 my-3">
           {(['watch1', 'watch2'] as const).map((key) => {
@@ -96,14 +96,14 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
                 className={[
                   'rounded-lg px-3 py-3 text-sm font-semibold transition-all duration-200 border focus:outline-none',
                   isSelected
-                    ? 'bg-[#d4a853] text-[#1a1a2e] border-[#d4a853]'
+                    ? 'bg-[#b8860b] text-white border-[#b8860b]'
                     : isDisabled
-                    ? 'bg-transparent text-slate-500 border-[#334155] cursor-not-allowed'
-                    : 'bg-transparent text-white border-[#334155] hover:border-[#d4a853] hover:text-[#d4a853] cursor-pointer',
+                    ? 'bg-transparent text-[#94a3b8] border-[#e2e8f0] cursor-not-allowed'
+                    : 'bg-transparent text-[#0f172a] border-[#e2e8f0] hover:border-[#b8860b] hover:text-[#b8860b] cursor-pointer',
                 ].join(' ')}
               >
                 <span className="block truncate">{name}</span>
-                <span className={`block text-xs mt-0.5 font-normal ${isSelected ? 'text-[#1a1a2e]/70' : 'text-slate-500'}`}>
+                <span className={`block text-xs mt-0.5 font-normal ${isSelected ? 'text-white/70' : 'text-[#94a3b8]'}`}>
                   {count.toLocaleString()} vote{count !== 1 ? 's' : ''}
                 </span>
               </button>
@@ -114,13 +114,13 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
 
       {votes.total > 0 && (
         <>
-          <div className="flex h-2 rounded-full overflow-hidden bg-[#334155]">
-            <div className="bg-[#d4a853] transition-all duration-500" style={{ width: `${pct1}%` }} />
-            <div className="bg-[#475569] transition-all duration-500" style={{ width: `${pct2}%` }} />
+          <div className="flex h-2 rounded-full overflow-hidden bg-[#e2e8f0]">
+            <div className="bg-[#b8860b] transition-all duration-500" style={{ width: `${pct1}%` }} />
+            <div className="bg-[#cbd5e1] transition-all duration-500" style={{ width: `${pct2}%` }} />
           </div>
           <div className="flex justify-between text-xs mt-1.5">
-            <span className="text-[#d4a853] font-bold">{pct1}%</span>
-            <span className="text-slate-500 font-bold">{pct2}%</span>
+            <span className="text-[#b8860b] font-bold">{pct1}%</span>
+            <span className="text-[#94a3b8] font-bold">{pct2}%</span>
           </div>
         </>
       )}

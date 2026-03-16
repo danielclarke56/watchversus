@@ -80,12 +80,12 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Breadcrumb */}
-        <nav className="text-sm text-slate-500 mb-6 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#d4a853] transition-colors">Home</Link>
+        <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
+          <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/brands" className="hover:text-[#d4a853] transition-colors">Brands</Link>
+          <Link href="/brands" className="hover:text-[#b8860b] transition-colors">Brands</Link>
           <span>/</span>
-          <span className="text-white">{brand.name}</span>
+          <span className="text-[#0f172a]">{brand.name}</span>
         </nav>
 
         {/* Brand Hero */}
@@ -93,16 +93,16 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           <div className="flex items-start gap-4 mb-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-xs text-[#d4a853] font-bold uppercase tracking-wider border border-[#d4a853]/30 rounded px-2 py-0.5">
+                <span className="text-xs text-[#b8860b] font-bold uppercase tracking-wider border border-[#b8860b]/30 rounded px-2 py-0.5">
                   Est. {brand.founded}
                 </span>
-                <span className="text-xs text-slate-500">{brand.country}</span>
+                <span className="text-xs text-[#94a3b8]">{brand.country}</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{brand.name}</h1>
-              <p className="text-[#d4a853] text-sm italic mb-4">{brand.heroFact}</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-3">{brand.name}</h1>
+              <p className="text-[#b8860b] text-sm italic mb-4">{brand.heroFact}</p>
             </div>
           </div>
-          <div className="text-slate-300 text-sm leading-relaxed">
+          <div className="text-[#475569] text-sm leading-relaxed">
             {brand.overview.split('\n\n').map((para, i) => (
               <p key={i} className={i > 0 ? 'mt-3' : ''}>{para.trim()}</p>
             ))}
@@ -112,20 +112,20 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
         {/* Watches in Database */}
         {brandWatches.length > 0 ? (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">
+            <h2 className="text-2xl font-bold text-[#0f172a] mb-6">
               {brand.name} Watches in Our Database
-              <span className="ml-3 text-sm font-normal text-slate-500">({brandWatches.length} model{brandWatches.length !== 1 ? 's' : ''})</span>
+              <span className="ml-3 text-sm font-normal text-[#94a3b8]">({brandWatches.length} model{brandWatches.length !== 1 ? 's' : ''})</span>
             </h2>
             <div className="space-y-3">
               {brandWatches.map((watch) => (
                 <Link
                   key={watch.slug}
                   href={`/watches/${watch.slug}`}
-                  className="card p-5 flex items-center justify-between hover:border-[#d4a853]/40 transition-colors group"
+                  className="card p-5 flex items-center justify-between hover:border-[#b8860b]/40 transition-colors group"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-semibold group-hover:text-[#d4a853] transition-colors">{watch.name}</p>
-                    <div className="flex flex-wrap gap-3 mt-1 text-xs text-slate-500">
+                    <p className="text-[#0f172a] font-semibold group-hover:text-[#b8860b] transition-colors">{watch.name}</p>
+                    <div className="flex flex-wrap gap-3 mt-1 text-xs text-[#94a3b8]">
                       <span>Ref. {watch.reference}</span>
                       <span>{watch.case_diameter_mm}mm</span>
                       <span className="capitalize">{watch.movement_type}</span>
@@ -133,8 +133,8 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                     </div>
                   </div>
                   <div className="text-right ml-4 shrink-0">
-                    <p className="text-[#d4a853] font-semibold text-sm">{formatPrice(watch.price_new_usd)}</p>
-                    <p className="text-slate-500 text-xs">new</p>
+                    <p className="text-[#b8860b] font-semibold text-sm">{formatPrice(watch.price_new_usd)}</p>
+                    <p className="text-[#94a3b8] text-xs">new</p>
                   </div>
                 </Link>
               ))}
@@ -143,10 +143,10 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
         ) : (
           <section className="mb-12">
             <div className="card p-6 text-center">
-              <p className="text-slate-400 text-sm mb-2">
+              <p className="text-[#475569] text-sm mb-2">
                 We do not yet have {brand.name} watches in our comparison database.
               </p>
-              <p className="text-slate-500 text-xs">
+              <p className="text-[#94a3b8] text-xs">
                 We are continually expanding — check back soon.
               </p>
             </div>
@@ -156,7 +156,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
         {/* Popular Comparisons */}
         {brandComparisons.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Popular {brand.name} Comparisons</h2>
+            <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Popular {brand.name} Comparisons</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {brandComparisons.map((c) => {
                 const wa = watches.find((w) => w.slug === c.slug1)
@@ -166,19 +166,19 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-[#d4a853]/40 transition-colors group"
+                    className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-slate-500 uppercase">{wa.brand}</p>
-                        <p className="text-white text-xs font-semibold truncate group-hover:text-[#d4a853] transition-colors">
+                        <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
+                        <p className="text-[#0f172a] text-xs font-semibold truncate group-hover:text-[#b8860b] transition-colors">
                           {wa.name}
                         </p>
                       </div>
-                      <div className="text-[#d4a853] font-bold text-xs shrink-0">VS</div>
+                      <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
                       <div className="flex-1 min-w-0 text-right">
-                        <p className="text-[10px] text-slate-500 uppercase">{wb.brand}</p>
-                        <p className="text-white text-xs font-semibold truncate group-hover:text-[#d4a853] transition-colors">
+                        <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
+                        <p className="text-[#0f172a] text-xs font-semibold truncate group-hover:text-[#b8860b] transition-colors">
                           {wb.name}
                         </p>
                       </div>
@@ -192,24 +192,24 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
         {/* FAQ */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {brand.faq.map((item, i) => (
               <details key={i} className="card p-5 group cursor-pointer">
-                <summary className="text-white font-semibold flex justify-between items-center list-none">
+                <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
                   <span>{item.question}</span>
-                  <span className="text-[#d4a853] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                  <span className="text-[#b8860b] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
                 </summary>
-                <p className="text-slate-400 text-sm mt-4 leading-relaxed">{item.answer}</p>
+                <p className="text-[#475569] text-sm mt-4 leading-relaxed">{item.answer}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* CTA */}
-        <div className="text-center bg-[#1e293b] border border-[#334155] rounded-xl p-8">
-          <h3 className="text-white font-semibold text-lg mb-2">Compare {brand.name} Watches</h3>
-          <p className="text-slate-400 text-sm mb-5">
+        <div className="text-center bg-white border border-[#e2e8f0] rounded-xl p-8">
+          <h3 className="text-[#0f172a] font-semibold text-lg mb-2">Compare {brand.name} Watches</h3>
+          <p className="text-[#475569] text-sm mb-5">
             Head-to-head specs, community ratings, and pricing against any watch in our database
           </p>
           <Link href="/compare" className="btn-gold">

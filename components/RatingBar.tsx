@@ -9,8 +9,8 @@ export default function RatingBar({ label, value, max = 5 }: Props) {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-slate-400 w-36 shrink-0">{label}</span>
-      <div className="flex-1 h-1.5 bg-[#334155] rounded-full overflow-hidden">
+      <span className="text-xs text-[#475569] w-36 shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 bg-[#e2e8f0] rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-[#d4a853] to-[#e4c07a] rounded-full transition-all duration-500"
           style={{ width: `${pct}%` }}

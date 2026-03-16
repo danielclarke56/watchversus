@@ -35,16 +35,16 @@ export default function ReviewsClient({ reviews, watches }: Props) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Community Reviews</h1>
-        <p className="text-slate-400">Real owners, honest opinions — {reviews.length} reviews and growing</p>
+        <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Community Reviews</h1>
+        <p className="text-[#475569]">Real owners, honest opinions — {reviews.length} reviews and growing</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-4 mb-8 flex flex-wrap gap-3 items-center">
+      <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 mb-8 flex flex-wrap gap-3 items-center">
         <select
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
-          className="bg-[#0f172a] border border-[#334155] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#d4a853] transition-colors"
+          className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-2 text-sm text-[#0f172a] focus:outline-none focus:border-[#b8860b] transition-colors"
         >
           <option value="">All Brands</option>
           {brands.map((b) => (
@@ -55,7 +55,7 @@ export default function ReviewsClient({ reviews, watches }: Props) {
         <select
           value={minRating}
           onChange={(e) => setMinRating(Number(e.target.value))}
-          className="bg-[#0f172a] border border-[#334155] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#d4a853] transition-colors"
+          className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-2 text-sm text-[#0f172a] focus:outline-none focus:border-[#b8860b] transition-colors"
         >
           <option value={0}>All Ratings</option>
           <option value={4}>4+ Stars</option>
@@ -65,14 +65,14 @@ export default function ReviewsClient({ reviews, watches }: Props) {
         {(brand || minRating > 0) && (
           <button
             onClick={() => { setBrand(''); setMinRating(0) }}
-            className="text-sm text-slate-400 hover:text-white transition-colors"
+            className="text-sm text-[#475569] hover:text-[#0f172a] transition-colors"
           >
             Clear
           </button>
         )}
 
-        <span className="ml-auto text-slate-500 text-sm">
-          Showing <span className="text-white">{filtered.length}</span> reviews
+        <span className="ml-auto text-[#94a3b8] text-sm">
+          Showing <span className="text-[#0f172a]">{filtered.length}</span> reviews
         </span>
       </div>
 
@@ -84,7 +84,7 @@ export default function ReviewsClient({ reviews, watches }: Props) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 text-slate-400">
+        <div className="text-center py-16 text-[#475569]">
           No reviews match your filters.
         </div>
       )}

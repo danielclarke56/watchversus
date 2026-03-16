@@ -153,51 +153,51 @@ export default function QuizClient({ watches }: Props) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="text-center mb-10">
-          <div className="w-12 h-12 rounded-full bg-[#d4a853]/20 border border-[#d4a853]/30 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-[#d4a853]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 rounded-full bg-[#b8860b]/20 border border-[#b8860b]/30 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-[#b8860b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Your Top Matches</h1>
-          <p className="text-slate-400">Based on your preferences, here are your best watch options</p>
+          <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Your Top Matches</h1>
+          <p className="text-[#475569]">Based on your preferences, here are your best watch options</p>
         </div>
 
         <div className="space-y-5 mb-8">
           {results.map(({ watch }, i) => (
-            <div key={watch.id} className="card p-6 border-[#334155] hover:border-[#d4a853]/30 transition-colors">
+            <div key={watch.id} className="card p-6 border-[#e2e8f0] hover:border-[#b8860b]/30 transition-colors">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[#d4a853] font-bold text-sm">#{i + 1}</span>
-                    <span className="text-xs text-[#d4a853] font-semibold uppercase tracking-wider">{watch.brand}</span>
+                    <span className="text-[#b8860b] font-bold text-sm">#{i + 1}</span>
+                    <span className="text-xs text-[#b8860b] font-semibold uppercase tracking-wider">{watch.brand}</span>
                   </div>
-                  <h2 className="text-xl font-bold text-white">{watch.name}</h2>
-                  <p className="text-slate-400 text-sm">Ref. {watch.reference}</p>
+                  <h2 className="text-xl font-bold text-[#0f172a]">{watch.name}</h2>
+                  <p className="text-[#475569] text-sm">Ref. {watch.reference}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs text-slate-500">New</p>
-                  <p className="text-[#d4a853] font-bold">{formatPrice(watch.price_new_usd)}</p>
+                  <p className="text-xs text-[#94a3b8]">New</p>
+                  <p className="text-[#b8860b] font-bold">{formatPrice(watch.price_new_usd)}</p>
                 </div>
               </div>
 
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">{watch.description}</p>
+              <p className="text-[#475569] text-sm leading-relaxed mb-4">{watch.description}</p>
 
               {/* Why it matches */}
-              <div className="bg-[#0f172a] rounded-lg p-3 mb-4">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Why it matches</p>
+              <div className="bg-[#f8fafc] rounded-lg p-3 mb-4">
+                <p className="text-xs text-[#94a3b8] uppercase tracking-wider mb-2">Why it matches</p>
                 <ul className="space-y-1">
                   {watch.style.includes(answers.style) && (
-                    <li className="text-sm text-slate-300 flex items-center gap-2">
-                      <span className="text-[#d4a853]">✓</span> {watch.style.includes(answers.style) ? `${answers.style} style` : ''} watch
+                    <li className="text-sm text-[#475569] flex items-center gap-2">
+                      <span className="text-[#b8860b]">✓</span> {watch.style.includes(answers.style) ? `${answers.style} style` : ''} watch
                     </li>
                   )}
                   {(answers.movement === 'any' || watch.movement_type === answers.movement) && (
-                    <li className="text-sm text-slate-300 flex items-center gap-2">
-                      <span className="text-[#d4a853]">✓</span> {watch.movement_type} movement
+                    <li className="text-sm text-[#475569] flex items-center gap-2">
+                      <span className="text-[#b8860b]">✓</span> {watch.movement_type} movement
                     </li>
                   )}
-                  <li className="text-sm text-slate-300 flex items-center gap-2">
-                    <span className="text-[#d4a853]">✓</span> {watch.case_diameter_mm}mm case, {watch.water_resistance_m}m water resistance
+                  <li className="text-sm text-[#475569] flex items-center gap-2">
+                    <span className="text-[#b8860b]">✓</span> {watch.case_diameter_mm}mm case, {watch.water_resistance_m}m water resistance
                   </li>
                 </ul>
               </div>
@@ -214,7 +214,7 @@ export default function QuizClient({ watches }: Props) {
         <div className="text-center">
           <button
             onClick={() => { setStep(0); setAnswers({}); setShowResults(false) }}
-            className="text-slate-400 hover:text-white text-sm transition-colors"
+            className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
           >
             ← Retake Quiz
           </button>
@@ -228,12 +228,12 @@ export default function QuizClient({ watches }: Props) {
       {/* Progress */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-slate-400 text-sm">Question {step + 1} of {QUESTIONS.length}</span>
-          <span className="text-slate-400 text-sm">{Math.round(progress)}% complete</span>
+          <span className="text-[#475569] text-sm">Question {step + 1} of {QUESTIONS.length}</span>
+          <span className="text-[#475569] text-sm">{Math.round(progress)}% complete</span>
         </div>
-        <div className="h-1.5 bg-[#334155] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#e2e8f0] rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#d4a853] to-[#e4c07a] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#b8860b] to-[#d4a853] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -241,7 +241,7 @@ export default function QuizClient({ watches }: Props) {
 
       {/* Question */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">{currentQ.question}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#0f172a]">{currentQ.question}</h1>
       </div>
 
       {/* Options */}
@@ -250,10 +250,10 @@ export default function QuizClient({ watches }: Props) {
           <button
             key={opt.value}
             onClick={() => handleAnswer(opt.value)}
-            className="card p-5 text-left hover:border-[#d4a853]/50 hover:bg-[#d4a853]/5 transition-all group"
+            className="card p-5 text-left hover:border-[#b8860b]/50 hover:bg-[#b8860b]/5 transition-all group"
           >
             <span className="text-2xl mb-2 block">{opt.icon}</span>
-            <span className="text-white font-medium group-hover:text-[#d4a853] transition-colors">{opt.label}</span>
+            <span className="text-[#0f172a] font-medium group-hover:text-[#b8860b] transition-colors">{opt.label}</span>
           </button>
         ))}
       </div>
@@ -262,7 +262,7 @@ export default function QuizClient({ watches }: Props) {
         <div className="text-center mt-6">
           <button
             onClick={() => setStep(step - 1)}
-            className="text-slate-400 hover:text-white text-sm transition-colors"
+            className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
           >
             ← Back
           </button>

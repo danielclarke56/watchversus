@@ -60,23 +60,23 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Watch Index</h1>
-        <p className="text-slate-400">Browse {watches.length} watches — filter by brand, style, or price</p>
+        <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Watch Index</h1>
+        <p className="text-[#475569]">Browse {watches.length} watches — filter by brand, style, or price</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-4 mb-8 flex flex-wrap gap-3">
+      <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 mb-8 flex flex-wrap gap-3">
         <input
           type="text"
           placeholder="Search by name or brand..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 min-w-48 bg-[#0f172a] border border-[#334155] rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#d4a853] transition-colors"
+          className="flex-1 min-w-48 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-4 py-2 text-sm text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#b8860b] transition-colors"
         />
         <select
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
-          className="bg-[#0f172a] border border-[#334155] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#d4a853] transition-colors"
+          className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-2 text-sm text-[#0f172a] focus:outline-none focus:border-[#b8860b] transition-colors"
         >
           {brands.map((b) => (
             <option key={b} value={b === 'All Brands' ? '' : b}>{b}</option>
@@ -85,7 +85,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         <select
           value={style}
           onChange={(e) => setStyle(e.target.value)}
-          className="bg-[#0f172a] border border-[#334155] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#d4a853] transition-colors capitalize"
+          className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-2 text-sm text-[#0f172a] focus:outline-none focus:border-[#b8860b] transition-colors capitalize"
         >
           {styles.map((s) => (
             <option key={s} value={s === 'All Styles' ? '' : s} className="capitalize">{s}</option>
@@ -94,7 +94,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         <select
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          className="bg-[#0f172a] border border-[#334155] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#d4a853] transition-colors"
+          className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-2 text-sm text-[#0f172a] focus:outline-none focus:border-[#b8860b] transition-colors"
         >
           {PRICE_RANGES.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>
@@ -103,7 +103,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         {(search || brand || style || price) && (
           <button
             onClick={() => { setSearch(''); setBrand(''); setStyle(''); setPrice('') }}
-            className="text-sm text-slate-400 hover:text-white transition-colors px-3 py-2"
+            className="text-sm text-[#475569] hover:text-[#0f172a] transition-colors px-3 py-2"
           >
             Clear filters
           </button>
@@ -111,8 +111,8 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
       </div>
 
       {/* Results count */}
-      <p className="text-slate-400 text-sm mb-5">
-        Showing <span className="text-white font-semibold">{filtered.length}</span> of {watches.length} watches
+      <p className="text-[#475569] text-sm mb-5">
+        Showing <span className="text-[#0f172a] font-semibold">{filtered.length}</span> of {watches.length} watches
       </p>
 
       {/* Grid */}
@@ -124,7 +124,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         </div>
       ) : (
         <div className="text-center py-20">
-          <p className="text-slate-400 text-lg mb-3">No watches match your filters</p>
+          <p className="text-[#475569] text-lg mb-3">No watches match your filters</p>
           <button
             onClick={() => { setSearch(''); setBrand(''); setStyle(''); setPrice('') }}
             className="btn-gold"
