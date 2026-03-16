@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import type { Watch } from '@/lib/types'
 import { formatPrice } from '@/lib/watches'
@@ -165,6 +166,19 @@ export default function QuizClient({ watches }: Props) {
         <div className="space-y-5 mb-8">
           {results.map(({ watch }, i) => (
             <div key={watch.id} className="card p-6 border-[#e2e8f0] hover:border-[#b8860b]/30 transition-colors">
+              {watch.image && (
+                <div className="flex justify-center mb-5">
+                  <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] w-36 h-36 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src={watch.image}
+                      alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+                      width={144}
+                      height={144}
+                      className="w-full h-full object-contain p-3"
+                    />
+                  </div>
+                </div>
+              )}
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">

@@ -235,15 +235,32 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
                 href={`/compare/${c.slug1}-vs-${c.slug2}`}
                 className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
               >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center overflow-hidden shrink-0">
+                    {wa.image ? (
+                      <Image src={wa.image} alt={wa.name} width={40} height={40} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-[#e2e8f0] text-sm">⌚</span>
+                    )}
+                  </div>
+                  <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                  <div className="w-10 h-10 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center overflow-hidden shrink-0">
+                    {wb.image ? (
+                      <Image src={wb.image} alt={wb.name} width={40} height={40} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-[#e2e8f0] text-sm">⌚</span>
+                    )}
+                  </div>
+                </div>
                 <div className="flex items-center gap-1.5">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
-                    <p className="text-[#0f172a] text-xs font-semibold truncate">{wa.name}</p>
+                    <p className="text-[#0f172a] text-xs font-semibold truncate group-hover:text-[#b8860b] transition-colors">{wa.name}</p>
                   </div>
-                  <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                  <div className="text-[#b8860b] font-bold text-[10px] shrink-0">VS</div>
                   <div className="flex-1 min-w-0 text-right">
                     <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
-                    <p className="text-[#0f172a] text-xs font-semibold truncate">{wb.name}</p>
+                    <p className="text-[#0f172a] text-xs font-semibold truncate group-hover:text-[#b8860b] transition-colors">{wb.name}</p>
                   </div>
                 </div>
               </Link>

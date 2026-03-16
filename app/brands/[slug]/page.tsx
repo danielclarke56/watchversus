@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
@@ -121,8 +122,21 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                 <Link
                   key={watch.slug}
                   href={`/watches/${watch.slug}`}
-                  className="card p-5 flex items-center justify-between hover:border-[#b8860b]/40 transition-colors group"
+                  className="card p-4 flex items-center gap-4 hover:border-[#b8860b]/40 transition-colors group"
                 >
+                  <div className="w-14 h-14 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center overflow-hidden shrink-0">
+                    {watch.image ? (
+                      <Image
+                        src={watch.image}
+                        alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+                        width={56}
+                        height={56}
+                        className="w-full h-full object-contain p-1"
+                      />
+                    ) : (
+                      <span className="text-[#cbd5e1] text-xl">⌚</span>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[#0f172a] font-semibold group-hover:text-[#b8860b] transition-colors">{watch.name}</p>
                     <div className="flex flex-wrap gap-3 mt-1 text-xs text-[#94a3b8]">
@@ -132,7 +146,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                       <span>{watch.water_resistance_m}m WR</span>
                     </div>
                   </div>
-                  <div className="text-right ml-4 shrink-0">
+                  <div className="text-right ml-2 shrink-0">
                     <p className="text-[#b8860b] font-semibold text-sm">{formatPrice(watch.price_new_usd)}</p>
                     <p className="text-[#94a3b8] text-xs">new</p>
                   </div>
