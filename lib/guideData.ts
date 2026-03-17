@@ -612,4 +612,280 @@ export const guides: Guide[] = [
     ],
     conclusion: "The GMT complication transforms a watch from a simple timekeeping tool into a genuine instrument of global navigation — and the watches that do it best are among the most desirable in all of horology. Whether you choose the iconic Rolex GMT-Master II Pepsi, the exceptional-value Tudor Black Bay GMT, or the accessible Seiko Presage SPB167, compare them side-by-side on our tool to see exactly how specs, pricing, and community ratings differ.",
   },
+  {
+    slug: "best-watches-under-3000",
+    title: "Best Watches Under $3,000 — Luxury on a Budget",
+    description: "Top automatic watches under $3,000 from Seiko, Hamilton, Longines, Tag Heuer, and more. Expert picks with full specs.",
+    h1: "Best Watches Under $3,000",
+    intro: "The sub-$3,000 watch market is where serious watchmaking meets accessibility. This is where a Seiko automatic costs $250, a Swiss Longines costs $1,200, and genuine luxury brands compete on merit rather than heritage prestige. You get real complications, excellent movements, and the freedom to own multiple watches instead of one expensive piece. We've selected eight watches that represent the best value and engineering in this price tier.",
+    recommendations: [
+      {
+        slug: "swatch-sistem51",
+        highlight: "The philosophical statement: a chronograph-grade automated assembly movement at $100. Revolutionary engineering by ETA in 2013, still unmatched for price-to-complexity ratio.",
+      },
+      {
+        slug: "seiko-5-sports-srpe55",
+        highlight: "The gateway automatic at $250-350. Day/date, 42.5mm steel case, 100m water resistance, and the workhorse 4R36 movement. The perfect first automatic watch.",
+      },
+      {
+        slug: "baltic-aquascaphe",
+        highlight: "Vintage-inspired dive watch from a independent watchmaker at $530-630. Flieger-style case, Miyota 8215 automatic, 300m water resistance — proof that microbrands deliver genuine value.",
+      },
+      {
+        slug: "tissot-prx-40",
+        highlight: "Swiss engineering in an integrated bracelet at $550-650. Sapphire crystal, COSC-certified automatic, and a design that pairs equally well with casual and business dress.",
+      },
+      {
+        slug: "seiko-prospex-spb143",
+        highlight: "Professional-spec dive watch at $700-900. Seiko's legendary Prospex line with 300m certification, sapphire crystal, and the robust 6R15 automatic movement.",
+      },
+      {
+        slug: "hamilton-khaki-field-auto-38",
+        highlight: "The military-inspired field watch standard at $650-750. Swiss H-10 movement with 80-hour power reserve, 100m water resistance, and authentic canvas strap heritage.",
+      },
+      {
+        slug: "longines-hydroconquest-41",
+        highlight: "Swiss dive watch tradition at $1,200-1,400. COSC-certified automatic, 300m water resistance, Longines heritage since 1959. The perfect luxury gateway watch.",
+      },
+      {
+        slug: "tag-heuer-aquaracer-300",
+        highlight: "Luxury sports heritage at $1,950-2,200. Swiss automatic, 300m water resistance, and the prestige of one of watchmaking's oldest sporting brands.",
+      },
+    ],
+    buyingGuide: [
+      {
+        heading: "Movement Quality Under $3,000",
+        content: "Under $3,000, you can access in-house movements (Hamilton H-10, Longines DolceMX), reliable Japanese automatics (Seiko 4R/6R series), and Swiss COSC-certified movements (Tissot PR100, Longines HydroConquest). The key distinction is chronometer certification (COSC-certified means -4/+6 seconds per day accuracy standard). Longines, Tissot, and Hamilton deliver this at accessible prices — Seiko's Prospex and prestige SKX lines achieve it without certification at lower cost. In-house movements (even at entry level) represent engineering investment that justifies premium pricing.",
+      },
+      {
+        heading: "Case Material and Durability",
+        content: "Stainless steel (316L) is the standard, resistant to saltwater and everyday scratches. Under $3,000, you won't find titanium (reserved for luxury and tool watches). Hardened stainless is fine. Watch case finishing matters more than material — polished vs brushed, lugs vs integrated bracelet, and crown guards all impact durability and aesthetics. For daily wear, the Hamilton Khaki Field's robust design and 100m rating is more durable than the Tissot PRX's integrated bracelet despite PRX's higher price. Consider water resistance: 100m is splash-resistant but not swim-safe; 300m is genuine dive capability.",
+      },
+      {
+        heading: "Sapphire Crystal and Scratch Resistance",
+        content: "Sapphire crystal ($10-50 in manufacturing cost) prevents scratches and is the universal standard above $500. All recommendations here include sapphire. Acrylic (found on budget Seiko SKX) scratches easily but can be polished and carries vintage charm. For sub-$3,000 watches, sapphire is non-negotiable for long-term ownership. It also improves lume visibility and dial clarity significantly — compare a Seiko with mineral vs sapphire crystal to see the difference.",
+      },
+      {
+        heading: "Strap and Bracelet Choices",
+        content: "Steel bracelets (Tissot PRX, Tag Heuer Aquaracer) offer convenience and integrated design. Fabric/canvas straps (Hamilton Khaki Field) are more comfortable in warm weather and carry military authenticity. Leather offers formal versatility but requires maintenance. Most watches under $3,000 include one option; aftermarket alternatives (rubber, NATO, leather) are affordable and easy swaps. Integrated-bracelet watches (PRX) are harder to customize than lugged cases. For durability, steel bracelets outlast all alternatives.",
+      },
+    ],
+    faq: [
+      {
+        question: "What is the best automatic watch under $1,000?",
+        answer: "The Seiko 5 Sports SRPE55 ($250-350) is unmatched for value at any price — automatic movement, 100m water resistance, and robust 42.5mm case. If you want Swiss credentials, the Hamilton Khaki Field ($650-750) offers H-10 movement and 80-hour power reserve. The Tissot PRX ($550-650) delivers sapphire crystal and COSC-certified movement. Each represents the best in its category under $1,000.",
+      },
+      {
+        question: "Can you get a Swiss watch under $3,000?",
+        answer: "Absolutely. Longines, Tissot, Hamilton, and Tag Heuer all have excellent options under $3,000. The Longines HydroConquest ($1,200-1,400) is a COSC-certified Swiss automatic dive watch. The Hamilton Khaki Field ($650-750) is Swiss-made H-10 automatic. The Tissot PRX ($550-650) is Swiss COSC-certified automatic. Swiss manufacturing above $600 is realistic in this market.",
+      },
+      {
+        question: "Should I buy a Seiko or a Swiss watch under $3,000?",
+        answer: "Different strengths. Seiko offers exceptional engineering per dollar — the Prospex SPB143 at $700-900 is more watch per dollar than any Swiss equivalent. Swiss watches (Longines, Hamilton, Tissot) offer brand heritage, COSC certification, and stronger resale value. Seiko for pure engineering value; Swiss for prestige and long-term resale. Many collectors own both.",
+      },
+      {
+        question: "What is the best dive watch under $3,000?",
+        answer: "The Seiko Prospex SPB143 ($700-900) edges the Longines HydroConquest ($1,200-1,400). Both are 300m-rated, COSC-certified (Longines)/professional-spec (Seiko), with sapphire crystals. The Seiko is pure value; the Longines carries Swiss heritage. For dedicated dive use, either is excellent. The Tag Heuer Aquaracer ($1,950-2,200) bridges dive and dress styling.",
+      },
+    ],
+    paa: [
+      {
+        question: "How many watches should I own?",
+        answer: "Collectors often follow the three-watch rule: a dress watch, a sports watch, and a daily versatile watch. Under $3,000 combined, you can own all three — a $700 dress watch, a $800 dive watch, and a $500 daily watch.",
+      },
+      {
+        question: "What is the best watch under $500?",
+        answer: "The Seiko 5 Sports SRPE55 at $250-350 is exceptional. The Swatch Sistem51 at $100 is philosophically remarkable. The Tissot PRX and Baltic Aquascaphe both near $550-650 offer sapphire and dive credentials.",
+      },
+      {
+        question: "Is it worth buying new under $3,000 or used?",
+        answer: "New watches under $3,000 carry warranty and full service history. Used watches at this price often have undisclosed damage. For brand-new models or limited editions, buying new makes sense. For discontinued models, preowned on Chrono24 can offer 20-30% savings with authentication guarantees.",
+      },
+    ],
+    conclusion: "Under $3,000, you enter territory where a single watch represents genuine engineering achievement rather than brand premium. Whether you choose the philosophical Swatch Sistem51, the legendary Seiko Prospex, the luxury entry point of Tag Heuer, or the Swiss horological tradition of Longines, every recommendation here will serve reliably and beautifully for decades. Compare your shortlist directly and discover which speaks to your style and values.",
+  },
+  {
+    slug: "best-watches-under-5000",
+    title: "Best Watches Under $5,000 — The Sweet Spot for Luxury",
+    description: "Luxury watches under $5,000 from Tudor, Breitling, IWC, Longines, Omega, and Nomos. Expert recommendations with full specs.",
+    h1: "Best Watches Under $5,000",
+    intro: "The sub-$5,000 price point is where watchmaking separates into tiers: entry luxury (Tudor, Breitling), established Swiss brands (Longines, Hamilton), haute horlogerie beginnings (IWC, Omega), and respected German engineering (Nomos). At this level, you're acquiring watches with genuine complications, in-house movements, or heritage that will age beautifully and hold value. This is the price tier where serious collectors make their most meaningful purchases.",
+    recommendations: [
+      {
+        slug: "longines-master-collection-40",
+        highlight: "Swiss moonphase at $1,600-2,000. COSC-certified automatic, 40mm case with traditional proportions, and 185 years of Longines heritage — the accessible entry to luxury watchmaking.",
+      },
+      {
+        slug: "nomos-club-campus",
+        highlight: "German in-house movement at $1,900-2,200. DUW 3001 automatic, 36mm Bauhaus case, sapphire crystal, and minimalist philosophy. The intellectual's luxury watch.",
+      },
+      {
+        slug: "cartier-tank-must",
+        highlight: "Iconic design at $2,800-3,200. Solar quartz (no battery changes), legendary rectangular Tank silhouette since 1917, and the most recognizable watch in history.",
+      },
+      {
+        slug: "tudor-black-bay-58",
+        highlight: "In-house automatic at $3,600-3,900. COSC-certified MT5402 movement, 39mm size, riveted steel bracelet, and the most versatile Tudor in production — equal parts dive, dress, and field watch.",
+      },
+      {
+        slug: "breitling-superocean-42",
+        highlight: "Professional dive watch at $4,000-4,400. 42mm professional-spec case, 300m water resistance, in-house Breitling B20 movement, and sports watch heritage back to 1957.",
+      },
+      {
+        slug: "tudor-pelagos-39",
+        highlight: "Titanium dive legend at $4,350-4,800. Ultra-light titanium case, 300m professional certification, in-house MT5612 movement, and the most technical Tudor available.",
+      },
+      {
+        slug: "iwc-pilot-mark-xviii",
+        highlight: "Aviation precision at $4,400-4,900. 40mm black dial, soft-iron magnetic case, in-house Cal. 32110, and Flieger heritage back to 1936.",
+      },
+      {
+        slug: "omega-constellation-39",
+        highlight: "Prestige automatic at $5,000. 39mm Co-Axial movement, solid gold indices, sapphire caseback, and Omega's dress watch excellence.",
+      },
+    ],
+    buyingGuide: [
+      {
+        heading: "In-House Movements vs Luxury-Tier ETA/Sellita",
+        content: "At $3,000+, brands begin offering in-house movements (Tudor MT5402, Breitling B20, IWC Cal. 32110) instead of modified ETA/Sellita base movements. In-house movements cost 2-3x more to develop and manufacture but justify higher prices through superior finishing, reliability, and brand identity. Not every luxury watch needs in-house movement — Longines and Nomos deliver in-house excellence throughout their range. IWC, Tudor, and Breitling reserve premium in-house movements for higher-price collections.",
+      },
+      {
+        heading: "Specialized Case Materials",
+        content: "Under $5,000, stainless steel dominates for value and durability. At this tier, you'll encounter titanium (Tudor Pelagos $4,350-4,800 — ultra-light, 40% more corrosion resistant than steel), bronze (warm patina development), and solid gold (reserved for the $5,000 edge). Titanium adds $500-1,000 to price but lasts decades longer in saltwater environments. Gold holds value differently — it's jewelry-grade ownership. For tool watch durability, stainless steel remains ideal.",
+      },
+      {
+        heading: "COSC Certification and Chronometer Standards",
+        content: "COSC (Contrôle Officiel Suisse des Chronomètres) certification guarantees -4/+6 seconds per day accuracy and costs approximately $500-1,000 per movement to achieve. Most watches at this level are COSC-certified (Tudor Black Bay, Breitling, Longines HydroConquest, Omega Co-Axial). It's a reliable quality standard and impacts resale value positively. Seiko, Hamilton, and other brands skip COSC certification, meeting accuracy standards without the official seal — the practical difference is negligible for wearers.",
+      },
+      {
+        heading: "Complications Worth $3,000-$5,000: Moonphase, Chronograph, GMT",
+        content: "Moonphase (Longines Master Collection) is decorative but beautiful, adds $200-400 to movement complexity. Chronograph (common at this tier, absent from our picks) adds chronometer timing function and visual drama, worth the cost mainly for pilots or racing enthusiasts. GMT function (independent hour hand for second time zone) is genuinely useful for frequent travelers. Our recommendations avoid chronograph to keep focus on core complications; if chronograph interests you, Breitling and TAG Heuer excel here.",
+      },
+    ],
+    faq: [
+      {
+        question: "What is the best watch under $2,000?",
+        answer: "The Longines Master Collection ($1,600-2,000) and Nomos Club Campus ($1,900-2,200) represent the tier. The Longines offers Swiss heritage and moonphase complication; the Nomos delivers German minimalism and in-house movement. Both are excellent choices with different philosophies.",
+      },
+      {
+        question: "Is Tudor as good as Rolex at half the price?",
+        answer: "Tudor uses Rolex's manufacturing and is genuinely excellent, but Rolex commands higher prices for heritage, brand prestige, and waiting list scarcity — not always better engineering. The Tudor Black Bay 58 ($3,600-3,900) is arguably more versatile than the Rolex Submariner ($9,000+). Tudor is exceptional value; Rolex is the prestige premium.",
+      },
+      {
+        question: "What is the best luxury watch under $5,000?",
+        answer: "For versatility: Tudor Black Bay 58 ($3,600-3,900). For Swiss prestige: Longines Master Collection ($1,600-2,000) or Omega Constellation ($5,000). For German philosophy: Nomos Club Campus ($1,900-2,200). For Italian-adjacent thinking: Breitling Superocean ($4,000-4,400). Each represents excellence in its category.",
+      },
+      {
+        question: "Should I buy at retail or grey market under $5,000?",
+        answer: "Retail carries warranty and full authenticity guarantee. Grey market (authorized dealers selling below MSRP) offers 10-15% savings with warranty protection — increasingly common at luxury brands. Pre-owned on Chrono24 offers 20-30% discounts with authentication, good for discontinued models. At this price tier, retail or authorized grey market is recommended for peace of mind.",
+      },
+    ],
+    paa: [
+      {
+        question: "What defines a luxury watch?",
+        answer: "In-house movement, COSC certification, precious materials, or brand heritage. A $2,000 watch with all four is more luxury than a $1,000 watch with none.",
+      },
+      {
+        question: "Will a watch under $5,000 hold its value?",
+        answer: "Watches under $5,000 from established brands (Tudor, Longines, Omega, Breitling, IWC) hold 60-80% of retail value over 5-10 years. Limited editions and discontinued models often appreciate. Avoid fashion brands and quartz watches for value retention.",
+      },
+      {
+        question: "Is warranty important at this price point?",
+        answer: "Yes — a $4,000 watch represents significant investment. Warranty coverage (typically 2-5 years) protects against manufacturing defects. International warranty is more valuable than regional-only coverage when buying grey market.",
+      },
+    ],
+    conclusion: "The $3,000-$5,000 range represents the entry point to true luxury watchmaking — where engineering investment, heritage, and complications converge. Whether you choose Tudor's tool-watch excellence, Longines' Swiss tradition, Nomos' German minimalism, or IWC's aviation heritage, you're acquiring watches with substance and longevity. Use our comparison tool to evaluate movement specifications, case details, and community ratings side-by-side.",
+  },
+  {
+    slug: "best-automatic-watches-under-3000",
+    title: "Best Automatic Watches Under $3,000 — Pure Mechanical Excellence",
+    description: "Top automatic mechanical watches under $3,000 from Seiko, Hamilton, Longines, Tissot, and more. Expert picks with full specs.",
+    h1: "Best Automatic Watches Under $3,000",
+    intro: "An automatic movement — wound by wrist motion rather than battery or hand winding — represents the beating heart of modern watchmaking. Under $3,000, you can own automatics from legendary manufacturers: Seiko's robust field and dive movements, Hamilton's respected H-10, Longines' COSC-certified Swiss movements, and independent German makers like Nomos. We've selected eight automatics that represent exceptional value and engineering across categories.",
+    recommendations: [
+      {
+        slug: "swatch-sistem51",
+        highlight: "The revolutionary automated assembly automatic at $100. 51 jewels, chronograph-grade complications, and ETA's proof that affordable automatics are philosophically possible.",
+      },
+      {
+        slug: "seiko-5-sports-srpe55",
+        highlight: "The essential automatic at $250-350. Day/date, 42.5mm case, 100m water resistance, and the legendary 4R36 movement — the standard by which all budget automatics are measured.",
+      },
+      {
+        slug: "baltic-aquascaphe",
+        highlight: "Independent watchmaker automatic at $530-630. Vintage dive proportions, Miyota 8215 automatic, 300m water resistance, and proof that microbrands deliver credible alternatives.",
+      },
+      {
+        slug: "tissot-prx-40",
+        highlight: "Integrated-bracelet automatic at $550-650. Swiss COSC-certified PR100 movement, sapphire crystal, and a design that evolved from the original 1978 PRX concept.",
+      },
+      {
+        slug: "seiko-prospex-spb143",
+        highlight: "Professional automatic dive watch at $700-900. Seiko's 6R15 movement, 300m water resistance, sapphire crystal, and 60+ years of Prospex dive tradition.",
+      },
+      {
+        slug: "seiko-presage-spb167",
+        highlight: "Cocktail aesthetic automatic at $1,100-1,400. 40.8mm case, 6R35 movement with 70-hour power reserve, and a stunning hand-applied dial with vintage character.",
+      },
+      {
+        slug: "longines-hydroconquest-41",
+        highlight: "Swiss automatic dive tradition at $1,200-1,400. COSC-certified DolceMX movement, 300m water resistance, and Longines' legendary Hydroconquest heritage since 1959.",
+      },
+      {
+        slug: "nomos-club-campus",
+        highlight: "German in-house automatic at $1,900-2,200. DUW 3001 movement, 36mm Bauhaus proportions, and the philosophy that complications should be invisible to the wearer.",
+      },
+    ],
+    buyingGuide: [
+      {
+        heading: "Japanese vs Swiss Automatics Under $3,000",
+        content: "Japanese automatics (Seiko 4R/6R series, Miyota 8215) are robust, accurate, and require less service — a Seiko automatic will run 20+ years with basic maintenance. Swiss automatics (Hamilton H-10, Longines DolceMX, Tissot PR100) are COSC-certified and carry watchmaking heritage but require more frequent servicing. Both philosophies deliver excellence. Japanese automatics offer pure functionality; Swiss automatics offer heritage and certification credibility. Your choice reflects whether you value engineering excellence (Japanese) or horological tradition (Swiss).",
+      },
+      {
+        heading: "Power Reserve and Accuracy",
+        content: "Most automatics under $3,000 deliver 40-50 hours of power reserve — plenty for regular wear. Seiko's prestige line (Presage SPB167) achieves 70-hour reserve through balance design and larger barrels. Power reserve matters mainly if you travel or remove watches regularly. Accuracy variance: Japanese automatics typically ±15 seconds per day; Swiss COSC-certified automatics guarantee ±4 seconds per day. For daily wear, the difference is imperceptible — it only matters for precision timekeeping.",
+      },
+      {
+        heading: "Rotor Visibility: Case Back Windows",
+        content: "Automatics feature rotating rotors (the weight that winds the mainspring). Most watches include exhibition case backs to display the rotor. Some (Hamilton Khaki Field) skip the window for a solid case back — stronger, more durable, less showmanship. For collectors who enjoy the mechanical beauty, exhibition backs are desirable. For durability and simplicity, solid case backs are superior. Neither choice affects functionality.",
+      },
+      {
+        heading: "Service Intervals and Availability",
+        content: "Japanese automatics (Seiko, Citizen, Orient) have abundant independent service options worldwide — generally $300-500 for a full overhaul. Swiss automatics (Hamilton, Longines, Tissot) are serviced by authorized dealers, typically $600-1,000 per overhaul. German automatics (Nomos) require specialized service, often by independent watchmakers. Seiko is the most economical to maintain long-term. All automatics require service every 3-5 years depending on use.",
+      },
+    ],
+    faq: [
+      {
+        question: "What is an automatic watch and how does it work?",
+        answer: "An automatic watch winds itself through wrist motion. A rotor (oscillating weight) rotates with arm movement, winding the mainspring via a series of gears. The wound mainspring releases energy steadily, powering the watch. Automatics require no battery or hand-winding — just regular wear. They're more complex than quartz (more friction points, more service required) but offer mechanical beauty and independence from batteries.",
+      },
+      {
+        question: "Should I buy an automatic or quartz watch under $3,000?",
+        answer: "Automatics offer mechanical beauty, sustainability (no batteries), and aging character — ideal if you enjoy watches as objects. Quartz offers accuracy, lower maintenance, and reliability — ideal if you want a pure tool. At $3,000 budget, automatics dominate — the Seiko 5 Sports ($250) is unmatched for value. Quartz only makes sense if you specifically want chronographs or highly specialized functions.",
+      },
+      {
+        question: "How often do automatic watches need servicing?",
+        answer: "Every 3-5 years of regular wear. Japanese automatics (Seiko) are resilient and often go 5+ years trouble-free. Swiss automatics typically need service by 4-5 years. Service cost ranges from $300-1,000 depending on the brand and extent of needed repairs. Maintenance is the cost of automatic ownership — plan for it.",
+      },
+      {
+        question: "Can I replace an automatic watch's battery?",
+        answer: "Automatics don't have batteries — they're mechanically wound by motion. Some automatics (like Seiko Presage SPB167) have sufficient power reserve for 2-3 days without wearing. If your automatic stops, it needs winding or wearing to restart. If you need a 'no-maintenance' watch, quartz is the right choice.",
+      },
+    ],
+    paa: [
+      {
+        question: "What is the best automatic watch under $500?",
+        answer: "The Seiko 5 Sports SRPE55 at $250-350 is exceptional. The Swatch Sistem51 at $100 is philosophically remarkable. The Tissot PRX at $550-650 and Baltic Aquascaphe at $530-630 bridge the $500 boundary with Swiss or quality engineering.",
+      },
+      {
+        question: "Will an automatic watch work in space?",
+        answer: "No — automatic watches require gravity and motion to wind. In zero gravity, the rotor won't turn and the mainspring won't wind. Manual wind (hand-wound) watches work in space because they don't depend on gravity. Astronauts typically wear hand-wound watches or quartz.",
+      },
+      {
+        question: "How accurate are automatics compared to quartz?",
+        answer: "Typical automatic: ±15 seconds per day (±5,400 seconds per year). Typical quartz: ±15 seconds per month. COSC-certified automatics: ±4 seconds per day. For daily wear, automatics are acceptably accurate. If you need chronometer-grade precision, COSC-certified automatics or quartz are better choices.",
+      },
+    ],
+    conclusion: "The automatic watch celebrates mechanical engineering — thousands of moving parts working in perfect synchronization to measure time without batteries or hand-winding. Under $3,000, you can own automatics that represent the pinnacle of accessible watchmaking: Seiko's robust engineering, Swiss horological tradition, and independent makers proving that mechanical excellence needn't cost a fortune. Compare your favorites directly and discover which automatic resonates with your collecting philosophy.",
+  },
 ]

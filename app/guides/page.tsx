@@ -21,6 +21,9 @@ export const metadata: Metadata = {
 const guideCategories = [
   { slug: 'best-watches-under-500', emoji: '💰', tagline: 'Best automatic & quartz picks under $500 new or preowned' },
   { slug: 'best-watches-under-1000', emoji: '⚙️', tagline: 'The sweet spot — Swiss-made, Japanese excellence, top microbrands' },
+  { slug: 'best-watches-under-3000', emoji: '✨', tagline: 'Luxury on a budget — Seiko, Hamilton, Longines, Tag Heuer excellence' },
+  { slug: 'best-watches-under-5000', emoji: '👑', tagline: 'Entry luxury tier — Tudor, Breitling, IWC, Omega prestige' },
+  { slug: 'best-automatic-watches-under-3000', emoji: '⚙️', tagline: 'Pure mechanical excellence — Japanese, Swiss, and German automatics' },
   { slug: 'best-dive-watches', emoji: '🤿', tagline: 'From sub-$400 Seiko to Rolex Submariner — every budget covered' },
   { slug: 'best-dress-watches', emoji: '🎩', tagline: 'Elegance at every price — Nomos, Cartier, Grand Seiko, and more' },
   { slug: 'best-field-watches', emoji: '🧭', tagline: 'Military heritage and modern performance from Hamilton to Rolex' },
