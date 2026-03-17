@@ -62,22 +62,39 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const parts = params.slug.split('-vs-')
-  if (parts.length !== 2) return {}
-  const w1 = getWatchBySlug(parts[0])
-  const w2 = getWatchBySlug(parts[1])
+  const vsIndex = params.slug.indexOf('-vs-')
+  if (vsIndex === -1) return {}
+  const slug1 = params.slug.slice(0, vsIndex)
+  const slug2 = params.slug.slice(vsIndex + 4)
+  const w1 = getWatchBySlug(slug1)
+  const w2 = getWatchBySlug(slug2)
   if (!w1 || !w2) return {}
+
+  const year = new Date().getFullYear()
+  const priceDiff = Math.abs(w1.price_new_usd.min - w2.price_new_usd.min)
+  const cheaper = w1.price_new_usd.min <= w2.price_new_usd.min ? w1 : w2
+  const dearer = cheaper === w1 ? w2 : w1
+  const diffLabel = priceDiff > 50
+    ? ` ${cheaper.brand} ${cheaper.name} starts ${formatPrice({ min: priceDiff, max: priceDiff })} cheaper.`
+    : ` Both priced similarly at ${formatPrice(w1.price_new_usd)}.`
+
+  const canonicalUrl = `https://watchvswatch.com/compare/${slug1}-vs-${slug2}`
   return {
-    title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Full Comparison`,
-    description: `Compare ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}. Full specs, movement, water resistance, and community ratings side-by-side. Which watch is best?`,
+    title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better? (${year})`,
+    description: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — specs, scores, and community votes compared.${diffLabel} Find out which wins in ${year}.`,
     alternates: {
-      canonical: `https://watchvswatch.com/compare/${parts[0]}-vs-${parts[1]}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} | WatchVsWatch`,
-      description: `Which is better? ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — full head-to-head comparison with specs, community ratings, and pricing.`,
-      url: `https://watchvswatch.com/compare/${parts[0]}-vs-${parts[1]}`,
+      title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better? | WatchVsWatch`,
+      description: `Side-by-side: ${w1.brand} ${w1.name} (${formatPrice(w1.price_new_usd)}) vs ${w2.brand} ${w2.name} (${formatPrice(w2.price_new_usd)}). Specs, movement, water resistance, and votes. Which watch wins?`,
+      url: canonicalUrl,
       type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better?`,
+      description: `Specs, community ratings, and pricing compared. ${dearer.brand} ${dearer.name} vs ${cheaper.brand} ${cheaper.name} — find your winner.`,
     },
   }
 }
@@ -204,6 +221,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         '@type': 'ItemList',
         name: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} Comparison`,
         description: `Head-to-head specs, community ratings, and pricing for ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}.`,
+        dateModified: new Date().toISOString().split('T')[0],
         itemListElement: [
           {
             '@type': 'ListItem',
@@ -247,6 +265,16 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           <span>/</span>
           <span className="text-[#0f172a]">{w1.name} vs {w2.name}</span>
         </nav>
+
+        {/* SEO lede — featured snippet target */}
+        <p className="text-[#475569] text-base leading-relaxed mb-8 max-w-3xl">
+          Comparing the <strong className="text-[#0f172a]">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm) against the <strong className="text-[#0f172a]">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm) — specs, movement, community votes, and an expert verdict below.{' '}
+          {w1.price_new_usd.min !== w2.price_new_usd.min && (
+            <span>
+              The {w1.price_new_usd.min < w2.price_new_usd.min ? `${w1.brand} ${w1.name}` : `${w2.brand} ${w2.name}`} is the more affordable option by {formatPrice({ min: Math.abs(w1.price_new_usd.min - w2.price_new_usd.min), max: Math.abs(w1.price_new_usd.min - w2.price_new_usd.min) })}.
+            </span>
+          )}
+        </p>
 
         {/* Hero Section — Enhanced */}
         <section id="comparison-hero" className="bg-gradient-to-br from-[#fffbf0] via-white to-[#f8fafc] border border-[#e2e8f0] rounded-2xl overflow-hidden mb-12 shadow-lg">
