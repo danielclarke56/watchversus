@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { watches } from '@/lib/watches'
 import WatchCard from '@/components/WatchCard'
-import { byScore, inPriceBucket, inSizeBucket, topN } from '@/lib/rankings'
+import { inSizeBucket, topN } from '@/lib/rankings'
 
 export const metadata: Metadata = {
   title: 'Best Watches — Rankings & Buyer\'s Guide | WatchVsWatch',
@@ -79,7 +79,7 @@ export default function RankingsPage() {
       <section className="bg-white border-b border-[#e2e8f0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
           <h1 className="text-4xl md:text-5xl font-bold text-[#0f172a] mb-4">
-            Best Watches — Rankings & Buyer's Guide
+            Best Watches — Rankings &amp; Buyer&apos;s Guide
           </h1>
           <p className="text-lg text-[#475569]">
             Ranked by expert score, real owner satisfaction, and community votes
