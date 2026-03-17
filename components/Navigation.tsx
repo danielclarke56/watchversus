@@ -55,7 +55,6 @@ const navGroups: NavGroup[] = [
   {
     label: 'Community',
     items: [
-      { href: '/blog', label: 'Blog', desc: 'Guides, reviews & watch advice' },
       { href: '/reviews', label: 'Owner Reviews', desc: 'Real insights from real owners' },
       { href: '/about', label: 'About', desc: 'Our mission & methodology' },
     ],
