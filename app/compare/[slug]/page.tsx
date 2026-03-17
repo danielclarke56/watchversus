@@ -11,6 +11,12 @@ import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
 import VoteSection from './VoteSection'
 import ComparisonStickyNav from './ComparisonStickyNav'
+import { Container } from '@/components/ui/Container'
+import { Card } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
+import { SpecRow } from '@/components/ui/SpecRow'
+import { ResultBar } from '@/components/ui/ResultBar'
 
 
 
@@ -258,7 +264,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ComparisonStickyNav slug1={w1.slug} slug2={w2.slug} watch1Name={w1.name} watch2Name={w2.name} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16">
+      <Container className="py-10 pt-16">
         {/* Breadcrumb */}
         <nav className="text-sm text-textMuted mb-6 flex items-center gap-2">
           <Link href="/compare" className="hover:text-accent transition-colors">Compare</Link>
@@ -297,19 +303,25 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 const badges = i === 0 ? generateComparisonBadges(w1, w2) : generateComparisonBadges(w2, w1)
                 return (
                   <div key={w.id} className="relative">
-                    <div className="bg-surface border-2 border-border rounded-xl p-6 md:p-8 hover:border-accent/40 transition-colors">
+                    <Card hover as="article" className="p-6 md:p-8">
                       {/* Badges with improved styling */}
                       {badges.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-6">
-                          {badges.map((badge) => (
-                            <span
-                              key={badge.text}
-                              className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border-2 ${getBadgeClasses(badge.color)}`}
-                            >
-                              <span className="text-sm">{badge.icon}</span>
-                              {badge.text}
-                            </span>
-                          ))}
+                          {badges.map((badge) => {
+                            const variantMap: { [key: string]: 'winner' | 'loser' | 'accent' | 'neutral' } = {
+                              'winner': 'winner',
+                              'loser': 'loser',
+                              'accent': 'accent',
+                              'neutral': 'neutral',
+                            }
+                            const variant = variantMap[badge.color] || 'neutral'
+                            return (
+                              <Badge key={badge.text} variant={variant}>
+                                <span className="text-sm">{badge.icon}</span>
+                                {badge.text}
+                              </Badge>
+                            )
+                          })}
                         </div>
                       )}
 
@@ -430,7 +442,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                   </span>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </section>
 
@@ -549,11 +561,13 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           const v2 = row.fn(w2)
           const differ = v1 !== v2
           return (
-            <div key={row.label} className={`grid grid-cols-3 px-4 py-3 text-sm border-b border-border last:border-0 ${i % 2 === 0 ? 'bg-surfaceAlt' : 'bg-surface'}`}>
-              <div className="text-textSecond font-medium">{row.label}</div>
-              <div className={`capitalize ${differ ? 'text-accent font-semibold' : 'text-textPrimary'}`}>{v1}</div>
-              <div className={`capitalize ${differ ? 'text-accent font-semibold' : 'text-textPrimary'}`}>{v2}</div>
-            </div>
+            <SpecRow
+              key={row.label}
+              label={row.label}
+              value1={v1}
+              value2={v2}
+              highlight={i % 2 === 0}
+            />
           )
         })}
       </section>

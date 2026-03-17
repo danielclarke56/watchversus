@@ -1,0 +1,43 @@
+'use client';
+
+import React from 'react';
+
+interface SpecRowProps {
+  label: string;
+  value1: string | number;
+  value2: string | number;
+  winner?: 1 | 2 | null;
+  highlight?: boolean;
+}
+
+export function SpecRow({
+  label,
+  value1,
+  value2,
+  winner,
+  highlight = false,
+}: SpecRowProps) {
+  const bgClass = highlight ? 'bg-surfaceAlt' : '';
+
+  const value1Class =
+    winner === 1
+      ? 'font-bold text-winner'
+      : winner === 2
+      ? 'text-textMuted'
+      : 'text-textPrimary font-medium';
+
+  const value2Class =
+    winner === 2
+      ? 'font-bold text-winner'
+      : winner === 1
+      ? 'text-textMuted'
+      : 'text-textPrimary font-medium';
+
+  return (
+    <div className={`grid grid-cols-3 gap-2 py-3 border-b border-border text-sm ${bgClass}`}>
+      <div className="text-textMuted text-xs text-center">{label}</div>
+      <div className={`text-center ${value1Class}`}>{value1}</div>
+      <div className={`text-center ${value2Class}`}>{value2}</div>
+    </div>
+  );
+}

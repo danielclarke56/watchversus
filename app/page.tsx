@@ -5,6 +5,11 @@ import { brands } from '@/lib/brandData'
 import { topN } from '@/lib/rankings'
 import WatchCard from '@/components/WatchCard'
 import ReviewCard from '@/components/ReviewCard'
+import { Container } from '@/components/ui/Container'
+import { Section } from '@/components/ui/Section'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Card } from '@/components/ui/Card'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -29,7 +34,7 @@ export default function HomePage() {
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-accent opacity-5 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-accent opacity-5 blur-3xl" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 flex items-center gap-12">
+        <Container className="py-20 md:py-28 flex items-center gap-12">
           <div className="max-w-3xl flex-1">
             <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-1.5 text-sm text-accent mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
@@ -43,12 +48,12 @@ export default function HomePage() {
               recommendations. 50+ watches. Honest insights. No fluff.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/quiz" className="btn-gold text-base px-7 py-3">
+              <Button href="/quiz" variant="primary" size="lg">
                 Take the Quiz →
-              </Link>
-              <Link href="/compare" className="btn-outline text-base px-7 py-3">
+              </Button>
+              <Button href="/compare" variant="outline" size="lg">
                 Compare Watches
-              </Link>
+              </Button>
             </div>
           </div>
           {/* Hero watch showcase — desktop only */}
@@ -71,29 +76,29 @@ export default function HomePage() {
             </div>
             <p className="text-center text-xs text-accent tracking-wider font-semibold">VS</p>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Search bar */}
-      <section className="bg-surface border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <form action="/watches" method="get" className="flex gap-3 max-w-2xl">
-            <input
+      <Section bg="surface">
+        <Container>
+          <form action="/watches" method="get" className="flex gap-3 max-w-2xl py-5">
+            <Input
               type="text"
               name="search"
               placeholder="Search by watch name or brand (e.g. Rolex, Seamaster)..."
-              className="flex-1 bg-surfaceAlt border border-borderStrong rounded-sm px-4 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent transition-colors"
+              className="flex-1"
             />
-            <button type="submit" className="btn-gold px-5 py-2.5 text-sm">
+            <Button variant="primary" size="md">
               Search
-            </button>
+            </Button>
           </form>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Featured comparison */}
-      <section className="bg-surface border-y border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <Section bg="surface" border py="md">
+        <Container>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-textPrimary">Featured Comparison</h2>
@@ -136,35 +141,38 @@ export default function HomePage() {
             ))}
           </div>
           <div className="text-center">
-            <Link href="/compare/rolex-submariner-41-vs-tudor-black-bay-58" className="btn-gold">
+            <Button href="/compare/rolex-submariner-41-vs-tudor-black-bay-58" variant="primary">
               See Full Side-by-Side Comparison
-            </Link>
+            </Button>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Popular comparisons */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-textPrimary">Popular Comparisons</h2>
-            <p className="text-textSecond text-sm mt-1">Community&apos;s most-viewed head-to-heads</p>
+      <Section py="md">
+        <Container>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-textPrimary">Popular Comparisons</h2>
+              <p className="text-textSecond text-sm mt-1">Community&apos;s most-viewed head-to-heads</p>
+            </div>
+            <Link href="/compare" className="text-sm text-accent hover:text-accentHover hidden sm:block">
+              Create your own →
+            </Link>
           </div>
-          <Link href="/compare" className="text-sm text-accent hover:text-accentHover hidden sm:block">
-            Create your own →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {topComparisons.map((c) => {
-            const wa = getWatchBySlug(c.slug1)
-            const wb = getWatchBySlug(c.slug2)
-            if (!wa || !wb) return null
-            return (
-              <Link
-                key={`${c.slug1}-${c.slug2}`}
-                href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                className="card p-4 hover:border-accent/40 transition-colors group"
-              >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {topComparisons.map((c) => {
+              const wa = getWatchBySlug(c.slug1)
+              const wb = getWatchBySlug(c.slug2)
+              if (!wa || !wb) return null
+              return (
+                <Card
+                  key={`${c.slug1}-${c.slug2}`}
+                  hover
+                  className="p-4 group"
+                  as="article"
+                >
+                  <Link href={`/compare/${c.slug1}-vs-${c.slug2}`} className="block h-full">
                 <div className="flex justify-center gap-3 mb-3">
                   {[wa, wb].map((w) => (
                     <div key={w.id} className="w-12 h-12 rounded-lg bg-surfaceAlt flex items-center justify-center overflow-hidden border border-border">
@@ -193,15 +201,17 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-              </Link>
-            )
-          })}
-        </div>
-      </section>
+                  </Link>
+                </Card>
+              )
+            })}
+          </div>
+        </Container>
+      </Section>
 
       {/* Best Watches by Budget */}
-      <section className="bg-surface border-y border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <Section bg="surface" border py="md">
+        <Container>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-textPrimary">Best Watches by Budget</h2>
@@ -218,24 +228,27 @@ export default function HomePage() {
               { href: '/guides/best-watches-under-3000', label: 'Under $3,000', sub: 'Premium territory' },
               { href: '/guides/best-watches-under-5000', label: 'Under $5,000', sub: 'Luxury entry' },
             ].map(({ href, label, sub }) => (
-              <Link
+              <Card
                 key={href}
-                href={href}
-                className="card p-5 text-center hover:border-accent/40 transition-colors group"
+                hover
+                as="article"
+                className="p-5 text-center group"
               >
-                <p className="text-2xl mb-2">⌚</p>
-                <p className="text-textPrimary font-bold text-sm group-hover:text-accent transition-colors">{label}</p>
-                <p className="text-xs text-textSecond mt-1">{sub}</p>
-                <p className="text-xs text-accent font-medium mt-3">See Picks →</p>
-              </Link>
+                <Link href={href} className="block">
+                  <p className="text-2xl mb-2">⌚</p>
+                  <p className="text-textPrimary font-bold text-sm group-hover:text-accent transition-colors">{label}</p>
+                  <p className="text-xs text-textSecond mt-1">{sub}</p>
+                  <p className="text-xs text-accent font-medium mt-3">See Picks →</p>
+                </Link>
+              </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Recent reviews */}
-      <section className="bg-surface border-y border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <Section bg="surface" border py="md">
+        <Container>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-textPrimary">Recent Community Reviews</h2>
@@ -250,11 +263,12 @@ export default function HomePage() {
               <ReviewCard key={r.id} review={r} />
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Top Ranked Watches */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <Section py="md">
+        <Container>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-textPrimary">Top Ranked Watches</h2>
@@ -270,14 +284,16 @@ export default function HomePage() {
           ))}
         </div>
         <div className="text-center mt-8">
-          <Link href="/rankings" className="btn-outline">
+          <Button href="/rankings" variant="outline">
             View All Rankings
-          </Link>
+          </Button>
         </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Watch grid teaser */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <Section py="md">
+        <Container>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-textPrimary">Explore Watches</h2>
@@ -293,14 +309,16 @@ export default function HomePage() {
           ))}
         </div>
         <div className="text-center mt-8">
-          <Link href="/watches" className="btn-outline">
+          <Button href="/watches" variant="outline">
             Browse All 50 Watches
-          </Link>
+          </Button>
         </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Explore by Brand — Topic Cluster Architecture */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <Section py="md">
+        <Container>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-textPrimary">Explore by Brand</h2>
@@ -311,48 +329,52 @@ export default function HomePage() {
           {brands.map((brand) => {
             const brandWatchCount = watches.filter(w => w.brand === brand.name).length
             return (
-              <Link
+              <Card
                 key={brand.slug}
-                href={`/brands/${brand.slug}`}
-                className="group card p-4 text-center hover:border-accent hover:shadow-sm transition-all duration-200"
+                hover
+                as="article"
+                className="p-4 text-center group"
               >
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-surfaceAlt border border-border mb-3 mx-auto group-hover:bg-accentLight group-hover:border-accent/30 transition-colors">
-                  <span className="text-lg">🏛️</span>
-                </div>
-                <h3 className="font-bold text-textPrimary text-sm group-hover:text-accent transition-colors">
-                  {brand.name}
-                </h3>
-                <p className="text-xs text-textMuted mt-2">{brandWatchCount} watches</p>
-              </Link>
+                <Link href={`/brands/${brand.slug}`} className="block">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-surfaceAlt border border-border mb-3 mx-auto group-hover:bg-accentLight group-hover:border-accent/30 transition-colors">
+                    <span className="text-lg">🏛️</span>
+                  </div>
+                  <h3 className="font-bold text-textPrimary text-sm group-hover:text-accent transition-colors">
+                    {brand.name}
+                  </h3>
+                  <p className="text-xs text-textMuted mt-2">{brandWatchCount} watches</p>
+                </Link>
+              </Card>
             )
           })}
         </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Compare Any Two Watches CTA */}
       <section className="bg-textPrimary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
+        <Container className="py-14 text-center">
           <h2 className="text-3xl font-bold text-white mb-3">Compare Any Two Watches</h2>
           <p className="text-textMuted text-lg mb-7 max-w-xl mx-auto">
             Side-by-side specs, community votes, and an expert verdict — in seconds.
           </p>
-          <Link href="/compare" className="btn-gold text-base px-8 py-3">
+          <Button href="/compare" variant="primary" size="lg">
             Start Comparing →
-          </Link>
-        </div>
+          </Button>
+        </Container>
       </section>
 
       {/* Quiz CTA */}
       <section className="bg-gradient-to-r from-accent/10 to-accentLight border-y border-accent/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
+        <Container className="py-14 text-center">
           <h2 className="text-3xl font-bold text-textPrimary mb-3">Not Sure Where to Start?</h2>
           <p className="text-textSecond text-lg mb-7 max-w-xl mx-auto">
             Answer 5 quick questions and we&apos;ll recommend your perfect watch based on your needs.
           </p>
-          <Link href="/quiz" className="btn-gold text-base px-8 py-3">
+          <Button href="/quiz" variant="primary" size="lg">
             Take the 2-Minute Quiz →
-          </Link>
-        </div>
+          </Button>
+        </Container>
       </section>
     </>
   )

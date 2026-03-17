@@ -1,8 +1,9 @@
-import Link from 'next/link'
 import Image from 'next/image'
 import type { Watch } from '@/lib/types'
 import { formatPrice, calcAverageRatings, calcOverallRating, getReviewsForWatch } from '@/lib/watches'
 import StarRating from './StarRating'
+import { Card } from './ui/Card'
+import { Button } from './ui/Button'
 
 interface Props {
   watch: Watch
@@ -15,7 +16,7 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
   const overallRating = avgRatings ? calcOverallRating(avgRatings) : null
 
   return (
-    <div className="card hover:border-accent/40 transition-colors group flex flex-col">
+    <Card hover className="group flex flex-col">
       {/* Watch image */}
       <div className="relative bg-surfaceAlt h-56 flex items-center justify-center overflow-hidden">
         {watch.image ? (
@@ -79,22 +80,23 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
           </div>
           <div className="flex gap-2">
             {showCompareButton && (
-              <Link
+              <Button
                 href={`/compare?a=${watch.slug}`}
-                className="text-xs text-textSecond hover:text-accent border border-border hover:border-accent/40 px-3 py-1.5 rounded-md transition-colors"
+                variant="outline"
+                size="sm"
               >
                 Compare
-              </Link>
+              </Button>
             )}
-            <Link
+            <Button
               href={`/watches/${watch.slug}`}
-              className="text-xs bg-accent text-white font-semibold px-3 py-1.5 rounded-md hover:bg-accentHover transition-colors"
+              variant="primary"
+              size="sm"
             >
               View
-            </Link>
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </Card>
   )
 }

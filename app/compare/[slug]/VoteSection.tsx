@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { VoteButton } from '@/components/ui/VoteButton'
 
 interface VoteSectionProps {
   slug: string
@@ -82,33 +83,30 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
         <div className="text-xs text-[#94a3b8] py-2">Loading...</div>
       ) : (
         <div className="grid grid-cols-2 gap-3 my-3">
-          {(['watch1', 'watch2'] as const).map((key) => {
-            const name = key === 'watch1' ? watch1Name : watch2Name
-            const count = votes[key]
-            const isSelected = voted === key
-            const isDisabled = voted !== null
-
-            return (
-              <button
-                key={key}
-                onClick={() => handleVote(key)}
-                disabled={isDisabled}
-                className={[
-                  'rounded-lg px-3 py-3 text-sm font-semibold transition-all duration-200 border focus:outline-none',
-                  isSelected
-                    ? 'bg-[#b8860b] text-white border-[#b8860b]'
-                    : isDisabled
-                    ? 'bg-transparent text-[#94a3b8] border-[#e2e8f0] cursor-not-allowed'
-                    : 'bg-transparent text-[#0f172a] border-[#e2e8f0] hover:border-[#b8860b] hover:text-[#b8860b] cursor-pointer',
-                ].join(' ')}
-              >
-                <span className="block truncate">{name}</span>
-                <span className={`block text-xs mt-0.5 font-normal ${isSelected ? 'text-white/70' : 'text-[#94a3b8]'}`}>
-                  {count.toLocaleString()} vote{count !== 1 ? 's' : ''}
-                </span>
-              </button>
-            )
-          })}
+          <VoteButton
+            side="left"
+            watchName={watch1Name}
+            votes={votes.watch1}
+            userVote={voted === 'watch1' ? 'left' : voted === 'watch2' ? 'right' : null}
+            onVote={(side) => {
+              if (voted) return
+              const choice = side === 'left' ? 'watch1' : 'watch2'
+              handleVote(choice)
+            }}
+            disabled={voted !== null && voted !== 'watch1'}
+          />
+          <VoteButton
+            side="right"
+            watchName={watch2Name}
+            votes={votes.watch2}
+            userVote={voted === 'watch1' ? 'left' : voted === 'watch2' ? 'right' : null}
+            onVote={(side) => {
+              if (voted) return
+              const choice = side === 'left' ? 'watch1' : 'watch2'
+              handleVote(choice)
+            }}
+            disabled={voted !== null && voted !== 'watch2'}
+          />
         </div>
       )}
 

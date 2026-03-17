@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Review } from '@/lib/types'
 import { getWatchById } from '@/lib/watches'
 import StarRating from './StarRating'
+import { Card } from './ui/Card'
 
 interface Props {
   review: Review
@@ -14,7 +15,7 @@ export default function ReviewCard({ review, showWatch = true }: Props) {
     Object.values(review.ratings).reduce((a, b) => a + b, 0) / Object.values(review.ratings).length
 
   return (
-    <div className="card p-5">
+    <Card className="p-5">
       {showWatch && watch && (
         <Link
           href={`/watches/${watch.slug}`}
@@ -39,6 +40,6 @@ export default function ReviewCard({ review, showWatch = true }: Props) {
         </span>
         <span>{review.helpful_count} found helpful</span>
       </div>
-    </div>
+    </Card>
   )
 }
