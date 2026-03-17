@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'WatchVsWatch — Find Your Perfect Watch',
   description:
-    'Compare any two watches head-to-head, read community reviews, and take our quiz to find your perfect watch. Honest, community-driven insights.',
+    'Compare luxury watches, dive watches & sport watches head-to-head. Read honest reviews from the watch community. Find your perfect timepiece with expert insights.',
 }
 
 export default function HomePage() {

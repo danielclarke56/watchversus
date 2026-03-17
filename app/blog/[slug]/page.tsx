@@ -50,8 +50,43 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const allPosts = getAllPosts()
   const related = allPosts.filter((p) => p.slug !== post.slug).slice(0, 2)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchvswatch.com' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://watchvswatch.com/blog' },
+          { '@type': 'ListItem', position: 3, name: post.title, item: `https://watchvswatch.com/blog/${post.slug}` },
+        ],
+      },
+      {
+        '@type': 'Article',
+        headline: post.title,
+        description: post.description,
+        datePublished: post.date,
+        dateModified: post.date,
+        author: {
+          '@type': 'Organization',
+          name: 'WatchVsWatch',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'WatchVsWatch',
+          url: 'https://watchvswatch.com',
+        },
+        ...(post.heroImage ? { image: `https://watchvswatch.com${post.heroImage}` } : {}),
+      },
+    ],
+  }
+
   return (
     <main className="bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Breadcrumb */}

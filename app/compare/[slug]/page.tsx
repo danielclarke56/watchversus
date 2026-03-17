@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
+import { guides } from '@/lib/guideData'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
@@ -65,7 +66,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!w1 || !w2) return {}
   return {
     title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Full Comparison`,
-    description: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: ${w1.brand} ${w1.name} has a ${w1.case_diameter_mm}mm case at ${formatPrice(w1.price_new_usd)}, ${w2.brand} ${w2.name} at ${w2.case_diameter_mm}mm for ${formatPrice(w2.price_new_usd)}. Compare movement, water resistance, and full specs side-by-side.`,
+    description: `Compare ${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}. Full specs, movement, water resistance, and community ratings side-by-side. Which watch is best?`,
     alternates: {
       canonical: `https://watchvswatch.com/compare/${parts[0]}-vs-${parts[1]}`,
     },
@@ -132,6 +133,23 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
   const relatedComparisons = popularComparisons
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
     .slice(0, 4)
+
+  // Get relevant guides based on watch characteristics
+  const relatedGuides = guides
+    .filter((g) => {
+      const lowerGuideSlug = g.slug.toLowerCase()
+      const guideRecs = g.recommendations.map((r) => r.slug.toLowerCase())
+      const isWatchIncluded = guideRecs.includes(slug1.toLowerCase()) || guideRecs.includes(slug2.toLowerCase())
+      const w1InRange = w1.price_new_usd.max <= 500 && lowerGuideSlug.includes('under-500')
+      const w1InRange1k = w1.price_new_usd.max <= 1000 && lowerGuideSlug.includes('under-1000')
+      const w1InRange2k = w1.price_new_usd.max <= 2000 && lowerGuideSlug.includes('1000-2000')
+      const w2InRange = w2.price_new_usd.max <= 500 && lowerGuideSlug.includes('under-500')
+      const w2InRange1k = w2.price_new_usd.max <= 1000 && lowerGuideSlug.includes('under-1000')
+      const w2InRange2k = w2.price_new_usd.max <= 2000 && lowerGuideSlug.includes('1000-2000')
+      const watchInPriceRange = w1InRange || w1InRange1k || w1InRange2k || w2InRange || w2InRange1k || w2InRange2k
+      return isWatchIncluded || watchInPriceRange
+    })
+    .slice(0, 3)
 
   const faqItems = [
     {
@@ -376,7 +394,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
       {/* Related comparisons */}
       {relatedComparisons.length > 0 && (
-        <div>
+        <div className="mb-10">
           <h2 className="text-xl font-bold text-[#0f172a] mb-5">Related Comparisons</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {relatedComparisons.map((c) => {
@@ -399,6 +417,23 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 </Link>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Related guides */}
+      {relatedGuides.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-xl font-bold text-[#0f172a] mb-5">Related Guides</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {relatedGuides.map((g) => (
+              <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-[#b8860b]/40 transition-colors group">
+                <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Buying Guide</p>
+                <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">{g.title}</h3>
+                <p className="text-xs text-[#475569] mt-3 line-clamp-1">{g.description}</p>
+                <p className="text-xs text-[#b8860b] font-medium mt-4 inline-block">Read Guide →</p>
+              </Link>
+            ))}
           </div>
         </div>
       )}

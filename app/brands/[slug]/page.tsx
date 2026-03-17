@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!brand) return {}
   return {
     title: `${brand.name} Watches — Reviews, Specs & Comparisons`,
-    description: `Explore ${brand.name} watches in our comparison database. Full specs, community ratings, and head-to-head comparisons for every ${brand.name} model.`,
+    description: `Explore all ${brand.name} watches with full specs, community ratings, and head-to-head comparisons. Find your perfect ${brand.name} timepiece with honest reviews.`,
     alternates: {
       canonical: `https://watchvswatch.com/brands/${brand.slug}`,
     },
