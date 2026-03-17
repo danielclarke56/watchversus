@@ -260,15 +260,15 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       <ComparisonStickyNav slug1={w1.slug} slug2={w2.slug} watch1Name={w1.name} watch2Name={w2.name} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16">
         {/* Breadcrumb */}
-        <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
-          <Link href="/compare" className="hover:text-[#b8860b] transition-colors">Compare</Link>
+        <nav className="text-sm text-textMuted mb-6 flex items-center gap-2">
+          <Link href="/compare" className="hover:text-accent transition-colors">Compare</Link>
           <span>/</span>
-          <span className="text-[#0f172a]">{w1.name} vs {w2.name}</span>
+          <span className="text-textPrimary">{w1.name} vs {w2.name}</span>
         </nav>
 
         {/* SEO lede — featured snippet target */}
-        <p className="text-[#475569] text-base leading-relaxed mb-8 max-w-3xl">
-          Comparing the <strong className="text-[#0f172a]">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm) against the <strong className="text-[#0f172a]">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm) — specs, movement, community votes, and an expert verdict below.{' '}
+        <p className="text-textSecond text-base leading-relaxed mb-8 max-w-3xl">
+          Comparing the <strong className="text-textPrimary">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm) against the <strong className="text-textPrimary">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm) — specs, movement, community votes, and an expert verdict below.{' '}
           {w1.price_new_usd.min !== w2.price_new_usd.min && (
             <span>
               The {w1.price_new_usd.min < w2.price_new_usd.min ? `${w1.brand} ${w1.name}` : `${w2.brand} ${w2.name}`} is the more affordable option by {formatPrice({ min: Math.abs(w1.price_new_usd.min - w2.price_new_usd.min), max: Math.abs(w1.price_new_usd.min - w2.price_new_usd.min) })}.
@@ -277,16 +277,16 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         </p>
 
         {/* Hero Section — Enhanced */}
-        <section id="comparison-hero" className="bg-gradient-to-br from-[#fffbf0] via-white to-[#f8fafc] border border-[#e2e8f0] rounded-2xl overflow-hidden mb-12 shadow-lg">
+        <section id="comparison-hero" className="bg-gradient-to-br from-accentLight via-white to-surfaceAlt border border-border rounded-2xl overflow-hidden mb-12 shadow-md">
           <div className="px-6 md:px-10 py-10 md:py-14">
             {/* Main headline */}
             <div className="text-center mb-8">
-              <h1 className="text-4xl md:text-6xl font-black text-[#0f172a] leading-tight mb-3">
+              <h1 className="text-4xl md:text-6xl font-black text-textPrimary leading-tight mb-3">
                 <span className="block">{w1.brand} {w1.name}</span>
-                <span className="text-[#b8860b] text-3xl md:text-5xl">vs</span>
+                <span className="text-accent text-3xl md:text-5xl">vs</span>
                 <span className="block">{w2.brand} {w2.name}</span>
               </h1>
-              <p className="text-[#475569] text-lg md:text-xl">Complete head-to-head comparison</p>
+              <p className="text-textSecond text-lg md:text-xl">Complete head-to-head comparison</p>
             </div>
 
             {/* Watch Cards — Side-by-side comparison layout */}
@@ -297,7 +297,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 const badges = i === 0 ? generateComparisonBadges(w1, w2) : generateComparisonBadges(w2, w1)
                 return (
                   <div key={w.id} className="relative">
-                    <div className="bg-white border-2 border-[#e2e8f0] rounded-xl p-6 md:p-8 hover:border-[#b8860b]/40 transition-colors">
+                    <div className="bg-surface border-2 border-border rounded-xl p-6 md:p-8 hover:border-accent/40 transition-colors">
                       {/* Badges with improved styling */}
                       {badges.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-6">
@@ -315,7 +315,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
                       {/* Watch Image — Larger and more prominent */}
                       {w.image ? (
-                        <div className="bg-gradient-to-br from-[#f8fafc] to-[#fffbf0] rounded-lg border-2 border-[#e2e8f0] aspect-square flex items-center justify-center mb-6 overflow-hidden">
+                        <div className="bg-gradient-to-br from-surfaceAlt to-accentLight rounded-lg border-2 border-border aspect-square flex items-center justify-center mb-6 overflow-hidden">
                           <Image
                             src={w.image}
                             alt={w.imageAlt ?? `${w.brand} ${w.name}`}
@@ -326,8 +326,8 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                           />
                         </div>
                       ) : (
-                        <div className="bg-[#f8fafc] rounded-lg border-2 border-[#e2e8f0] aspect-square flex items-center justify-center mb-6">
-                          <svg className="w-16 h-16 text-[#cbd5e1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="bg-surfaceAlt rounded-lg border-2 border-border aspect-square flex items-center justify-center mb-6">
+                          <svg className="w-16 h-16 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="9" strokeWidth="1" />
                             <path strokeLinejoin="round" strokeLinecap="round" strokeWidth="1" d="M12 7v5l3 3" />
                           </svg>
@@ -335,54 +335,54 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                       )}
 
                       {/* Watch Identity */}
-                      <div className="border-b border-[#e2e8f0] pb-4 mb-4">
-                        <p className="text-xs text-[#b8860b] font-black uppercase tracking-widest mb-1">{w.brand}</p>
-                        <h2 className="text-2xl font-black text-[#0f172a] mb-1">{w.name}</h2>
-                        <p className="text-[#94a3b8] text-xs font-medium">Ref. {w.reference}</p>
+                      <div className="border-b border-border pb-4 mb-4">
+                        <p className="text-xs text-accent font-black uppercase tracking-widest mb-1">{w.brand}</p>
+                        <h2 className="text-2xl font-black text-textPrimary mb-1">{w.name}</h2>
+                        <p className="text-textMuted text-xs font-medium">Ref. {w.reference}</p>
                       </div>
 
                       {/* Price Highlight — Enhanced */}
-                      <div className="bg-[#fffbf0] border-2 border-[#b8860b]/30 rounded-lg p-4 mb-4">
-                        <p className="text-xs text-[#94a3b8] font-semibold uppercase mb-1">New Price</p>
-                        <p className="text-2xl font-black text-[#b8860b]">{formatPrice(w.price_new_usd)}</p>
-                        <p className="text-xs text-[#475569] mt-2">Pre-owned: {formatPrice(w.price_preowned_usd)}</p>
+                      <div className="bg-accentLight border-2 border-accent/30 rounded-lg p-4 mb-4">
+                        <p className="text-xs text-textMuted font-semibold uppercase mb-1">New Price</p>
+                        <p className="text-2xl font-black text-accent">{formatPrice(w.price_new_usd)}</p>
+                        <p className="text-xs text-textSecond mt-2">Pre-owned: {formatPrice(w.price_preowned_usd)}</p>
                       </div>
 
                       {/* Key Specs — Visual Rows */}
-                      <div className="space-y-2.5 mb-6 pb-4 border-b border-[#e2e8f0]">
+                      <div className="space-y-2.5 mb-6 pb-4 border-b border-border">
                         <div className="flex justify-between items-center">
-                          <span className="text-[#94a3b8] text-xs font-semibold">Case</span>
-                          <span className="text-[#0f172a] font-bold text-sm">{w.case_diameter_mm}mm {w.case_material}</span>
+                          <span className="text-textMuted text-xs font-semibold">Case</span>
+                          <span className="text-textPrimary font-bold text-sm">{w.case_diameter_mm}mm {w.case_material}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-[#94a3b8] text-xs font-semibold">Thickness</span>
-                          <span className="text-[#0f172a] font-bold text-sm">{w.case_thickness_mm}mm</span>
+                          <span className="text-textMuted text-xs font-semibold">Thickness</span>
+                          <span className="text-textPrimary font-bold text-sm">{w.case_thickness_mm}mm</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-[#94a3b8] text-xs font-semibold">Movement</span>
-                          <span className="text-[#0f172a] font-bold text-sm capitalize">{w.movement_type}</span>
+                          <span className="text-textMuted text-xs font-semibold">Movement</span>
+                          <span className="text-textPrimary font-bold text-sm capitalize">{w.movement_type}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-[#94a3b8] text-xs font-semibold">Water Resistance</span>
-                          <span className="text-[#0f172a] font-bold text-sm">{w.water_resistance_m}m</span>
+                          <span className="text-textMuted text-xs font-semibold">Water Resistance</span>
+                          <span className="text-textPrimary font-bold text-sm">{w.water_resistance_m}m</span>
                         </div>
                       </div>
 
                       {/* Rating Section */}
                       {overall ? (
                         <div className="flex flex-col items-center gap-2 py-4 mb-4">
-                          <div className="text-4xl font-black text-[#b8860b]">{overall.toFixed(1)}</div>
+                          <div className="text-4xl font-black text-accent">{overall.toFixed(1)}</div>
                           <StarRating rating={overall} size="sm" />
-                          <span className="text-xs text-[#94a3b8] font-medium">{revCount} review{revCount !== 1 ? 's' : ''}</span>
+                          <span className="text-xs text-textMuted font-medium">{revCount} review{revCount !== 1 ? 's' : ''}</span>
                         </div>
                       ) : (
                         <div className="text-center py-4 mb-4">
-                          <span className="text-xs text-[#94a3b8] font-medium">No reviews yet</span>
+                          <span className="text-xs text-textMuted font-medium">No reviews yet</span>
                         </div>
                       )}
 
                       {/* View Details Link */}
-                      <Link href={`/watches/${w.slug}`} className="block w-full text-center py-3 px-4 bg-[#b8860b]/10 text-[#b8860b] hover:bg-[#b8860b] hover:text-white font-bold rounded-lg transition-all duration-200">
+                      <Link href={`/watches/${w.slug}`} className="block w-full text-center py-3 px-4 bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all duration-200">
                         View Full Specs →
                       </Link>
                     </div>
@@ -392,12 +392,12 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
             </div>
 
             {/* Quick Comparison Summary — 4-stat grid */}
-            <div className="bg-white/60 backdrop-blur border border-[#b8860b]/20 rounded-xl p-4 md:p-6">
+            <div className="bg-white/60 backdrop-blur border border-accent/20 rounded-xl p-4 md:p-6">
               <div className="flex flex-wrap gap-3 justify-center">
                 {/* Price diff */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
-                  <span className="text-xs text-[#94a3b8] font-semibold">Price:</span>
-                  <span className="text-sm font-bold text-[#0f172a]">
+                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                  <span className="text-xs text-textMuted font-semibold">Price:</span>
+                  <span className="text-sm font-bold text-textPrimary">
                     {w1.price_new_usd.min < w2.price_new_usd.min
                       ? `${w1.name} is ${formatPrice({ min: w2.price_new_usd.min - w1.price_new_usd.min, max: w2.price_new_usd.max - w1.price_new_usd.max })} cheaper`
                       : `${w2.name} is ${formatPrice({ min: w1.price_new_usd.min - w2.price_new_usd.min, max: w1.price_new_usd.max - w2.price_new_usd.max })} cheaper`}
@@ -405,25 +405,25 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 </div>
 
                 {/* Water resistance */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
-                  <span className="text-xs text-[#94a3b8] font-semibold">H2O:</span>
-                  <span className="text-sm font-bold text-[#0f172a]">
+                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                  <span className="text-xs text-textMuted font-semibold">H2O:</span>
+                  <span className="text-sm font-bold text-textPrimary">
                     {w1.water_resistance_m > w2.water_resistance_m ? `${w1.name} (${w1.water_resistance_m}m)` : `${w2.name} (${w2.water_resistance_m}m)`}
                   </span>
                 </div>
 
                 {/* Score */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
-                  <span className="text-xs text-[#94a3b8] font-semibold">Score:</span>
-                  <span className="text-sm font-bold text-[#0f172a]">
+                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                  <span className="text-xs text-textMuted font-semibold">Score:</span>
+                  <span className="text-sm font-bold text-textPrimary">
                     {w1.score > w2.score ? `${w1.name} (${w1.score}/10)` : `${w2.name} (${w2.score}/10)`}
                   </span>
                 </div>
 
                 {/* Buy Again */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
-                  <span className="text-xs text-[#94a3b8] font-semibold">Repurchase:</span>
-                  <span className="text-sm font-bold text-[#0f172a]">
+                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                  <span className="text-xs text-textMuted font-semibold">Repurchase:</span>
+                  <span className="text-sm font-bold text-textPrimary">
                     {w1.buy_again_pct > w2.buy_again_pct
                       ? `${w1.name} (${w1.buy_again_pct}%)`
                       : `${w2.name} (${w2.buy_again_pct}%)`}
@@ -439,16 +439,16 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           {[w1, w2].map((w) => {
             const brandSlug = w.brand.toLowerCase().replace(/\s+/g, '-')
             return (
-              <div key={w.id} className="card p-5 md:p-6 border-l-4 border-[#b8860b] bg-gradient-to-br from-[#fffbf0]/50 to-white hover:shadow-md transition-shadow">
+              <div key={w.id} className="card p-5 md:p-6 border-l-4 border-accent bg-gradient-to-br from-accentLight/50 to-white hover:shadow-sm transition-shadow">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="text-xs text-[#b8860b] font-black uppercase tracking-wider mb-1">Explore Brand</p>
-                    <h3 className="text-lg font-bold text-[#0f172a]">{w.brand} Hub</h3>
+                    <p className="text-xs text-accent font-black uppercase tracking-wider mb-1">Explore Brand</p>
+                    <h3 className="text-lg font-bold text-textPrimary">{w.brand} Hub</h3>
                   </div>
                   <span className="text-2xl">🏛️</span>
                 </div>
-                <p className="text-sm text-[#475569] mb-4">All {w.brand} watches, comparisons, and guides in one place</p>
-                <Link href={`/brands/${brandSlug}`} className="inline-block w-full text-center px-4 py-2.5 bg-[#b8860b] text-white font-semibold rounded-lg hover:bg-[#d4a853] transition-colors">
+                <p className="text-sm text-textSecond mb-4">All {w.brand} watches, comparisons, and guides in one place</p>
+                <Link href={`/brands/${brandSlug}`} className="inline-block w-full text-center px-4 py-2.5 bg-accent text-white font-semibold rounded-lg hover:bg-accentHover transition-colors">
                   Visit {w.brand} Pillar Page →
                 </Link>
               </div>
@@ -457,35 +457,35 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         </section>
 
       {/* Quick Verdict — Enhanced */}
-      <section id="comparison-verdict" className="bg-[#fffbf0] border border-[#b8860b]/40 rounded-xl p-6 md:p-8 my-10 shadow-md">
+      <section id="comparison-verdict" className="bg-accentLight border border-accent/40 rounded-xl p-6 md:p-8 my-10 shadow-sm">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-[#b8860b] text-lg">⚖️</span>
-          <h2 className="font-bold text-lg text-[#b8860b] tracking-wide">Quick Verdict</h2>
+          <span className="text-accent text-lg">⚖️</span>
+          <h2 className="font-bold text-lg text-accent tracking-wide">Quick Verdict</h2>
           {preferredWatch && (
-            <span className="ml-auto text-xs bg-[#b8860b]/20 text-[#b8860b] border border-[#b8860b]/40 px-2 py-0.5 rounded-full font-semibold">
+            <span className="ml-auto text-xs bg-accent/20 text-accent border border-accent/40 px-2 py-0.5 rounded-full font-semibold">
               Community Pick: {preferredWatch.name}
             </span>
           )}
         </div>
 
         {/* Verdict text */}
-        <p className="text-[#475569] text-sm leading-relaxed mb-5">{generateVerdict(w1, w2)}</p>
+        <p className="text-textSecond text-sm leading-relaxed mb-5">{generateVerdict(w1, w2)}</p>
 
         {/* Community ratings preference bar */}
         <div className="mb-5">
           <div className="flex justify-between text-xs mb-2">
-            <span className="font-semibold text-[#0f172a]">{w1.name}</span>
-            <span className="text-[#475569]">Internet Community Rating</span>
-            <span className="font-semibold text-[#0f172a]">{w2.name}</span>
+            <span className="font-semibold text-textPrimary">{w1.name}</span>
+            <span className="text-textSecond">Internet Community Rating</span>
+            <span className="font-semibold text-textPrimary">{w2.name}</span>
           </div>
-          <div className="flex h-2.5 rounded-full overflow-hidden bg-[#e2e8f0]">
-            <div className="bg-[#b8860b] transition-all" style={{ width: `${pref1}%` }} />
-            <div className="bg-[#cbd5e1] transition-all" style={{ width: `${pref2}%` }} />
+          <div className="flex h-2.5 rounded-full overflow-hidden bg-border">
+            <div className="bg-accent transition-all" style={{ width: `${pref1}%` }} />
+            <div className="bg-borderStrong transition-all" style={{ width: `${pref2}%` }} />
           </div>
           <div className="flex justify-between text-xs mt-1.5">
-            <span className="text-[#b8860b] font-bold">{pref1}%</span>
-            <span className="text-[#94a3b8] font-bold">{pref2}%</span>
+            <span className="text-accent font-bold">{pref1}%</span>
+            <span className="text-textMuted font-bold">{pref2}%</span>
           </div>
         </div>
 
@@ -495,21 +495,21 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
       {/* Pros & Cons */}
       <section id="comparison-pros-cons" className="mb-10">
-        <h2 className="text-xl font-bold text-[#0f172a] mb-5">Pros &amp; Cons</h2>
+        <h2 className="text-xl font-bold text-textPrimary mb-5">Pros &amp; Cons</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {[
             { w: w1, pros: w1.pros, cons: w1.cons },
             { w: w2, pros: w2.pros, cons: w2.cons },
           ].map(({ w, pros, cons }) => (
             <div key={w.id} className="card p-5">
-              <h3 className="font-bold text-[#0f172a] mb-4">{w.brand} {w.name}</h3>
+              <h3 className="font-bold text-textPrimary mb-4">{w.brand} {w.name}</h3>
               {pros.length > 0 && (
                 <div className="mb-4">
                   <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Pros</p>
                   <ul className="space-y-1.5">
                     {pros.map((p, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-[#475569]">
-                        <span className="text-emerald-500 mt-0.5 shrink-0">✓</span>
+                      <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
+                        <span className="text-winner mt-0.5 shrink-0">✓</span>
                         <span>{p}</span>
                       </li>
                     ))}
@@ -521,7 +521,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                   <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">Cons</p>
                   <ul className="space-y-1.5">
                     {cons.map((c, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-[#475569]">
+                      <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
                         <span className="text-red-400 mt-0.5 shrink-0">✗</span>
                         <span>{c}</span>
                       </li>
@@ -536,10 +536,10 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
       {/* Spec comparison table */}
       <section id="comparison-specs" className="card overflow-hidden mb-10">
-        <div className="bg-[#f8fafc] px-4 py-3 border-b border-[#e2e8f0]">
-          <h2 className="text-[#0f172a] font-semibold">Specifications Compared</h2>
+        <div className="bg-surfaceAlt px-4 py-3 border-b border-border">
+          <h2 className="text-textPrimary font-semibold">Specifications Compared</h2>
         </div>
-        <div className="grid grid-cols-3 bg-white px-4 py-2 border-b border-[#e2e8f0] text-xs text-[#94a3b8] uppercase tracking-wider">
+        <div className="grid grid-cols-3 bg-surface px-4 py-2 border-b border-border text-xs text-textMuted uppercase tracking-wider">
           <div>Specification</div>
           <div>{w1.brand} {w1.name}</div>
           <div>{w2.brand} {w2.name}</div>
@@ -549,10 +549,10 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           const v2 = row.fn(w2)
           const differ = v1 !== v2
           return (
-            <div key={row.label} className={`grid grid-cols-3 px-4 py-3 text-sm border-b border-[#e2e8f0] last:border-0 ${i % 2 === 0 ? 'bg-[#f8fafc]' : 'bg-white'}`}>
-              <div className="text-[#475569] font-medium">{row.label}</div>
-              <div className={`capitalize ${differ ? 'text-[#b8860b] font-semibold' : 'text-[#0f172a]'}`}>{v1}</div>
-              <div className={`capitalize ${differ ? 'text-[#b8860b] font-semibold' : 'text-[#0f172a]'}`}>{v2}</div>
+            <div key={row.label} className={`grid grid-cols-3 px-4 py-3 text-sm border-b border-border last:border-0 ${i % 2 === 0 ? 'bg-surfaceAlt' : 'bg-surface'}`}>
+              <div className="text-textSecond font-medium">{row.label}</div>
+              <div className={`capitalize ${differ ? 'text-accent font-semibold' : 'text-textPrimary'}`}>{v1}</div>
+              <div className={`capitalize ${differ ? 'text-accent font-semibold' : 'text-textPrimary'}`}>{v2}</div>
             </div>
           )
         })}
@@ -561,11 +561,11 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       {/* Community ratings comparison */}
       {(avg1 || avg2) && (
         <section id="comparison-ratings" className="mb-10">
-          <h2 className="text-xl font-bold text-[#0f172a] mb-5">Community Ratings</h2>
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Community Ratings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {[{ w: w1, avg: avg1, label: `${w1.brand} ${w1.name}` }, { w: w2, avg: avg2, label: `${w2.brand} ${w2.name}` }].map(({ w, avg, label }) => (
               <div key={w.id} className="card p-5">
-                <h3 className="text-[#0f172a] font-semibold mb-4 text-sm">{label}</h3>
+                <h3 className="text-textPrimary font-semibold mb-4 text-sm">{label}</h3>
                 {avg ? (
                   <div className="space-y-3">
                     {Object.entries(avg).map(([key, val]) => (
@@ -573,7 +573,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[#94a3b8] text-sm">No community ratings yet</p>
+                  <p className="text-textMuted text-sm">No community ratings yet</p>
                 )}
               </div>
             ))}
@@ -583,15 +583,15 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
       {/* FAQ Section */}
       <section id="comparison-faq" className="mb-10">
-        <h2 className="text-xl font-bold text-[#0f172a] mb-5">Frequently Asked Questions</h2>
+        <h2 className="text-xl font-bold text-textPrimary mb-5">Frequently Asked Questions</h2>
         <div className="space-y-4">
           {faqItems.map((item, i) => (
             <details key={i} className="card p-5 group cursor-pointer">
-              <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
+              <summary className="text-textPrimary font-semibold flex justify-between items-center list-none">
                 <span>{item.question}</span>
-                <span className="text-[#b8860b] group-open:rotate-180 transition-transform">▼</span>
+                <span className="text-accent group-open:rotate-180 transition-transform">▼</span>
               </summary>
-              <p className="text-[#475569] text-sm mt-4 leading-relaxed">{item.answer}</p>
+              <p className="text-textSecond text-sm mt-4 leading-relaxed">{item.answer}</p>
             </details>
           ))}
         </div>
@@ -600,23 +600,23 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       {/* Related comparisons */}
       {relatedComparisons.length > 0 && (
         <section id="comparison-related" className="mb-10">
-          <h2 className="text-xl font-bold text-[#0f172a] mb-5">Related Comparisons</h2>
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Related Comparisons</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {relatedComparisons.map((c) => {
               const wa = getWatchBySlug(c.slug1)
               const wb = getWatchBySlug(c.slug2)
               if (!wa || !wb) return null
               return (
-                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 hover:border-[#b8860b]/40 transition-colors group">
+                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 hover:border-accent/40 transition-colors group">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
-                      <p className="text-[#0f172a] text-xs font-semibold truncate">{wa.name}</p>
+                      <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
+                      <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
                     </div>
-                    <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                    <div className="text-accent font-bold text-xs shrink-0">VS</div>
                     <div className="flex-1 min-w-0 text-right">
-                      <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
-                      <p className="text-[#0f172a] text-xs font-semibold truncate">{wb.name}</p>
+                      <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
+                      <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
                     </div>
                   </div>
                 </Link>
@@ -629,14 +629,14 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       {/* Related guides */}
       {relatedGuides.length > 0 && (
         <section id="comparison-guides" className="mb-10">
-          <h2 className="text-xl font-bold text-[#0f172a] mb-5">Related Guides</h2>
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Related Guides</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {relatedGuides.map((g) => (
-              <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-[#b8860b]/40 transition-colors group">
-                <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Buying Guide</p>
-                <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">{g.title}</h3>
-                <p className="text-xs text-[#475569] mt-3 line-clamp-1">{g.description}</p>
-                <p className="text-xs text-[#b8860b] font-medium mt-4 inline-block">Read Guide →</p>
+              <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-accent/40 transition-colors group">
+                <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
+                <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{g.title}</h3>
+                <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
+                <p className="text-xs text-accent font-medium mt-4 inline-block">Read Guide →</p>
               </Link>
             ))}
           </div>
@@ -645,34 +645,34 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
       {/* Brand Hub Links */}
       <section className="mb-10">
-        <h2 className="text-xl font-bold text-[#0f172a] mb-5">Explore These Brands</h2>
+        <h2 className="text-xl font-bold text-textPrimary mb-5">Explore These Brands</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Link
             href={`/brands/${w1.brand.toLowerCase().replace(/\s+/g, '-')}`}
-            className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+            className="card p-5 hover:border-accent/40 transition-colors group"
           >
-            <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Brand Hub</p>
-            <h3 className="text-lg font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors mb-2">
+            <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
+            <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">
               {w1.brand}
             </h3>
-            <p className="text-sm text-[#475569] mb-4">
+            <p className="text-sm text-textSecond mb-4">
               Explore all {w1.brand} watches in our database and see how they compare
             </p>
-            <p className="text-xs text-[#b8860b] font-medium inline-block">View Brand Hub →</p>
+            <p className="text-xs text-accent font-medium inline-block">View Brand Hub →</p>
           </Link>
-          
+
           <Link
             href={`/brands/${w2.brand.toLowerCase().replace(/\s+/g, '-')}`}
-            className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+            className="card p-5 hover:border-accent/40 transition-colors group"
           >
-            <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Brand Hub</p>
-            <h3 className="text-lg font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors mb-2">
+            <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
+            <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">
               {w2.brand}
             </h3>
-            <p className="text-sm text-[#475569] mb-4">
+            <p className="text-sm text-textSecond mb-4">
               Explore all {w2.brand} watches in our database and see how they compare
             </p>
-            <p className="text-xs text-[#b8860b] font-medium inline-block">View Brand Hub →</p>
+            <p className="text-xs text-accent font-medium inline-block">View Brand Hub →</p>
           </Link>
         </div>
       </section>
@@ -680,19 +680,19 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       {/* Related brands footer */}
       {relatedBrands.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#0f172a] mb-5">Explore Other Brands</h2>
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Explore Other Brands</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {relatedBrands.map((b) => (
               <Link
                 key={b.slug}
                 href={`/brands/${b.slug}`}
-                className="card p-4 hover:border-[#b8860b]/40 transition-colors group text-center"
+                className="card p-4 hover:border-accent/40 transition-colors group text-center"
               >
-                <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
                   {b.name}
                 </h3>
-                <p className="text-xs text-[#475569] mt-2 line-clamp-2">{b.heroFact}</p>
-                <p className="text-xs text-[#b8860b] font-medium mt-3 inline-block">Explore Brand →</p>
+                <p className="text-xs text-textSecond mt-2 line-clamp-2">{b.heroFact}</p>
+                <p className="text-xs text-accent font-medium mt-3 inline-block">Explore Brand →</p>
               </Link>
             ))}
           </div>
@@ -709,14 +709,14 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         if (altWatches.length === 0) return null
         return (
           <section className="mb-10">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-2">Explore Alternatives</h2>
-            <p className="text-sm text-[#475569] mb-5">Other watches worth considering in this category</p>
+            <h2 className="text-xl font-bold text-textPrimary mb-2">Explore Alternatives</h2>
+            <p className="text-sm text-textSecond mb-5">Other watches worth considering in this category</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {altWatches.map((w: Watch) => (
-                <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-[#b8860b]/40 transition-colors group text-center">
-                  <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">{w.brand}</p>
-                  <p className="text-xs font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">{w.name}</p>
-                  <p className="text-[10px] text-[#b8860b] font-medium mt-2">View →</p>
+                <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-accent/40 transition-colors group text-center">
+                  <p className="text-[10px] text-textMuted uppercase font-semibold mb-1">{w.brand}</p>
+                  <p className="text-xs font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{w.name}</p>
+                  <p className="text-[10px] text-accent font-medium mt-2">View →</p>
                 </Link>
               ))}
             </div>
@@ -725,9 +725,9 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       })()}
 
       {/* Custom compare CTA */}
-      <div className="mt-8 text-center bg-white border border-[#e2e8f0] rounded-xl p-8">
-        <h3 className="text-[#0f172a] font-semibold text-lg mb-2">Build Your Own Comparison</h3>
-        <p className="text-[#475569] text-sm mb-5">Pick any two watches from our database of 50</p>
+      <div className="mt-8 text-center bg-surface border border-border rounded-xl p-8">
+        <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
+        <p className="text-textSecond text-sm mb-5">Pick any two watches from our database of 50</p>
         <Link href="/compare" className="btn-gold">
           Start a New Comparison
         </Link>

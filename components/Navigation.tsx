@@ -16,7 +16,7 @@ const ClerkAuth = hasClerk
             <>
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="text-sm text-[#475569] hover:text-[#b8860b] transition-colors font-medium">
+                  <button className="text-sm text-textSecond hover:text-accent transition-colors font-medium">
                     Sign In
                   </button>
                 </SignInButton>
@@ -77,7 +77,7 @@ function DropdownMenu({ label, items }: NavGroup) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-sm text-[#475569] hover:text-[#b8860b] transition-colors font-medium py-1"
+        className="flex items-center gap-1 text-sm text-textSecond hover:text-accent transition-colors font-medium py-1"
       >
         {label}
         <svg
@@ -89,19 +89,19 @@ function DropdownMenu({ label, items }: NavGroup) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#e2e8f0] rounded-xl shadow-lg overflow-hidden z-50">
+        <div className="absolute top-full left-0 mt-2 w-56 bg-surface border border-border rounded-xl shadow-md overflow-hidden z-50">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="flex items-start gap-3 px-4 py-3 hover:bg-[#f8fafc] transition-colors group border-b border-[#e2e8f0] last:border-0"
+              className="flex items-start gap-3 px-4 py-3 hover:bg-surfaceAlt transition-colors group border-b border-border last:border-0"
             >
               <div>
-                <div className="text-sm font-medium text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                <div className="text-sm font-medium text-textPrimary group-hover:text-accent transition-colors">
                   {item.label}
                 </div>
-                <div className="text-xs text-[#94a3b8] mt-0.5">{item.desc}</div>
+                <div className="text-xs text-textMuted mt-0.5">{item.desc}</div>
               </div>
             </Link>
           ))}
@@ -115,14 +115,14 @@ export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-[#e2e8f0] drop-shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border drop-shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
 
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center">
-          <span className="text-[#b8860b] text-xl font-bold tracking-tight">Watch</span>
-          <span className="text-[#0f172a] text-xl font-bold tracking-tight">Vs</span>
-          <span className="text-[#b8860b] text-xl font-bold tracking-tight">Watch</span>
+          <span className="text-accent text-xl font-bold tracking-tight">Watch</span>
+          <span className="text-textPrimary text-xl font-bold tracking-tight">Vs</span>
+          <span className="text-accent text-xl font-bold tracking-tight">Watch</span>
         </Link>
 
         {/* Desktop nav */}
@@ -136,7 +136,7 @@ export default function Navigation() {
         <div className="hidden md:flex items-center gap-4 shrink-0">
           <Link
             href="/compare"
-            className="btn-gold text-xs px-4 py-2 rounded-lg font-semibold"
+            className="btn-gold text-xs px-4 py-2 rounded-md font-semibold"
           >
             Compare Now
           </Link>
@@ -146,7 +146,7 @@ export default function Navigation() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-[#475569] hover:text-[#0f172a] p-2 ml-auto"
+          className="md:hidden text-textSecond hover:text-textPrimary p-2 ml-auto"
           aria-label="Toggle menu"
         >
           <div className="w-5 space-y-1.5">
@@ -159,10 +159,10 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t border-[#e2e8f0] px-4 pt-2 pb-6">
+        <div className="md:hidden bg-surface border-t border-border px-4 pt-2 pb-6">
           {navGroups.map((g) => (
             <div key={g.label}>
-              <p className="text-[10px] uppercase tracking-widest text-[#94a3b8] mt-5 mb-1 font-semibold">
+              <p className="text-[10px] uppercase tracking-widest text-textMuted mt-5 mb-1 font-semibold">
                 {g.label}
               </p>
               {g.items.map((item) => (
@@ -170,19 +170,19 @@ export default function Navigation() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="flex justify-between items-center py-2.5 border-b border-[#e2e8f0] last:border-0 group"
+                  className="flex justify-between items-center py-2.5 border-b border-border last:border-0 group"
                 >
-                  <span className="text-sm font-medium text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                  <span className="text-sm font-medium text-textPrimary group-hover:text-accent transition-colors">
                     {item.label}
                   </span>
-                  <span className="text-xs text-[#94a3b8]">{item.desc}</span>
+                  <span className="text-xs text-textMuted">{item.desc}</span>
                 </Link>
               ))}
             </div>
           ))}
 
-          <div className="mt-5 pt-5 border-t border-[#e2e8f0] flex items-center justify-between">
-            <Link href="/compare" className="btn-gold text-xs px-4 py-2 rounded-lg font-semibold">
+          <div className="mt-5 pt-5 border-t border-border flex items-center justify-between">
+            <Link href="/compare" className="btn-gold text-xs px-4 py-2 rounded-md font-semibold">
               Compare Now
             </Link>
             <ClerkAuth />

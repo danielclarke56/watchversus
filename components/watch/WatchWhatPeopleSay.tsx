@@ -14,19 +14,19 @@ export default function WatchWhatPeopleSay({ watch }: WatchWhatPeopleSayProps) {
   const commonCons = watch.cons
 
   return (
-    <section className="py-8 border-b border-[#e2e8f0]">
+    <section className="py-8 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-[#0f172a] mb-6">What People Say</h2>
+        <h2 className="text-2xl font-bold text-textPrimary mb-6">What People Say</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Common Pros */}
           <div>
-            <h3 className="text-lg font-bold text-[#0f172a] mb-3">Top Strengths</h3>
+            <h3 className="text-lg font-bold text-textPrimary mb-3">Top Strengths</h3>
             <div className="flex flex-wrap gap-2">
               {commonPros.map((pro, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-[#dbeafe] text-[#0c4a6e] rounded-full text-sm font-semibold"
+                  className="px-3 py-1 bg-winnerBg text-winner rounded-full text-sm font-semibold"
                 >
                   {pro}
                 </span>
@@ -36,12 +36,12 @@ export default function WatchWhatPeopleSay({ watch }: WatchWhatPeopleSayProps) {
 
           {/* Common Cons */}
           <div>
-            <h3 className="text-lg font-bold text-[#0f172a] mb-3">Common Concerns</h3>
+            <h3 className="text-lg font-bold text-textPrimary mb-3">Common Concerns</h3>
             <div className="flex flex-wrap gap-2">
               {commonCons.map((con, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-[#fee2e2] text-[#7f1d1d] rounded-full text-sm font-semibold"
+                  className="px-3 py-1 bg-surfaceAlt text-textMuted rounded-full text-sm font-semibold"
                 >
                   {con}
                 </span>

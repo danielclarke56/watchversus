@@ -53,11 +53,11 @@ export default function WatchComparisons({ watch }: WatchComparisonsProps) {
   if (compareData.length === 0) return null
 
   return (
-    <section className="py-8 border-b border-[#e2e8f0]">
+    <section className="py-8 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-2xl font-bold text-[#0f172a]">Compare {watch.name} With...</h2>
-          <span className="text-xs text-[#94a3b8] hidden sm:block">Side-by-side specs &amp; votes</span>
+          <h2 className="text-2xl font-bold text-textPrimary">Compare {watch.name} With...</h2>
+          <span className="text-xs text-textMuted hidden sm:block">Side-by-side specs &amp; votes</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {compareData.map(({ otherWatch, compareSlug }) => {
@@ -72,24 +72,24 @@ export default function WatchComparisons({ watch }: WatchComparisonsProps) {
               <Link
                 key={compareSlug}
                 href={`/compare/${compareSlug}`}
-                className="card p-4 hover:border-[#b8860b] transition-colors group flex flex-col gap-2"
+                className="card p-4 hover:border-accent transition-colors group flex flex-col gap-2"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-xs text-[#94a3b8]">{otherWatch.brand}</p>
-                    <p className="font-bold text-[#0f172a] group-hover:text-[#b8860b] leading-tight">
+                    <p className="text-xs text-textMuted">{otherWatch.brand}</p>
+                    <p className="font-bold text-textPrimary group-hover:text-accent leading-tight">
                       {otherWatch.name}
                     </p>
                   </div>
-                  <span className="text-[#b8860b] text-lg leading-none mt-0.5">→</span>
+                  <span className="text-accent text-lg leading-none mt-0.5">→</span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-[#475569]">
+                <div className="flex items-center justify-between text-xs text-textSecond">
                   <span>{fmt(otherWatch.price_new_usd.min)}</span>
-                  <span className={priceDelta > 0 ? 'text-[#dc2626]' : priceDelta < 0 ? 'text-[#16a34a]' : 'text-[#94a3b8]'}>
+                  <span className={priceDelta > 0 ? 'text-red-600' : priceDelta < 0 ? 'text-winner' : 'text-textMuted'}>
                     {deltaLabel}
                   </span>
                 </div>
-                <p className="text-xs font-semibold text-[#b8860b] group-hover:underline">Compare head-to-head →</p>
+                <p className="text-xs font-semibold text-accent group-hover:underline">Compare head-to-head →</p>
               </Link>
             )
           })}

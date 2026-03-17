@@ -24,9 +24,9 @@ export default function WatchAlternatives({ watch }: WatchAlternativesProps) {
   }
 
   return (
-    <section className="py-8 border-b border-[#e2e8f0]">
+    <section className="py-8 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Similar Watches</h2>
+        <h2 className="text-2xl font-bold text-textPrimary mb-6">Similar Watches</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {similarWatches.map((alt) => {
@@ -39,8 +39,8 @@ export default function WatchAlternatives({ watch }: WatchAlternativesProps) {
             return (
               <div key={alt.slug} className="card p-4 flex flex-col gap-2">
                 <Link href={`/watches/${alt.slug}`} className="group">
-                  <p className="text-sm text-[#94a3b8] mb-0.5">{alt.brand}</p>
-                  <p className="font-bold text-[#0f172a] group-hover:text-[#b8860b] leading-tight">
+                  <p className="text-sm text-textMuted mb-0.5">{alt.brand}</p>
+                  <p className="font-bold text-textPrimary group-hover:text-accent leading-tight">
                     {alt.name}
                   </p>
                 </Link>
@@ -48,20 +48,20 @@ export default function WatchAlternatives({ watch }: WatchAlternativesProps) {
                 {overallScore && (
                   <div className="flex items-center gap-1">
                     <span className="text-sm">⭐</span>
-                    <span className="font-semibold text-[#0f172a] text-sm">
+                    <span className="font-semibold text-textPrimary text-sm">
                       {overallScore.toFixed(1)}
                     </span>
-                    <span className="text-xs text-[#94a3b8]">/ 10</span>
+                    <span className="text-xs text-textMuted">/ 10</span>
                   </div>
                 )}
 
-                <p className="text-xs text-[#cbd5e1]">
+                <p className="text-xs text-borderStrong">
                   {reviews.length} review{reviews.length !== 1 ? 's' : ''}
                 </p>
 
                 <Link
                   href={`/compare/${compareSlug}`}
-                  className="mt-auto text-xs font-semibold text-[#b8860b] hover:underline"
+                  className="mt-auto text-xs font-semibold text-accent hover:underline"
                 >
                   Compare vs {watch.name} →
                 </Link>

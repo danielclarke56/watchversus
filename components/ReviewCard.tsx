@@ -18,22 +18,22 @@ export default function ReviewCard({ review, showWatch = true }: Props) {
       {showWatch && watch && (
         <Link
           href={`/watches/${watch.slug}`}
-          className="text-xs text-[#d4a853] font-semibold uppercase tracking-wider hover:text-[#e4c07a] transition-colors mb-2 block"
+          className="text-xs text-accent font-semibold uppercase tracking-wider hover:text-accentHover transition-colors mb-2 block"
         >
           {watch.brand} {watch.name}
         </Link>
       )}
 
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h4 className="font-semibold text-[#0f172a] text-sm leading-snug">{review.title}</h4>
+        <h4 className="font-semibold text-textPrimary text-sm leading-snug">{review.title}</h4>
         <StarRating rating={overallRating} size="sm" showNumber />
       </div>
 
-      <p className="text-[#475569] text-sm leading-relaxed line-clamp-3 mb-3">{review.body}</p>
+      <p className="text-textSecond text-sm leading-relaxed line-clamp-3 mb-3">{review.body}</p>
 
-      <div className="flex items-center justify-between text-xs text-[#94a3b8]">
+      <div className="flex items-center justify-between text-xs text-textMuted">
         <span>
-          <span className="text-[#0f172a] font-medium">{review.reviewer_name}</span>
+          <span className="text-textPrimary font-medium">{review.reviewer_name}</span>
           {' · '}
           {new Date(review.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>

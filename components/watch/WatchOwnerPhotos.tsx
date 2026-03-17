@@ -14,7 +14,7 @@ interface WatchOwnerPhotosProps {
  * - Upload button that opens modal
  * - Modal form with file input, watch model (auto-filled), optional fields
  * - Submits to /api/photos/submit (stubbed, returns success and logs to console)
- * 
+ *
  * Rules:
  * - Photos require manual approval before display
  * - No comments, no likes, no profiles
@@ -82,21 +82,21 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
   }
 
   return (
-    <section className="py-8 border-b border-[#e2e8f0]">
+    <section className="py-8 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-[#0f172a]">Real Owner Photos</h2>
+          <h2 className="text-2xl font-bold text-textPrimary">Real Owner Photos</h2>
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-[#0f172a] text-white rounded-lg font-semibold hover:bg-[#1e293b] transition-colors"
+            className="bg-accent text-white font-semibold text-sm px-4 py-2 rounded-md hover:bg-accentHover transition-colors"
           >
             + Add Your Photo
           </button>
         </div>
 
         {/* Photo Count Badge */}
-        <div className="mb-6 inline-block px-3 py-1 bg-[#f1f5f9] rounded-full">
-          <p className="text-sm font-semibold text-[#0f172a]">{photoCount} photos</p>
+        <div className="mb-6 inline-block px-3 py-1 bg-surfaceAlt rounded-full">
+          <p className="text-sm font-semibold text-textPrimary">{photoCount} photos</p>
         </div>
 
         {/* Photo Gallery Grid */}
@@ -104,16 +104,16 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
           {placeholderPhotos.map((photo) => (
             <div
               key={photo.id}
-              className="relative w-full aspect-square bg-[#f8fafc] rounded-lg border border-[#e2e8f0] overflow-hidden"
+              className="relative w-full aspect-square bg-surfaceAlt rounded-lg border border-border overflow-hidden"
             >
               <div className="flex items-center justify-center w-full h-full">
                 <div className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full border-2 border-[#e2e8f0] flex items-center justify-center">
-                    <svg className="w-6 h-6 text-[#cbd5e1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 mx-auto mb-2 rounded-full border-2 border-border flex items-center justify-center">
+                    <svg className="w-6 h-6 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <p className="text-xs text-[#94a3b8]">Photo {photo.id + 1}</p>
+                  <p className="text-xs text-textMuted">Photo {photo.id + 1}</p>
                 </div>
               </div>
             </div>
@@ -121,8 +121,8 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
         </div>
 
         {/* Info Box */}
-        <div className="mt-6 p-4 bg-[#eff6ff] rounded-lg border border-[#bfdbfe]">
-          <p className="text-sm text-[#1e40af]">
+        <div className="mt-6 p-4 bg-accentLight rounded-lg border border-accent/20">
+          <p className="text-sm text-textPrimary">
             📝 <strong>Note:</strong> All photos are reviewed before publication. Help other buyers by sharing how the watch looks on your wrist!
           </p>
         </div>
@@ -131,12 +131,12 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
       {/* Upload Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+          <div className="bg-surface rounded-lg shadow-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-[#0f172a]">Add Your Photo</h3>
+              <h3 className="text-xl font-bold text-textPrimary">Add Your Photo</h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-[#94a3b8] hover:text-[#0f172a]"
+                className="text-textMuted hover:text-textPrimary"
               >
                 ✕
               </button>
@@ -145,7 +145,7 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
             {submitSuccess ? (
               <div className="text-center py-6">
                 <div className="text-3xl mb-2">✓</div>
-                <p className="text-[#059669] font-semibold">
+                <p className="text-winner font-semibold">
                   Thanks! Your photo will appear after review.
                 </p>
               </div>
@@ -153,20 +153,20 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
               <form onSubmit={handlePhotoSubmit} className="space-y-4">
                 {/* Watch Model (auto-filled, read-only) */}
                 <div>
-                  <label className="block text-sm font-semibold text-[#0f172a] mb-1">
+                  <label className="block text-sm font-semibold text-textPrimary mb-1">
                     Watch Model
                   </label>
                   <input
                     type="text"
                     value={`${watch.brand} ${watch.name}`}
                     disabled
-                    className="w-full px-3 py-2 bg-[#f1f5f9] border border-[#e2e8f0] rounded-lg text-[#0f172a] text-sm"
+                    className="w-full px-3 py-2 bg-surfaceAlt border border-border rounded-sm text-textPrimary text-sm"
                   />
                 </div>
 
                 {/* File Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-[#0f172a] mb-1">
+                  <label className="block text-sm font-semibold text-textPrimary mb-1">
                     Photo *
                   </label>
                   <input
@@ -174,46 +174,46 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
                     name="image"
                     accept="image/*"
                     required
-                    className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-borderStrong rounded-sm text-sm focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 {/* Wrist Size (optional) */}
                 <div>
-                  <label className="block text-sm font-semibold text-[#0f172a] mb-1">
+                  <label className="block text-sm font-semibold text-textPrimary mb-1">
                     Wrist Size (optional)
                   </label>
                   <input
                     type="text"
                     name="wristSize"
                     placeholder="e.g., 7.5 inches"
-                    className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-borderStrong rounded-sm text-sm focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 {/* Strap/Bracelet (optional) */}
                 <div>
-                  <label className="block text-sm font-semibold text-[#0f172a] mb-1">
+                  <label className="block text-sm font-semibold text-textPrimary mb-1">
                     Strap / Bracelet (optional)
                   </label>
                   <input
                     type="text"
                     name="strapBracelet"
                     placeholder="e.g., Steel bracelet"
-                    className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-borderStrong rounded-sm text-sm focus:border-accent focus:outline-none"
                   />
                 </div>
 
                 {/* Note (optional, max 200 chars) */}
                 <div>
-                  <label className="block text-sm font-semibold text-[#0f172a] mb-1">
+                  <label className="block text-sm font-semibold text-textPrimary mb-1">
                     Your Note (optional, max 200 chars)
                   </label>
                   <textarea
                     name="note"
                     maxLength={200}
                     placeholder="What do you love about this watch on your wrist?"
-                    className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-sm resize-none"
+                    className="w-full px-3 py-2 border border-borderStrong rounded-sm text-sm resize-none focus:border-accent focus:outline-none"
                     rows={3}
                   />
                 </div>
@@ -223,14 +223,14 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 px-4 py-2 bg-[#f1f5f9] text-[#0f172a] rounded-lg font-semibold hover:bg-[#e2e8f0]"
+                    className="flex-1 px-4 py-2 bg-surfaceAlt text-textPrimary rounded-md font-semibold hover:bg-border transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 px-4 py-2 bg-[#0f172a] text-white rounded-lg font-semibold hover:bg-[#1e293b] disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-accent text-white rounded-md font-semibold hover:bg-accentHover disabled:opacity-50 transition-colors"
                   >
                     {isSubmitting ? 'Uploading...' : 'Submit Photo'}
                   </button>

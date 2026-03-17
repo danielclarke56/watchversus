@@ -132,10 +132,10 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
 
       {/* Compare strip — immediately below hero */}
       {quickCompareWatches.length > 0 && (
-        <section className="bg-[#f8fafc] border-b border-[#e2e8f0]">
+        <section className="bg-surfaceAlt border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <p className="text-sm font-semibold text-[#475569] shrink-0">Compare {watch.name} vs:</p>
+              <p className="text-sm font-semibold text-textSecond shrink-0">Compare {watch.name} vs:</p>
               <div className="flex flex-wrap gap-2">
                 {quickCompareWatches.map((other) => {
                   const slugs = [watch.slug, other.slug].sort()
@@ -144,17 +144,17 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
                     <Link
                       key={other.slug}
                       href={`/compare/${compareSlug}`}
-                      className="inline-flex items-center gap-1.5 bg-white border border-[#e2e8f0] hover:border-[#b8860b] text-[#0f172a] hover:text-[#b8860b] text-sm font-medium px-3 py-1.5 rounded-full transition-colors"
+                      className="inline-flex items-center gap-1.5 bg-surface border border-border hover:border-accent text-textPrimary hover:text-accent text-sm font-medium px-3 py-1.5 rounded-full transition-colors"
                     >
                       {other.brand} {other.name}
-                      <span className="text-[#b8860b]">→</span>
+                      <span className="text-accent">→</span>
                     </Link>
                   )
                 })}
               </div>
               <Link
                 href="/compare"
-                className="text-xs text-[#94a3b8] hover:text-[#b8860b] transition-colors sm:ml-auto shrink-0"
+                className="text-xs text-textMuted hover:text-accent transition-colors sm:ml-auto shrink-0"
               >
                 More comparisons →
               </Link>
@@ -188,16 +188,16 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
       <WatchWhatPeopleSay watch={watch} />
 
       {/* Existing Reviews Section */}
-      <section className="py-8 border-b border-[#e2e8f0]">
+      <section className="py-8 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">
+          <h2 className="text-2xl font-bold text-textPrimary mb-6">
             Community Reviews
             {reviews.length > 0 && (
-              <span className="text-[#94a3b8] font-normal text-base ml-2">({reviews.length})</span>
+              <span className="text-textMuted font-normal text-base ml-2">({reviews.length})</span>
             )}
           </h2>
           {reviews.length === 0 ? (
-            <div className="card p-6 text-center text-[#475569]">
+            <div className="card p-6 text-center text-textSecond">
               No reviews yet — be the first!
             </div>
           ) : (
@@ -211,7 +211,7 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
       </section>
 
       {/* User reviews from Redis */}
-      <div className="border-b border-[#e2e8f0]">
+      <div className="border-b border-border">
         <UserReviews watchId={watch.id} />
       </div>
 
