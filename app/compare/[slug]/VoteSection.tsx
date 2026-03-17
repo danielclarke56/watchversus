@@ -122,6 +122,15 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
             <span className="text-[#b8860b] font-bold">{pct1}%</span>
             <span className="text-[#94a3b8] font-bold">{pct2}%</span>
           </div>
+
+          {/* Winner banner — show if one watch ≥55% and votes ≥5 */}
+          {votes.total >= 5 && (pct1 >= 55 || pct2 >= 55) && (
+            <div className="mt-4 p-3 rounded-lg bg-gradient-to-r from-[#b8860b]/20 to-[#b8860b]/10 border border-[#b8860b]/40">
+              <p className="text-sm font-bold text-[#b8860b] text-center">
+                🏆 {pct1 >= 55 ? watch1Name : watch2Name} is leading ({pct1 >= 55 ? pct1 : pct2}% of {votes.total} vote{votes.total !== 1 ? 's' : ''})
+              </p>
+            </div>
+          )}
         </>
       )}
     </div>

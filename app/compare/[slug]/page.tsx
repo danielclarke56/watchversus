@@ -363,14 +363,45 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               })}
             </div>
 
-            {/* Quick Comparison Summary */}
-            <div className="bg-white/60 backdrop-blur border border-[#b8860b]/20 rounded-xl p-4 md:p-6 text-center">
-              <p className="text-[#475569] text-sm md:text-base">
-                {w1.price_new_usd.min < w2.price_new_usd.min
-                  ? `${w1.name} is ${formatPrice({ min: w2.price_new_usd.min - w1.price_new_usd.min, max: w2.price_new_usd.max - w1.price_new_usd.max })} cheaper`
-                  : `${w2.name} is ${formatPrice({ min: w1.price_new_usd.min - w2.price_new_usd.min, max: w1.price_new_usd.max - w2.price_new_usd.max })} cheaper`} •{' '}
-                {w1.water_resistance_m > w2.water_resistance_m ? `${w1.name} has better water resistance` : `${w2.name} has better water resistance`}
-              </p>
+            {/* Quick Comparison Summary — 4-stat grid */}
+            <div className="bg-white/60 backdrop-blur border border-[#b8860b]/20 rounded-xl p-4 md:p-6">
+              <div className="flex flex-wrap gap-3 justify-center">
+                {/* Price diff */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
+                  <span className="text-xs text-[#94a3b8] font-semibold">Price:</span>
+                  <span className="text-sm font-bold text-[#0f172a]">
+                    {w1.price_new_usd.min < w2.price_new_usd.min
+                      ? `${w1.name} is ${formatPrice({ min: w2.price_new_usd.min - w1.price_new_usd.min, max: w2.price_new_usd.max - w1.price_new_usd.max })} cheaper`
+                      : `${w2.name} is ${formatPrice({ min: w1.price_new_usd.min - w2.price_new_usd.min, max: w1.price_new_usd.max - w2.price_new_usd.max })} cheaper`}
+                  </span>
+                </div>
+
+                {/* Water resistance */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
+                  <span className="text-xs text-[#94a3b8] font-semibold">H2O:</span>
+                  <span className="text-sm font-bold text-[#0f172a]">
+                    {w1.water_resistance_m > w2.water_resistance_m ? `${w1.name} (${w1.water_resistance_m}m)` : `${w2.name} (${w2.water_resistance_m}m)`}
+                  </span>
+                </div>
+
+                {/* Score */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
+                  <span className="text-xs text-[#94a3b8] font-semibold">Score:</span>
+                  <span className="text-sm font-bold text-[#0f172a]">
+                    {w1.score > w2.score ? `${w1.name} (${w1.score}/10)` : `${w2.name} (${w2.score}/10)`}
+                  </span>
+                </div>
+
+                {/* Buy Again */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-[#b8860b]/10 border border-[#b8860b]/20 rounded-lg">
+                  <span className="text-xs text-[#94a3b8] font-semibold">Repurchase:</span>
+                  <span className="text-sm font-bold text-[#0f172a]">
+                    {w1.buy_again_pct > w2.buy_again_pct
+                      ? `${w1.name} (${w1.buy_again_pct}%)`
+                      : `${w2.name} (${w2.buy_again_pct}%)`}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -432,6 +463,47 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
         <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} />
 
+      </section>
+
+      {/* Pros & Cons */}
+      <section id="comparison-pros-cons" className="mb-10">
+        <h2 className="text-xl font-bold text-[#0f172a] mb-5">Pros &amp; Cons</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {[
+            { w: w1, pros: w1.pros, cons: w1.cons },
+            { w: w2, pros: w2.pros, cons: w2.cons },
+          ].map(({ w, pros, cons }) => (
+            <div key={w.id} className="card p-5">
+              <h3 className="font-bold text-[#0f172a] mb-4">{w.brand} {w.name}</h3>
+              {pros.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Pros</p>
+                  <ul className="space-y-1.5">
+                    {pros.map((p, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-[#475569]">
+                        <span className="text-emerald-500 mt-0.5 shrink-0">✓</span>
+                        <span>{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {cons.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">Cons</p>
+                  <ul className="space-y-1.5">
+                    {cons.map((c, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-[#475569]">
+                        <span className="text-red-400 mt-0.5 shrink-0">✗</span>
+                        <span>{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Spec comparison table */}
@@ -598,6 +670,31 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           </div>
         </section>
       )}
+
+      {/* Alternatives */}
+      {(() => {
+        const altSet = new Set([...(w1.alternatives || []), ...(w2.alternatives || [])])
+        const altSlugs = Array.from(altSet)
+          .filter((s: string) => s !== w1.slug && s !== w2.slug)
+          .slice(0, 6)
+        const altWatches = altSlugs.map(getWatchBySlug).filter(Boolean) as Watch[]
+        if (altWatches.length === 0) return null
+        return (
+          <section className="mb-10">
+            <h2 className="text-xl font-bold text-[#0f172a] mb-2">Explore Alternatives</h2>
+            <p className="text-sm text-[#475569] mb-5">Other watches worth considering in this category</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {altWatches.map((w: Watch) => (
+                <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-[#b8860b]/40 transition-colors group text-center">
+                  <p className="text-[10px] text-[#94a3b8] uppercase font-semibold mb-1">{w.brand}</p>
+                  <p className="text-xs font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">{w.name}</p>
+                  <p className="text-[10px] text-[#b8860b] font-medium mt-2">View →</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )
+      })()}
 
       {/* Custom compare CTA */}
       <div className="mt-8 text-center bg-white border border-[#e2e8f0] rounded-xl p-8">

@@ -13,6 +13,7 @@ interface ComparisonStickyNavProps {
 const sections = [
   { id: 'comparison-hero', label: 'Overview' },
   { id: 'comparison-verdict', label: 'Verdict' },
+  { id: 'comparison-pros-cons', label: 'Pros & Cons' },
   { id: 'comparison-specs', label: 'Specs' },
   { id: 'comparison-ratings', label: 'Ratings' },
   { id: 'comparison-faq', label: 'FAQ' },
