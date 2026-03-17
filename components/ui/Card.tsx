@@ -15,14 +15,13 @@ export function Card({
   hover = false,
   as: Component = 'div',
 }: CardProps) {
-  const hoverClass = hover
-    ? 'hover:border-accent/40 hover:shadow-sm transition-all duration-200'
-    : '';
+  const hoverClass = hover ? 'hover:shadow-sm transition-all duration-200' : '';
+  const borderClass = 'border border-[#F9F9F9]';
 
   return React.createElement(
     Component,
     {
-      className: `bg-surface border border-border rounded-lg overflow-hidden ${hoverClass} ${className}`,
+      className: `bg-surface ${borderClass} rounded-sm overflow-hidden ${hoverClass} ${className}`,
     },
     children
   );

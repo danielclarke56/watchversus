@@ -97,6 +97,7 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
             </Button>
           </div>
         </div>
+      </div>
       </Card>
   )
 }
