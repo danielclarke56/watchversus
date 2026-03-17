@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: base, priority: 1.0 },
     { url: `${base}/watches`, priority: 0.9 },
     { url: `${base}/compare`, priority: 0.9 },
+    { url: `${base}/rankings`, priority: 0.9 },
     { url: `${base}/brands`, priority: 0.85 },
     { url: `${base}/guides`, priority: 0.85 },
     { url: `${base}/reviews`, priority: 0.8 },
