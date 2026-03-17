@@ -521,6 +521,40 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         </section>
       )}
 
+      {/* Brand Hub Links */}
+      <section className="mb-10">
+        <h2 className="text-xl font-bold text-[#0f172a] mb-5">Explore These Brands</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Link
+            href={`/brands/${w1.brand.toLowerCase().replace(/\s+/g, '-')}`}
+            className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+          >
+            <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Brand Hub</p>
+            <h3 className="text-lg font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors mb-2">
+              {w1.brand}
+            </h3>
+            <p className="text-sm text-[#475569] mb-4">
+              Explore all {w1.brand} watches in our database and see how they compare
+            </p>
+            <p className="text-xs text-[#b8860b] font-medium inline-block">View Brand Hub →</p>
+          </Link>
+          
+          <Link
+            href={`/brands/${w2.brand.toLowerCase().replace(/\s+/g, '-')}`}
+            className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+          >
+            <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Brand Hub</p>
+            <h3 className="text-lg font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors mb-2">
+              {w2.brand}
+            </h3>
+            <p className="text-sm text-[#475569] mb-4">
+              Explore all {w2.brand} watches in our database and see how they compare
+            </p>
+            <p className="text-xs text-[#b8860b] font-medium inline-block">View Brand Hub →</p>
+          </Link>
+        </div>
+      </section>
+
       {/* Related brands footer */}
       {relatedBrands.length > 0 && (
         <section className="mb-10">

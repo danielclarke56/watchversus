@@ -1,6 +1,6 @@
 import { guides, Guide } from './guideData'
 import { brands, BrandData } from './brandData'
-import { watches } from './watches'
+import { watches, popularComparisons } from './watches'
 
 /**
  * Find guides that recommend watches from a specific brand
@@ -117,6 +117,37 @@ export function getGuidesForBrand(brandName: string): Guide[] {
       return watch && watch.brand === brandName
     })
   }).slice(0, 3)
+}
+
+/**
+ * Find ALL comparisons involving a specific watch slug (for deep internal linking)
+ */
+export function getAllComparisonsForWatch(watchSlug: string): Array<[string, string]> {
+  const comparisons: Array<[string, string]> = []
+  
+  popularComparisons.forEach(({ slug1, slug2 }: { slug1: string; slug2: string }) => {
+    if (slug1 === watchSlug) {
+      comparisons.push([slug1, slug2])
+    } else if (slug2 === watchSlug) {
+      comparisons.push([slug2, slug1])
+    }
+  })
+  
+  return comparisons
+}
+
+/**
+ * Get comparison slug from two watch slugs
+ */
+export function getComparisonSlug(slug1: string, slug2: string): string {
+  return [slug1, slug2].sort().join('-vs-')
+}
+
+/**
+ * Find top comparisons for a watch (max 5)
+ */
+export function getTopComparisonsForWatch(watchSlug: string, limit: number = 5): Array<[string, string]> {
+  return getAllComparisonsForWatch(watchSlug).slice(0, limit)
 }
 
 /**

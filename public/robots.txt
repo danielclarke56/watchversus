@@ -1,0 +1,9 @@
+# Allow all crawlers to access all content
+User-agent: *
+Allow: /
+
+# Specify sitemap location
+Sitemap: https://watchvswatch.com/sitemap.xml
+
+# Crawl-delay settings (optional, in seconds)
+Crawl-delay: 1

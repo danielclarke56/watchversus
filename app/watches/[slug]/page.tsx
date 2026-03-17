@@ -2,13 +2,14 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
+import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice } from '@/lib/watches'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import ReviewCard from '@/components/ReviewCard'
 import ReviewForm from './ReviewForm'
 import UserReviews from './UserReviews'
 import WatchImageZoom from '@/components/WatchImageZoom'
+import { getAllComparisonsForWatch, getComparisonSlug, getGuidesForBrand } from '@/lib/relatedContent'
 
 export async function generateStaticParams() {
   return watches.map((w) => ({ slug: w.slug }))
@@ -48,8 +49,18 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
   const avgRatings = calcAverageRatings(reviews)
   const overallRating = avgRatings ? calcOverallRating(avgRatings) : null
 
-  const relatedComparisons = popularComparisons
-    .filter((c) => c.slug1 === watch.slug || c.slug2 === watch.slug)
+  // Get ALL comparisons for this watch (for deep linking)
+  const allComparisons = getAllComparisonsForWatch(watch.slug)
+  
+  // Get top comparisons for the sidebar
+  const topComparisons = allComparisons.slice(0, 6)
+  
+  // Get guides mentioning this watch
+  const relatedGuides = getGuidesForBrand(watch.brand)
+  
+  // Get other watches from the same brand
+  const otherBrandWatches = watches
+    .filter((w) => w.brand === watch.brand && w.slug !== watch.slug)
     .slice(0, 4)
 
   const jsonLd = {
@@ -310,23 +321,71 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
           </div>
 
           {/* Related comparisons */}
-          {relatedComparisons.length > 0 && (
+          {topComparisons.length > 0 && (
             <div className="card p-5">
-              <h3 className="text-[#0f172a] font-semibold mb-4">Related Comparisons</h3>
+              <h3 className="text-[#0f172a] font-semibold mb-2">How {watch.name} Compares</h3>
+              {allComparisons.length > topComparisons.length && (
+                <p className="text-[#94a3b8] text-xs mb-4">Showing {topComparisons.length} of {allComparisons.length} comparisons</p>
+              )}
               <div className="space-y-2">
-                {relatedComparisons.map((c) => {
-                  const other = c.slug1 === watch.slug ? c.slug2 : c.slug1
-                  const otherSlug = other
+                {topComparisons.map(([s1, s2]) => {
+                  const otherWatch = watches.find((w) => w.slug === (s1 === watch.slug ? s2 : s1))
+                  if (!otherWatch) return null
+                  const compSlug = getComparisonSlug(s1, s2)
                   return (
                     <Link
-                      key={`${c.slug1}-${c.slug2}`}
-                      href={`/compare/${c.slug1}-vs-${c.slug2}`}
+                      key={compSlug}
+                      href={`/compare/${compSlug}`}
                       className="block text-sm text-[#475569] hover:text-[#b8860b] transition-colors py-1 border-b border-[#e2e8f0] last:border-0"
                     >
-                      vs {otherSlug.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                      vs {otherWatch.name}
                     </Link>
                   )
                 })}
+              </div>
+              {allComparisons.length > topComparisons.length && (
+                <Link
+                  href={`/watches/${watch.slug}#all-comparisons`}
+                  className="block text-sm text-[#b8860b] hover:text-[#d4af37] transition-colors py-3 border-t border-[#e2e8f0] text-center font-semibold mt-2"
+                >
+                  View all {allComparisons.length} comparisons →
+                </Link>
+              )}
+            </div>
+          )}
+
+          {/* Other watches from this brand */}
+          {otherBrandWatches.length > 0 && (
+            <div className="card p-5">
+              <h3 className="text-[#0f172a] font-semibold mb-4">Other {watch.brand} Watches</h3>
+              <div className="space-y-2">
+                {otherBrandWatches.map((w) => (
+                  <Link
+                    key={w.slug}
+                    href={`/watches/${w.slug}`}
+                    className="block text-sm text-[#475569] hover:text-[#b8860b] transition-colors py-1 border-b border-[#e2e8f0] last:border-0"
+                  >
+                    {w.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Guides mentioning this watch/brand */}
+          {relatedGuides.length > 0 && (
+            <div className="card p-5">
+              <h3 className="text-[#0f172a] font-semibold mb-4">Guides Featuring {watch.brand}</h3>
+              <div className="space-y-2">
+                {relatedGuides.map((guide) => (
+                  <Link
+                    key={guide.slug}
+                    href={`/guides/${guide.slug}`}
+                    className="block text-sm text-[#475569] hover:text-[#b8860b] transition-colors py-1 border-b border-[#e2e8f0] last:border-0"
+                  >
+                    {guide.title}
+                  </Link>
+                ))}
               </div>
             </div>
           )}

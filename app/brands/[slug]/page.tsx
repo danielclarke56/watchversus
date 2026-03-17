@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { brands } from '@/lib/brandData'
-import { getGuidesForBrand, getRelatedBrandsByContext } from '@/lib/relatedContent'
+import { getGuidesForBrand, getRelatedBrandsByContext, getAllComparisonsForWatch, getComparisonSlug } from '@/lib/relatedContent'
 
 export async function generateStaticParams() {
   return brands.map((b) => ({ slug: b.slug }))
@@ -115,48 +115,75 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           </div>
         </div>
 
-        {/* Watches in Database */}
+        {/* Watches in Database with Comparisons */}
         {brandWatches.length > 0 ? (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-[#0f172a] mb-6">
               {brand.name} Watches in Our Database
               <span className="ml-3 text-sm font-normal text-[#94a3b8]">({brandWatches.length} model{brandWatches.length !== 1 ? 's' : ''})</span>
             </h2>
-            <div className="space-y-3">
-              {brandWatches.map((watch) => (
-                <Link
-                  key={watch.slug}
-                  href={`/watches/${watch.slug}`}
-                  className="card p-4 flex items-center gap-4 hover:border-[#b8860b]/40 transition-colors group"
-                >
-                  <div className="w-14 h-14 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center overflow-hidden shrink-0">
-                    {watch.image ? (
-                      <Image
-                        src={watch.image}
-                        alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
-                        width={56}
-                        height={56}
-                        className="w-full h-full object-contain p-1"
-                      />
-                    ) : (
-                      <span className="text-[#cbd5e1] text-xl">⌚</span>
+            <div className="space-y-6">
+              {brandWatches.map((watch) => {
+                const watchComparisons = getAllComparisonsForWatch(watch.slug).slice(0, 4)
+                return (
+                  <div key={watch.slug}>
+                    <Link
+                      href={`/watches/${watch.slug}`}
+                      className="card p-4 flex items-center gap-4 hover:border-[#b8860b]/40 transition-colors group"
+                    >
+                      <div className="w-14 h-14 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center overflow-hidden shrink-0">
+                        {watch.image ? (
+                          <Image
+                            src={watch.image}
+                            alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+                            width={56}
+                            height={56}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        ) : (
+                          <span className="text-[#cbd5e1] text-xl">⌚</span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[#0f172a] font-semibold group-hover:text-[#b8860b] transition-colors">{watch.name}</p>
+                        <div className="flex flex-wrap gap-3 mt-1 text-xs text-[#94a3b8]">
+                          <span>Ref. {watch.reference}</span>
+                          <span>{watch.case_diameter_mm}mm</span>
+                          <span className="capitalize">{watch.movement_type}</span>
+                          <span>{watch.water_resistance_m}m WR</span>
+                        </div>
+                      </div>
+                      <div className="text-right ml-2 shrink-0">
+                        <p className="text-[#b8860b] font-semibold text-sm">{formatPrice(watch.price_new_usd)}</p>
+                        <p className="text-[#94a3b8] text-xs">new</p>
+                      </div>
+                    </Link>
+                    
+                    {/* Watch-specific comparisons */}
+                    {watchComparisons.length > 0 && (
+                      <div className="ml-4 mt-2 pl-4 border-l-2 border-[#e2e8f0]">
+                        <p className="text-xs font-semibold text-[#94a3b8] mb-2 uppercase">Compare with:</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {watchComparisons.map(([s1, s2]) => {
+                            const otherWatch = watches.find((w) => w.slug === (s1 === watch.slug ? s2 : s1))
+                            if (!otherWatch) return null
+                            const compSlug = getComparisonSlug(s1, s2)
+                            return (
+                              <Link
+                                key={compSlug}
+                                href={`/compare/${compSlug}`}
+                                className="text-xs bg-[#f8fafc] border border-[#e2e8f0] rounded px-3 py-2 hover:bg-[#eff6ff] hover:border-[#b8860b]/40 transition-colors text-[#475569] hover:text-[#b8860b] font-medium truncate"
+                              >
+                                vs {otherWatch.name}
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[#0f172a] font-semibold group-hover:text-[#b8860b] transition-colors">{watch.name}</p>
-                    <div className="flex flex-wrap gap-3 mt-1 text-xs text-[#94a3b8]">
-                      <span>Ref. {watch.reference}</span>
-                      <span>{watch.case_diameter_mm}mm</span>
-                      <span className="capitalize">{watch.movement_type}</span>
-                      <span>{watch.water_resistance_m}m WR</span>
-                    </div>
-                  </div>
-                  <div className="text-right ml-2 shrink-0">
-                    <p className="text-[#b8860b] font-semibold text-sm">{formatPrice(watch.price_new_usd)}</p>
-                    <p className="text-[#94a3b8] text-xs">new</p>
-                  </div>
-                </Link>
-              ))}
+                )
+              })}
             </div>
           </section>
         ) : (
