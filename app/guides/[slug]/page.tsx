@@ -91,19 +91,48 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-[#fffbf0] to-white border-b border-[#e2e8f0] mb-0">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Breadcrumb */}
+          <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
+            <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
+            <span>/</span>
+            <Link href="/guides" className="hover:text-[#b8860b] transition-colors">Guides</Link>
+            <span>/</span>
+            <span className="text-[#0f172a]">{guide.h1}</span>
+          </nav>
+
+          {/* Category Badge + H1 */}
+          {(() => {
+            const allText = [
+              guide.h1,
+              guide.intro,
+              guide.description,
+              ...guide.buyingGuide.map(s => s.heading + ' ' + s.content),
+              ...guide.faq.map(f => f.question + ' ' + f.answer),
+              guide.conclusion,
+            ].join(' ')
+            const readTime = Math.ceil(allText.split(' ').length / 200)
+            return (
+              <div className="flex items-center gap-3 mb-4">
+                <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#b8860b]/10 text-[#b8860b] border border-[#b8860b]/30">
+                  Buying Guide
+                </span>
+                <span className="text-xs text-[#94a3b8] flex items-center gap-1">
+                  📖 {readTime} min read
+                </span>
+              </div>
+            )
+          })()}
+
+          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-4">{guide.h1}</h1>
+          <p className="text-lg text-[#475569] leading-relaxed">{guide.description}</p>
+        </div>
+      </div>
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
-        {/* Breadcrumb */}
-        <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/guides" className="hover:text-[#b8860b] transition-colors">Guides</Link>
-          <span>/</span>
-          <span className="text-[#0f172a]">{guide.h1}</span>
-        </nav>
-
-        {/* H1 + Intro */}
-        <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-6">{guide.h1}</h1>
+        {/* Intro */}
         <div className="text-[#475569] leading-relaxed mb-10 space-y-4">
           {guide.intro.split('\n\n').map((para, i) => (
             <p key={i}>{para.trim()}</p>

@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getBrandsForComparison } from '@/lib/relatedContent'
+import { generateComparisonBadges, getBadgeClasses } from '@/lib/comparisonBadges'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
 import VoteSection from './VoteSection'
-import WatchImageZoom from '@/components/WatchImageZoom'
 
 
 
@@ -245,55 +246,106 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         <span className="text-[#0f172a]">{w1.name} vs {w2.name}</span>
       </nav>
 
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-2">
-          {w1.brand} {w1.name} <span className="text-[#b8860b]">vs</span> {w2.brand} {w2.name}
-        </h1>
-        <p className="text-[#475569]">Head-to-head comparison · Community ratings · Pricing</p>
-      </div>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-b from-[#fffbf0] to-white border border-[#e2e8f0] rounded-xl overflow-hidden mb-10 shadow-sm">
+        <div className="px-6 md:px-8 py-8">
+          {/* Title */}
+          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-2 text-center">
+            {w1.brand} {w1.name} <span className="text-[#b8860b]">vs</span> {w2.brand} {w2.name}
+          </h1>
+          <p className="text-center text-[#475569] mb-8">Head-to-head comparison · Community ratings · Pricing</p>
 
-      {/* Watch headers */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        {[w1, w2].map((w, i) => {
-          const overall = i === 0 ? overall1 : overall2
-          const revCount = i === 0 ? reviews1.length : reviews2.length
-          return (
-            <div key={w.id} className="card p-6 text-center">
-              {w.image ? (
-                <WatchImageZoom
-                  src={w.image}
-                  alt={w.imageAlt ?? `${w.brand} ${w.name}`}
-                  watchName={`${w.brand} ${w.name}`}
-                  containerClassName="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] aspect-square max-w-[280px] w-full mx-auto flex items-center justify-center mb-4 overflow-hidden"
-                  imgClassName="w-full h-full object-contain p-2"
-                />
-              ) : (
-                <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] aspect-square max-w-[280px] w-full mx-auto flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-[#e2e8f0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" strokeWidth="1" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 7v5l3 3" />
-                  </svg>
+          {/* Watch Cards Side-by-side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {[w1, w2].map((w, i) => {
+              const overall = i === 0 ? overall1 : overall2
+              const revCount = i === 0 ? reviews1.length : reviews2.length
+              const badges = i === 0 ? generateComparisonBadges(w1, w2) : generateComparisonBadges(w2, w1)
+              return (
+                <div key={w.id} className="relative">
+                  <div className="bg-white border border-[#e2e8f0] rounded-lg p-6">
+                    {/* Badges */}
+                    {badges.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {badges.map((badge) => (
+                          <span
+                            key={badge.text}
+                            className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${getBadgeClasses(badge.color)}`}
+                          >
+                            {badge.icon} {badge.text}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Watch Image */}
+                    {w.image ? (
+                      <div className="bg-[#f8fafc] rounded-lg border border-[#e2e8f0] aspect-square flex items-center justify-center mb-4 overflow-hidden">
+                        <Image
+                          src={w.image}
+                          alt={w.imageAlt ?? `${w.brand} ${w.name}`}
+                          width={240}
+                          height={240}
+                          className="w-full h-full object-contain p-4"
+                          priority={i === 0}
+                        />
+                      </div>
+                    ) : (
+                      <div className="bg-[#f8fafc] rounded-lg border border-[#e2e8f0] aspect-square flex items-center justify-center mb-4">
+                        <svg className="w-12 h-12 text-[#e2e8f0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <circle cx="12" cy="12" r="9" strokeWidth="1" />
+                          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth="1" d="M12 7v5l3 3" />
+                        </svg>
+                      </div>
+                    )}
+
+                    {/* Watch Info */}
+                    <p className="text-xs text-[#b8860b] font-bold uppercase tracking-wider mb-1">{w.brand}</p>
+                    <h2 className="text-xl font-bold text-[#0f172a] mb-2">{w.name}</h2>
+                    <p className="text-[#94a3b8] text-xs mb-4">Ref. {w.reference}</p>
+
+                    {/* Price Highlight */}
+                    <div className="bg-[#f8fafc] rounded-lg p-3 mb-4">
+                      <p className="text-xs text-[#94a3b8] mb-1">Price (New)</p>
+                      <p className="text-lg font-bold text-[#0f172a]">{formatPrice(w.price_new_usd)}</p>
+                    </div>
+
+                    {/* Key Specs */}
+                    <div className="space-y-2 text-sm mb-4">
+                      <div className="flex justify-between text-[#475569]">
+                        <span className="text-[#94a3b8]">Case:</span>
+                        <span className="font-medium text-[#0f172a]">{w.case_diameter_mm}mm {w.case_material}</span>
+                      </div>
+                      <div className="flex justify-between text-[#475569]">
+                        <span className="text-[#94a3b8]">Movement:</span>
+                        <span className="font-medium text-[#0f172a]">{w.movement_type}</span>
+                      </div>
+                      <div className="flex justify-between text-[#475569]">
+                        <span className="text-[#94a3b8]">Water Resistance:</span>
+                        <span className="font-medium text-[#0f172a]">{w.water_resistance_m}m</span>
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    {overall ? (
+                      <div className="flex flex-col items-center gap-1 py-3 border-t border-[#e2e8f0] mt-4">
+                        <div className="text-2xl font-bold text-[#b8860b]">{overall.toFixed(1)}</div>
+                        <StarRating rating={overall} size="sm" />
+                        <span className="text-xs text-[#94a3b8]">{revCount} review{revCount !== 1 ? 's' : ''}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-[#94a3b8] text-center block py-3 border-t border-[#e2e8f0] mt-4">No reviews yet</span>
+                    )}
+
+                    <Link href={`/watches/${w.slug}`} className="block w-full text-center text-xs text-[#b8860b] hover:text-[#b8860b]/80 font-semibold mt-4 pt-4 border-t border-[#e2e8f0] transition-colors">
+                      Full specs →
+                    </Link>
+                  </div>
                 </div>
-              )}
-              <p className="text-xs text-[#b8860b] font-bold uppercase tracking-wider mb-1">{w.brand}</p>
-              <h2 className="text-lg font-bold text-[#0f172a] mb-1">{w.name}</h2>
-              <p className="text-[#94a3b8] text-xs mb-3">Ref. {w.reference}</p>
-              {overall ? (
-                <div className="flex flex-col items-center gap-1">
-                  <div className="text-2xl font-bold text-[#b8860b]">{overall.toFixed(1)}</div>
-                  <StarRating rating={overall} size="sm" />
-                  <span className="text-xs text-[#94a3b8]">{revCount} review{revCount !== 1 ? 's' : ''}</span>
-                </div>
-              ) : (
-                <span className="text-xs text-[#94a3b8]">No reviews yet</span>
-              )}
-              <Link href={`/watches/${w.slug}`} className="text-xs text-[#b8860b] hover:underline block mt-3">
-                Full specs →
-              </Link>
-            </div>
-          )
-        })}
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Quick Verdict — Enhanced */}

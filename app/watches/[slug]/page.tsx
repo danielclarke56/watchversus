@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
 import RatingBar from '@/components/RatingBar'
@@ -117,13 +118,37 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Breadcrumb */}
-      <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
-        <Link href="/watches" className="hover:text-[#b8860b] transition-colors">Watches</Link>
-        <span>/</span>
-        <span className="text-[#0f172a]">{watch.brand} {watch.name}</span>
-      </nav>
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-[#0f172a] to-[#1e293b] h-96 flex items-center justify-center overflow-hidden">
+        {/* Background image with overlay */}
+        {watch.image && (
+          <>
+            <Image
+              src={watch.image}
+              alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+              fill
+              className="object-cover opacity-20"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0f172a]/90 to-[#1e293b]/80" />
+          </>
+        )}
+
+        {/* Content */}
+        <div className="relative z-10 text-center text-white">
+          <p className="text-[#b8860b] font-bold uppercase tracking-widest text-sm mb-3">{watch.brand}</p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3">{watch.name}</h1>
+          <p className="text-lg text-[#cbd5e1] max-w-2xl mx-auto">{watch.description}</p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Breadcrumb */}
+        <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
+          <Link href="/watches" className="hover:text-[#b8860b] transition-colors">Watches</Link>
+          <span>/</span>
+          <span className="text-[#0f172a]">{watch.brand} {watch.name}</span>
+        </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left column */}
