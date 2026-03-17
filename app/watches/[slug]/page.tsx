@@ -112,10 +112,10 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
       />
 
       {/* 1. Hero Section - watch image, name (H1), score, would-buy %, votes, verdict */}
-      <WatchHero watch={watch} overallRating={overallRating} reviewCount={reviews.length} />
+      <WatchHero watch={watch} reviewCount={reviews.length} />
 
       {/* 2. Quick Actions - Rate this watch (👍 👎) + Would you buy again (Y/N) */}
-      <WatchQuickActions watchName={`${watch.brand} ${watch.name}`} />
+      <WatchQuickActions watch={watch} />
 
       {/* 3. Pros/Cons - Two-column layout with bullet points */}
       <WatchProsConsSections watch={watch} />
@@ -135,8 +135,8 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
       {/* 8. Alternatives Section - 3–5 similar watches from same brand */}
       <WatchAlternatives watch={watch} />
 
-      {/* 9. "What People Say" - Tag-cloud style pros/cons (MVP: static) */}
-      <WatchWhatPeopleSay />
+      {/* 9. "What People Say" - Tag-cloud style pros/cons */}
+      <WatchWhatPeopleSay watch={watch} />
 
       {/* Existing Reviews Section */}
       <section className="py-8 border-b border-[#e2e8f0]">

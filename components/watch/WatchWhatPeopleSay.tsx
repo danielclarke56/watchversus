@@ -1,27 +1,17 @@
+import type { Watch } from '@/lib/types'
+
+interface WatchWhatPeopleSayProps {
+  watch: Watch
+}
+
 /**
  * "What People Say" Section - Tag-cloud style list of most common pros/cons
- * For MVP, this is fully static/manual
- * TODO: Pull from aggregated review sentiment or watch.pros/cons fields once available
+ * Pulls from watch.pros and watch.cons fields
  */
 
-export default function WatchWhatPeopleSay() {
-  // TODO: Aggregate from reviews table or computed field
-  // For MVP: static content
-  
-  const commonPros = [
-    'Build Quality',
-    'Resale Value',
-    'Reliability',
-    'Design',
-    'Water Resistant',
-  ]
-
-  const commonCons = [
-    'Expensive',
-    'Difficult to Buy',
-    'Heavy',
-    'Service Costs',
-  ]
+export default function WatchWhatPeopleSay({ watch }: WatchWhatPeopleSayProps) {
+  const commonPros = watch.pros
+  const commonCons = watch.cons
 
   return (
     <section className="py-8 border-b border-[#e2e8f0]">

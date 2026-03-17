@@ -8,14 +8,14 @@ interface WatchAlternativesProps {
 }
 
 /**
- * Alternatives Section - Show 3–5 similar watches
- * Logic: Find watches in the same brand (category) 
- * TODO: If no category field exists, pull watches from same brand family
+ * Alternatives Section - Show recommended alternatives based on watch data
+ * Uses the watch.alternatives array (array of watch slugs) to find recommended watches
  */
 export default function WatchAlternatives({ watch }: WatchAlternativesProps) {
-  // Get watches from the same brand, excluding current watch
-  const similarWatches = watches
-    .filter((w) => w.brand === watch.brand && w.slug !== watch.slug)
+  // Get watches from the alternatives array by slug lookup
+  const similarWatches = watch.alternatives
+    .map((slug) => watches.find((w) => w.slug === slug))
+    .filter((w) => w !== undefined)
     .slice(0, 5)
 
   // If no watches in same brand, stub gracefully

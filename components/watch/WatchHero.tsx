@@ -3,7 +3,6 @@ import type { Watch } from '@/lib/types'
 
 interface WatchHeroProps {
   watch: Watch
-  overallRating: number | null
   reviewCount: number
 }
 
@@ -11,11 +10,7 @@ interface WatchHeroProps {
  * Hero Section - First impression with key metrics
  * Shows: watch image, name (H1), score, would-buy-again %, vote count, one-line verdict
  */
-export default function WatchHero({ watch, overallRating, reviewCount }: WatchHeroProps) {
-  // TODO: Pull from watch data once schema includes these fields
-  const wouldBuyAgainPercentage = 82
-  const oneLineVerdict = 'The quintessential everyday luxury tool watch'
-
+export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
   return (
     <section className="py-8 border-b border-[#e2e8f0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,17 +51,15 @@ export default function WatchHero({ watch, overallRating, reviewCount }: WatchHe
 
             {/* Key Metrics Row */}
             <div className="flex flex-wrap gap-3 text-sm md:text-base">
-              {overallRating !== null ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⭐</span>
-                  <span className="font-semibold text-[#0f172a]">{overallRating.toFixed(1)}</span>
-                  <span className="text-[#94a3b8]">/ 10</span>
-                </div>
-              ) : null}
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⭐</span>
+                <span className="font-semibold text-[#0f172a]">{watch.score.toFixed(1)}</span>
+                <span className="text-[#94a3b8]">/ 10</span>
+              </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-lg">👍</span>
-                <span className="font-semibold text-[#0f172a]">{wouldBuyAgainPercentage}%</span>
+                <span className="font-semibold text-[#0f172a]">{watch.buy_again_pct}%</span>
                 <span className="text-[#94a3b8]">would buy again</span>
               </div>
 
@@ -78,7 +71,7 @@ export default function WatchHero({ watch, overallRating, reviewCount }: WatchHe
 
             {/* One-line Verdict */}
             <p className="text-lg text-[#475569] italic">
-              &quot;{oneLineVerdict}&quot;
+              &quot;{watch.tagline}&quot;
             </p>
 
             {/* Watch Reference & Year */}

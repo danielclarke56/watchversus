@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import type { Watch } from '@/lib/types'
 
 interface WatchQuickActionsProps {
-  watchName: string
+  watch: Watch
 }
 
 /**
@@ -13,7 +14,7 @@ interface WatchQuickActionsProps {
  * 
  * Hooks into Upstash Redis if available, otherwise local state stub
  */
-export default function WatchQuickActions({ watchName }: WatchQuickActionsProps) {
+export default function WatchQuickActions({ watch }: WatchQuickActionsProps) {
   const [rateVote, setRateVote] = useState<'up' | 'down' | null>(null)
   const [buyAgainVote, setBuyAgainVote] = useState<'yes' | 'no' | null>(null)
   const [showRateThank, setShowRateThank] = useState(false)
@@ -25,7 +26,7 @@ export default function WatchQuickActions({ watchName }: WatchQuickActionsProps)
     
     // TODO: Hook into Upstash Redis voting via /api/vote endpoint
     // For now, local state + stub
-    console.log(`Voted ${vote} on ${watchName}`)
+    console.log(`Voted ${vote} on ${watch.slug}`)
 
     setTimeout(() => setShowRateThank(false), 3000)
   }
@@ -35,7 +36,7 @@ export default function WatchQuickActions({ watchName }: WatchQuickActionsProps)
     setShowBuyThank(true)
 
     // TODO: Hook into Upstash Redis voting via /api/vote endpoint
-    console.log(`Buy again: ${vote} on ${watchName}`)
+    console.log(`Buy again: ${vote} on ${watch.slug}`)
 
     setTimeout(() => setShowBuyThank(false), 3000)
   }
