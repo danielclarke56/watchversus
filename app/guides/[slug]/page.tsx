@@ -43,6 +43,30 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
     .filter((c) => relatedSlugs.has(c.slug1) || relatedSlugs.has(c.slug2))
     .slice(0, 6)
 
+  // Compute all pairs between recommended watches that exist in popularComparisons
+  const recSlugList = guide.recommendations.map((r) => r.slug)
+  const internalComparisons: typeof popularComparisons = []
+  for (let i = 0; i < recSlugList.length; i++) {
+    for (let j = i + 1; j < recSlugList.length; j++) {
+      const found = popularComparisons.find(
+        (c) =>
+          (c.slug1 === recSlugList[i] && c.slug2 === recSlugList[j]) ||
+          (c.slug1 === recSlugList[j] && c.slug2 === recSlugList[i])
+      )
+      if (found) internalComparisons.push(found)
+    }
+  }
+  // Merge internal pairs first, then other related — dedupe, max 6
+  const seenComps = new Set<string>()
+  const topComparisons = [...internalComparisons, ...relatedComparisons]
+    .filter((c) => {
+      const key = `${c.slug1}-${c.slug2}`
+      if (seenComps.has(key)) return false
+      seenComps.add(key)
+      return true
+    })
+    .slice(0, 6)
+
   // Find related guides and brands
   const relatedGuides = getRelatedGuidesByBrand(guide.slug)
   const brandsInThisGuide = getBrandsInGuide(guide)
@@ -139,6 +163,14 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           ))}
         </div>
 
+        {/* Rankings Strip */}
+        <div className="mb-8 flex items-center justify-between bg-[#f8fafc] border border-[#e2e8f0] rounded-xl px-5 py-3">
+          <p className="text-sm text-[#475569]">See how these watches rank against the full database</p>
+          <Link href="/rankings" className="text-sm font-semibold text-[#b8860b] hover:underline shrink-0 ml-4">
+            View Rankings →
+          </Link>
+        </div>
+
         {/* Recommendations */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Our Picks</h2>
@@ -173,23 +205,23 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                       >
                         Full specs →
                       </Link>
-                      {(() => {
-                        const comp = popularComparisons.find(
-                          (c) => c.slug1 === watch.slug || c.slug2 === watch.slug
-                        )
-                        if (!comp) return null
-                        const otherSlug = comp.slug1 === watch.slug ? comp.slug2 : comp.slug1
-                        const otherWatch = watches.find((w) => w.slug === otherSlug)
-                        if (!otherWatch) return null
-                        return (
-                          <Link
-                            href={`/compare/${comp.slug1}-vs-${comp.slug2}`}
-                            className="text-xs text-[#475569] hover:text-[#b8860b] hover:underline transition-colors"
-                          >
-                            Compare vs {otherWatch.brand} {otherWatch.name} →
-                          </Link>
-                        )
-                      })()}
+                      {popularComparisons
+                        .filter((c) => c.slug1 === watch.slug || c.slug2 === watch.slug)
+                        .slice(0, 2)
+                        .map((comp) => {
+                          const otherSlug = comp.slug1 === watch.slug ? comp.slug2 : comp.slug1
+                          const otherWatch = watches.find((w) => w.slug === otherSlug)
+                          if (!otherWatch) return null
+                          return (
+                            <Link
+                              key={`${comp.slug1}-${comp.slug2}`}
+                              href={`/compare/${comp.slug1}-vs-${comp.slug2}`}
+                              className="text-xs text-[#475569] hover:text-[#b8860b] hover:underline transition-colors"
+                            >
+                              vs {otherWatch.brand} {otherWatch.name} →
+                            </Link>
+                          )
+                        })}
                     </div>
                   </div>
                 </div>
@@ -197,6 +229,41 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
             ))}
           </div>
         </section>
+
+        {/* Compare These Watches — surfaced above buying guide */}
+        {topComparisons.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold text-[#0f172a] mb-2">Compare These Watches Head-to-Head</h2>
+            <p className="text-sm text-[#475569] mb-5">Side-by-side specs, community votes, and expert scores</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {topComparisons.map((c) => {
+                const wa = watches.find((w) => w.slug === c.slug1)
+                const wb = watches.find((w) => w.slug === c.slug2)
+                if (!wa || !wb) return null
+                return (
+                  <Link
+                    key={`${c.slug1}-${c.slug2}`}
+                    href={`/compare/${c.slug1}-vs-${c.slug2}`}
+                    className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
+                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wa.name}</p>
+                      </div>
+                      <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                      <div className="flex-1 min-w-0 text-right">
+                        <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
+                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wb.name}</p>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-[#b8860b] font-medium mt-2">Compare →</p>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Buying Guide */}
         <section className="mb-12">
