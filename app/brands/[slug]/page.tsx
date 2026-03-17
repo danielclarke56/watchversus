@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { brands } from '@/lib/brandData'
+import { getGuidesForBrand, getRelatedBrandsByContext } from '@/lib/relatedContent'
 
 export async function generateStaticParams() {
   return brands.map((b) => ({ slug: b.slug }))
@@ -39,6 +40,10 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   const brandComparisons = popularComparisons
     .filter((c) => brandSlugs.has(c.slug1) || brandSlugs.has(c.slug2))
     .slice(0, 6)
+
+  // Find relevant guides and related brands
+  const relevantGuides = getGuidesForBrand(brand.name).slice(0, 3)
+  const relatedBrands = getRelatedBrandsByContext(brand.name).slice(0, 4)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -219,6 +224,51 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
             ))}
           </div>
         </section>
+
+        {/* Relevant Guides Footer */}
+        {relevantGuides.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Buying Guides Featuring {brand.name}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {relevantGuides.map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/guides/${g.slug}`}
+                  className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+                >
+                  <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Buying Guide</p>
+                  <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">
+                    {g.title}
+                  </h3>
+                  <p className="text-xs text-[#475569] mt-3 line-clamp-1">{g.description}</p>
+                  <p className="text-xs text-[#b8860b] font-medium mt-4 inline-block">Read Guide →</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Related Brands Footer */}
+        {relatedBrands.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Similar Brands to Explore</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {relatedBrands.map((b) => (
+                <Link
+                  key={b.slug}
+                  href={`/brands/${b.slug}`}
+                  className="card p-4 hover:border-[#b8860b]/40 transition-colors group text-center"
+                >
+                  <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                    {b.name}
+                  </h3>
+                  <p className="text-xs text-[#475569] mt-2 line-clamp-2">{b.heroFact}</p>
+                  <p className="text-xs text-[#b8860b] font-medium mt-3 inline-block">Explore Brand →</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* CTA */}
         <div className="text-center bg-white border border-[#e2e8f0] rounded-xl p-8">

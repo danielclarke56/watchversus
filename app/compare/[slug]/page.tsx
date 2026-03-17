@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
+import { getBrandsForComparison } from '@/lib/relatedContent'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
@@ -177,6 +178,9 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       answer: `${w1.brand} and ${w2.brand} both command strong secondary markets. Pre-owned pricing shows an estimated resale value of ${formatPrice(w1.price_preowned_usd)} for the ${w1.name} and ${formatPrice(w2.price_preowned_usd)} for the ${w2.name}. Condition, service history, and box/papers significantly impact resale value for both models.`,
     },
   ]
+
+  // Get related brands for internal linking footer
+  const relatedBrands = getBrandsForComparison(slug1, slug2)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -432,6 +436,28 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">{g.title}</h3>
                 <p className="text-xs text-[#475569] mt-3 line-clamp-1">{g.description}</p>
                 <p className="text-xs text-[#b8860b] font-medium mt-4 inline-block">Read Guide →</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Related brands footer */}
+      {relatedBrands.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-xl font-bold text-[#0f172a] mb-5">Explore Other Brands</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {relatedBrands.map((b) => (
+              <Link
+                key={b.slug}
+                href={`/brands/${b.slug}`}
+                className="card p-4 hover:border-[#b8860b]/40 transition-colors group text-center"
+              >
+                <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                  {b.name}
+                </h3>
+                <p className="text-xs text-[#475569] mt-2 line-clamp-2">{b.heroFact}</p>
+                <p className="text-xs text-[#b8860b] font-medium mt-3 inline-block">Explore Brand →</p>
               </Link>
             ))}
           </div>

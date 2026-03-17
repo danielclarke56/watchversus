@@ -82,6 +82,21 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
                 bestRating: '5',
                 worstRating: '1',
               },
+              review: reviews.slice(0, 5).map((r) => ({
+                '@type': 'Review',
+                reviewRating: {
+                  '@type': 'Rating',
+                  ratingValue: calcOverallRating(r.ratings).toFixed(1),
+                  bestRating: '5',
+                  worstRating: '1',
+                },
+                author: {
+                  '@type': 'Person',
+                  name: r.reviewer_name,
+                },
+                reviewBody: r.title + '. ' + r.body,
+                datePublished: r.date,
+              })),
             }
           : {}),
       },
