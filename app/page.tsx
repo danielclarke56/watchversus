@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { watches, getAllReviews, popularComparisons, getWatchBySlug, formatPrice } from '@/lib/watches'
 import { brands } from '@/lib/brandData'
+import { topN } from '@/lib/rankings'
 import WatchCard from '@/components/WatchCard'
 import ReviewCard from '@/components/ReviewCard'
 import type { Metadata } from 'next'
@@ -16,6 +17,7 @@ export default function HomePage() {
   const recentReviews = getAllReviews().slice(0, 3)
   const featuredWatches = watches.slice(0, 4)
   const topComparisons = popularComparisons.slice(0, 6)
+  const topRankedWatches = topN(watches, 6)
   const w1 = getWatchBySlug('rolex-submariner-41')!
   const w2 = getWatchBySlug('tudor-black-bay-58')!
 
@@ -197,6 +199,40 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Best Watches by Budget */}
+      <section className="bg-white border-y border-[#e2e8f0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-[#0f172a]">Best Watches by Budget</h2>
+              <p className="text-[#475569] text-sm mt-1">Expert picks at every price point</p>
+            </div>
+            <Link href="/guides" className="text-sm text-[#b8860b] hover:text-[#d4a853] hidden sm:block">
+              All buying guides →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { href: '/guides/best-watches-under-500', label: 'Under $500', sub: 'Best value picks' },
+              { href: '/guides/best-watches-under-1000', label: 'Under $1,000', sub: 'The sweet spot' },
+              { href: '/guides/best-watches-under-3000', label: 'Under $3,000', sub: 'Premium territory' },
+              { href: '/guides/best-watches-under-5000', label: 'Under $5,000', sub: 'Luxury entry' },
+            ].map(({ href, label, sub }) => (
+              <Link
+                key={href}
+                href={href}
+                className="card p-5 text-center hover:border-[#b8860b]/40 transition-colors group"
+              >
+                <p className="text-2xl mb-2">⌚</p>
+                <p className="text-[#0f172a] font-bold text-sm group-hover:text-[#b8860b] transition-colors">{label}</p>
+                <p className="text-xs text-[#475569] mt-1">{sub}</p>
+                <p className="text-xs text-[#b8860b] font-medium mt-3">See Picks →</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Recent reviews */}
       <section className="bg-white border-y border-[#e2e8f0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -214,6 +250,29 @@ export default function HomePage() {
               <ReviewCard key={r.id} review={r} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Top Ranked Watches */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-[#0f172a]">Top Ranked Watches</h2>
+            <p className="text-[#475569] text-sm mt-1">Highest-rated across specs, value, and community scores</p>
+          </div>
+          <Link href="/rankings" className="text-sm text-[#b8860b] hover:text-[#d4a853] hidden sm:block">
+            Full rankings →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {topRankedWatches.map((w) => (
+            <WatchCard key={w.id} watch={w} />
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link href="/rankings" className="btn-outline">
+            View All Rankings
+          </Link>
         </div>
       </section>
 
@@ -267,6 +326,19 @@ export default function HomePage() {
               </Link>
             )
           })}
+        </div>
+      </section>
+
+      {/* Compare Any Two Watches CTA */}
+      <section className="bg-[#0f172a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
+          <h2 className="text-3xl font-bold text-white mb-3">Compare Any Two Watches</h2>
+          <p className="text-[#94a3b8] text-lg mb-7 max-w-xl mx-auto">
+            Side-by-side specs, community votes, and an expert verdict — in seconds.
+          </p>
+          <Link href="/compare" className="btn-gold text-base px-8 py-3">
+            Start Comparing →
+          </Link>
         </div>
       </section>
 
