@@ -1,3 +1,5 @@
+import 'server-only'
+
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
@@ -12,6 +14,9 @@ export interface BlogPost {
   tags: string[]
   heroImage: string
   readingTime: string
+  category?: string
+  author?: string
+  featured?: boolean
   content: string
 }
 
@@ -31,6 +36,9 @@ export function getAllPosts(): BlogPost[] {
       tags: (data.tags as string[]) ?? [],
       heroImage: (data.heroImage as string) ?? '',
       readingTime: (data.readingTime as string) ?? '',
+      category: (data.category as string) ?? '',
+      author: (data.author as string) ?? '',
+      featured: (data.featured as boolean) ?? false,
       content,
     }
   })
@@ -53,6 +61,9 @@ export function getPostBySlug(slug: string): BlogPost | null {
     tags: (data.tags as string[]) ?? [],
     heroImage: (data.heroImage as string) ?? '',
     readingTime: (data.readingTime as string) ?? '',
+    category: (data.category as string) ?? '',
+    author: (data.author as string) ?? '',
+    featured: (data.featured as boolean) ?? false,
     content,
   }
 }

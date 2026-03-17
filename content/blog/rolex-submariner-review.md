@@ -3,9 +3,12 @@ title: "Rolex Submariner Review: Is It Still Worth It in 2026?"
 description: "Rolex Submariner review: history, specs, movement quality, value retention, price. Compare alternatives. Is it worth buying in 2026? Expert analysis."
 date: "2026-03-15"
 slug: "rolex-submariner-review"
+category: "Review"
 tags: ["Rolex Submariner", "watch review", "dive watch", "luxury watch", "Rolex", "value retention"]
 heroImage: '/images/watches/rolex-submariner-41.png'
 readingTime: '9 min read'
+featured: false
+author: "WatchVsWatch Editorial"
 ---
 
 # Rolex Submariner Review: Is It Still Worth It in 2026?

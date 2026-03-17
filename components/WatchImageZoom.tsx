@@ -30,6 +30,7 @@ export default function WatchImageZoom({ src, alt, watchName, containerClassName
         className={`relative group cursor-zoom-in ${containerClassName ?? ''}`}
         aria-label={`Enlarge image of ${watchName}`}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}
@@ -54,6 +55,7 @@ export default function WatchImageZoom({ src, alt, watchName, containerClassName
             className="flex flex-col items-center gap-4 p-6"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={src}
               alt={alt}

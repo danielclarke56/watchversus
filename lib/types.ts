@@ -22,6 +22,27 @@ export interface Watch {
   description: string
   image?: string
   imageAlt?: string
+
+  // MVP page fields — required
+  primary_category: string // e.g. "dive", "dress", "sport", "gmt", "chronograph", "field"
+  tagline: string // one-line sell: "The quintessential dive watch"
+  score: number // e.g. 8.7 — out of 10
+  buy_again_pct: number // e.g. 82 — integer 0–100
+  pros: string[] // 3–5 bullet points
+  cons: string[] // 3–5 bullet points
+  verdict: {
+    who_its_for: string // 1–2 sentence description
+    who_should_skip: string // 1–2 sentence description
+    final_take: string // short paragraph (3–4 sentences)
+  }
+  alternatives: string[] // array of watch slugs
+
+  // Optional — populated over time
+  rating_count?: number // total thumbs up/down votes received
+  buy_again_count?: number // total yes/no votes received
+  comparison_slugs?: string[] // slugs of compare pages that feature this watch
+  official_images?: string[] // additional product image URLs
+  owner_photo_count?: number // number of approved owner photos
 }
 
 export interface ReviewRatings {
