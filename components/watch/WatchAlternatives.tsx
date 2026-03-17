@@ -34,21 +34,21 @@ export default function WatchAlternatives({ watch }: WatchAlternativesProps) {
             const avgRatings = reviews.length > 0 ? calcAverageRatings(reviews) : null
             const overallScore = avgRatings ? calcOverallRating(avgRatings) : null
 
+            const slugs = [watch.slug, alt.slug].sort()
+            const compareSlug = `${slugs[0]}-vs-${slugs[1]}`
             return (
-              <Link
-                key={alt.slug}
-                href={`/watches/${alt.slug}`}
-                className="card p-4 hover:border-[#b8860b] transition-colors group"
-              >
-                <p className="text-sm text-[#94a3b8] mb-1">{alt.brand}</p>
-                <p className="font-bold text-[#0f172a] mb-2 group-hover:text-[#b8860b]">
-                  {alt.name}
-                </p>
+              <div key={alt.slug} className="card p-4 flex flex-col gap-2">
+                <Link href={`/watches/${alt.slug}`} className="group">
+                  <p className="text-sm text-[#94a3b8] mb-0.5">{alt.brand}</p>
+                  <p className="font-bold text-[#0f172a] group-hover:text-[#b8860b] leading-tight">
+                    {alt.name}
+                  </p>
+                </Link>
 
                 {overallScore && (
-                  <div className="flex items-center gap-1 mb-2">
+                  <div className="flex items-center gap-1">
                     <span className="text-sm">⭐</span>
-                    <span className="font-semibold text-[#0f172a]">
+                    <span className="font-semibold text-[#0f172a] text-sm">
                       {overallScore.toFixed(1)}
                     </span>
                     <span className="text-xs text-[#94a3b8]">/ 10</span>
@@ -58,7 +58,14 @@ export default function WatchAlternatives({ watch }: WatchAlternativesProps) {
                 <p className="text-xs text-[#cbd5e1]">
                   {reviews.length} review{reviews.length !== 1 ? 's' : ''}
                 </p>
-              </Link>
+
+                <Link
+                  href={`/compare/${compareSlug}`}
+                  className="mt-auto text-xs font-semibold text-[#b8860b] hover:underline"
+                >
+                  Compare vs {watch.name} →
+                </Link>
+              </div>
             )
           })}
         </div>
