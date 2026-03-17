@@ -320,6 +320,18 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
             </Link>
           </div>
 
+          {/* Brand Hub / Pillar Page Link */}
+          <div className="card p-5 bg-gradient-to-br from-[#b8860b]/5 to-[#d4a853]/5 border-[#b8860b]/20">
+            <h3 className="text-[#0f172a] font-semibold mb-2">Explore {watch.brand}</h3>
+            <p className="text-[#475569] text-xs mb-3">Discover all {watch.brand} watches, comparisons, and guides</p>
+            <Link
+              href={`/brands/${watch.brand.toLowerCase().replace(/\s+/g, '-')}`}
+              className="block w-full text-center btn-gold text-sm"
+            >
+              {watch.brand} Hub →
+            </Link>
+          </div>
+
           {/* Related comparisons */}
           {topComparisons.length > 0 && (
             <div className="card p-5">

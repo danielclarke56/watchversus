@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { watches, getAllReviews, popularComparisons, getWatchBySlug, formatPrice } from '@/lib/watches'
+import { brands } from '@/lib/brandData'
 import WatchCard from '@/components/WatchCard'
 import ReviewCard from '@/components/ReviewCard'
 import type { Metadata } from 'next'
@@ -236,6 +237,36 @@ export default function HomePage() {
           <Link href="/watches" className="btn-outline">
             Browse All 50 Watches
           </Link>
+        </div>
+      </section>
+
+      {/* Explore by Brand — Topic Cluster Architecture */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-[#0f172a]">Explore by Brand</h2>
+            <p className="text-[#475569] text-sm mt-1">Discover our complete brand guides and pillar pages</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {brands.map((brand) => {
+            const brandWatchCount = watches.filter(w => w.brand === brand.name).length
+            return (
+              <Link
+                key={brand.slug}
+                href={`/brands/${brand.slug}`}
+                className="group card p-4 text-center hover:border-[#b8860b] hover:shadow-md transition-all duration-200"
+              >
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#f8fafc] border border-[#e2e8f0] mb-3 mx-auto group-hover:bg-[#fffbf0] group-hover:border-[#b8860b]/30 transition-colors">
+                  <span className="text-lg">🏛️</span>
+                </div>
+                <h3 className="font-bold text-[#0f172a] text-sm group-hover:text-[#b8860b] transition-colors">
+                  {brand.name}
+                </h3>
+                <p className="text-xs text-[#94a3b8] mt-2">{brandWatchCount} watches</p>
+              </Link>
+            )
+          })}
         </div>
       </section>
 

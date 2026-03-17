@@ -375,6 +375,28 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           </div>
         </section>
 
+        {/* Brand Hubs / Pillar Pages — Topic Cluster Linking */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 my-10">
+          {[w1, w2].map((w) => {
+            const brandSlug = w.brand.toLowerCase().replace(/\s+/g, '-')
+            return (
+              <div key={w.id} className="card p-5 md:p-6 border-l-4 border-[#b8860b] bg-gradient-to-br from-[#fffbf0]/50 to-white hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="text-xs text-[#b8860b] font-black uppercase tracking-wider mb-1">Explore Brand</p>
+                    <h3 className="text-lg font-bold text-[#0f172a]">{w.brand} Hub</h3>
+                  </div>
+                  <span className="text-2xl">🏛️</span>
+                </div>
+                <p className="text-sm text-[#475569] mb-4">All {w.brand} watches, comparisons, and guides in one place</p>
+                <Link href={`/brands/${brandSlug}`} className="inline-block w-full text-center px-4 py-2.5 bg-[#b8860b] text-white font-semibold rounded-lg hover:bg-[#d4a853] transition-colors">
+                  Visit {w.brand} Pillar Page →
+                </Link>
+              </div>
+            )
+          })}
+        </section>
+
       {/* Quick Verdict — Enhanced */}
       <section id="comparison-verdict" className="bg-[#fffbf0] border border-[#b8860b]/40 rounded-xl p-6 md:p-8 my-10 shadow-md">
         {/* Header */}

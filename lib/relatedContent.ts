@@ -176,3 +176,64 @@ export function getRelatedBrandsByContext(brandName: string): BrandData[] {
     .filter((b): b is BrandData => !!b)
     .slice(0, 4)
 }
+
+/**
+ * Get ALL watches for a specific brand (pillar page support)
+ */
+export function getWatchesForBrand(brandName: string) {
+  return watches.filter((w) => w.brand === brandName)
+}
+
+/**
+ * Get ALL comparisons featuring a specific brand
+ */
+export function getComparisonsForBrand(brandName: string): Array<[string, string]> {
+  const comparisons: Array<[string, string]> = []
+  const brandWatches = new Set(getWatchesForBrand(brandName).map((w) => w.slug))
+
+  popularComparisons.forEach(({ slug1, slug2 }: { slug1: string; slug2: string }) => {
+    if (brandWatches.has(slug1) || brandWatches.has(slug2)) {
+      comparisons.push([slug1, slug2])
+    }
+  })
+
+  return comparisons
+}
+
+/**
+ * Get top brands for a guide (with limit)
+ */
+export function getTopBrandsForGuide(guideSlug: string, limit: number = 5): BrandData[] {
+  const guide = guides.find((g) => g.slug === guideSlug)
+  if (!guide) return []
+
+  const brandsInGuide = getBrandsInGuide(guide)
+  return brandsInGuide.slice(0, limit)
+}
+
+/**
+ * Get watches from the same brand as a given watch (excluding the watch itself)
+ */
+export function getWatchesFromSameBrand(watchSlug: string, limit: number = 4): typeof watches {
+  const watch = watches.find((w) => w.slug === watchSlug)
+  if (!watch) return []
+
+  return watches
+    .filter((w) => w.brand === watch.brand && w.slug !== watchSlug)
+    .slice(0, limit)
+}
+
+/**
+ * Get the most consolidated related content for a watch (for footer linking)
+ */
+export function getMostRelevantContentForWatch(watchSlug: string) {
+  const watch = watches.find((w) => w.slug === watchSlug)
+  if (!watch) return { comparisons: [], brand: null, guides: [], relatedWatches: [] }
+
+  const comparisons = getTopComparisonsForWatch(watchSlug, 5)
+  const brand = brands.find((b) => b.name === watch.brand)
+  const guides = getGuidesByBrand(watch.brand).slice(0, 3)
+  const relatedWatches = getWatchesFromSameBrand(watchSlug, 3)
+
+  return { comparisons, brand, guides, relatedWatches }
+}
