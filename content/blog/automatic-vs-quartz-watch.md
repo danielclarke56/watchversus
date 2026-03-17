@@ -105,12 +105,6 @@ Most serious collectors own both. A quartz Casio G-Shock for travel and beach da
 
 ---
 
-## Watches Worth Considering
+---
 
-If you're exploring your options:
-
-- [Seiko 5 Sports vs. Seiko Prospex](/compare/seiko-5-sports-vs-seiko-prospex) — both automatic, different use cases
-- [Rolex Submariner vs. Omega Seamaster](/compare/rolex-submariner-vs-omega-seamaster-300m) — the automatic benchmark comparison
-- [Browse all watches](/watches/) — filter by movement type
-
-The best watch is the one you wear. Start there.
+Ready to compare? [Browse all watches](/watches/) and use the movement filter to see automatics and quartz side by side, or head to [Compare](/compare/) to put any two watches head-to-head.

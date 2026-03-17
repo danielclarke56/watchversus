@@ -115,10 +115,4 @@ The most important rule: **don't buy a watch you don't want to wear, hoping it a
 
 ---
 
-## Where to Compare Specific Models
-
-- [Rolex Submariner vs. Omega Seamaster](/compare/rolex-submariner-vs-omega-seamaster-300m)
-- [Rolex Submariner vs. Tudor Black Bay](/compare/rolex-submariner-vs-tudor-black-bay)
-- [Patek Aquanaut vs. AP Royal Oak](/compare/patek-philippe-aquanaut-vs-audemars-piguet-royal-oak)
-- [Browse all watch comparisons](/compare/)
-- [Explore individual watches](/watches/)
+Ready to explore? Browse [all watches](/watches/) and [compare any two](/compare/) head-to-head to see real specs, movement details, and community ratings side by side.

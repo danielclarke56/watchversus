@@ -91,13 +91,9 @@ Historical comparison: a ref. 16610 (the 2000s Submariner) bought new for ~$4,00
 
 The Seamaster has an excellent movement (Co-Axial Master Chronometer), ceramic bezel, and a legitimate dive watch pedigree. It's the better choice if you find the Submariner design boring or want something slightly different. The Submariner holds value more aggressively; the Seamaster is easier to actually buy at retail.
 
-[Full comparison: Rolex Submariner vs. Omega Seamaster 300m](/compare/rolex-submariner-vs-omega-seamaster-300m)
-
 ### vs. Tudor Black Bay (~$3,500–$4,500)
 
 Tudor is owned by Rolex. The Black Bay uses a manufacture movement and shares some DNA. It's a third of the price, easier to acquire, and a genuinely excellent watch. If the Submariner is financially out of reach, the Black Bay is the rational alternative — not a consolation prize.
-
-[Full comparison: Rolex Submariner vs. Tudor Black Bay](/compare/rolex-submariner-vs-tudor-black-bay)
 
 ### vs. Seiko Marinemaster (~$1,200)
 
@@ -120,5 +116,3 @@ It's the wrong watch if you're buying purely for status or expecting it to outpe
 ## Verdict
 
 **9.2/10.** The Rolex Submariner earns its reputation. The movement, the build quality, the wearing experience, and the long-term value retention are best-in-class at the price point. It costs what it costs — and it's worth it.
-
-[View the Rolex Submariner on WatchVsWatch](/watches/rolex-submariner) | [Compare it to alternatives](/compare/)
