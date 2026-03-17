@@ -47,19 +47,19 @@ export default function AboutPage() {
           </h2>
           <div className="text-[#475569] space-y-3 leading-relaxed">
             <p>
-              Reviews on WatchVsWatch are submitted by community members who own or have owned the watches they review.
-              We don&apos;t compensate reviewers. We don&apos;t require accounts or verification.
+              Reviews on WatchVsWatch are submitted by authenticated community members who own or have owned the watches
+              they review. We don&apos;t compensate reviewers, and all reviews are stored securely in our backend database
+              and instantly available to the community.
             </p>
             <p>
-              Each review rates the watch across five dimensions that matter to real owners:
+              Each review includes:
             </p>
             <ul className="list-none space-y-2 ml-2">
               {[
-                ['Value for Money', 'Does the watch deliver on its price point?'],
-                ['Build Quality', 'Materials, finishing, bracelet, tolerances'],
-                ['Movement Reliability', 'Accuracy, service intervals, repairability'],
-                ['Daily Wearability', 'Size, comfort, versatility across occasions'],
-                ['Resale Strength', 'How well does it hold value on the secondary market?'],
+                ['Star Rating', '1–5 stars representing your overall assessment'],
+                ['Title', 'A short summary of your experience'],
+                ['Detailed Review', 'Your thoughts on value, build quality, reliability, wearability, and resale value'],
+                ['Ownership Duration', 'How long you&apos;ve owned the watch (optional)'],
               ].map(([name, desc]) => (
                 <li key={name} className="flex gap-3">
                   <span className="text-[#b8860b] shrink-0 mt-0.5">→</span>
@@ -68,8 +68,8 @@ export default function AboutPage() {
               ))}
             </ul>
             <p className="text-[#94a3b8] text-sm mt-4">
-              Reviews are currently stored locally in your browser. We&apos;re building backend infrastructure to
-              aggregate community reviews globally — coming soon.
+              To submit a review, simply sign in with your account. Your review is published after a quick moderation
+              check to prevent spam.
             </p>
           </div>
         </section>
