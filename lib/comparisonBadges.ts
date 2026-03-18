@@ -53,7 +53,7 @@ export function generateComparisonBadges(watch: Watch, otherWatch: Watch): Badge
 
 export function getBadgeClasses(color: string): string {
   const map: { [key: string]: string } = {
-    gold: 'bg-[#b8860b]/10 text-[#b8860b] border-[#b8860b]/30',
+    gold: 'bg-[#5C5C5C]/10 text-[#5C5C5C] border-[#5C5C5C]/30',
     blue: 'bg-blue-50 text-blue-700 border-blue-200',
     green: 'bg-green-50 text-green-700 border-green-200',
     purple: 'bg-purple-50 text-purple-700 border-purple-200',

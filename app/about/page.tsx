@@ -115,7 +115,7 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="mt-12 text-center bg-gradient-to-r from-[#b8860b]/10 to-[#d4a853]/10 border border-[#b8860b]/20 rounded-xl p-8">
+      <div className="mt-12 text-center bg-[#F0F0F0] border border-[#E8E8E8] rounded-xl p-8">
         <h3 className="text-[#0f172a] font-bold text-xl mb-2">Ready to find your perfect watch?</h3>
         <p className="text-[#475569] mb-5">Take our 2-minute quiz or start comparing watches side-by-side</p>
         <div className="flex flex-wrap gap-3 justify-center">

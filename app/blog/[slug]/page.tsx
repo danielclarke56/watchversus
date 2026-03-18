@@ -143,12 +143,12 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         {/* Article body */}
         <article className="max-w-3xl mx-auto prose prose-lg prose-slate
           prose-headings:font-bold prose-headings:text-[#0f172a]
-          prose-h2:border-l-4 prose-h2:border-[#d4a853] prose-h2:pl-4 prose-h2:ml-0
+          prose-h2:border-l-4 prose-h2:border-[#5C5C5C] prose-h2:pl-4 prose-h2:ml-0
           prose-p:text-[#334155] prose-p:leading-8 prose-p:text-[1.05rem]
           prose-strong:text-[#0f172a]
-          prose-blockquote:italic prose-blockquote:border-l-4 prose-blockquote:border-[#d4a853] prose-blockquote:bg-[#fdf3dc] prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:text-[#475569] prose-blockquote:not-italic
+          prose-blockquote:italic prose-blockquote:border-l-4 prose-blockquote:border-[#5C5C5C] prose-blockquote:bg-[#F0F0F0] prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:text-[#475569] prose-blockquote:not-italic
           prose-li:text-[#334155]
-          prose-a:text-[#b8860b] prose-a:no-underline hover:prose-a:underline
+          prose-a:text-[#5C5C5C] prose-a:no-underline hover:prose-a:underline
           prose-hr:border-[#e2e8f0]
           max-w-none"
         >
@@ -200,7 +200,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
           <Link
             href="/compare"
-            className="flex-1 block bg-[#d4a853] text-[#0f172a] font-bold text-center px-6 py-4 rounded-xl hover:bg-[#c49a42] transition-colors"
+            className="flex-1 block bg-[#5C5C5C] text-white font-bold text-center px-6 py-4 rounded-xl hover:bg-[#404040] transition-colors"
           >
             Compare watches side by side →
           </Link>

@@ -247,7 +247,7 @@ export default function QuizClient({ watches }: Props) {
         </div>
         <div className="h-1.5 bg-[#e2e8f0] rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#b8860b] to-[#d4a853] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#5C5C5C] to-[#8A8A8A] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

@@ -23,7 +23,7 @@ export default function StarRating({ rating, size = 'md', showNumber = false }: 
           <svg className={`${starSize} text-accent`} viewBox="0 0 24 24">
             <defs>
               <linearGradient id={`partial-${Math.round(partial * 10)}`}>
-                <stop offset={`${partial * 100}%`} stopColor="#B8860B" />
+                <stop offset={`${partial * 100}%`} stopColor="#5C5C5C" />
                 <stop offset={`${partial * 100}%`} stopColor="#E2E8F0" />
               </linearGradient>
             </defs>

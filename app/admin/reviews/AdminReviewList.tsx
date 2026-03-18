@@ -86,7 +86,7 @@ export default function AdminReviewList({ initialReviews, watchNames }: Props) {
               <button
                 onClick={() => act('approve', r.watchId, r.id)}
                 disabled={loading === r.id}
-                className="px-3 py-1.5 text-xs rounded-lg bg-[#b8860b] text-white font-semibold hover:bg-[#d4a853] transition-colors disabled:opacity-50"
+                className="px-3 py-1.5 text-xs rounded-lg bg-[#5C5C5C] text-white font-semibold hover:bg-[#404040] transition-colors disabled:opacity-50"
               >
                 Approve
               </button>

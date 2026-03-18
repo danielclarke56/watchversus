@@ -126,7 +126,7 @@ export default function BlogIndex() {
                         </span>
                       ))}
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-[#d4a853] transition-colors">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-white/80 transition-colors">
                       {hero.title}
                     </h2>
                     <p className="text-white/85 text-sm sm:text-base leading-relaxed mb-4 max-w-2xl">
@@ -138,7 +138,7 @@ export default function BlogIndex() {
                       </time>
                       <span className="text-white/40">·</span>
                       <span className="text-white/70 text-xs font-medium">{hero.readingTime}</span>
-                      <span className="ml-2 inline-block bg-[#d4a853] text-[#0f172a] text-sm font-semibold px-4 py-1.5 rounded-full group-hover:bg-white transition-colors">
+                      <span className="ml-2 inline-block bg-white/20 text-white text-sm font-semibold px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-[#0f172a] transition-colors">
                         Read article →
                       </span>
                     </div>
