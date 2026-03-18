@@ -136,6 +136,7 @@ export const popularComparisons = [
   { slug1: 'rolex-yacht-master-40', slug2: 'longines-hydroconquest-41' },
   { slug1: 'rolex-datejust-36', slug2: 'omega-aqua-terra-38' },
   { slug1: 'rolex-datejust-36', slug2: 'longines-master-collection-40' },
+  { slug1: 'rolex-datejust-36', slug2: 'cartier-santos' },
 
   // Budget & Mid-Range
   { slug1: 'seiko-5-sports-srpe55', slug2: 'tissot-prx-40' },
