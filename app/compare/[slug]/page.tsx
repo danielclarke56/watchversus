@@ -196,7 +196,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
     },
     {
       question: `How do the movements compare?`,
-      answer: `The ${w1.brand} ${w1.name} uses a ${w1.movement_type} ${w1.movement_caliber} with ${w1.power_reserve_hours ? `${w1.power_reserve_hours} hours` : 'quartz'} power reserve. The ${w2.brand} ${w2.name} features a ${w2.movement_type} ${w2.movement_caliber}${w2.power_reserve_hours ? ` with ${w2.power_reserve_hours} hours` : ''} power reserve. ${w1.movement_type !== 'quartz' && w2.movement_type !== 'quartz' ? 'Both offer traditional mechanical craftsmanship.' : 'Check movement specifications for specific features like chronograph or GMT functionality.'}`,
+      answer: `The ${w1.brand} ${w1.name} uses a ${w1.movement_type} ${w1.movement_caliber} with ${w1.power_reserve_hours ? (w1.power_reserve_hours + ' hours') : 'quartz'} power reserve. The ${w2.brand} ${w2.name} features a ${w2.movement_type} ${w2.movement_caliber}${w2.power_reserve_hours ? (' with ' + w2.power_reserve_hours + ' hours') : ''} power reserve. ${w1.movement_type !== 'quartz' && w2.movement_type !== 'quartz' ? 'Both offer traditional mechanical craftsmanship.' : 'Check movement specifications for specific features like chronograph or GMT functionality.'}`,
     },
     {
       question: `Which holds value better?`,
@@ -397,7 +397,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                       <Link href={`/watches/${w.slug}`} className="block w-full text-center py-3 px-4 bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all duration-200">
                         View Full Specs →
                       </Link>
-                    </div>
+                    </Card>
                   </div>
                 )
               })}
@@ -442,7 +442,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                   </span>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </section>
 
@@ -746,7 +746,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           Start a New Comparison
         </Link>
       </div>
-    </div>
+    </Container>
     </>
   )
 }
