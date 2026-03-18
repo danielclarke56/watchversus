@@ -6,6 +6,7 @@ import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRati
 import { guides } from '@/lib/guideData'
 import { getBrandsForComparison } from '@/lib/relatedContent'
 import { generateComparisonBadges } from '@/lib/comparisonBadges'
+import { comparisonMetaDescriptions } from '@/data/comparisons'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
@@ -75,30 +76,28 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!w1 || !w2) return {}
 
   const year = new Date().getFullYear()
-  const priceDiff = Math.abs(w1.price_new_usd.min - w2.price_new_usd.min)
-  const cheaper = w1.price_new_usd.min <= w2.price_new_usd.min ? w1 : w2
-  const dearer = cheaper === w1 ? w2 : w1
-  const diffLabel = priceDiff > 50
-    ? ` ${cheaper.brand} ${cheaper.name} starts ${formatPrice({ min: priceDiff, max: priceDiff })} cheaper.`
-    : ` Both priced similarly at ${formatPrice(w1.price_new_usd)}.`
-
   const canonicalUrl = `https://watchvswatch.com/compare/${slug1}-vs-${slug2}`
+  
+  // Use optimized meta description from comparisons.ts, fallback to generated
+  const customDescription = comparisonMetaDescriptions[params.slug]
+  const description = customDescription || `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Compare specs, movement, pricing & design. Find the perfect luxury watch for you.`
+  
   return {
     title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better? (${year})`,
-    description: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — specs, scores, and community votes compared.${diffLabel} Find out which wins in ${year}.`,
+    description: description,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better? | WatchVsWatch`,
-      description: `Side-by-side: ${w1.brand} ${w1.name} (${formatPrice(w1.price_new_usd)}) vs ${w2.brand} ${w2.name} (${formatPrice(w2.price_new_usd)}). Specs, movement, water resistance, and votes. Which watch wins?`,
+      description: description,
       url: canonicalUrl,
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better?`,
-      description: `Specs, community ratings, and pricing compared. ${dearer.brand} ${dearer.name} vs ${cheaper.brand} ${cheaper.name} — find your winner.`,
+      description: description,
     },
   }
 }
