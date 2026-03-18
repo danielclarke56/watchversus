@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getBrandsForComparison } from '@/lib/relatedContent'
-import { generateComparisonBadges, getBadgeClasses } from '@/lib/comparisonBadges'
+import { generateComparisonBadges } from '@/lib/comparisonBadges'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
@@ -14,9 +14,7 @@ import ComparisonStickyNav from './ComparisonStickyNav'
 import { Container } from '@/components/ui/Container'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { SpecRow } from '@/components/ui/SpecRow'
-import { ResultBar } from '@/components/ui/ResultBar'
 
 
 
@@ -559,7 +557,6 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         {SPEC_ROWS.map((row, i) => {
           const v1 = row.fn(w1)
           const v2 = row.fn(w2)
-          const differ = v1 !== v2
           return (
             <SpecRow
               key={row.label}
