@@ -33,6 +33,9 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   'omega-seamaster-300m-vs-panerai-luminor-44-pam01312':
     'Omega Seamaster vs Panerai Luminor: Mediterranean grace meets Italian precision. Compare lume, case design & movement reputation.',
   
+  'omega-seamaster-300m-vs-tag-heuer-aquaracer-300':
+    'Omega Seamaster 300M vs TAG Heuer Aquaracer 300: Swiss diver rivalry. Compare in-house movement precision, dive credentials, brand prestige & price.',
+  
   // Tudor comparisons
   'tudor-black-bay-58-vs-seiko-prospex-spb143':
     'Tudor Black Bay 58 vs Seiko Prospex: Vintage homage face-off. Compare gilt dials, snowflake vs Mercedes hands, movement quality.',
