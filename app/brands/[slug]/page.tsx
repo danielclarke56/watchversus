@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { brands } from '@/lib/brandData'
 import { getGuidesForBrand, getRelatedBrandsByContext, getAllComparisonsForWatch, getComparisonSlug } from '@/lib/relatedContent'
+import BrandWatchCard from '@/components/BrandWatchCard'
+
+const categoryMeta: Record<string, { label: string; description: string }> = {
+  dive: { label: 'Dive Watches', description: 'Built for the water — robust, legible, and rated for serious depth resistance.' },
+  dress: { label: 'Dress Watches', description: 'Elegant timepieces designed for formal occasions and refined everyday wear.' },
+  sport: { label: 'Sport Watches', description: 'Versatile and durable — equally at home on the wrist during active pursuits.' },
+  gmt: { label: 'GMT & Travel', description: 'Dual-timezone capability for frequent travelers and global professionals.' },
+  field: { label: 'Field Watches', description: 'Military-inspired designs built for legibility and outdoor durability.' },
+  casual: { label: 'Casual & Everyday', description: 'Approachable designs for daily wear — style without the formality.' },
+  chronograph: { label: 'Chronographs', description: 'Precision timing with stopwatch functionality and sporty aesthetics.' },
+}
 
 export async function generateStaticParams() {
   return brands.map((b) => ({ slug: b.slug }))
@@ -34,6 +44,19 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
   // Filter watches by brand
   const brandWatches = watches.filter((w) => w.brand === brand.watchBrand)
+
+  // Group watches by primary_category for collection-style display
+  const collections: Record<string, typeof brandWatches> = {}
+  brandWatches.forEach((w) => {
+    const cat = w.primary_category || 'other'
+    if (!collections[cat]) collections[cat] = []
+    collections[cat].push(w)
+  })
+
+  // Sort collection keys: larger groups first
+  const sortedCategories = Object.keys(collections).sort(
+    (a, b) => collections[b].length - collections[a].length
+  )
 
   // Find comparisons that involve this brand's watches
   const brandSlugs = new Set(brandWatches.map((w) => w.slug))
@@ -77,122 +100,140 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
     ],
   }
 
+  // Whether we have enough watches to warrant grouping (2+ categories with watches)
+  const useGrouping = sortedCategories.length > 1
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Breadcrumb */}
-        <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/brands" className="hover:text-[#b8860b] transition-colors">Brands</Link>
-          <span>/</span>
-          <span className="text-[#0f172a]">{brand.name}</span>
+        <nav className="text-sm text-textMuted mb-8 flex items-center gap-2">
+          <Link href="/" className="hover:text-accent transition-colors">Home</Link>
+          <span className="text-border">/</span>
+          <Link href="/brands" className="hover:text-accent transition-colors">Brands</Link>
+          <span className="text-border">/</span>
+          <span className="text-textPrimary font-medium">{brand.name}</span>
         </nav>
 
         {/* Brand Hero */}
-        <div className="mb-10">
-          <div className="flex items-start gap-4 mb-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-xs text-[#b8860b] font-bold uppercase tracking-wider border border-[#b8860b]/30 rounded px-2 py-0.5">
-                  Est. {brand.founded}
-                </span>
-                <span className="text-xs text-[#94a3b8]">{brand.country}</span>
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-3">{brand.name}</h1>
-              <p className="text-[#b8860b] text-sm italic mb-4">{brand.heroFact}</p>
-            </div>
+        <header className="mb-12">
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            <span className="text-xs text-accent font-bold uppercase tracking-wider border border-accent/30 rounded-full px-3 py-1">
+              Est. {brand.founded}
+            </span>
+            <span className="text-xs text-textMuted">{brand.country}</span>
+            {brandWatches.length > 0 && (
+              <span className="text-xs text-textSecond bg-neutral px-3 py-1 rounded-full">
+                {brandWatches.length} model{brandWatches.length !== 1 ? 's' : ''} in database
+              </span>
+            )}
           </div>
-          <div className="text-[#475569] text-sm leading-relaxed">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-textPrimary mb-4 tracking-tight">
+            {brand.name}
+          </h1>
+          <p className="text-accent text-sm italic mb-6 max-w-2xl">{brand.heroFact}</p>
+          <div className="text-textSecond text-sm leading-relaxed max-w-3xl">
             {brand.overview.split('\n\n').map((para, i) => (
               <p key={i} className={i > 0 ? 'mt-3' : ''}>{para.trim()}</p>
             ))}
           </div>
-        </div>
+        </header>
 
-        {/* Watches in Database with Comparisons */}
+        {/* Watch Collections */}
         {brandWatches.length > 0 ? (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-[#0f172a] mb-6">
-              {brand.name} Watches in Our Database
-              <span className="ml-3 text-sm font-normal text-[#94a3b8]">({brandWatches.length} model{brandWatches.length !== 1 ? 's' : ''})</span>
-            </h2>
-            <div className="space-y-6">
-              {brandWatches.map((watch) => {
-                const watchComparisons = getAllComparisonsForWatch(watch.slug).slice(0, 4)
-                return (
-                  <div key={watch.slug}>
-                    <Link
-                      href={`/watches/${watch.slug}`}
-                      className="card p-4 flex items-center gap-4 hover:border-[#b8860b]/40 transition-colors group"
-                    >
-                      <div className="w-14 h-14 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center overflow-hidden shrink-0">
-                        {watch.image ? (
-                          <Image
-                            src={watch.image}
-                            alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
-                            width={56}
-                            height={56}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        ) : (
-                          <span className="text-[#cbd5e1] text-xl">⌚</span>
+          <section className="mb-16">
+            <div className="flex items-baseline justify-between mb-8">
+              <h2 className="text-2xl font-heading font-bold text-textPrimary">
+                {brand.name} Collection
+              </h2>
+              {useGrouping && (
+                <p className="text-xs text-textMuted hidden sm:block">
+                  {sortedCategories.length} categories
+                </p>
+              )}
+            </div>
+
+            {useGrouping ? (
+              /* Grouped by collection/category */
+              <div className="space-y-12">
+                {sortedCategories.map((cat) => {
+                  const meta = categoryMeta[cat] ?? { label: cat.charAt(0).toUpperCase() + cat.slice(1), description: '' }
+                  const catWatches = collections[cat]
+                  return (
+                    <div key={cat}>
+                      <div className="mb-5">
+                        <div className="flex items-center gap-3 mb-1">
+                          <h3 className="text-lg font-heading font-bold text-textPrimary">
+                            {meta.label}
+                          </h3>
+                          <span className="text-xs text-textMuted bg-neutral px-2 py-0.5 rounded-full">
+                            {catWatches.length}
+                          </span>
+                        </div>
+                        {meta.description && (
+                          <p className="text-xs text-textSecond max-w-xl">{meta.description}</p>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[#0f172a] font-semibold group-hover:text-[#b8860b] transition-colors">{watch.name}</p>
-                        <div className="flex flex-wrap gap-3 mt-1 text-xs text-[#94a3b8]">
-                          <span>Ref. {watch.reference}</span>
-                          <span>{watch.case_diameter_mm}mm</span>
-                          <span className="capitalize">{watch.movement_type}</span>
-                          <span>{watch.water_resistance_m}m WR</span>
-                        </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {catWatches.map((watch) => (
+                          <BrandWatchCard key={watch.slug} watch={watch} />
+                        ))}
                       </div>
-                      <div className="text-right ml-2 shrink-0">
-                        <p className="text-[#b8860b] font-semibold text-sm">{formatPrice(watch.price_new_usd)}</p>
-                        <p className="text-[#94a3b8] text-xs">new</p>
-                      </div>
-                    </Link>
-                    
-                    {/* Watch-specific comparisons */}
-                    {watchComparisons.length > 0 && (
-                      <div className="ml-4 mt-2 pl-4 border-l-2 border-[#e2e8f0]">
-                        <p className="text-xs font-semibold text-[#94a3b8] mb-2 uppercase">Compare with:</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {watchComparisons.map(([s1, s2]) => {
-                            const otherWatch = watches.find((w) => w.slug === (s1 === watch.slug ? s2 : s1))
-                            if (!otherWatch) return null
-                            const compSlug = getComparisonSlug(s1, s2)
-                            return (
-                              <Link
-                                key={compSlug}
-                                href={`/compare/${compSlug}`}
-                                className="text-xs bg-[#f8fafc] border border-[#e2e8f0] rounded px-3 py-2 hover:bg-[#eff6ff] hover:border-[#b8860b]/40 transition-colors text-[#475569] hover:text-[#b8860b] font-medium truncate"
-                              >
-                                vs {otherWatch.name}
-                              </Link>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+
+                      {/* Per-collection comparison links */}
+                      {catWatches.length > 0 && (() => {
+                        const catComparisons = catWatches.flatMap(watch => {
+                          return getAllComparisonsForWatch(watch.slug).slice(0, 2).map(([s1, s2]) => {
+                            const otherSlug = s1 === watch.slug ? s2 : s1
+                            const other = watches.find(w => w.slug === otherSlug)
+                            if (!other) return null
+                            return { s1, s2, watchName: watch.name, otherName: other.name, otherBrand: other.brand }
+                          }).filter(Boolean)
+                        }).slice(0, 4)
+                        if (catComparisons.length === 0) return null
+                        return (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {catComparisons.map((c) => {
+                              if (!c) return null
+                              const slug = getComparisonSlug(c.s1, c.s2)
+                              return (
+                                <Link
+                                  key={slug}
+                                  href={`/compare/${slug}`}
+                                  className="text-xs bg-neutral border border-border rounded-full px-3 py-1.5 hover:bg-accentLight hover:border-accent/30 transition-colors text-textSecond hover:text-accent font-medium"
+                                >
+                                  {c.watchName} vs {c.otherName}
+                                </Link>
+                              )
+                            })}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              /* Single category — flat grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {brandWatches.map((watch) => (
+                  <BrandWatchCard key={watch.slug} watch={watch} />
+                ))}
+              </div>
+            )}
           </section>
         ) : (
-          <section className="mb-12">
-            <div className="card p-6 text-center">
-              <p className="text-[#475569] text-sm mb-2">
+          <section className="mb-16">
+            <div className="bg-surface border border-border rounded-lg p-8 text-center">
+              <p className="text-textSecond text-sm mb-2">
                 We do not yet have {brand.name} watches in our comparison database.
               </p>
-              <p className="text-[#94a3b8] text-xs">
+              <p className="text-textMuted text-xs">
                 We are continually expanding — check back soon.
               </p>
             </div>
@@ -201,9 +242,11 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
         {/* Popular Comparisons */}
         {brandComparisons.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Popular {brand.name} Comparisons</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <section className="mb-16">
+            <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">
+              Popular {brand.name} Comparisons
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {brandComparisons.map((c) => {
                 const wa = watches.find((w) => w.slug === c.slug1)
                 const wb = watches.find((w) => w.slug === c.slug2)
@@ -212,21 +255,25 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
+                    className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:shadow-sm transition-all group"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
-                        <p className="text-[#0f172a] text-xs font-semibold truncate group-hover:text-[#b8860b] transition-colors">
+                        <p className="text-[10px] text-textMuted uppercase tracking-wider">{wa.brand}</p>
+                        <p className="text-textPrimary text-sm font-semibold truncate group-hover:text-accent transition-colors">
                           {wa.name}
                         </p>
+                        <p className="text-xs text-accent font-medium mt-0.5">{formatPrice(wa.price_new_usd)}</p>
                       </div>
-                      <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                      <div className="text-accent font-bold text-xs shrink-0 bg-neutral w-8 h-8 rounded-full flex items-center justify-center">
+                        VS
+                      </div>
                       <div className="flex-1 min-w-0 text-right">
-                        <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
-                        <p className="text-[#0f172a] text-xs font-semibold truncate group-hover:text-[#b8860b] transition-colors">
+                        <p className="text-[10px] text-textMuted uppercase tracking-wider">{wb.brand}</p>
+                        <p className="text-textPrimary text-sm font-semibold truncate group-hover:text-accent transition-colors">
                           {wb.name}
                         </p>
+                        <p className="text-xs text-accent font-medium mt-0.5">{formatPrice(wb.price_new_usd)}</p>
                       </div>
                     </div>
                   </Link>
@@ -237,60 +284,60 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
         )}
 
         {/* FAQ */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Frequently Asked Questions</h2>
-          <div className="space-y-4">
+        <section className="mb-16">
+          <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-3">
             {brand.faq.map((item, i) => (
-              <details key={i} className="card p-5 group cursor-pointer">
-                <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
+              <details key={i} className="bg-surface border border-border rounded-lg p-5 group cursor-pointer">
+                <summary className="text-textPrimary font-semibold text-sm flex justify-between items-center list-none">
                   <span>{item.question}</span>
-                  <span className="text-[#b8860b] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                  <span className="text-accent group-open:rotate-180 transition-transform ml-4 shrink-0 text-xs">▼</span>
                 </summary>
-                <p className="text-[#475569] text-sm mt-4 leading-relaxed">{item.answer}</p>
+                <p className="text-textSecond text-sm mt-4 leading-relaxed">{item.answer}</p>
               </details>
             ))}
           </div>
         </section>
 
-        {/* Relevant Guides Footer */}
+        {/* Relevant Guides */}
         {relevantGuides.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Buying Guides Featuring {brand.name}</h2>
+          <section className="mb-16">
+            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">Buying Guides Featuring {brand.name}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {relevantGuides.map((g) => (
                 <Link
                   key={g.slug}
                   href={`/guides/${g.slug}`}
-                  className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+                  className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:shadow-sm transition-all group"
                 >
-                  <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Buying Guide</p>
-                  <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">
+                  <p className="text-[10px] uppercase text-textMuted font-semibold tracking-wider mb-2">Buying Guide</p>
+                  <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">
                     {g.title}
                   </h3>
-                  <p className="text-xs text-[#475569] mt-3 line-clamp-1">{g.description}</p>
-                  <p className="text-xs text-[#b8860b] font-medium mt-4 inline-block">Read Guide →</p>
+                  <p className="text-xs text-textSecond mt-3 line-clamp-2">{g.description}</p>
+                  <p className="text-xs text-accent font-medium mt-4 inline-block">Read Guide →</p>
                 </Link>
               ))}
             </div>
           </section>
         )}
 
-        {/* Related Brands Footer */}
+        {/* Related Brands */}
         {relatedBrands.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Similar Brands to Explore</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <section className="mb-16">
+            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">Similar Brands to Explore</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedBrands.map((b) => (
                 <Link
                   key={b.slug}
                   href={`/brands/${b.slug}`}
-                  className="card p-4 hover:border-[#b8860b]/40 transition-colors group text-center"
+                  className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:shadow-sm transition-all group text-center"
                 >
-                  <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                  <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
                     {b.name}
                   </h3>
-                  <p className="text-xs text-[#475569] mt-2 line-clamp-2">{b.heroFact}</p>
-                  <p className="text-xs text-[#b8860b] font-medium mt-3 inline-block">Explore Brand →</p>
+                  <p className="text-xs text-textSecond mt-2 line-clamp-2">{b.heroFact}</p>
+                  <p className="text-xs text-accent font-medium mt-3 inline-block">Explore →</p>
                 </Link>
               ))}
             </div>
@@ -298,10 +345,10 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
         )}
 
         {/* CTA */}
-        <div className="text-center bg-white border border-[#e2e8f0] rounded-xl p-8">
-          <h3 className="text-[#0f172a] font-semibold text-lg mb-2">Compare {brand.name} Watches</h3>
-          <p className="text-[#475569] text-sm mb-5">
-            Head-to-head specs, community ratings, and pricing against any watch in our database
+        <div className="text-center bg-neutral border border-border rounded-xl p-10">
+          <h3 className="text-textPrimary font-heading font-bold text-xl mb-3">Compare {brand.name} Watches</h3>
+          <p className="text-textSecond text-sm mb-6 max-w-md mx-auto">
+            Head-to-head specs, community ratings, and pricing against any watch in our database.
           </p>
           <Link href="/compare" className="btn-gold">
             Start a Comparison
