@@ -989,4 +989,97 @@ export const guides: Guide[] = [
     ],
     conclusion: "The dress watch under $500 proves that elegance is accessible to everyone. Whether you choose the Seiko Presage's exceptional engineering, Hamilton's Swiss heritage, or Frederique Constant's refined approach to affordable Swiss watchmaking, you will discover that genuine dress watches at this price serve as daily reminders that thoughtful design transcends price. Use our comparison tool to put your shortlist side-by-side and see exactly how specs, pricing, and collector ratings align before you decide.",
   },
+
+  {
+    slug: "best-dive-watches-under-1000",
+    title: "Best Dive Watches Under $1,000 in 2026 — Professional & Reliable",
+    description: "The best dive watches under $1,000 in 2026. From Seiko Prospex to Christopher Ward, reviewed with full specs, water resistance, and movement details.",
+    h1: "Best Dive Watches Under $1,000 in 2026",
+    intro: "Under $1,000, you can get a dive watch with 200m+ water resistance, sapphire crystal, and a certified automatic movement. Best options:\n\nThe dive watch is the most versatile and honest category in watchmaking. The best models under $1,000 deliver ISO 6425 compliance, genuine tool-watch capability, and movements that will outlast their owners if properly maintained. This tier sits at a sweet spot: high enough to demand serious specifications, low enough to reward buyers who know what to prioritize.\n\nSeiko's professional Prospex line dominates here, offering Japan's best-kept secret: exceptional tool watch engineering that Swiss brands struggle to match at this price. Christopher Ward's C65 Trident brings genuine in-house movement quality to the category, while Baltic and Halios prove that microbrands can deliver finishing that surprises established Swiss makers. This guide focuses on dive watches that excel both as professional tools and daily-wear companions — watches with 200m+ water resistance, screw-down crowns, rotating bezels, and movements built to take a beating.",
+    recommendations: [
+      {
+        slug: "baltic-aquascaphe",
+        highlight: "Best value microbrand dive watch. French-made with domed sapphire, 200m water resistance, Miyota 9039 movement, and bi-compax vintage layout for $530-600. Finishing quality that shocks at this price — collectors regularly compare it to watches at three times its cost.",
+      },
+      {
+        slug: "seiko-prospex-sbdc101",
+        highlight: "Best Japanese dive watch under $800. The SBDC101 pairs the reliable 6R15 movement with 200m water resistance, sapphire crystal, and Seiko's legendary reputation for dive-watch durability. At $650-800, it is the benchmark for value-conscious professionals.",
+      },
+      {
+        slug: "christopher-ward-c65-trident",
+        highlight: "Best in-house movement at this price. British-designed with the SH21 in-house caliber offering 60-hour power reserve, 150m water resistance, and exceptional finishing for $700-900. Professional journalists call it the best value dive watch period.",
+      },
+      {
+        slug: "seiko-prospex-spb143",
+        highlight: "Best vintage-heritage dive watch. The modern reissue of the legendary 62MAS with 6R35 movement (70-hour power reserve), sapphire crystal, 200m water resistance, and textured dial that delivers character for $700-900.",
+      },
+      {
+        slug: "tissot-seastar-1000",
+        highlight: "Best 300m water resistance at this price. Swiss-made with Powermatic 80's 80-hour movement and professional-grade 300m water resistance for $650-800. Outspecifies many watches at triple the price — a no-nonsense tool watch.",
+      },
+    ],
+    buyingGuide: [
+      {
+        heading: "What Makes a Proper Dive Watch",
+        content: "A true dive watch follows ISO 6425 standards: minimum 100m water resistance (300m+ is professional-grade), a screw-down crown for pressure integrity, a unidirectional rotating bezel for elapsed-time tracking, legible lume markers, and secure bracelet attachment. All recommendations in this guide meet or exceed these standards. The difference between a 150m and 300m watch is practical — 150m is sufficient for snorkeling; 300m+ covers recreational and technical diving. The screw-down crown is not optional if you plan actual water time; it protects the movement from pressure changes.",
+      },
+      {
+        heading: "Japanese (Seiko Prospex) vs Swiss vs Microbrand",
+        content: "Seiko's Prospex collection represents Japanese professional watchmaking at peak value — robust movements (6R and 7S series), no compromises on specifications, and reliability proven over decades in actual professional use. Swiss options (Tissot Seastar) offer COSC-certified movements and Swiss heritage, but often at higher prices for comparable specs. Microbrands like Baltic use proven third-party movements (Miyota 9039) and compete through finishing quality and design — the Baltic Aquascaphe's domed sapphire and vintage aesthetics justify its cult status. At this price, all three approaches deliver genuine tool watches.",
+      },
+      {
+        heading: "Water Resistance: 200m vs 300m",
+        content: "For daily wear and occasional snorkeling, 200m is sufficient and standard among these recommendations. The difference between 200m and 300m is professional capability — 300m watches (Tissot Seastar 1000) handle moderate recreational diving. Neither rating means unlimited depth; always follow manufacturer guidance and get watches pressure-tested regularly. The real benefit of 300m is the redundancy built into the design — you get an extra margin of safety through more robust construction.",
+      },
+      {
+        heading: "Sapphire Crystal & Lume",
+        content: "All recommendations here include sapphire crystal — scratch resistance matters for watches you actually use underwater. Lume (luminescent material on markers and hands) is essential; all of these watches use either standard SuperLuminova or LumiNova, which glows visibly in darkness after sun charging. Seiko and Christopher Ward often use exceptional lume quality. Vintage aesthetic choices like the Baltic Aquascaphe use excellent lume that honors the design language without compromising functionality.",
+      },
+      {
+        heading: "Bezel Action: Smooth vs Ratcheted",
+        content: "All dive watches here feature a unidirectional rotating bezel — it only rotates counterclockwise, so if you accidentally bump it, you cannot accidentally advance your elapsed time. Test the bezel action in person if possible; smoothness and click clarity vary. The Seiko Prospex line is known for precise bezel action. The Christopher Ward C65 Trident has exceptional tactile feedback. Baltic's Aquascaphe offers vintage-style bezel with reliable ratcheting.",
+      },
+    ],
+    faq: [
+      {
+        question: "What is the best dive watch under $1,000?",
+        answer: "The best depends on your priority. For value and Japanese engineering: Seiko Prospex SPB143 ($700-900). For microbrand finishing and vintage aesthetics: Baltic Aquascaphe ($530-600). For in-house movement quality: Christopher Ward C65 Trident ($700-900). For Swiss water resistance: Tissot Seastar 1000 ($650-800) with 300m. All are professional-grade watches capable of actual diving.",
+      },
+      {
+        question: "Is Seiko Prospex good enough for diving?",
+        answer: "Absolutely. Seiko Prospex watches are used by professional divers worldwide. The SBDC101 and SPB143 meet ISO 6425 standards, feature screw-down crowns, robust movements (6R15, 6R35), and 200m water resistance — everything needed for recreational and professional diving. Seiko's reputation for durability in extreme conditions is well-earned.",
+      },
+      {
+        question: "Should I choose a microbrand like Baltic over established brands?",
+        answer: "Yes, if you prioritize finishing and design. The Baltic Aquascaphe delivers case finishing and dial quality that surprises even experienced collectors, often comparing favorably to Swiss watches at double its price. The trade-off is slightly smaller service network and lower brand recognition. If reliability and brand prestige matter most, choose Swiss or Japanese. If you want the best-finished watch at this price, Baltic is genuine.",
+      },
+      {
+        question: "Do I need 300m water resistance or is 200m enough?",
+        answer: "For daily wear and snorkeling, 200m is sufficient. 300m is professional-diving territory and provides extra margin through robust construction. Unless you actively dive, 200m is more than adequate. What matters more is that your watch meets ISO 6425 standards (screw-down crown, rotating bezel, lume, legibility) — all of these do.",
+      },
+      {
+        question: "What is the difference between the Seiko SBDC101 and SPB143?",
+        answer: "Both are excellent, but they serve different aesthetics. The SBDC101 features the 6R15 movement and a modern design optimized for everyday wear. The SPB143 is a modern reissue of the legendary 62MAS with the upgraded 6R35 movement (70-hour vs 50-hour power reserve), slightly different case finishing, and vintage-inspired styling. The SPB143 offers slightly better movement and more character; the SBDC101 is more versatile as an everyday watch. Both are under $900 and professional-grade.",
+      },
+    ],
+    paa: [
+      {
+        question: "What is the best dive watch under $1,000?",
+        answer: "The Seiko Prospex SPB143 ($700–900) is widely considered the best overall — 70-hour 6R35 movement, 200m water resistance, and vintage heritage. The Baltic Aquascaphe ($530–600) offers microbrand excellence. The Christopher Ward C65 Trident ($700–900) delivers in-house movement quality.",
+      },
+      {
+        question: "Is Seiko Prospex worth buying?",
+        answer: "Yes. Seiko Prospex watches are professional tools used by actual divers worldwide. At $700–900, you get a screw-down crown, ISO 6425 compliance, high-quality automatic movement, and Seiko's proven reliability — outstanding value for a dive watch.",
+      },
+      {
+        question: "Can you get a Swiss dive watch under $1,000?",
+        answer: "Yes. The Tissot Seastar 1000 ($650–800) offers 300m water resistance, sapphire crystal, and an 80-hour Powermatic 80 movement — professional Swiss dive watch capabilities at this budget.",
+      },
+      {
+        question: "Are microbrand dive watches reliable?",
+        answer: "Yes. The Baltic Aquascaphe uses the proven Miyota 9039 movement and has an excellent reputation among enthusiasts. Service is available through authorized Miyota dealers worldwide. Microbrand finishing quality often exceeds established brands at the same price.",
+      },
+    ],
+    conclusion: "The dive watch under $1,000 is where serious watchmaking meets accessibility. Whether you choose the Seiko Prospex's legendary reliability, the Christopher Ward's in-house movement refinement, the Baltic Aquascaphe's microbrand finishing, or the Tissot Seastar's Swiss professional capability, you will own a watch genuinely capable of both daily wear and actual diving. Use our comparison tool to see exactly how these watches compare on specs, movement, water resistance, and community ratings before you decide.",
+  },
 ]
