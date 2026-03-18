@@ -207,6 +207,9 @@ export const popularComparisons = [
   { slug1: 'vacheron-constantin-overseas-42', slug2: 'patek-philippe-nautilus-5711' },
   { slug1: 'vacheron-constantin-overseas-42', slug2: 'rolex-day-date-36' },
 
+  // Ultra-Luxury Comparisons
+  { slug1: 'rolex-datejust-36', slug2: 'patek-philippe-nautilus-5711' },
+
   // Additional Strategic Pairs
   { slug1: 'tudor-black-bay-gmt', slug2: 'rolex-gmt-master-ii-pepsi' },
   { slug1: 'tudor-pelagos-39', slug2: 'seiko-prospex-spb143' },
