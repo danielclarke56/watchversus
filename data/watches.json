@@ -2805,5 +2805,65 @@
       "omega-speedmaster-moonwatch",
       "omega-aqua-terra-38"
     ]
+  },
+  {
+    "id": "51",
+    "slug": "rolex-submariner-date",
+    "name": "Submariner Date",
+    "brand": "Rolex",
+    "reference": "126610",
+    "year_introduced": 2020,
+    "case_diameter_mm": 41,
+    "case_thickness_mm": 12.9,
+    "lug_width_mm": 20,
+    "lug_to_lug_mm": 48,
+    "movement_type": "automatic",
+    "movement_caliber": "Cal. 3235",
+    "power_reserve_hours": 70,
+    "water_resistance_m": 300,
+    "crystal": "sapphire",
+    "case_material": "Oystersteel",
+    "bracelet_material": "Oystersteel Oyster",
+    "price_new_usd": {
+      "min": 9300,
+      "max": 9800
+    },
+    "price_preowned_usd": {
+      "min": 12500,
+      "max": 16500
+    },
+    "style": [
+      "dive",
+      "sport",
+      "luxury"
+    ],
+    "description": "The Rolex Submariner Date 41 combines the legendary Submariner's dive credentials with the practical date window. Sharing the same 300m water resistance and bulletproof Cal. 3235 movement as its no-date sibling, the Submariner Date adds utility for everyday wear. It's the watch for divers who also need to know what day it is.",
+    "image": "/images/watches/rolex-submariner-date.webp",
+    "imageAlt": "Rolex Submariner Date 41 official product image",
+    "primary_category": "dive",
+    "tagline": "The Submariner with utility — legendary dive credentials and a date window.",
+    "score": 9.0,
+    "buy_again_pct": 90,
+    "pros": [
+      "Same world-class Cal. 3235 movement with 70-hour power reserve",
+      "Adds date window practicality without sacrificing diving capabilities",
+      "Excellent value retention — seeks nearly three-figure premiums",
+      "300m water resistance with cyclops-magnified date window"
+    ],
+    "cons": [
+      "Slightly higher price than the no-date variant",
+      "Date window can collect lint or dust in humid environments",
+      "Extraordinary grey market demand makes retail purchase very difficult"
+    ],
+    "verdict": {
+      "who_its_for": "Divers and watch collectors who want a genuine tool watch with practical daily functions. Perfect if the date window matters to you and you're willing to pay the Rolex premium.",
+      "who_should_skip": "Minimalist purists favoring the cleaner no-date dial. Also skip if budget is your priority — the grey market premium is steeper than the no-date version.",
+      "final_take": "The Submariner Date is a masterclass in balancing form and function. You get everything that makes the Submariner legendary — the movement, the water resistance, the wearability — plus a date window that actually comes in handy. At retail, it's exceptional value; on the secondary market, expect substantial premiums reflecting collector demand. If you dive and live your watch daily, this might be the edge case where the date window tips the scale in its favor over the no-date version."
+    },
+    "alternatives": [
+      "tudor-black-bay-58",
+      "omega-seamaster-300m",
+      "tag-heuer-aquaracer-300"
+    ]
   }
 ]
