@@ -1325,7 +1325,7 @@ export const guides: Guide[] = [
     tagline: "In-house movements, heritage brands, sapphire crystal, and genuine luxury-all under $10K new",
     title: "Best Luxury Watches Under $10,000 in 2026 - Expert Guide",
     description: "The best luxury watches under $10,000 in 2026. In-house movements, heritage brands, and genuine luxury from Omega, Rolex, TAG Heuer, Cartier, and IWC. Reviewed and compared.",
-    h1: "Best Luxury Watches Under $10,000 in 2026 - Expert Guide",
+    h1: "Best Luxury Watches Under $10,000 in 2026 - Rolex, Omega & Cartier Compared",
     intro: "At the $10,000 threshold, you enter genuine luxury territory-in-house movements, sapphire crystals, heritage brands, and watches designed to last decades. The best options:\n\nThe $5,000-$10,000 bracket represents a fundamental shift in watchmaking. Below $5,000, most watches use outsourced movements (ETA, Miyota, Sellita). At $10,000, you are entering the domain of in-house calibers, heritage houses with centuries of tradition, and watches that appreciate rather than depreciate. An Omega Seamaster 300m at $5,700 is not simply a dive watch-it is a Master Chronometer-certified instrument with 15,000 gauss anti-magnetic resistance. A Rolex Submariner at $9,100 is not merely stainless steel-it is the watch that defined the dive watch category in 1953 and continues to define it today.\n\nWhat separates $10,000 watches from everything below is finishing quality, movement architecture, and brand prestige. You will find sapphire bezels, micro-adjustable clasps, hand-finished bridges, and movements that take months to assemble. This guide highlights the strongest entries into genuine luxury-watches that prove the $10,000 price point is where watchmaking genuinely transforms from commodity to heirloom.",
     recommendations: [
       {
@@ -1443,7 +1443,7 @@ export const guides: Guide[] = [
     tagline: "Durable, reliable watches built for activity, sport, and rugged daily wear",
     title: "Best Sports Watches for Active Men in 2026 - Expert Guide",
     description: "The best sports watches for active men in 2026: durable, shock-resistant, water-resistant watches from Omega, Rolex, TAG Heuer, Seiko, and Tudor. Expert picks with real specs.",
-    h1: "Best Sports Watches for Active Men in 2026 - Expert Guide",
+    h1: "Best Sports Watches for Active Men in 2026 - Dive, Field & Chronograph Picks",
     intro: "The best sports watches for active men prioritize durability over decoration. They deliver shock resistance, genuine water resistance, reliable movements, and honest design that works as hard as you do.\n\nA true sports watch is not defined by chronographs or complex complications. It is defined by core engineering: a movement that can withstand impact and maintain accuracy under stress, a case that protects that movement, and a crystal and bezel designed for legibility and function in real conditions. The watches on this list-from the Omega Seamaster 300m to the TAG Heuer Aquaracer 300 to the Seiko Prospex SPB143-share a philosophy: build for the activity first, aesthetics second.\n\nWhether you are training for a triathlon, running marathons, hiking remote terrain, or simply refusing to baby your wrist wear, this guide covers the essential specifications, honest recommendations, and real-world considerations for active men who want a watch that proves itself through use.",
     recommendations: [
       {
