@@ -64,6 +64,7 @@ export const popularComparisons = [
   { slug1: 'rolex-submariner-41', slug2: 'breitling-superocean-42' },
   { slug1: 'rolex-submariner-41', slug2: 'seiko-prospex-spb143' },
   { slug1: 'omega-seamaster-300m', slug2: 'tudor-black-bay-58' },
+  { slug1: 'tudor-black-bay-58', slug2: 'omega-seamaster-300m' },
   { slug1: 'omega-seamaster-300m', slug2: 'breitling-superocean-42' },
   { slug1: 'omega-seamaster-300m', slug2: 'tudor-pelagos-39' },
   { slug1: 'omega-seamaster-300m', slug2: 'panerai-luminor-44-pam01312' },
