@@ -1,0 +1,35 @@
+interface VerdictCalloutProps {
+  winnerName: string | null
+  verdictSummary: string
+}
+
+export function VerdictCallout({ winnerName, verdictSummary }: VerdictCalloutProps) {
+  const isClose = !winnerName
+
+  return (
+    <div
+      className={`rounded-xl p-5 md:p-6 mb-8 border-l-4 ${
+        isClose
+          ? 'bg-accentLight border-accent'
+          : 'bg-winnerBg border-winner'
+      }`}
+    >
+      <div className="flex items-center gap-3 mb-2">
+        <span className="text-2xl" aria-hidden="true">
+          {isClose ? '⚖️' : '🏆'}
+        </span>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-textMuted">
+            Our Verdict
+          </p>
+          <p className={`text-lg md:text-xl font-black ${isClose ? 'text-accent' : 'text-winner'}`}>
+            {isClose ? 'Too Close to Call' : winnerName}
+          </p>
+        </div>
+      </div>
+      <p className="text-sm text-textSecond leading-relaxed ml-0 md:ml-11">
+        {verdictSummary}
+      </p>
+    </div>
+  )
+}

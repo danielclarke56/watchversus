@@ -13,6 +13,7 @@ import type { Watch } from '@/lib/types'
 import VoteSection from './VoteSection'
 import ComparisonStickyNav from './ComparisonStickyNav'
 import { Container } from '@/components/ui/Container'
+import { VerdictCallout } from '@/components/ui/VerdictCallout'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { SpecRow } from '@/components/ui/SpecRow'
@@ -58,6 +59,25 @@ function generateVerdict(w1: Watch, w2: Watch): string {
   }
 
   return sentences.slice(0, 3).join(' ')
+}
+
+function getVerdictInfo(w1: Watch, w2: Watch, preferredWatch: Watch | null): { winnerName: string | null; summary: string } {
+  if (!preferredWatch) {
+    return {
+      winnerName: null,
+      summary: `Both the ${w1.brand} ${w1.name} and ${w2.brand} ${w2.name} are excellent choices — the winner depends on your priorities, budget, and style preference.`,
+    }
+  }
+  const other = preferredWatch === w1 ? w2 : w1
+  const reasons: string[] = []
+  if (preferredWatch.price_new_usd.min < other.price_new_usd.min) reasons.push('better value')
+  if (preferredWatch.water_resistance_m > other.water_resistance_m) reasons.push('superior water resistance')
+  if (preferredWatch.power_reserve_hours && other.power_reserve_hours && preferredWatch.power_reserve_hours > other.power_reserve_hours) reasons.push('longer power reserve')
+  if (reasons.length === 0) reasons.push('stronger community ratings')
+  return {
+    winnerName: `${preferredWatch.brand} ${preferredWatch.name}`,
+    summary: `The ${preferredWatch.brand} ${preferredWatch.name} edges ahead with ${reasons.join(' and ')} — but both are strong picks depending on your needs.`,
+  }
 }
 
 export async function generateStaticParams() {
@@ -152,6 +172,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
     : 50
   const pref2 = 100 - pref1
   const preferredWatch = pref1 > pref2 ? w1 : pref2 > pref1 ? w2 : null
+  const verdictInfo = getVerdictInfo(w1, w2, preferredWatch)
 
   const relatedComparisons = popularComparisons
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
@@ -260,7 +281,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ComparisonStickyNav slug1={w1.slug} slug2={w2.slug} watch1Name={w1.name} watch2Name={w2.name} />
+      <ComparisonStickyNav slug1={w1.slug} slug2={w2.slug} watch1Name={w1.name} watch2Name={w2.name} verdict={verdictInfo.winnerName || 'Too Close to Call'} />
       <Container className="py-10 pt-16">
         {/* Breadcrumb */}
         <nav className="text-sm text-textMuted mb-6 flex items-center gap-2">
@@ -278,6 +299,9 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
             </span>
           )}
         </p>
+
+        {/* Verdict Callout — prominent visual summary */}
+        <VerdictCallout winnerName={verdictInfo.winnerName} verdictSummary={verdictInfo.summary} />
 
         {/* Hero Section — Enhanced */}
         <section id="comparison-hero" className="bg-gradient-to-br from-accentLight via-white to-surfaceAlt border border-border rounded-2xl overflow-hidden mb-12 shadow-md">
@@ -553,6 +577,12 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           <div>{w1.brand} {w1.name}</div>
           <div>{w2.brand} {w2.name}</div>
         </div>
+        {/* Desktop column headers */}
+        <div className="hidden sm:grid grid-cols-3 gap-2 py-3 border-b-2 border-borderStrong text-xs font-bold text-textSecond uppercase tracking-wider">
+          <div className="text-center">Spec</div>
+          <div className="text-center">{w1.name}</div>
+          <div className="text-center">{w2.name}</div>
+        </div>
         {SPEC_ROWS.map((row, i) => {
           const v1 = row.fn(w1)
           const v2 = row.fn(w2)
@@ -562,6 +592,8 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               label={row.label}
               value1={v1}
               value2={v2}
+              watch1Name={w1.name}
+              watch2Name={w2.name}
               highlight={i % 2 === 0}
             />
           )
