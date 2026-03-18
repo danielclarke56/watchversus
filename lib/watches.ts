@@ -152,6 +152,7 @@ export const popularComparisons = [
   { slug1: 'longines-hydroconquest-41', slug2: 'tissot-seastar-1000' },
   { slug1: 'longines-hydroconquest-41', slug2: 'christopher-ward-c65-trident' },
   { slug1: 'tissot-seastar-1000', slug2: 'seiko-prospex-spb143' },
+  { slug1: 'hamilton-khaki-field-auto-38', slug2: 'seiko-prospex-spb143' },
   { slug1: 'tissot-prx-40', slug2: 'omega-constellation-39' },
 
   // Microbrands & Independents
