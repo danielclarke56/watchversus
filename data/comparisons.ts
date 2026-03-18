@@ -89,4 +89,8 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   // Sport Luxury Icon Battle
   'rolex-submariner-date-vs-ap-royal-oak-15500':
     'Rolex Submariner Date vs Audemars Piguet Royal Oak 15500: Iconic luxury sport watch rivalry. Compare integrated bracelet design, diving heritage vs haute horlogerie sport, waitlist dynamics & investment value. The $14K diver vs the $35K masterpiece.',
+
+  // Aviation vs Racing Chronograph Heritage
+  'breitling-navitimer-b01-42-vs-tag-heuer-carrera-42':
+    'Breitling Navitimer B01 42 vs TAG Heuer Carrera 42: Epic chronograph showdown. Compare aviation heritage vs racing pedigree, in-house movements, dial complexity & wrist presence. The $9.5K pilot\'s tool vs the $5K racing legend. Which iconic chronograph wins?',
 };

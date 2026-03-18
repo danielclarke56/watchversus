@@ -32,6 +32,20 @@ Read this before doing anything.
 - 121 comparison pages live with FAQ schema
 - SEO: canonical URLs, OG tags, JSON-LD structured data, sitemap
 
+## Architecture Rules (Learned from bugs)
+
+- **Single source of truth**: Never maintain parallel arrays/lists that must be kept in sync. If a list exists in a data file (`guideData.ts`, `watches.json`, etc.), derive from it — never hardcode a copy elsewhere. (Root cause of guides index bug, 2026-03-18)
+- **Dynamic routing > static lists**: When Next.js supports dynamic slug routing, use it. Don't manually register pages that can be auto-discovered.
+- **Validate before deploying**: Run `npm run validate` (if exists) before `npm run build`. The validate script catches slug mismatches, broken references, and missing data entries.
+
+## Self-Improvement Logging
+
+After every task, log to `C:\Users\daniel\.openclaw\workspace\.learnings\`:
+- Unexpected errors → `ERRORS.md`
+- Bug patterns worth preventing → `LEARNINGS.md`
+- Better approaches discovered → `LEARNINGS.md`
+
 ## DO NOT
 - Ask about domain setup — already live at watchvswatch.com
 - Re-suggest affiliate links
+- Create hardcoded lists that mirror data already in a TypeScript file
