@@ -90,9 +90,9 @@ export const popularComparisons = [
   { slug1: 'omega-speedmaster-moonwatch', slug2: 'tag-heuer-carrera-42' },
   { slug1: 'omega-speedmaster-moonwatch', slug2: 'breitling-navitimer-b01-42' },
   { slug1: 'breitling-navitimer-b01-42', slug2: 'tag-heuer-carrera-42' },
-  { slug1: 'omega-speedmaster-moonwatch', slug2: 'zenith-el-primero-38' },
-  { slug1: 'breitling-navitimer-b01-42', slug2: 'zenith-el-primero-38' },
-  { slug1: 'tag-heuer-carrera-42', slug2: 'iwc-pilot-chronograph-41' },
+  { slug1: 'omega-speedmaster-moonwatch', slug2: 'zenith-el-primero-chronomaster' },
+  { slug1: 'breitling-navitimer-b01-42', slug2: 'zenith-el-primero-chronomaster' },
+  { slug1: 'tag-heuer-carrera-42', slug2: 'iwc-pilot-mark-xviii' },
 
   // Dress Watches
   { slug1: 'cartier-santos', slug2: 'cartier-tank-must' },
@@ -162,7 +162,7 @@ export const popularComparisons = [
   { slug1: 'halios-tropik', slug2: 'longines-hydroconquest-41' },
 
   // Tag Heuer & Sports
-  { slug1: 'tag-heuer-carrera-42', slug2: 'iwc-pilot-chronograph-41' },
+  { slug1: 'tag-heuer-carrera-42', slug2: 'iwc-pilot-mark-xviii' },
   { slug1: 'tag-heuer-carrera-42', slug2: 'omega-speedmaster-moonwatch' },
   { slug1: 'tag-heuer-carrera-42', slug2: 'rolex-gmt-master-ii-pepsi' },
 
@@ -181,11 +181,11 @@ export const popularComparisons = [
   // IWC Pairings
   { slug1: 'iwc-pilot-mark-xviii', slug2: 'breitling-navitimer-b01-42' },
   { slug1: 'iwc-portugieser-40', slug2: 'cartier-santos' },
-  { slug1: 'iwc-pilot-chronograph-41', slug2: 'zenith-el-primero-38' },
+  { slug1: 'iwc-pilot-mark-xviii', slug2: 'zenith-el-primero-chronomaster' },
 
   // Zenith
-  { slug1: 'zenith-el-primero-38', slug2: 'omega-speedmaster-moonwatch' },
-  { slug1: 'zenith-el-primero-38', slug2: 'breitling-navitimer-b01-42' },
+  { slug1: 'zenith-el-primero-chronomaster', slug2: 'omega-speedmaster-moonwatch' },
+  { slug1: 'zenith-el-primero-chronomaster', slug2: 'breitling-navitimer-b01-42' },
 
   // Panerai
   { slug1: 'panerai-luminor-44-pam01312', slug2: 'rolex-submariner-41' },
