@@ -60,6 +60,7 @@ export const popularComparisons = [
   // Luxury Dive Watches
   { slug1: 'rolex-submariner-41', slug2: 'omega-seamaster-300m' },
   { slug1: 'rolex-submariner-41', slug2: 'tudor-black-bay-58' },
+  { slug1: 'rolex-submariner-date', slug2: 'tudor-black-bay-58' },
   { slug1: 'rolex-submariner-41', slug2: 'tudor-pelagos-39' },
   { slug1: 'rolex-submariner-41', slug2: 'breitling-superocean-42' },
   { slug1: 'rolex-submariner-41', slug2: 'seiko-prospex-spb143' },

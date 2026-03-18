@@ -13,6 +13,9 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   
   'rolex-submariner-41-vs-tudor-pelagos-39':
     'Rolex Submariner 41 vs Tudor Pelagos 39: Compare movements, depth ratings, dial designs & value. Choose your professional dive watch.',
+
+  'rolex-submariner-date-vs-tudor-black-bay-58':
+    'Rolex Submariner Date vs Tudor Black Bay 58: Sister brands compared. Explore the $6K price delta, case sizes (41mm vs 39mm), bracelet quality, crown guards & lume. Rolex prestige vs exceptional Tudor value.',
   
   'rolex-submariner-41-vs-breitling-superocean-42':
     'Rolex Submariner vs Breitling Superocean: Analyze case diameter, bezel action, bracelet quality & legacy. Pick your dive companion.',
