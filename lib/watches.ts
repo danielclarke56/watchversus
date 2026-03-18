@@ -103,6 +103,7 @@ export const popularComparisons = [
   { slug1: 'nomos-tangente-38', slug2: 'longines-master-collection-40' },
   { slug1: 'patek-philippe-calatrava-5119', slug2: 'jaeger-lecoultre-master-ultra-thin' },
   { slug1: 'iwc-portugieser-40', slug2: 'longines-master-collection-40' },
+  { slug1: 'iwc-portugieser-automatic', slug2: 'longines-master-collection' },
   { slug1: 'iwc-portugieser-40', slug2: 'omega-aqua-terra-38' },
   { slug1: 'longines-master-collection-40', slug2: 'omega-aqua-terra-38' },
   { slug1: 'grand-seiko-sbga211-snowflake', slug2: 'omega-aqua-terra-38' },
