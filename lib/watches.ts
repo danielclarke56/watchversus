@@ -91,6 +91,7 @@ export const popularComparisons = [
   // Chronographs
   { slug1: 'omega-speedmaster-moonwatch', slug2: 'tag-heuer-carrera-42' },
   { slug1: 'omega-speedmaster-moonwatch', slug2: 'breitling-navitimer-b01-42' },
+  { slug1: 'breitling-navitimer-b01-42', slug2: 'omega-speedmaster-moonwatch' },
   { slug1: 'breitling-navitimer-b01-42', slug2: 'tag-heuer-carrera-42' },
   { slug1: 'omega-speedmaster-moonwatch', slug2: 'zenith-el-primero-chronomaster' },
   { slug1: 'breitling-navitimer-b01-42', slug2: 'zenith-el-primero-chronomaster' },

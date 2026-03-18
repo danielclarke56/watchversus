@@ -100,4 +100,12 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   // Aviation vs Racing Chronograph Heritage
   'breitling-navitimer-b01-42-vs-tag-heuer-carrera-42':
     'Breitling Navitimer B01 42 vs TAG Heuer Carrera 42: Epic chronograph showdown. Compare aviation heritage vs racing pedigree, in-house movements, dial complexity & wrist presence. The $9.5K pilot\'s tool vs the $5K racing legend. Which iconic chronograph wins?',
+
+  // Pilot Chronograph vs Space Legend — The Ultimate Chronograph Rivalry
+  'breitling-navitimer-b01-42-vs-omega-speedmaster-moonwatch':
+    'Breitling Navitimer B01 42 vs Omega Speedmaster Moonwatch: Aviation legend vs space icon. Compare in-house Caliber 01 vs Cal. 3861 Master Chronometer, slide rule bezel, 70h vs 50h power reserve & heritage. The $9.3K pilot\'s tool vs the $6.9K moonwatch. Which iconic chronograph belongs on your wrist?',
+
+  // Reverse order for SEO coverage
+  'omega-speedmaster-moonwatch-vs-breitling-navitimer-b01-42':
+    'Omega Speedmaster Moonwatch vs Breitling Navitimer B01 42: Space icon vs aviation legend. Compare manual-wind Cal. 3861 vs in-house Caliber 01, moon history vs pilot heritage, Master Chronometer certification & value. The definitive chronograph comparison for serious collectors.',
 };
