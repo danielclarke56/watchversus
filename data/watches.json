@@ -2978,5 +2978,129 @@
         "score":  8.2,
         "name":  "Ronde Solo de Cartier",
         "crystal":  "sapphire"
+    },
+    {
+        "id":  "53",
+        "slug":  "patek-philippe-calatrava-5119",
+        "name":  "Calatrava 5119",
+        "brand":  "Patek Philippe",
+        "reference":  "5119G-001",
+        "year_introduced":  2006,
+        "case_diameter_mm":  36,
+        "case_thickness_mm":  8.55,
+        "lug_width_mm":  18,
+        "lug_to_lug_mm":  43,
+        "movement_type":  "automatic",
+        "movement_caliber":  "Cal. 315S",
+        "power_reserve_hours":  42,
+        "water_resistance_m":  30,
+        "crystal":  "sapphire",
+        "case_material":  "White Gold",
+        "bracelet_material":  "Alligator leather",
+        "price_new_usd":  {
+                              "min":  26000,
+                              "max":  32000
+                          },
+        "price_preowned_usd":  {
+                                   "min":  24000,
+                                   "max":  35000
+                               },
+        "style":  [
+                      "dress",
+                      "luxury",
+                      "formal"
+                  ],
+        "description":  "The Patek Philippe Calatrava 5119 is the pinnacle of dress watch sophistication. Featuring a hand-engraved case back, Calatrava cross on the caseback, and ultra-thin profile, it represents decades of horological mastery. The white gold construction and in-house movement make it a collector\u0027s choice for those who appreciate horological purity.",
+        "image":  "/images/watches/patek-philippe-calatrava-5119.webp",
+        "imageAlt":  "Patek Philippe Calatrava 5119 official product image",
+        "primary_category":  "dress",
+        "tagline":  "Patek Philippe Calatrava 5119 is the pinnacle of dress watch sophistication.",
+        "score":  9.5,
+        "buy_again_pct":  92,
+        "pros":  [
+                     "Ultra-thin in-house movement",
+                     "Hand-engraved case back with Calatrava cross",
+                     "Supreme prestige and resale value",
+                     "Exquisite white gold construction",
+                     "Timeless design that never ages"
+                 ],
+        "cons":  [
+                     "Extremely limited availability",
+                     "Premium pricing at entry level ($26K+)",
+                     "Minimal water resistance (30m)",
+                     "Requires specialized service"
+                 ],
+        "verdict":  {
+                        "who_its_for":  "Serious collectors seeking the ultimate dress watch. Perfect for those who value horological heritage and are willing to invest in a lifetime piece with strong resale potential.",
+                        "who_should_skip":  "Anyone prioritizing water resistance, sports functionality, or affordability. Also not ideal for daily beaters or those seeking modern complications.",
+                        "final_take":  "The Calatrava 5119 represents Patek Philippe at its finest. The ultra-thin in-house movement, exquisite finishing, and hand-engraved case back embody the brand\u0027s horological philosophy. While expensive, it\u0027s arguably the most prestigious dress watch money can buy, with legendary resale retention."
+                    },
+        "alternatives":  [
+                             "jaeger-lecoultre-master-ultra-thin",
+                             "vacheron-constantin-patrimony-40",
+                             "rolex-datejust-36"
+                         ]
+    },
+    {
+        "id":  "54",
+        "slug":  "jaeger-lecoultre-master-ultra-thin",
+        "name":  "Master Ultra Thin",
+        "brand":  "Jaeger-LeCoultre",
+        "reference":  "Q1232510",
+        "year_introduced":  2012,
+        "case_diameter_mm":  40,
+        "case_thickness_mm":  7.9,
+        "lug_width_mm":  20,
+        "lug_to_lug_mm":  47,
+        "movement_type":  "automatic",
+        "movement_caliber":  "Cal. 899",
+        "power_reserve_hours":  42,
+        "water_resistance_m":  30,
+        "crystal":  "sapphire",
+        "case_material":  "Stainless Steel",
+        "bracelet_material":  "Stainless Steel bracelet",
+        "price_new_usd":  {
+                              "min":  7000,
+                              "max":  8500
+                          },
+        "price_preowned_usd":  {
+                                   "min":  5500,
+                                   "max":  7500
+                               },
+        "style":  [
+                      "dress",
+                      "luxury",
+                      "formal"
+                  ],
+        "description":  "The Jaeger-LeCoultre Master Ultra Thin is an exceptional value proposition in the ultra-thin dress watch category. With its 7.9mm profile and in-house Cal. 899 movement, it delivers prestigious watchmaking at a fraction of competing luxury brands. The minimalist dial and steel construction make it both elegant and practical.",
+        "image":  "/images/watches/jaeger-lecoultre-master-ultra-thin.webp",
+        "imageAlt":  "Jaeger-LeCoultre Master Ultra Thin official product image",
+        "primary_category":  "dress",
+        "tagline":  "Jaeger-LeCoultre Master Ultra Thin delivers prestigious watchmaking in an ultra-thin package.",
+        "score":  8.8,
+        "buy_again_pct":  85,
+        "pros":  [
+                     "Exceptional ultra-thin profile (7.9mm)",
+                     "In-house Cal. 899 movement",
+                     "Stunning value for the price point",
+                     "Versatile stainless steel construction",
+                     "Excellent finishing and dial clarity"
+                 ],
+        "cons":  [
+                     "40mm diameter may be large for some",
+                     "Limited water resistance (30m)",
+                     "Less prestige than Patek Philippe",
+                     "Service availability can be challenging"
+                 ],
+        "verdict":  {
+                        "who_its_for":  "Watch enthusiasts seeking ultra-thin dress watch elegance without Patek-level pricing. Perfect for professionals who appreciate refined Swiss watchmaking and want strong value retention.",
+                        "who_should_skip":  "Those requiring water resistance for water activities. Also not ideal for minimalist purists who prefer vintage movements or those seeking maximum prestige.",
+                        "final_take":  "The Master Ultra Thin represents exceptional value in the luxury dress watch segment. JLC\u0027s in-house Cal. 899 is beautifully finished and exceptionally reliable. At roughly a quarter of Patek\u0027s Calatrava pricing, it\u0027s arguably the smarter choice for those prioritizing value and wearability over pure prestige."
+                    },
+        "alternatives":  [
+                             "patek-philippe-calatrava-5119",
+                             "vacheron-constantin-patrimony-40",
+                             "rolex-datejust-36"
+                         ]
     }
 ]

@@ -77,4 +77,8 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   // Dress Watch Classics
   'rolex-datejust-36-vs-cartier-ronde-solo':
     'Rolex Datejust 36 vs Cartier Ronde Solo: Dress watch rivals. Compare Swiss prestige, movement tech, sizing & design philosophy. Which elegant daily wearer is right for you?',
+
+  // Ultra-Thin Dress Watch Prestige Matchup
+  'patek-philippe-calatrava-5119-vs-jaeger-lecoultre-master-ultra-thin':
+    'Patek Philippe Calatrava vs Jaeger-LeCoultre Master Ultra Thin: Ultra-thin dress watch showdown. Compare 8.55mm vs 7.9mm profiles, in-house movements, prestige & value proposition. The $26K collector vs the $7K alternative.',
 };
