@@ -19,6 +19,8 @@ export interface Guide {
   description: string
   h1: string
   intro: string
+  emoji?: string
+  tagline?: string
   recommendations: GuideRecommendation[]
   buyingGuide: GuideSection[]
   faq: GuideFAQ[]
@@ -29,6 +31,8 @@ export interface Guide {
 export const guides: Guide[] = [
   {
     slug: "best-watches-under-500",
+    emoji: "💰",
+    tagline: "Best automatic & quartz picks under $500 new or preowned",
     title: "Best Watches Under $500 in 2026 — Expert Picks",
     description: "The best automatic and quartz watches under $500 in 2026. Expert picks from Seiko, Tissot, Baltic, Hamilton, and more. Reviewed and compared with specs.",
     h1: "Best Watches Under $500 in 2026",
@@ -122,6 +126,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-watches-under-1000",
+    emoji: "⚙️",
+    tagline: "The sweet spot — Swiss-made, Japanese excellence, top microbrands",
     title: "Best Watches Under $1,000 in 2026 — Top Swiss & Japanese Picks",
     description: "The best automatic watches under $1,000 in 2026. Swiss-made, Japanese excellence, and top microbrands reviewed and compared by category.",
     h1: "Best Watches Under $1,000 in 2026",
@@ -223,6 +229,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-dive-watches",
+    emoji: "🤿",
+    tagline: "From sub-$400 Seiko to Rolex Submariner — every budget covered",
     title: "Best Dive Watches in 2026 — From Budget to Luxury",
     description: "The best dive watches in 2026 across every budget. From Seiko Prospex under $900 to Rolex Submariner, reviewed and compared with full specs.",
     h1: "Best Dive Watches in 2026",
@@ -324,6 +332,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-dress-watches",
+    emoji: "🎩",
+    tagline: "Elegance at every price — Nomos, Cartier, Grand Seiko, and more",
     title: "Best Dress Watches in 2026 — Elegance at Every Budget",
     description: "The best dress watches in 2026 from Nomos, Cartier, Grand Seiko, IWC, Longines, and more. Expert picks with full specs and honest reviews.",
     h1: "Best Dress Watches in 2026",
@@ -429,6 +439,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-field-watches",
+    emoji: "🧭",
+    tagline: "Military heritage and modern performance from Hamilton to Rolex",
     title: "Best Field Watches in 2026 — Military Heritage, Modern Performance",
     description: "Best field watches in 2026: Hamilton Khaki Field, IWC Pilot, Rolex Explorer, and more reviewed across every budget. Expert picks with specs.",
     h1: "Best Field Watches in 2026",
@@ -526,6 +538,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-gmt-watches",
+    emoji: "✈️",
+    tagline: "Track two time zones — Rolex Pepsi, Tudor GMT, and value alternatives",
     title: "Best GMT Watches in 2026 — Track Two Time Zones in Style",
     description: "Best GMT watches in 2026: Rolex GMT-Master II, Tudor Black Bay GMT, Seiko Presage, and more. Expert picks with full specs and buying advice.",
     h1: "Best GMT Watches in 2026",
@@ -614,6 +628,8 @@ export const guides: Guide[] = [
   },
   {
     slug: "best-watches-under-3000",
+    emoji: "✨",
+    tagline: "Luxury on a budget — Seiko, Hamilton, Longines, Tag Heuer excellence",
     title: "Best Watches Under $3,000 — Luxury on a Budget",
     description: "Top automatic watches under $3,000 from Seiko, Hamilton, Longines, Tag Heuer, and more. Expert picks with full specs.",
     h1: "Best Watches Under $3,000",
@@ -706,6 +722,8 @@ export const guides: Guide[] = [
   },
   {
     slug: "best-watches-under-5000",
+    emoji: "👑",
+    tagline: "Entry luxury tier — Tudor, Breitling, IWC, Omega prestige",
     title: "Best Watches Under $5,000 — The Sweet Spot for Luxury",
     description: "Luxury watches under $5,000 from Tudor, Breitling, IWC, Longines, Omega, and Nomos. Expert recommendations with full specs.",
     h1: "Best Watches Under $5,000",
@@ -798,6 +816,8 @@ export const guides: Guide[] = [
   },
   {
     slug: "best-automatic-watches-under-3000",
+    emoji: "⚙️",
+    tagline: "Pure mechanical excellence — Japanese, Swiss, and German automatics",
     title: "Best Automatic Watches Under $3,000 — Pure Mechanical Excellence",
     description: "Top automatic mechanical watches under $3,000 from Seiko, Hamilton, Longines, Tissot, and more. Expert picks with full specs.",
     h1: "Best Automatic Watches Under $3,000",
@@ -891,6 +911,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-dress-watches-under-500",
+    emoji: "👔",
+    tagline: "Sapphire crystals, automatic movements, and refined designs — without the luxury price tag",
     title: "Best Dress Watches Under $500 in 2026 — Elegant & Affordable",
     description: "The best dress watches under $500. From Seiko Presage to Swiss-made Hamilton and Frederique Constant, reviewed with full specs and buying guidance.",
     h1: "Best Dress Watches Under $500 in 2026",
@@ -992,6 +1014,8 @@ export const guides: Guide[] = [
 
   {
     slug: "best-dive-watches-under-1000",
+    emoji: "🏊",
+    tagline: "Professional dive capability under $1,000 — Seiko Prospex, Christopher Ward, and more",
     title: "Best Dive Watches Under $1,000 in 2026 — Professional & Reliable",
     description: "The best dive watches under $1,000 in 2026. From Seiko Prospex to Christopher Ward, reviewed with full specs, water resistance, and movement details.",
     h1: "Best Dive Watches Under $1,000 in 2026",
