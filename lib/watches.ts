@@ -198,19 +198,37 @@ export const popularComparisons = [
   { slug1: 'nomos-tangente-38', slug2: 'cartier-tank-must' },
   { slug1: 'nomos-club-campus', slug2: 'tissot-prx-40' },
 
-  // Dive - Budget/Mid Tier (Tier 1)
+  // ===== TIER 1 KEYWORD PAIRS (2026-03-18) =====
+  // Dive - Budget/Mid Tier
   { slug1: 'seiko-prospex-sbdc101', slug2: 'tudor-black-bay-58' },
   { slug1: 'seiko-prospex-sbdc101', slug2: 'omega-seamaster-300m' },
   { slug1: 'mido-ocean-star-tribute', slug2: 'longines-hydroconquest-41' },
+  { slug1: 'tissot-seastar-1000', slug2: 'seiko-prospex-spb143' },
   { slug1: 'breitling-superocean-42', slug2: 'tag-heuer-aquaracer-300' },
   { slug1: 'baltic-aquascaphe', slug2: 'seiko-prospex-spb143' },
   { slug1: 'halios-seaforth', slug2: 'tudor-pelagos-39' },
-  { slug1: 'seiko-prospex-sbdc101', slug2: 'seiko-prospex-spb143' },
 
-  // Dress - Swiss/Japanese (Tier 1)
-  { slug1: 'jaeger-lecoultre-reverso-classic', slug2: 'cartier-tank-must' },
-  { slug1: 'grand-seiko-sbgw231', slug2: 'omega-aqua-terra-38' },
+  // Dress - Swiss/Japanese
+  { slug1: 'jaeger-lecoultre-reverso-classic', slug2: 'cartier-ronde-solo' },
+
+  // Luxury Sports & Ultra-Luxury
+  { slug1: 'rolex-submariner-41', slug2: 'patek-philippe-nautilus-5711' },
+  { slug1: 'rolex-datejust-36', slug2: 'cartier-tank-must' },
+  { slug1: 'rolex-gmt-master-ii-pepsi', slug2: 'cartier-santos' },
+  { slug1: 'omega-seamaster-300m', slug2: 'patek-philippe-calatrava-5119' },
+  { slug1: 'rolex-submariner-41', slug2: 'omega-speedmaster-moonwatch' },
+  { slug1: 'breitling-superocean-42', slug2: 'rolex-submariner-41' },
+  { slug1: 'tudor-black-bay-58', slug2: 'rolex-explorer-36' },
+  { slug1: 'iwc-pilot-mark-xviii', slug2: 'omega-aqua-terra-38' },
+  { slug1: 'longines-hydroconquest-41', slug2: 'rolex-datejust-36' },
+  { slug1: 'grand-seiko-sbgw231', slug2: 'rolex-day-date-40' },
+  { slug1: 'jaeger-lecoultre-master-ultra-thin', slug2: 'cartier-ronde-solo' },
+  { slug1: 'omega-constellation-39', slug2: 'patek-philippe-calatrava-5119' },
+  { slug1: 'tag-heuer-carrera-42', slug2: 'breitling-navitimer-b01-42' },
   { slug1: 'seiko-presage-spb165', slug2: 'omega-aqua-terra-38' },
+  { slug1: 'nomos-tangente-38', slug2: 'cartier-tank-must' },
+
+  // Legacy entries (may duplicate some above, but preserved for existing traffic)
   { slug1: 'seiko-presage-spb167', slug2: 'iwc-portugieser-40' },
   { slug1: 'grand-seiko-sbga211-snowflake', slug2: 'iwc-portugieser-40' },
   { slug1: 'frederique-constant-classics-auto', slug2: 'omega-constellation-39' },
@@ -218,12 +236,8 @@ export const popularComparisons = [
   { slug1: 'cartier-ronde-solo', slug2: 'cartier-tank-must' },
   { slug1: 'nomos-tangente-38', slug2: 'seiko-presage-spb165' },
   { slug1: 'seiko-presage-spb165', slug2: 'tag-heuer-aquaracer-300' },
-
-  // Sport/Chrono (Tier 1)
   { slug1: 'tag-heuer-carrera-42', slug2: 'zenith-el-primero-chronomaster' },
   { slug1: 'omega-speedmaster-moonwatch', slug2: 'iwc-pilot-mark-xviii' },
-
-  // Casual/Field (Tier 1)
   { slug1: 'baltic-bicompax-001', slug2: 'seiko-5-sports-srpe55' },
 
   // Grand Seiko Pairings
