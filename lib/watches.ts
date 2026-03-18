@@ -166,6 +166,7 @@ export const popularComparisons = [
   { slug1: 'omega-constellation-39', slug2: 'cartier-santos' },
   { slug1: 'omega-aqua-terra-38', slug2: 'rolex-datejust-36' },
   { slug1: 'omega-aqua-terra-38', slug2: 'iwc-portugieser-40' },
+  { slug1: 'omega-seamaster-300m', slug2: 'cartier-tank-must' },
 
   // Breitling Across Categories
   { slug1: 'breitling-superocean-42', slug2: 'breitling-navitimer-b01-42' },
