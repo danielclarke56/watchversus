@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { DM_Sans } from 'next/font/google'
 import Script from 'next/script'
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
@@ -8,10 +8,10 @@ import Footer from '@/components/Footer'
 
 const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-inter',
+  variable: '--font-dm-sans',
 })
 
 export const metadata: Metadata = {
@@ -61,8 +61,10 @@ const websiteJsonLd = {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={dmSans.variable}>
       <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}

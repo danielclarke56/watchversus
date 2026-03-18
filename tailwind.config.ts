@@ -38,7 +38,8 @@ const config: Config = {
         neutral: '#F9F9F9',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-dm-sans)', 'DM Sans', 'system-ui', 'sans-serif'],
+        heading: ['Satoshi', 'system-ui', 'sans-serif'],
         serif: ['Georgia', 'serif'],
       },
       borderRadius: {
