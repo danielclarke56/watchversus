@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
   className?: string;
@@ -23,6 +23,8 @@ export function Button({
   const variantClass = {
     primary:
       'bg-accent text-white font-semibold rounded-md hover:bg-accentHover transition-colors',
+    secondary:
+      'bg-accent/10 text-accent font-semibold rounded-md hover:bg-accent/20 transition-colors',
     outline:
       'border border-accent text-accent font-semibold rounded-md hover:bg-accentLight transition-colors',
     ghost:

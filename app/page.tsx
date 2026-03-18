@@ -89,7 +89,7 @@ export default function HomePage() {
               placeholder="Search by watch name or brand (e.g. Rolex, Seamaster)..."
               className="flex-1"
             />
-            <Button variant="primary" size="md">
+            <Button variant="secondary" size="md">
               Search
             </Button>
           </form>
@@ -141,7 +141,7 @@ export default function HomePage() {
             ))}
           </div>
           <div className="text-center">
-            <Button href="/compare/rolex-submariner-41-vs-tudor-black-bay-58" variant="primary">
+            <Button href="/compare/rolex-submariner-41-vs-tudor-black-bay-58" variant="outline">
               See Full Side-by-Side Comparison
             </Button>
           </div>
@@ -358,7 +358,7 @@ export default function HomePage() {
           <p className="text-textMuted text-lg mb-7 max-w-xl mx-auto">
             Side-by-side specs, community votes, and an expert verdict — in seconds.
           </p>
-          <Button href="/compare" variant="primary" size="lg">
+          <Button href="/compare" variant="outline" size="lg">
             Start Comparing →
           </Button>
         </Container>
@@ -371,7 +371,7 @@ export default function HomePage() {
           <p className="text-textSecond text-lg mb-7 max-w-xl mx-auto">
             Answer 5 quick questions and we&apos;ll recommend your perfect watch based on your needs.
           </p>
-          <Button href="/quiz" variant="primary" size="lg">
+          <Button href="/quiz" variant="outline" size="lg">
             Take the 2-Minute Quiz →
           </Button>
         </Container>

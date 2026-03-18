@@ -481,7 +481,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                   <span className="text-2xl">🏛️</span>
                 </div>
                 <p className="text-sm text-textSecond mb-4">All {w.brand} watches, comparisons, and guides in one place</p>
-                <Link href={`/brands/${brandSlug}`} className="inline-block w-full text-center px-4 py-2.5 bg-accent text-white font-semibold rounded-lg hover:bg-accentHover transition-colors">
+                <Link href={`/brands/${brandSlug}`} className="inline-block w-full text-center px-4 py-2.5 bg-accent/10 text-accent font-semibold rounded-lg hover:bg-accent/20 border border-accent/20 transition-colors">
                   Visit {w.brand} Pillar Page →
                 </Link>
               </div>
@@ -830,7 +830,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       <div className="mt-8 text-center bg-surface border border-border rounded-xl p-8">
         <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
         <p className="text-textSecond text-sm mb-5">Pick any two watches from our database of 50</p>
-        <Link href="/compare" className="btn-gold">
+        <Link href="/compare" className="btn-outline">
           Start a New Comparison
         </Link>
       </div>

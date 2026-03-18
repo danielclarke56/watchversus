@@ -88,7 +88,7 @@ export default function WatchOwnerPhotos({ watch }: WatchOwnerPhotosProps) {
           <h2 className="text-2xl font-bold text-textPrimary">Real Owner Photos</h2>
           <button
             onClick={() => setShowModal(true)}
-            className="bg-accent text-white font-semibold text-sm px-4 py-2 rounded-md hover:bg-accentHover transition-colors"
+            className="bg-accent/10 text-accent font-semibold text-sm px-4 py-2 rounded-md hover:bg-accent/20 border border-accent/20 transition-colors"
           >
             + Add Your Photo
           </button>
