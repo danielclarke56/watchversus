@@ -81,4 +81,8 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   // Ultra-Thin Dress Watch Prestige Matchup
   'patek-philippe-calatrava-5119-vs-jaeger-lecoultre-master-ultra-thin':
     'Patek Philippe Calatrava vs Jaeger-LeCoultre Master Ultra Thin: Ultra-thin dress watch showdown. Compare 8.55mm vs 7.9mm profiles, in-house movements, prestige & value proposition. The $26K collector vs the $7K alternative.',
+  
+  // Sport Luxury Icon Battle
+  'rolex-submariner-date-vs-ap-royal-oak-15500':
+    'Rolex Submariner Date vs Audemars Piguet Royal Oak 15500: Iconic luxury sport watch rivalry. Compare integrated bracelet design, diving heritage vs haute horlogerie sport, waitlist dynamics & investment value. The $14K diver vs the $35K masterpiece.',
 };

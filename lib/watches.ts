@@ -125,6 +125,7 @@ export const popularComparisons = [
   { slug1: 'tissot-prx-40', slug2: 'omega-constellation-39' },
 
   // Sports / Integrated Bracelet
+  { slug1: 'rolex-submariner-date', slug2: 'ap-royal-oak-15500' },
   { slug1: 'ap-royal-oak-15500', slug2: 'patek-philippe-nautilus-5711' },
   { slug1: 'ap-royal-oak-15500', slug2: 'vacheron-constantin-overseas-4500v' },
   { slug1: 'patek-philippe-nautilus-5711', slug2: 'vacheron-constantin-overseas-4500v' },
