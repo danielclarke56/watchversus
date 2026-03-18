@@ -197,7 +197,34 @@ export const popularComparisons = [
   // Nomos Further Comparisons
   { slug1: 'nomos-tangente-38', slug2: 'cartier-tank-must' },
   { slug1: 'nomos-club-campus', slug2: 'tissot-prx-40' },
-  { slug1: 'nomos-club-campus', slug2: 'seiko-5-sports-srpe55' },
+
+  // Dive - Budget/Mid Tier (Tier 1)
+  { slug1: 'seiko-prospex-sbdc101', slug2: 'tudor-black-bay-58' },
+  { slug1: 'seiko-prospex-sbdc101', slug2: 'omega-seamaster-300m' },
+  { slug1: 'mido-ocean-star-tribute', slug2: 'longines-hydroconquest-41' },
+  { slug1: 'breitling-superocean-42', slug2: 'tag-heuer-aquaracer-300' },
+  { slug1: 'baltic-aquascaphe', slug2: 'seiko-prospex-spb143' },
+  { slug1: 'halios-seaforth', slug2: 'tudor-pelagos-39' },
+  { slug1: 'seiko-prospex-sbdc101', slug2: 'seiko-prospex-spb143' },
+
+  // Dress - Swiss/Japanese (Tier 1)
+  { slug1: 'jaeger-lecoultre-reverso-classic', slug2: 'cartier-tank-must' },
+  { slug1: 'grand-seiko-sbgw231', slug2: 'omega-aqua-terra-38' },
+  { slug1: 'seiko-presage-spb165', slug2: 'omega-aqua-terra-38' },
+  { slug1: 'seiko-presage-spb167', slug2: 'iwc-portugieser-40' },
+  { slug1: 'grand-seiko-sbga211-snowflake', slug2: 'iwc-portugieser-40' },
+  { slug1: 'frederique-constant-classics-auto', slug2: 'omega-constellation-39' },
+  { slug1: 'frederique-constant-classics-auto', slug2: 'longines-master-collection-40' },
+  { slug1: 'cartier-ronde-solo', slug2: 'cartier-tank-must' },
+  { slug1: 'nomos-tangente-38', slug2: 'seiko-presage-spb165' },
+  { slug1: 'seiko-presage-spb165', slug2: 'tag-heuer-aquaracer-300' },
+
+  // Sport/Chrono (Tier 1)
+  { slug1: 'tag-heuer-carrera-42', slug2: 'zenith-el-primero-chronomaster' },
+  { slug1: 'omega-speedmaster-moonwatch', slug2: 'iwc-pilot-mark-xviii' },
+
+  // Casual/Field (Tier 1)
+  { slug1: 'baltic-bicompax-001', slug2: 'seiko-5-sports-srpe55' },
 
   // Grand Seiko Pairings
   { slug1: 'grand-seiko-sbga211-snowflake', slug2: 'rolex-datejust-36' },
