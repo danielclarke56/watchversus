@@ -34,25 +34,24 @@ export default function HomePage() {
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-accent opacity-5 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-accent opacity-5 blur-3xl" />
         </div>
-        <Container className="py-20 md:py-28 flex items-center gap-12">
+        <Container className="py-16 md:py-24 flex items-center gap-12">
           <div className="max-w-3xl flex-1">
             <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-1.5 text-sm text-accent mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
               Community-Driven Watch Intelligence
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-textPrimary mb-5 leading-tight tracking-tight">
-              Find Your <span className="text-accent">Perfect Watch</span>
+              Compare Any Two Watches, <span className="text-accent">Side by Side</span>
             </h1>
             <p className="text-lg md:text-xl text-textSecond mb-8 leading-relaxed max-w-2xl">
-              Compare watches head-to-head, read real community reviews, and get personalized
-              recommendations. 50+ watches. Honest insights. No fluff.
+              Detailed specs, community votes, and honest comparisons for 56 luxury watches. Find your perfect timepiece in seconds.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button href="/quiz" variant="primary" size="lg">
-                Take the Quiz →
+              <Button href="/compare" variant="primary" size="lg">
+                Start Comparing →
               </Button>
-              <Button href="/compare" variant="outline" size="lg">
-                Compare Watches
+              <Button href="/quiz" variant="outline" size="lg">
+                Take the Quiz
               </Button>
             </div>
           </div>
@@ -78,6 +77,57 @@ export default function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* Trust Signals Bar */}
+      <Section bg="surface" border py="sm">
+        <Container>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 text-center">
+            <div>
+              <p className="text-3xl md:text-4xl font-bold text-textPrimary">56</p>
+              <p className="text-sm text-textSecond mt-1">Watches Compared</p>
+            </div>
+            <div>
+              <p className="text-3xl md:text-4xl font-bold text-textPrimary">161</p>
+              <p className="text-sm text-textSecond mt-1">Comparison Pages</p>
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <p className="text-3xl md:text-4xl font-bold text-accent">🗳️</p>
+              <p className="text-sm text-textSecond mt-1">Community-Voted</p>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Value Proposition */}
+      <Section py="md">
+        <Container>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+            {[
+              {
+                icon: '📊',
+                title: 'Side-by-Side Specs',
+                desc: 'Compare case size, movement, water resistance, price, and more in an instant.',
+              },
+              {
+                icon: '🗳️',
+                title: 'Community Voting',
+                desc: 'See what real owners think. Every comparison includes community preference data.',
+              },
+              {
+                icon: '🔍',
+                title: 'Expert Comparisons',
+                desc: 'Detailed analysis and verdict for every matchup. No affiliate bias, pure insights.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="p-6 rounded-lg border border-border bg-surface hover:border-accent/30 transition-colors">
+                <p className="text-4xl mb-3">{item.icon}</p>
+                <h3 className="text-lg font-bold text-textPrimary mb-2">{item.title}</h3>
+                <p className="text-sm text-textSecond leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
 
       {/* Search bar */}
       <Section bg="surface">

@@ -1644,11 +1644,27 @@ export const guides: Guide[] = [
         slug: "hamilton-khaki-field-auto-38",
         highlight: "Swiss-made ETA movement, sapphire crystal, 100m water resistance. Equally at home in an office or outdoors. One of the most honest watches at any price.",
       },
+      {
+        slug: "longines-hydroconquest-41",
+        highlight: "Longines heritage meets modern design. Automatic movement, sapphire crystal, 300m water resistance. For beginners who want dive watch capability with a brand name and Swiss precision.",
+      },
+      {
+        slug: "swatch-sistem51",
+        highlight: "An engineering marvel under $150. Robot-assembled 51-component automatic with a remarkable 90-hour power reserve and maintenance-free design. Unusual but genuinely fascinating.",
+      },
     ],
     buyingGuide: [
       {
+        heading: "Why Automatic Watches Matter",
+        content: "An automatic watch is an engineered object that does something remarkable: it runs entirely on the kinetic energy from your wrist. No battery. No charging cable. No subscriptions. A well-made automatic, properly serviced, can outlast its owner. Once you see the rotor spinning through the caseback, you can't unsee it. You're not just buying a timepiece — you're joining a tradition of people who love mechanical watches.",
+      },
+      {
         heading: "How Automatic Movements Work",
-        content: "An automatic movement stores energy in a coiled mainspring. A weighted rotor pivots with wrist movement, winding the spring through a series of gears. The escapement regulates energy release in precise intervals, driving the hands. Key specs: power reserve (38–80 hours typical), beats per hour (21,600 or 28,800 bph), jewels (synthetic ruby bearings that reduce friction), and accuracy (±10–30 seconds/day is normal for entry-level automatics).",
+        content: "An automatic movement stores energy in a coiled mainspring. A weighted rotor pivots with wrist movement, winding the spring through a series of gears. The escapement regulates energy release in precise intervals, driving the hands. Key specs: power reserve (38–80 hours typical), beats per hour (21,600 or 28,800 bph), jewels (synthetic ruby bearings that reduce friction), and accuracy (±10–30 seconds/day is normal for entry-level automatics). The seconds hand sweeps smoothly on high-frequency movements, creating that satisfying mechanical rhythm.",
+      },
+      {
+        heading: "Choosing Your First Automatic",
+        content: "Consider these factors: brand track record (Seiko, Orient, Tissot, Hamilton have proven reliability), movement robustness (Japanese 4R/6R series and Swiss ETA calibers are safe choices), crystal material (Hardlex is durable, sapphire is premium), water resistance rating (100m is versatile, 50m adequate for non-swimmers), and design personality. Pick a style you genuinely want to wear daily — that matters more than any spec. An automatic only teaches you what works when you wear it.",
       },
       {
         heading: "Price Ranges & Value",
@@ -1656,7 +1672,7 @@ export const guides: Guide[] = [
       },
       {
         heading: "Maintenance Basics",
-        content: "Wear your watch regularly to keep the mainspring wound and lubricants distributed. If it stops, wind manually (20–30 crown turns) before setting the time. Avoid strong magnetic fields (bag clasps, speakers, some phone cases) — magnetization causes erratic fast running. Service every 5–7 years for daily wearers ($150–$400 depending on movement). Have water resistance tested every 2–3 years if water exposure matters.",
+        content: "Wear your watch regularly to keep the mainspring wound and lubricants distributed. If it stops, wind manually (20–30 crown turns) before setting the time. Avoid strong magnetic fields (bag clasps, speakers, some phone cases) — magnetization causes erratic fast running. Service every 5–7 years for daily wearers ($150–$400 depending on movement). Have water resistance tested every 2–3 years if water exposure matters. Don't obsess over accuracy — ±10–30 seconds per day is normal.",
       },
     ],
     faq: [
@@ -1683,6 +1699,14 @@ export const guides: Guide[] = [
       {
         question: "Is Orient a good brand for a first automatic watch?",
         answer: "Yes. Orient produces its own in-house automatic calibers at prices that undercut most competitors. Their movements include hacking and hand-winding capability where many rivals at the same price skip both. The Orient Bambino and Mako are community favorites.",
+      },
+      {
+        question: "Should I buy a new or used automatic watch as a beginner?",
+        answer: "For your first automatic, buying new from an authorized dealer gives you warranty protection and confidence in authenticity. Once you've worn a few watches and developed an eye for quality, used watches on platforms like Chrono24 offer significant value and protections. Always ask for service history if buying used.",
+      },
+      {
+        question: "What is the difference between automatic and manual wind watches?",
+        answer: "Both are mechanical watches powered by a wound mainspring. An automatic winds itself via a rotor that spins with wrist movement — no manual effort during wear. A manual wind watch requires you to wind the crown daily or every few days. Most beginner watches are automatic; manual wind watches are rarer and often more expensive at entry-level prices.",
       },
     ],
     conclusion: "Your first automatic watch doesn't need to be perfect — it needs to be worn. The Seiko 5 Sports is the most-recommended starting point for good reason: it's reliable, characterful, and affordable enough to wear without anxiety. Once you've lived with a mechanical watch for six months, you'll know exactly what you want next. Use our comparison tool to put any two of these watches head-to-head before you decide.",
