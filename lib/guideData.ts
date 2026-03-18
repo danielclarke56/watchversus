@@ -1106,4 +1106,121 @@ export const guides: Guide[] = [
     ],
     conclusion: "The dive watch under $1,000 is where serious watchmaking meets accessibility. Whether you choose the Seiko Prospex's legendary reliability, the Christopher Ward's in-house movement refinement, the Baltic Aquascaphe's microbrand finishing, or the Tissot Seastar's Swiss professional capability, you will own a watch genuinely capable of both daily wear and actual diving. Use our comparison tool to see exactly how these watches compare on specs, movement, water resistance, and community ratings before you decide.",
   },
+
+  {
+    slug: "best-pilot-watches-everyday-wear",
+    emoji: "✈️",
+    tagline: "Legible, reliable, and built for aviators — from $700 to $10,000",
+    title: "Best Pilot Watches for Everyday Wear in 2026",
+    description: "The best pilot watches for everyday wear in 2026. From the IWC Pilot Mark XVIII to the Breitling Navitimer, explore legible field watches with aviation heritage and clear dials.",
+    h1: "Best Pilot Watches for Everyday Wear",
+
+    intro: "A true pilot watch is defined by three principles: legibility above all else, aviation heritage, and practical durability. The large crown, oversized Arabic numerals, and high-contrast dial aren't decoration — they're tools that evolved from actual cockpit demands. Today's best pilot watches blend that legacy with modern craftsmanship, delivering watches that are equally comfortable under a flight suit or a business shirt. Whether you're an aviator seeking genuine functionality or a collector drawn to field watch simplicity, a well-chosen pilot watch becomes your most reliable everyday companion.",
+
+    recommendations: [
+      {
+        slug: "iwc-pilot-mark-xviii",
+        highlight: "The classic modern pilot watch — slim profile, soft-iron case, Swiss precision",
+      },
+      {
+        slug: "breitling-navitimer-b01-42",
+        highlight: "Ultimate pilot's chronograph with circular slide rule for aviation calculations",
+      },
+      {
+        slug: "seiko-prospex-spb143",
+        highlight: "Best value pilot watch — 70-hour power reserve, field watch heritage at $700–900",
+      },
+      {
+        slug: "panerai-luminor-44-pam01312",
+        highlight: "Bold Italian design with 300m capability and 72-hour power reserve",
+      },
+      {
+        slug: "tag-heuer-aquaracer-300",
+        highlight: "Sports watch with pilot-watch proportions at $1,950–2,400",
+      },
+    ],
+
+    buyingGuide: [
+      {
+        heading: "What Defines a Pilot Watch",
+        content: "A pilot watch is more than a large dial — it's a functional design language born from aviation demands. The International Pilot Association establishes these core traits: Arabic numerals for rapid reading in cockpit lighting, a unidirectional rotating bezel for timing, a screw-down crown for pressure resistance, and dial contrast optimized for legibility. Water resistance, while present, typically ranges 60m–300m rather than extreme depths. The case size is deliberately large (40–44mm is the sweet spot), and the dial is uncluttered with primary information immediately visible at a glance.",
+      },
+      {
+        heading: "Dial Legibility — The Core Priority",
+        content: "The most important spec on a pilot watch is dial readability. Look for: large Arabic numerals (at least 6–8mm tall), high-contrast dial backgrounds (black dial with white numerals is the standard), and lume-filled hour markers. The Breitling Navitimer's circular slide rule bezel adds functional complexity, but the core dial remains scannable in milliseconds. The IWC Pilot Mark XVIII uses applied Arabic indices and a clean dial layout — classic, unfussy, reliable.",
+      },
+      {
+        heading: "Case Size and Wristability",
+        content: "Pilot watches traditionally range 40–44mm. The 40mm IWC Pilot Mark XVIII suits smaller wrists and slides under shirt cuffs easily. The 42mm Breitling Navitimer and Panerai Luminor land in the universal fit zone. The 44mm Panerai Luminor is a statement piece for those comfortable with larger watches. Case thickness matters too — the IWC at 10.8mm is notably slim, while the Panerai's 15.5mm is chunky. For everyday wear, thinner is more versatile.",
+      },
+      {
+        heading: "Movement Reliability",
+        content: "Pilot watches demand bulletproof movements. The IWC's Cal. 30110, Breitling's Caliber 01, Seiko's 6R35, and Panerai's P.9010 are all proven workhorses. Power reserve matters — 42–70 hours is typical. The Seiko Prospex SPB143's 70-hour reserve means you can take off Friday and the watch will still be running Monday morning. Magnetic resistance is valuable too (the IWC includes a soft-iron inner case), though no longer mission-critical with modern avionics.",
+      },
+      {
+        heading: "Water Resistance and Strap Options",
+        content: "Water resistance on pilot watches typically ranges 60m (IWC Pilot) to 300m (Panerai, TAG Heuer). For actual aviation, 60m is more than enough — the watch rarely contacts salt water. Strap choice is equally important: leather is traditional (the IWC comes on calfskin), rubber is sporty (most Breitlings offer rubber), and steel bracelet is versatile. The best pilot watches offer multiple strap options so you can match your daily context.",
+      },
+      {
+        heading: "Finding Your Price Point",
+        content: "Pilot watches span a wide range. The Seiko Prospex SPB143 at $700–900 delivers authentic field watch DNA with 70-hour power reserve and vintage 62MAS heritage. The TAG Heuer Aquaracer 300 at $1,950–2,400 offers Swiss-made sport watch proportions. The IWC Pilot Mark XVIII at $4,400–4,900 is the modern benchmark for elegant pilot design. The Breitling Navitimer B01 at $9,300–10,000 adds aviation utility (the slide rule bezel). The Panerai Luminor at $9,000–10,000 is a statement piece.",
+      },
+    ],
+
+    faq: [
+      {
+        question: "What makes a watch a true pilot watch?",
+        answer: "A true pilot watch combines three elements: (1) optimized legibility with large Arabic numerals and high-contrast dial, (2) aviation heritage and functional design born from cockpit demands, and (3) practical durability with reliable movement and water resistance. The International Pilot Association has established standards, but many watches wear the aesthetic without the substance. The IWC Pilot Mark XVIII and Breitling Navitimer are gold standards; many field watches adopt similar styling without the engineering pedigree.",
+      },
+      {
+        question: "Can I wear a pilot watch in formal settings?",
+        answer: "Yes. Pilot watches on leather straps — particularly the IWC Pilot Mark XVIII and Breitling Navitimer on calfskin — read as genuinely dressy. The clean dial and slim profile (especially IWC at 10.8mm) make them suitable for business and semi-formal wear. Avoid rubber straps for formal occasions. Larger pilot watches like the 44mm Panerai Luminor skew more casual.",
+      },
+      {
+        question: "IWC Pilot Mark XVIII vs Breitling Navitimer — which should I choose?",
+        answer: "The IWC Pilot Mark XVIII ($4,400–4,900) is the everyday chameleon — it slides under cuffs, wears small on the wrist, and represents pure pilot watch elegance without extra complications. The Breitling Navitimer B01 ($9,300–10,000) adds a circular slide rule bezel for flight calculations, a 70-hour power reserve, and more visual presence. Choose the IWC for refined simplicity; choose the Breitling for aviation utility and chronograph complications.",
+      },
+      {
+        question: "Is the Seiko Prospex SPB143 a 'real' pilot watch?",
+        answer: "Functionally, yes — it has the core DNA: 40.5mm case, clean Arabic numerals, reliable movement, and excellent legibility. It lacks explicit aviation heritage and the soft-iron case found on true aviator watches. But for everyday wear and the pilot watch aesthetic at $700–900, the Seiko Prospex SPB143 delivers authentic field watch performance. Many experienced collectors include it in their rotation.",
+      },
+      {
+        question: "What's the best pilot watch under $1,000?",
+        answer: "The Seiko Prospex SPB143 at $700–900 is the clear winner. It combines a 70-hour power reserve, sapphire crystal, 200m water resistance, and genuine field watch heritage in a 40.5mm package. For slightly more ($1,950–2,400), the TAG Heuer Aquaracer 300 offers Swiss manufacturing and 300m water resistance. The Prospex represents the best value in authentic pilot watch DNA.",
+      },
+      {
+        question: "How do pilot watches differ from field watches?",
+        answer: "Pilot watches are a subset of field watches, but with more specific aviation heritage and design language. All pilot watches are field watches; not all field watches are pilot watches. Pilot watches emphasize dial legibility optimized for cockpit reading and often include features like large crowns and magnetic protection. The IWC Pilot and Breitling Navitimer are explicit pilots; the Seiko Prospex is field watch heritage repurposed for pilot aesthetics.",
+      },
+      {
+        question: "Do I need a chronograph pilot watch?",
+        answer: "No. Chronographs add complications and cost. The Breitling Navitimer's slide rule bezel is genuinely useful for aviators (calculating fuel consumption, climb rate, airspeed), but most everyday wearers will never use it. The simpler IWC Pilot Mark XVIII or Seiko Prospex SPB143 deliver the pilot watch experience without chronograph complexity.",
+      },
+      {
+        question: "Are vintage pilot watches better than modern ones?",
+        answer: "Vintage pilot watches (particularly IWC Big Pilot references and early Breitlings) have collector prestige and historical significance. Modern pilot watches offer improved lume, better movements, and superior reliability. For actual daily wear and dependability, modern is superior. For investment potential and collecting, vintage Big Pilots and Navitimers have outpaced modern equivalents.",
+      },
+    ],
+
+    paa: [
+      {
+        question: "What water resistance do I need for a pilot watch?",
+        answer: "Most modern pilots operate aircraft with pressurized cabins, so 60m water resistance is practical. Seaplanes may benefit from 300m, but it's uncommon. The IWC Pilot's 60m is sufficient; the Seiko Prospex and Panerai's 200–300m provide margin but aren't essential. Choose based on lifestyle, not aviation utility.",
+      },
+      {
+        question: "Should I buy a pilot watch on the bracelet or leather strap?",
+        answer: "Leather is traditional for pilot watches and more versatile for formal wear. Steel bracelets are durable and sporty. Buy whichever matches your daily context first — many pilot watches (Breitling, IWC) offer both options separately.",
+      },
+      {
+        question: "What's the difference between a pilot watch and a chronograph?",
+        answer: "A pilot watch emphasizes legibility and field durability. A chronograph adds stopwatch functionality. Many pilot watches are chronographs (Breitling Navitimer), but many are not (IWC Pilot Mark XVIII). Chronographs cost more and add complexity; simpler pilot watches are often more versatile for everyday wear.",
+      },
+      {
+        question: "Are IWC pilot watches worth the price?",
+        answer: "Yes, for what you get — Swiss-made reliability, soft-iron inner case for magnetic protection, slim profile, and elite finishing. The IWC Pilot Mark XVIII at $4,400–4,900 is pricey, but justified for daily wear reliability and design. If budget is tight, the Seiko Prospex SPB143 at $700–900 offers 80% of the experience.",
+      },
+    ],
+
+    conclusion: "The best pilot watch is the one that meets your budget and fits your wrist. From the Seiko Prospex SPB143's remarkable value at $700–900 to the IWC Pilot Mark XVIII's refined elegance at $4,400–4,900 to the Breitling Navitimer's functional aviation heritage at $9,300–10,000, each represents authentic pilot watch design executed at its price point. What unites them is dial legibility, reliable movement, and the clean aesthetic that makes a pilot watch equally at home in the flight deck or under your business shirt cuff. Use our comparison tool to see exactly how these watches stack up on specs, movement, and community ratings.",
+  },
 ]
