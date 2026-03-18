@@ -66,12 +66,12 @@ export const popularComparisons = [
   { slug1: 'omega-seamaster-300m', slug2: 'tudor-black-bay-58' },
   { slug1: 'omega-seamaster-300m', slug2: 'breitling-superocean-42' },
   { slug1: 'omega-seamaster-300m', slug2: 'tudor-pelagos-39' },
-  { slug1: 'omega-seamaster-300m', slug2: 'panerai-luminor-due-42' },
+  { slug1: 'omega-seamaster-300m', slug2: 'panerai-luminor-44-pam01312' },
   { slug1: 'tudor-black-bay-58', slug2: 'seiko-prospex-spb143' },
   { slug1: 'tudor-black-bay-58', slug2: 'christopher-ward-c65-trident' },
   { slug1: 'tudor-pelagos-39', slug2: 'breitling-superocean-42' },
   { slug1: 'tudor-pelagos-39', slug2: 'longines-hydroconquest-41' },
-  { slug1: 'breitling-superocean-42', slug2: 'panerai-luminor-due-42' },
+  { slug1: 'breitling-superocean-42', slug2: 'panerai-luminor-44-pam01312' },
   { slug1: 'seiko-prospex-spb143', slug2: 'longines-hydroconquest-41' },
   { slug1: 'seiko-prospex-spb143', slug2: 'christopher-ward-c65-trident' },
   { slug1: 'baltic-aquascaphe', slug2: 'halios-seaforth' },
@@ -123,17 +123,17 @@ export const popularComparisons = [
 
   // Sports / Integrated Bracelet
   { slug1: 'ap-royal-oak-15500', slug2: 'patek-philippe-nautilus-5711' },
-  { slug1: 'ap-royal-oak-15500', slug2: 'vacheron-constantin-overseas-42' },
-  { slug1: 'patek-philippe-nautilus-5711', slug2: 'vacheron-constantin-overseas-42' },
-  { slug1: 'ap-royal-oak-15500', slug2: 'rolex-day-date-36' },
-  { slug1: 'patek-philippe-nautilus-5711', slug2: 'rolex-yacht-master-42' },
+  { slug1: 'ap-royal-oak-15500', slug2: 'vacheron-constantin-overseas-4500v' },
+  { slug1: 'patek-philippe-nautilus-5711', slug2: 'vacheron-constantin-overseas-4500v' },
+  { slug1: 'ap-royal-oak-15500', slug2: 'rolex-day-date-40' },
+  { slug1: 'patek-philippe-nautilus-5711', slug2: 'rolex-yacht-master-40' },
 
   // Rolex Across Categories
-  { slug1: 'rolex-day-date-36', slug2: 'rolex-submariner-41' },
-  { slug1: 'rolex-day-date-36', slug2: 'rolex-yacht-master-42' },
-  { slug1: 'rolex-day-date-36', slug2: 'cartier-santos' },
-  { slug1: 'rolex-yacht-master-42', slug2: 'tudor-pelagos-39' },
-  { slug1: 'rolex-yacht-master-42', slug2: 'longines-hydroconquest-41' },
+  { slug1: 'rolex-day-date-40', slug2: 'rolex-submariner-41' },
+  { slug1: 'rolex-day-date-40', slug2: 'rolex-yacht-master-40' },
+  { slug1: 'rolex-day-date-40', slug2: 'cartier-santos' },
+  { slug1: 'rolex-yacht-master-40', slug2: 'tudor-pelagos-39' },
+  { slug1: 'rolex-yacht-master-40', slug2: 'longines-hydroconquest-41' },
   { slug1: 'rolex-datejust-36', slug2: 'omega-aqua-terra-38' },
   { slug1: 'rolex-datejust-36', slug2: 'longines-master-collection-40' },
 
@@ -168,7 +168,7 @@ export const popularComparisons = [
 
   // Breitling Across Categories
   { slug1: 'breitling-superocean-42', slug2: 'breitling-navitimer-b01-42' },
-  { slug1: 'breitling-superocean-42', slug2: 'rolex-submarine-41' },
+  { slug1: 'breitling-superocean-42', slug2: 'rolex-submariner-41' },
   { slug1: 'breitling-superocean-42', slug2: 'tudor-pelagos-39' },
 
   // IWC Pairings
@@ -181,8 +181,8 @@ export const popularComparisons = [
   { slug1: 'zenith-el-primero-38', slug2: 'breitling-navitimer-b01-42' },
 
   // Panerai
-  { slug1: 'panerai-luminor-due-42', slug2: 'rolex-submariner-41' },
-  { slug1: 'panerai-luminor-due-42', slug2: 'tudor-black-bay-58' },
+  { slug1: 'panerai-luminor-44-pam01312', slug2: 'rolex-submariner-41' },
+  { slug1: 'panerai-luminor-44-pam01312', slug2: 'tudor-black-bay-58' },
 
   // Nomos Further Comparisons
   { slug1: 'nomos-tangente-38', slug2: 'cartier-tank-must' },
@@ -203,12 +203,13 @@ export const popularComparisons = [
   { slug1: 'hamilton-jazzmaster-40', slug2: 'nomos-tangente-38' },
 
   // Vacheron Constantin
-  { slug1: 'vacheron-constantin-overseas-42', slug2: 'ap-royal-oak-15500' },
-  { slug1: 'vacheron-constantin-overseas-42', slug2: 'patek-philippe-nautilus-5711' },
-  { slug1: 'vacheron-constantin-overseas-42', slug2: 'rolex-day-date-36' },
+  { slug1: 'vacheron-constantin-overseas-4500v', slug2: 'ap-royal-oak-15500' },
+  { slug1: 'vacheron-constantin-overseas-4500v', slug2: 'patek-philippe-nautilus-5711' },
+  { slug1: 'vacheron-constantin-overseas-4500v', slug2: 'rolex-day-date-40' },
 
   // Ultra-Luxury Comparisons
   { slug1: 'rolex-datejust-36', slug2: 'patek-philippe-nautilus-5711' },
+  { slug1: 'rolex-day-date-40', slug2: 'patek-philippe-nautilus-5711' },
 
   // Additional Strategic Pairs
   { slug1: 'tudor-black-bay-gmt', slug2: 'rolex-gmt-master-ii-pepsi' },
