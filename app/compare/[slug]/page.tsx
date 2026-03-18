@@ -734,6 +734,66 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         )
       })()}
 
+      {/* Related Comparisons */}
+      {relatedComparisons.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-textPrimary mb-2">You May Also Like</h2>
+          <p className="text-sm text-textSecond mb-5">Other popular comparisons featuring {w1.brand} or {w2.brand}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {relatedComparisons.map((comp) => {
+              const cw1 = getWatchBySlug(comp.slug1)
+              const cw2 = getWatchBySlug(comp.slug2)
+              if (!cw1 || !cw2) return null
+              const compSlug = `${comp.slug1}-vs-${comp.slug2}`
+              return (
+                <Link
+                  key={compSlug}
+                  href={`/compare/${compSlug}`}
+                  className="card p-5 hover:border-accent/40 transition-all hover:shadow-md group"
+                >
+                  {/* Comparison title */}
+                  <div className="flex gap-2 items-start mb-4">
+                    <div className="flex-1">
+                      <p className="text-xs text-textMuted font-semibold mb-1">COMPARISON</p>
+                      <p className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-1">
+                        {cw1.brand} {cw1.name}
+                      </p>
+                      <p className="text-xs text-textMuted text-center my-1.5">vs</p>
+                      <p className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-1">
+                        {cw2.brand} {cw2.name}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Price range */}
+                  <div className="bg-accentLight/30 rounded-lg p-3 mb-3">
+                    <p className="text-xs text-textMuted font-semibold mb-2">Price Range</p>
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <p className="text-[10px] text-textMuted mb-0.5">{cw1.brand}</p>
+                        <p className="text-sm font-bold text-textPrimary">{formatPrice(cw1.price_new_usd)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-textMuted mb-0.5">{cw2.brand}</p>
+                        <p className="text-sm font-bold text-textPrimary">{formatPrice(cw2.price_new_usd)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tagline / specs teaser */}
+                  <div className="text-xs text-textSecond mb-3 line-clamp-2">
+                    <span className="font-semibold">Specs:</span> {cw1.case_diameter_mm}mm / {cw2.case_diameter_mm}mm • {cw1.water_resistance_m}m / {cw2.water_resistance_m}m WR
+                  </div>
+
+                  {/* CTA */}
+                  <p className="text-xs text-accent font-semibold inline-block group-hover:underline">Compare Now →</p>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
       {/* Custom compare CTA */}
       <div className="mt-8 text-center bg-surface border border-border rounded-xl p-8">
         <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
