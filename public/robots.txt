@@ -1,9 +1,28 @@
-# Allow all crawlers to access all content
+# Primary robots directive for WatchVsWatch
+# Note: app/robots.ts takes precedence in Next.js 14. This is a fallback.
+
+# Default rules for all crawlers
 User-agent: *
 Allow: /
+Allow: /compare
+Allow: /brand
+Allow: /brands
+Allow: /watches
+Allow: /guides
+Allow: /quiz
+Allow: /rankings
+Allow: /reviews
+Allow: /about
+
+# Block private/system routes
+Disallow: /api
+Disallow: /admin
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /_next
+
+# Crawl-delay settings (in seconds)
+Crawl-delay: 1
 
 # Specify sitemap location
 Sitemap: https://watchvswatch.com/sitemap.xml
-
-# Crawl-delay settings (optional, in seconds)
-Crawl-delay: 1
