@@ -35,7 +35,7 @@ export const guides: Guide[] = [
     tagline: "Best automatic & quartz picks under $500 new or preowned",
     title: "Best Watches Under $500 in 2026 — Expert Picks",
     description: "The best automatic and quartz watches under $500 in 2026. Expert picks from Seiko, Tissot, Baltic, Hamilton, and more. Reviewed and compared with specs.",
-    h1: "Best Watches Under $500 in 2026",
+    h1: "Best Watches Under $500 in 2026 – Expert Picks",
     intro: "The best watches under $500 in 2026 come from Seiko, Tissot, and Hamilton — brands that deliver Swiss or Japanese movements without the luxury markup. Top picks:\n\nThe $500 price point is one of the most exciting tiers in modern watchmaking. A few years ago, buying a serious automatic watch for under $500 meant accepting significant compromises — noisy movements, mineral crystals, poor lume. Today, that is no longer true. Japanese and Swiss manufacturers have pushed extraordinary technology down the price ladder, delivering sapphire crystals, COSC-comparable movements, and genuine design character at prices that would have seemed impossible a decade ago.\n\nWhether you want a gateway automatic that will convert you to the hobby for life, a robust daily beater that can take genuine abuse, or a dive watch capable of real depth, the sub-$500 segment delivers. This guide covers the best options across categories — from Seiko's legendary Sport and Prospex lines to the Tissot PRX, a watch that genuinely disrupted the integrated bracelet market when it launched. We have also included picks available new just above $500 that consistently appear in excellent preowned condition well below the threshold, giving you more ways to find something that genuinely excites you.",
     recommendations: [
       {
@@ -130,7 +130,7 @@ export const guides: Guide[] = [
     tagline: "The sweet spot — Swiss-made, Japanese excellence, top microbrands",
     title: "Best Watches Under $1,000 in 2026 — Top Swiss & Japanese Picks",
     description: "The best automatic watches under $1,000 in 2026. Swiss-made, Japanese excellence, and top microbrands reviewed and compared by category.",
-    h1: "Best Watches Under $1,000 in 2026",
+    h1: "Best Watches Under $1,000 in 2026 – Top Swiss & Japanese Picks",
     intro: "Under $1,000, you can get genuine sapphire crystal, in-house movements, and 100m+ water resistance. Best options:\n\nThe $500-$1,000 bracket is arguably the most rewarding tier in watchmaking. This is where Swiss-made automatics become genuinely accessible, movement quality takes a meaningful leap, and design ambition increases substantially. You are no longer choosing between good and great — you are navigating different kinds of excellent.\n\nHamilton's exceptional 80-hour movement appears in both the Khaki Field and Jazzmaster at under $900. Seiko's professional Prospex line delivers 70-hour power reserves and sapphire crystals under $900. Baltic's cult-status Aquascaphe, the Christopher Ward C65 Trident with its in-house movement, and the Halios Tropik round out a microbrand tier that delivers remarkable value. This guide highlights the best automatic watches available new under $1,000, with a focus on what matters most: movement quality, build honesty, long-term wearability, and the likelihood you will still love it in ten years.",
     recommendations: [
       {
@@ -233,7 +233,7 @@ export const guides: Guide[] = [
     tagline: "From sub-$400 Seiko to Rolex Submariner — every budget covered",
     title: "Best Dive Watches in 2026 — From Budget to Luxury",
     description: "The best dive watches in 2026 across every budget. From Seiko Prospex under $900 to Rolex Submariner, reviewed and compared with full specs.",
-    h1: "Best Dive Watches in 2026",
+    h1: "Best Dive Watches in 2026 – From Budget to Luxury",
     intro: "The best dive watches offer at minimum 200m water resistance, a screw-down crown, and a uni-directional bezel. Our top picks are:\n\nThe dive watch is the most versatile category in horology. Born in the 1950s as a professional tool for military divers, it evolved into watchmaking's most popular genre — worn everywhere from ocean floors to board meetings. A true dive watch meets ISO 6425 standards: minimum 100m water resistance, luminescent markers, unidirectional elapsed-time bezel, and legibility underwater. The best go much further.\n\nToday's dive watch market spans from sub-$350 Seiko automatics to five-figure Rolex icons, and the remarkable thing is that the best values often sit far from both extremes. This guide ranks the best options across budgets — from the Baltic Aquascaphe's microbrand excellence to the Omega Seamaster's Bond-grade credibility. Whether you actually dive or simply want a watch that handles everything life throws at it, a quality dive watch is the most practical choice in any collection.",
     recommendations: [
       {
@@ -336,7 +336,7 @@ export const guides: Guide[] = [
     tagline: "Elegance at every price — Nomos, Cartier, Grand Seiko, and more",
     title: "Best Dress Watches in 2026 — Elegance at Every Budget",
     description: "The best dress watches in 2026 from Nomos, Cartier, Grand Seiko, IWC, Longines, and more. Expert picks with full specs and honest reviews.",
-    h1: "Best Dress Watches in 2026",
+    h1: "Best Dress Watches in 2026 – Elegance at Every Budget",
     intro: "The best dress watches are slim (under 10mm), classically styled, and pair well with formal wear. Our picks:\n\nA great dress watch is the quiet counterpoint to the sports watch revolution. While integrated-bracelet icons dominate watchmaking conversation, the dress watch endures as the most sophisticated choice in a collection — and the one that rewards long-term ownership most deeply. The hallmarks are universal: slim profile that disappears under a cuff, restrained dial design, meticulous case finishing, and a movement worthy of the craft surrounding it.\n\nFrom Nomos's Bauhaus minimalism to Grand Seiko's ethereal dial artistry, from Cartier's century-long elegance to Longines's remarkable Swiss value, the dress watch market offers unparalleled variety. This guide covers the best options from under $1,000 to the pinnacle of high watchmaking — watches that transcend trends, pair effortlessly with formal wear, and carry genuine cultural weight. Whatever your budget, we would recommend any of these without hesitation.",
     recommendations: [
       {
@@ -443,7 +443,7 @@ export const guides: Guide[] = [
     tagline: "Military heritage and modern performance from Hamilton to Rolex",
     title: "Best Field Watches in 2026 — Military Heritage, Modern Performance",
     description: "Best field watches in 2026: Hamilton Khaki Field, IWC Pilot, Rolex Explorer, and more reviewed across every budget. Expert picks with specs.",
-    h1: "Best Field Watches in 2026",
+    h1: "Best Field Watches in 2026 – Military Heritage, Modern Performance",
     intro: "The best field watches are legible, durable, and unpretentious. Key features: anti-magnetic, shock resistant, easy-to-read dial. Top options:\n\nThe field watch is watchmaking's most honest genre. Descended from military specification watches issued to soldiers in WWI and WWII, a field watch prioritizes one thing above all else: legibility under any condition. Clear Arabic numerals, high-contrast dial, robust case, reliable movement, and enough water resistance to survive whatever the field throws at it — these are the fundamentals that have defined the category for over a century.\n\nUnlike dive watches, field watches are typically slim enough to wear under a cuff. Unlike dress watches, they are made to take genuine abuse. The Hamilton Khaki Field — directly inspired by the Hamilton watches issued to U.S. military — is the modern benchmark. But the category spans from affordable Seiko daily beaters to IWC Pilots and Rolex Explorers that carry field watch DNA in luxury packaging. This guide delivers the best field watches across budgets, from exceptional Swiss value to serious collector pieces that honour the tool watch tradition.",
     recommendations: [
       {
@@ -542,7 +542,7 @@ export const guides: Guide[] = [
     tagline: "Track two time zones — Rolex Pepsi, Tudor GMT, and value alternatives",
     title: "Best GMT Watches in 2026 — Track Two Time Zones in Style",
     description: "Best GMT watches in 2026: Rolex GMT-Master II, Tudor Black Bay GMT, Seiko Presage, and more. Expert picks with full specs and buying advice.",
-    h1: "Best GMT Watches in 2026",
+    h1: "Best GMT Watches in 2026 – Track Two Time Zones in Style",
     intro: "The best GMT watches track two time zones with a dedicated 24-hour hand or bezel. Most useful for frequent travelers. Top picks:\n\nA GMT watch — named for Greenwich Mean Time — is the essential complication for anyone who crosses time zones regularly or coordinates with colleagues and family across continents. The complication adds a fourth hand that completes one rotation every 24 hours, readable against a 24-hour bezel or ring to display a second time zone simultaneously while the three-hand display keeps perfect local time.\n\nThe Rolex GMT-Master II established the gold standard in 1955, originally developed with Pan American Airways for pilots navigating transatlantic routes. Today the category extends from the iconic Rolex Pepsi to Tudor's exceptional value proposition and Seiko's accessible GMT Presage — genuinely different watches at genuinely different prices. Whether you are a frequent flier who genuinely uses the GMT function or simply appreciate the added utility and visual drama of a 24-hour bezel, these are the GMT watches worth serious consideration.",
     recommendations: [
       {
@@ -632,7 +632,7 @@ export const guides: Guide[] = [
     tagline: "Luxury on a budget — Seiko, Hamilton, Longines, Tag Heuer excellence",
     title: "Best Watches Under $3,000 — Luxury on a Budget",
     description: "Top automatic watches under $3,000 from Seiko, Hamilton, Longines, Tag Heuer, and more. Expert picks with full specs.",
-    h1: "Best Watches Under $3,000",
+    h1: "Best Watches Under $3,000 – Luxury on a Budget",
     intro: "The sub-$3,000 watch market is where serious watchmaking meets accessibility. This is where a Seiko automatic costs $250, a Swiss Longines costs $1,200, and genuine luxury brands compete on merit rather than heritage prestige. You get real complications, excellent movements, and the freedom to own multiple watches instead of one expensive piece. We've selected eight watches that represent the best value and engineering in this price tier.",
     recommendations: [
       {
@@ -726,7 +726,7 @@ export const guides: Guide[] = [
     tagline: "Entry luxury tier — Tudor, Breitling, IWC, Omega prestige",
     title: "Best Watches Under $5,000 — The Sweet Spot for Luxury",
     description: "Luxury watches under $5,000 from Tudor, Breitling, IWC, Longines, Omega, and Nomos. Expert recommendations with full specs.",
-    h1: "Best Watches Under $5,000",
+    h1: "Best Watches Under $5,000 – The Sweet Spot for Luxury",
     intro: "The sub-$5,000 price point is where watchmaking separates into tiers: entry luxury (Tudor, Breitling), established Swiss brands (Longines, Hamilton), haute horlogerie beginnings (IWC, Omega), and respected German engineering (Nomos). At this level, you're acquiring watches with genuine complications, in-house movements, or heritage that will age beautifully and hold value. This is the price tier where serious collectors make their most meaningful purchases.",
     recommendations: [
       {
@@ -820,7 +820,7 @@ export const guides: Guide[] = [
     tagline: "Pure mechanical excellence — Japanese, Swiss, and German automatics",
     title: "Best Automatic Watches Under $3,000 — Pure Mechanical Excellence",
     description: "Top automatic mechanical watches under $3,000 from Seiko, Hamilton, Longines, Tissot, and more. Expert picks with full specs.",
-    h1: "Best Automatic Watches Under $3,000",
+    h1: "Best Automatic Watches Under $3,000 – Pure Mechanical Excellence",
     intro: "An automatic movement — wound by wrist motion rather than battery or hand winding — represents the beating heart of modern watchmaking. Under $3,000, you can own automatics from legendary manufacturers: Seiko's robust field and dive movements, Hamilton's respected H-10, Longines' COSC-certified Swiss movements, and independent German makers like Nomos. We've selected eight automatics that represent exceptional value and engineering across categories.",
     recommendations: [
       {
@@ -915,7 +915,7 @@ export const guides: Guide[] = [
     tagline: "Sapphire crystals, automatic movements, and refined designs — without the luxury price tag",
     title: "Best Dress Watches Under $500 in 2026 — Elegant & Affordable",
     description: "The best dress watches under $500. From Seiko Presage to Swiss-made Hamilton and Frederique Constant, reviewed with full specs and buying guidance.",
-    h1: "Best Dress Watches Under $500 in 2026",
+    h1: "Best Dress Watches Under $500 in 2026 – Elegant & Affordable",
     intro: "A great dress watch doesn't require a luxury budget. Under $500 (new or preowned), you can own elegant pieces with sapphire crystals, automatic movements, and refined designs:\n\nThe dress watch is horology's most elegant category — minimalist dials, thin profiles, traditional leather straps, and proportions refined over decades. Unlike sports watches that celebrate ruggedness, dress watches embody restraint: clean numerals, simple date windows, and case sizes between 36–40mm that feel at home on any wrist.\n\nThe remarkable truth: genuine dress watches at exceptional value exist in the under-$500 window, both new and preowned. You'll find Swiss-made automatics from Hamilton and Frederique Constant alongside Japan's Seiko Presage — a watch that distills classic dress watch DNA into an entry-level price. This guide highlights the best options for anyone seeking an elegant timepiece that works in both boardrooms and casual settings.",
     recommendations: [
       {
@@ -1018,7 +1018,7 @@ export const guides: Guide[] = [
     tagline: "Professional dive capability under $1,000 — Seiko Prospex, Christopher Ward, and more",
     title: "Best Dive Watches Under $1,000 in 2026 — Professional & Reliable",
     description: "The best dive watches under $1,000 in 2026. From Seiko Prospex to Christopher Ward, reviewed with full specs, water resistance, and movement details.",
-    h1: "Best Dive Watches Under $1,000 in 2026",
+    h1: "Best Dive Watches Under $1,000 in 2026 – Professional & Reliable",
     intro: "Under $1,000, you can get a dive watch with 200m+ water resistance, sapphire crystal, and a certified automatic movement. Best options:\n\nThe dive watch is the most versatile and honest category in watchmaking. The best models under $1,000 deliver ISO 6425 compliance, genuine tool-watch capability, and movements that will outlast their owners if properly maintained. This tier sits at a sweet spot: high enough to demand serious specifications, low enough to reward buyers who know what to prioritize.\n\nSeiko's professional Prospex line dominates here, offering Japan's best-kept secret: exceptional tool watch engineering that Swiss brands struggle to match at this price. Christopher Ward's C65 Trident brings genuine in-house movement quality to the category, while Baltic and Halios prove that microbrands can deliver finishing that surprises established Swiss makers. This guide focuses on dive watches that excel both as professional tools and daily-wear companions — watches with 200m+ water resistance, screw-down crowns, rotating bezels, and movements built to take a beating.",
     recommendations: [
       {
@@ -1113,7 +1113,7 @@ export const guides: Guide[] = [
     tagline: "Legible, reliable, and built for aviators — from $700 to $10,000",
     title: "Best Pilot Watches for Everyday Wear in 2026",
     description: "The best pilot watches for everyday wear in 2026. From the IWC Pilot Mark XVIII to the Breitling Navitimer, explore legible field watches with aviation heritage and clear dials.",
-    h1: "Best Pilot Watches for Everyday Wear",
+    h1: "Best Pilot Watches for Everyday Wear in 2026",
 
     intro: "A true pilot watch is defined by three principles: legibility above all else, aviation heritage, and practical durability. The large crown, oversized Arabic numerals, and high-contrast dial aren't decoration — they're tools that evolved from actual cockpit demands. Today's best pilot watches blend that legacy with modern craftsmanship, delivering watches that are equally comfortable under a flight suit or a business shirt. Whether you're an aviator seeking genuine functionality or a collector drawn to field watch simplicity, a well-chosen pilot watch becomes your most reliable everyday companion.",
 
@@ -1230,7 +1230,7 @@ export const guides: Guide[] = [
     tagline: "Rare and refined — mechanical stopwatches with in-house movements and column-wheel precision",
     title: "Best Chronograph Watches Under $5000 in 2026 — Mechanical Excellence",
     description: "True mechanical chronographs under $5000 are rare. Explore the Baltic Bicompax 001 and the market realities that make sub-$5000 chronographs exceptional finds.",
-    h1: "Best Chronograph Watches Under $5000 in 2026",
+    h1: "Best Chronograph Watches Under $5000 in 2026 – Mechanical Excellence",
     intro: "A mechanical chronograph under $5000 is a genuine rarity in horology. While sports watches and dive instruments fill every price bracket, true chronographs—watches with precision mechanical stopwatch functionality—command premiums that often exceed $5000. The barrier isn't marketing; it's engineering.\n\nA quality chronograph demands either an in-house caliber (where a manufacture designs its own movement) or careful integration of an outsourced base movement with chronograph complications. The column wheel, which coordinates the chronograph's start/stop/reset functions, is one of horology's most complex mechanisms—typically found only in watches costing $4000 and up. Add in the requirement for pusher feel, reliable clutch engagement, and lasting precision, and a sub-$5000 chronograph represents a remarkable value compromise.\n\nYet the market has begun to shift. Independent makers and boutique brands now offer mechanical chronographs in the $3000–4500 range, proving that mass-market prestige pricing is not inevitable. This guide focuses on the singular exception: the Baltic Bicompax 001, a Danish micro-brand chronograph that challenges the notion that true chronographs require luxury pricing.",
     recommendations: [
       {
@@ -1325,7 +1325,7 @@ export const guides: Guide[] = [
     tagline: "In-house movements, heritage brands, sapphire crystal, and genuine luxury—all under $10K new",
     title: "Best Luxury Watches Under $10,000 in 2026 — Expert Guide",
     description: "The best luxury watches under $10,000 in 2026. In-house movements, heritage brands, and genuine luxury from Omega, Rolex, TAG Heuer, Cartier, and IWC. Reviewed and compared.",
-    h1: "Best Luxury Watches Under $10,000 in 2026",
+    h1: "Best Luxury Watches Under $10,000 in 2026 – Expert Guide",
     intro: "At the $10,000 threshold, you enter genuine luxury territory—in-house movements, sapphire crystals, heritage brands, and watches designed to last decades. The best options:\n\nThe $5,000–$10,000 bracket represents a fundamental shift in watchmaking. Below $5,000, most watches use outsourced movements (ETA, Miyota, Sellita). At $10,000, you are entering the domain of in-house calibers, heritage houses with centuries of tradition, and watches that appreciate rather than depreciate. An Omega Seamaster 300m at $5,700 is not simply a dive watch—it is a Master Chronometer-certified instrument with 15,000 gauss anti-magnetic resistance. A Rolex Submariner at $9,100 is not merely stainless steel—it is the watch that defined the dive watch category in 1953 and continues to define it today.\n\nWhat separates $10,000 watches from everything below is finishing quality, movement architecture, and brand prestige. You will find sapphire bezels, micro-adjustable clasps, hand-finished bridges, and movements that take months to assemble. This guide highlights the strongest entries into genuine luxury—watches that prove the $10,000 price point is where watchmaking genuinely transforms from commodity to heirloom.",
     recommendations: [
       {
@@ -1443,7 +1443,7 @@ export const guides: Guide[] = [
     tagline: "Durable, reliable watches built for activity, sport, and rugged daily wear",
     title: "Best Sports Watches for Active Men in 2026 — Expert Guide",
     description: "The best sports watches for active men in 2026: durable, shock-resistant, water-resistant watches from Omega, Rolex, TAG Heuer, Seiko, and Tudor. Expert picks with real specs.",
-    h1: "Best Sports Watches for Active Men in 2026",
+    h1: "Best Sports Watches for Active Men in 2026 – Expert Guide",
     intro: "The best sports watches for active men prioritize durability over decoration. They deliver shock resistance, genuine water resistance, reliable movements, and honest design that works as hard as you do.\n\nA true sports watch is not defined by chronographs or complex complications. It is defined by core engineering: a movement that can withstand impact and maintain accuracy under stress, a case that protects that movement, and a crystal and bezel designed for legibility and function in real conditions. The watches on this list—from the Omega Seamaster 300m to the TAG Heuer Aquaracer 300 to the Seiko Prospex SPB143—share a philosophy: build for the activity first, aesthetics second.\n\nWhether you are training for a triathlon, running marathons, hiking remote terrain, or simply refusing to baby your wrist wear, this guide covers the essential specifications, honest recommendations, and real-world considerations for active men who want a watch that proves itself through use.",
     recommendations: [
       {
