@@ -96,6 +96,7 @@ export const popularComparisons = [
 
   // Dress Watches
   { slug1: 'cartier-santos', slug2: 'cartier-tank-must' },
+  { slug1: 'rolex-datejust-36', slug2: 'cartier-ronde-solo' },
   { slug1: 'cartier-santos', slug2: 'nomos-tangente-38' },
   { slug1: 'cartier-santos', slug2: 'longines-master-collection-40' },
   { slug1: 'cartier-tank-must', slug2: 'nomos-tangente-38' },

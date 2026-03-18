@@ -73,4 +73,8 @@ export const comparisonMetaDescriptions: Record<string, string> = {
   
   'rolex-gmt-master-ii-pepsi-vs-omega-seamaster-300m':
     'Rolex GMT-Master II vs Omega Seamaster: Pilot vs diver heritage. Explore timing precision, case comfort & dual-timezone capability.',
+
+  // Dress Watch Classics
+  'rolex-datejust-36-vs-cartier-ronde-solo':
+    'Rolex Datejust 36 vs Cartier Ronde Solo: Dress watch rivals. Compare Swiss prestige, movement tech, sizing & design philosophy. Which elegant daily wearer is right for you?',
 };
