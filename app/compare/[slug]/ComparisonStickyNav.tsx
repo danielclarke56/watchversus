@@ -73,23 +73,24 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
         isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          {/* Watch names + verdict */}
-          <div className="min-w-0 flex-shrink-0">
-            <div className="text-sm font-bold text-textPrimary leading-tight">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        {/* Top row: watch names + verdict + desktop view links */}
+        <div className="flex items-center justify-between h-12 sm:h-14">
+          {/* Watch names + verdict — more prominent on mobile */}
+          <div className="min-w-0 flex-1">
+            <div className="text-sm sm:text-sm font-bold text-textPrimary leading-tight">
               <span className="text-accent">{watch1Name}</span>
               <span className="mx-1 text-textMuted">vs</span>
               <span className="text-textPrimary">{watch2Name}</span>
             </div>
             {verdict && (
-              <div className="text-[10px] sm:text-xs text-winner font-semibold leading-tight mt-0.5 truncate max-w-[200px] sm:max-w-none">
+              <div className="text-[10px] sm:text-xs text-winner font-semibold leading-tight mt-0.5 truncate">
                 🏆 {verdict}
               </div>
             )}
           </div>
 
-          {/* Section navigation — horizontal scroll on mobile */}
+          {/* Section navigation — desktop: inline */}
           <div className="flex-1 overflow-x-auto ml-4 hidden sm:block">
             <div className="flex gap-1 whitespace-nowrap">
               {sections.map((section) => (
@@ -122,6 +123,25 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
             >
               {watch2Name}
             </Link>
+          </div>
+        </div>
+
+        {/* Mobile section navigation — horizontal scroll, always visible */}
+        <div className="sm:hidden -mx-3 px-3 pb-2 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1 whitespace-nowrap">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => handleSectionClick(section.id)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all min-h-[32px] ${
+                  activeSection === section.id
+                    ? 'text-white bg-accent'
+                    : 'text-textSecond bg-surfaceAlt hover:text-accent'
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>

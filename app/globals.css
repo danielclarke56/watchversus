@@ -94,6 +94,15 @@ body {
   }
 }
 
+/* Hide scrollbar for mobile horizontal scroll nav */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

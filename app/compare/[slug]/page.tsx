@@ -282,7 +282,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ComparisonStickyNav slug1={w1.slug} slug2={w2.slug} watch1Name={w1.name} watch2Name={w2.name} verdict={verdictInfo.winnerName || 'Too Close to Call'} />
-      <Container className="py-10 pt-16">
+      <Container className="py-10 pt-28 sm:pt-20 lg:pt-16">
         {/* Breadcrumb */}
         <nav className="text-sm text-textMuted mb-6 flex items-center gap-2">
           <Link href="/compare" className="hover:text-accent transition-colors">Compare</Link>
@@ -308,9 +308,9 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           <div className="px-6 md:px-10 py-10 md:py-14">
             {/* Main headline */}
             <div className="text-center mb-8">
-              <h1 className="text-4xl md:text-6xl font-black text-textPrimary leading-tight mb-3">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-textPrimary leading-tight mb-3">
                 <span className="block">{w1.brand} {w1.name}</span>
-                <span className="text-accent text-3xl md:text-5xl">vs</span>
+                <span className="text-accent text-xl sm:text-3xl md:text-5xl">vs</span>
                 <span className="block">{w2.brand} {w2.name}</span>
               </h1>
               <p className="text-textSecond text-lg md:text-xl">Complete head-to-head comparison</p>
@@ -415,7 +415,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                       )}
 
                       {/* View Details Link */}
-                      <Link href={`/watches/${w.slug}`} className="block w-full text-center py-3 px-4 bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all duration-200">
+                      <Link href={`/watches/${w.slug}`} className="block w-full text-center py-3 px-4 min-h-[48px] flex items-center justify-center bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all duration-200">
                         View Full Specs →
                       </Link>
                     </Card>
@@ -426,38 +426,38 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
             {/* Quick Comparison Summary — 4-stat grid */}
             <div className="bg-white/60 backdrop-blur border border-accent/20 rounded-xl p-4 md:p-6">
-              <div className="flex flex-wrap gap-3 justify-center">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:justify-center">
                 {/* Price diff */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-                  <span className="text-xs text-textMuted font-semibold">Price:</span>
-                  <span className="text-sm font-bold text-textPrimary">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
+                  <span className="text-xs text-textMuted font-semibold">Price</span>
+                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
                     {w1.price_new_usd.min < w2.price_new_usd.min
-                      ? `${w1.name} is ${formatPrice({ min: w2.price_new_usd.min - w1.price_new_usd.min, max: w2.price_new_usd.max - w1.price_new_usd.max })} cheaper`
-                      : `${w2.name} is ${formatPrice({ min: w1.price_new_usd.min - w2.price_new_usd.min, max: w1.price_new_usd.max - w2.price_new_usd.max })} cheaper`}
+                      ? `${w1.name} cheaper`
+                      : `${w2.name} cheaper`}
                   </span>
                 </div>
 
                 {/* Water resistance */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-                  <span className="text-xs text-textMuted font-semibold">H2O:</span>
-                  <span className="text-sm font-bold text-textPrimary">
-                    {w1.water_resistance_m > w2.water_resistance_m ? `${w1.name} (${w1.water_resistance_m}m)` : `${w2.name} (${w2.water_resistance_m}m)`}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
+                  <span className="text-xs text-textMuted font-semibold">H2O</span>
+                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
+                    {w1.water_resistance_m >= w2.water_resistance_m ? `${w1.name} (${w1.water_resistance_m}m)` : `${w2.name} (${w2.water_resistance_m}m)`}
                   </span>
                 </div>
 
                 {/* Score */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-                  <span className="text-xs text-textMuted font-semibold">Score:</span>
-                  <span className="text-sm font-bold text-textPrimary">
-                    {w1.score > w2.score ? `${w1.name} (${w1.score}/10)` : `${w2.name} (${w2.score}/10)`}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
+                  <span className="text-xs text-textMuted font-semibold">Score</span>
+                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
+                    {w1.score >= w2.score ? `${w1.name} (${w1.score}/10)` : `${w2.name} (${w2.score}/10)`}
                   </span>
                 </div>
 
                 {/* Buy Again */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-                  <span className="text-xs text-textMuted font-semibold">Repurchase:</span>
-                  <span className="text-sm font-bold text-textPrimary">
-                    {w1.buy_again_pct > w2.buy_again_pct
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
+                  <span className="text-xs text-textMuted font-semibold">Repurchase</span>
+                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
+                    {w1.buy_again_pct >= w2.buy_again_pct
                       ? `${w1.name} (${w1.buy_again_pct}%)`
                       : `${w2.name} (${w2.buy_again_pct}%)`}
                   </span>
@@ -572,16 +572,16 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         <div className="bg-surfaceAlt px-4 py-3 border-b border-border">
           <h2 className="text-textPrimary font-semibold">Specifications Compared</h2>
         </div>
-        <div className="grid grid-cols-3 bg-surface px-4 py-2 border-b border-border text-xs text-textMuted uppercase tracking-wider">
-          <div>Specification</div>
-          <div>{w1.brand} {w1.name}</div>
-          <div>{w2.brand} {w2.name}</div>
-        </div>
         {/* Desktop column headers */}
-        <div className="hidden sm:grid grid-cols-3 gap-2 py-3 border-b-2 border-borderStrong text-xs font-bold text-textSecond uppercase tracking-wider">
+        <div className="hidden sm:grid grid-cols-3 gap-2 py-3 border-b-2 border-borderStrong bg-surface text-xs font-bold text-textSecond uppercase tracking-wider">
           <div className="text-center">Spec</div>
-          <div className="text-center">{w1.name}</div>
-          <div className="text-center">{w2.name}</div>
+          <div className="text-center">{w1.brand} {w1.name}</div>
+          <div className="text-center">{w2.brand} {w2.name}</div>
+        </div>
+        {/* Mobile column headers */}
+        <div className="sm:hidden grid grid-cols-2 gap-2 py-2 px-4 border-b border-borderStrong bg-surface text-xs font-bold text-textSecond">
+          <div className="text-left truncate">{w1.name}</div>
+          <div className="text-right truncate">{w2.name}</div>
         </div>
         {SPEC_ROWS.map((row, i) => {
           const v1 = row.fn(w1)
@@ -629,7 +629,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         <div className="space-y-4">
           {faqItems.map((item, i) => (
             <details key={i} className="card p-5 group cursor-pointer">
-              <summary className="text-textPrimary font-semibold flex justify-between items-center list-none">
+              <summary className="text-textPrimary font-semibold flex justify-between items-center list-none min-h-[48px]">
                 <span>{item.question}</span>
                 <span className="text-accent group-open:rotate-180 transition-transform">▼</span>
               </summary>
@@ -649,7 +649,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               const wb = getWatchBySlug(c.slug2)
               if (!wa || !wb) return null
               return (
-                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 hover:border-accent/40 transition-colors group">
+                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 min-h-[48px] hover:border-accent/40 transition-colors group">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
@@ -830,7 +830,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       <div className="mt-8 text-center bg-surface border border-border rounded-xl p-8">
         <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
         <p className="text-textSecond text-sm mb-5">Pick any two watches from our database of 50</p>
-        <Link href="/compare" className="btn-outline">
+        <Link href="/compare" className="btn-outline inline-flex items-center justify-center min-h-[48px] px-6">
           Start a New Comparison
         </Link>
       </div>
