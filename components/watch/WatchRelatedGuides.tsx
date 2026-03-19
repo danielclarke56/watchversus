@@ -45,11 +45,7 @@ function getRelatedGuides(watch: Watch): GuideLink[] {
   } else if (priceMax <= 1000) {
     guides.push({ href: '/guides/best-watches-under-1000', label: 'Best Watches Under $1,000', emoji: '💵' })
   } else if (priceMax <= 3000) {
-    if (movement_type === 'automatic' || movement_type === 'manual') {
-      guides.push({ href: '/guides/best-automatic-watches-under-3000', label: 'Best Automatic Watches Under $3,000', emoji: '⚙️' })
-    } else {
-      guides.push({ href: '/guides/best-watches-under-3000', label: 'Best Watches Under $3,000', emoji: '💵' })
-    }
+    guides.push({ href: '/guides/best-watches-under-3000', label: 'Best Watches Under $3,000', emoji: '💵' })
   } else if (priceMax <= 5000) {
     guides.push({ href: '/guides/best-watches-under-5000', label: 'Best Watches Under $5,000', emoji: '💵' })
   } else if (priceMax <= 10000) {

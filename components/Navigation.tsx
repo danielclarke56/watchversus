@@ -39,8 +39,7 @@ const navGroups: NavGroup[] = [
   {
     label: 'Watches',
     items: [
-      { href: '/rankings', label: 'Best Watches', desc: 'Ranked by score & category' },
-      { href: '/watches', label: 'All Watches', desc: 'Search & filter our database' },
+      { href: '/watches', label: 'All Watches', desc: 'Search, filter & sort by score' },
       { href: '/compare', label: 'Compare', desc: 'Head-to-head showdowns' },
     ],
   },

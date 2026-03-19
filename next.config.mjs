@@ -16,6 +16,38 @@ const nextConfig = {
         destination: '/guides',
         permanent: true,
       },
+      // Rankings retired — merged into /watches
+      {
+        source: '/rankings',
+        destination: '/watches',
+        permanent: true,
+      },
+      // Guide slug renames & merges
+      {
+        source: '/guides/best-automatic-watches-under-3000',
+        destination: '/guides/best-watches-under-3000',
+        permanent: true,
+      },
+      {
+        source: '/guides/best-automatic-watches-for-beginners',
+        destination: '/guides/best-watches-for-beginners',
+        permanent: true,
+      },
+      {
+        source: '/guides/best-watches-for-first-time-buyers',
+        destination: '/guides/best-watches-for-beginners',
+        permanent: true,
+      },
+      {
+        source: '/guides/best-sports-watches-for-active-men',
+        destination: '/guides/best-sports-watches',
+        permanent: true,
+      },
+      {
+        source: '/guides/best-pilot-watches-everyday-wear',
+        destination: '/guides/best-pilot-watches',
+        permanent: true,
+      },
     ]
   },
 };

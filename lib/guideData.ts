@@ -685,6 +685,14 @@ export const guides: Guide[] = [
         heading: "Strap and Bracelet Choices",
         content: "Steel bracelets (Tissot PRX, Tag Heuer Aquaracer) offer convenience and integrated design. Fabric/canvas straps (Hamilton Khaki Field) are more comfortable in warm weather and carry military authenticity. Leather offers formal versatility but requires maintenance. Most watches under $3,000 include one option; aftermarket alternatives (rubber, NATO, leather) are affordable and easy swaps. Integrated-bracelet watches (PRX) are harder to customize than lugged cases. For durability, steel bracelets outlast all alternatives.",
       },
+      {
+        heading: "Automatic Movements: Japanese vs Swiss Under $3,000",
+        content: "Japanese automatics (Seiko 4R/6R series, Miyota 8215) are robust, accurate, and require less service - a Seiko automatic will run 20+ years with basic maintenance. Swiss automatics (Hamilton H-10, Longines DolceMX, Tissot PR100) are COSC-certified and carry watchmaking heritage but require more frequent servicing. Both philosophies deliver excellence. Japanese automatics offer pure functionality; Swiss automatics offer heritage and certification credibility.",
+      },
+      {
+        heading: "Power Reserve, Accuracy & Service Intervals",
+        content: "Most automatics under $3,000 deliver 40-50 hours of power reserve. Seiko's Presage line achieves 70-hour reserve through larger barrels. Accuracy: Japanese automatics typically ±15 seconds per day; Swiss COSC-certified automatics guarantee ±4 seconds per day. Service intervals: Japanese automatics have abundant independent service options ($300-500 per overhaul), Swiss automatics require authorized dealers ($600-1,000). All automatics need service every 3-5 years.",
+      },
     ],
     faq: [
       {
@@ -702,6 +710,14 @@ export const guides: Guide[] = [
       {
         question: "What is the best dive watch under $3,000?",
         answer: "The Seiko Prospex SPB143 ($700-900) edges the Longines HydroConquest ($1,200-1,400). Both are 300m-rated, COSC-certified (Longines)/professional-spec (Seiko), with sapphire crystals. The Seiko is pure value; the Longines carries Swiss heritage. For dedicated dive use, either is excellent. The Tag Heuer Aquaracer ($1,950-2,200) bridges dive and dress styling.",
+      },
+      {
+        question: "What is an automatic watch and how does it work?",
+        answer: "An automatic watch winds itself through wrist motion. A rotor rotates with arm movement, winding the mainspring via gears. The wound mainspring releases energy steadily, powering the watch. Automatics require no battery - just regular wear. They are more complex than quartz but offer mechanical beauty and battery independence.",
+      },
+      {
+        question: "How often do automatic watches need servicing?",
+        answer: "Every 3-5 years of regular wear. Japanese automatics (Seiko) are resilient and often go 5+ years trouble-free. Swiss automatics typically need service by 4-5 years. Service cost ranges from $300-1,000 depending on the brand.",
       },
     ],
     paa: [
@@ -814,99 +830,100 @@ export const guides: Guide[] = [
     ],
     conclusion: "The $3,000-$5,000 range represents the entry point to true luxury watchmaking - where engineering investment, heritage, and complications converge. Whether you choose Tudor's tool-watch excellence, Longines' Swiss tradition, Nomos' German minimalism, or IWC's aviation heritage, you're acquiring watches with substance and longevity. Use our comparison tool to evaluate movement specifications, case details, and community ratings side-by-side.",
   },
+
   {
-    slug: "best-automatic-watches-under-3000",
-    emoji: "⚙️",
-    tagline: "Pure mechanical excellence - Japanese, Swiss, and German automatics",
-    title: "Best Automatic Watches Under $3,000 - Pure Mechanical Excellence",
-    description: "Top automatic mechanical watches under $3,000 from Seiko, Hamilton, Longines, Tissot, and more. Expert picks with full specs.",
-    h1: "Best Automatic Watches Under $3,000 in 2026 - Pure Mechanical Excellence",
-    intro: "An automatic movement - wound by wrist motion rather than battery or hand winding - represents the beating heart of modern watchmaking. Under $3,000, you can own automatics from legendary manufacturers: Seiko's robust field and dive movements, Hamilton's respected H-10, Longines' COSC-certified Swiss movements, and independent German makers like Nomos. We've selected eight automatics that represent exceptional value and engineering across categories.",
+    slug: "best-dive-watches-under-1000",
+    emoji: "🏊",
+    tagline: "Professional dive capability under $1,000 - Seiko Prospex, Christopher Ward, and more",
+    title: "Best Dive Watches Under $1,000 in 2026 - Professional & Reliable",
+    description: "The best dive watches under $1,000 in 2026. From Seiko Prospex to Christopher Ward, reviewed with full specs, water resistance, and movement details.",
+    h1: "Best Dive Watches Under $1,000 in 2026 - Professional & Reliable",
+    intro: "Under $1,000, you can get a dive watch with 200m+ water resistance, sapphire crystal, and a certified automatic movement. Best options:\n\nThe dive watch is the most versatile and honest category in watchmaking. The best models under $1,000 deliver ISO 6425 compliance, genuine tool-watch capability, and movements that will outlast their owners if properly maintained. This tier sits at a sweet spot: high enough to demand serious specifications, low enough to reward buyers who know what to prioritize.\n\nSeiko's professional Prospex line dominates here, offering Japan's best-kept secret: exceptional tool watch engineering that Swiss brands struggle to match at this price. Christopher Ward's C65 Trident brings genuine in-house movement quality to the category, while Baltic and Halios prove that microbrands can deliver finishing that surprises established Swiss makers. This guide focuses on dive watches that excel both as professional tools and daily-wear companions - watches with 200m+ water resistance, screw-down crowns, rotating bezels, and movements built to take a beating.",
     recommendations: [
       {
-        slug: "swatch-sistem51",
-        highlight: "The revolutionary automated assembly automatic at $100. 51 jewels, chronograph-grade complications, and ETA's proof that affordable automatics are philosophically possible.",
-      },
-      {
-        slug: "seiko-5-sports-srpe55",
-        highlight: "The essential automatic at $250-350. Day/date, 42.5mm case, 100m water resistance, and the legendary 4R36 movement - the standard by which all budget automatics are measured.",
-      },
-      {
         slug: "baltic-aquascaphe",
-        highlight: "Independent watchmaker automatic at $530-630. Vintage dive proportions, Miyota 8215 automatic, 300m water resistance, and proof that microbrands deliver credible alternatives.",
+        highlight: "Best value microbrand dive watch. French-made with domed sapphire, 200m water resistance, Miyota 9039 movement, and bi-compax vintage layout for $530-600. Finishing quality that shocks at this price - collectors regularly compare it to watches at three times its cost.",
       },
       {
-        slug: "tissot-prx-40",
-        highlight: "Integrated-bracelet automatic at $550-650. Swiss COSC-certified PR100 movement, sapphire crystal, and a design that evolved from the original 1978 PRX concept.",
+        slug: "seiko-prospex-sbdc101",
+        highlight: "Best Japanese dive watch under $800. The SBDC101 pairs the reliable 6R15 movement with 200m water resistance, sapphire crystal, and Seiko's legendary reputation for dive-watch durability. At $650-800, it is the benchmark for value-conscious professionals.",
+      },
+      {
+        slug: "christopher-ward-c65-trident",
+        highlight: "Best in-house movement at this price. British-designed with the SH21 in-house caliber offering 60-hour power reserve, 150m water resistance, and exceptional finishing for $700-900. Professional journalists call it the best value dive watch period.",
       },
       {
         slug: "seiko-prospex-spb143",
-        highlight: "Professional automatic dive watch at $700-900. Seiko's 6R15 movement, 300m water resistance, sapphire crystal, and 60+ years of Prospex dive tradition.",
+        highlight: "Best vintage-heritage dive watch. The modern reissue of the legendary 62MAS with 6R35 movement (70-hour power reserve), sapphire crystal, 200m water resistance, and textured dial that delivers character for $700-900.",
       },
       {
-        slug: "seiko-presage-spb167",
-        highlight: "Cocktail aesthetic automatic at $1,100-1,400. 40.8mm case, 6R35 movement with 70-hour power reserve, and a stunning hand-applied dial with vintage character.",
-      },
-      {
-        slug: "longines-hydroconquest-41",
-        highlight: "Swiss automatic dive tradition at $1,200-1,400. COSC-certified DolceMX movement, 300m water resistance, and Longines' legendary Hydroconquest heritage since 1959.",
-      },
-      {
-        slug: "nomos-club-campus",
-        highlight: "German in-house automatic at $1,900-2,200. DUW 3001 movement, 36mm Bauhaus proportions, and the philosophy that complications should be invisible to the wearer.",
+        slug: "tissot-seastar-1000",
+        highlight: "Best 300m water resistance at this price. Swiss-made with Powermatic 80's 80-hour movement and professional-grade 300m water resistance for $650-800. Outspecifies many watches at triple the price - a no-nonsense tool watch.",
       },
     ],
     buyingGuide: [
       {
-        heading: "Japanese vs Swiss Automatics Under $3,000",
-        content: "Japanese automatics (Seiko 4R/6R series, Miyota 8215) are robust, accurate, and require less service - a Seiko automatic will run 20+ years with basic maintenance. Swiss automatics (Hamilton H-10, Longines DolceMX, Tissot PR100) are COSC-certified and carry watchmaking heritage but require more frequent servicing. Both philosophies deliver excellence. Japanese automatics offer pure functionality; Swiss automatics offer heritage and certification credibility. Your choice reflects whether you value engineering excellence (Japanese) or horological tradition (Swiss).",
+        heading: "What Makes a Proper Dive Watch",
+        content: "A true dive watch follows ISO 6425 standards: minimum 100m water resistance (300m+ is professional-grade), a screw-down crown for pressure integrity, a unidirectional rotating bezel for elapsed-time tracking, legible lume markers, and secure bracelet attachment. All recommendations in this guide meet or exceed these standards. The difference between a 150m and 300m watch is practical - 150m is sufficient for snorkeling; 300m+ covers recreational and technical diving. The screw-down crown is not optional if you plan actual water time; it protects the movement from pressure changes.",
       },
       {
-        heading: "Power Reserve and Accuracy",
-        content: "Most automatics under $3,000 deliver 40-50 hours of power reserve - plenty for regular wear. Seiko's prestige line (Presage SPB167) achieves 70-hour reserve through balance design and larger barrels. Power reserve matters mainly if you travel or remove watches regularly. Accuracy variance: Japanese automatics typically ±15 seconds per day; Swiss COSC-certified automatics guarantee ±4 seconds per day. For daily wear, the difference is imperceptible - it only matters for precision timekeeping.",
+        heading: "Japanese (Seiko Prospex) vs Swiss vs Microbrand",
+        content: "Seiko's Prospex collection represents Japanese professional watchmaking at peak value - robust movements (6R and 7S series), no compromises on specifications, and reliability proven over decades in actual professional use. Swiss options (Tissot Seastar) offer COSC-certified movements and Swiss heritage, but often at higher prices for comparable specs. Microbrands like Baltic use proven third-party movements (Miyota 9039) and compete through finishing quality and design - the Baltic Aquascaphe's domed sapphire and vintage aesthetics justify its cult status. At this price, all three approaches deliver genuine tool watches.",
       },
       {
-        heading: "Rotor Visibility: Case Back Windows",
-        content: "Automatics feature rotating rotors (the weight that winds the mainspring). Most watches include exhibition case backs to display the rotor. Some (Hamilton Khaki Field) skip the window for a solid case back - stronger, more durable, less showmanship. For collectors who enjoy the mechanical beauty, exhibition backs are desirable. For durability and simplicity, solid case backs are superior. Neither choice affects functionality.",
+        heading: "Water Resistance: 200m vs 300m",
+        content: "For daily wear and occasional snorkeling, 200m is sufficient and standard among these recommendations. The difference between 200m and 300m is professional capability - 300m watches (Tissot Seastar 1000) handle moderate recreational diving. Neither rating means unlimited depth; always follow manufacturer guidance and get watches pressure-tested regularly. The real benefit of 300m is the redundancy built into the design - you get an extra margin of safety through more robust construction.",
       },
       {
-        heading: "Service Intervals and Availability",
-        content: "Japanese automatics (Seiko, Citizen, Orient) have abundant independent service options worldwide - generally $300-500 for a full overhaul. Swiss automatics (Hamilton, Longines, Tissot) are serviced by authorized dealers, typically $600-1,000 per overhaul. German automatics (Nomos) require specialized service, often by independent watchmakers. Seiko is the most economical to maintain long-term. All automatics require service every 3-5 years depending on use.",
+        heading: "Sapphire Crystal & Lume",
+        content: "All recommendations here include sapphire crystal - scratch resistance matters for watches you actually use underwater. Lume (luminescent material on markers and hands) is essential; all of these watches use either standard SuperLuminova or LumiNova, which glows visibly in darkness after sun charging. Seiko and Christopher Ward often use exceptional lume quality. Vintage aesthetic choices like the Baltic Aquascaphe use excellent lume that honors the design language without compromising functionality.",
+      },
+      {
+        heading: "Bezel Action: Smooth vs Ratcheted",
+        content: "All dive watches here feature a unidirectional rotating bezel - it only rotates counterclockwise, so if you accidentally bump it, you cannot accidentally advance your elapsed time. Test the bezel action in person if possible; smoothness and click clarity vary. The Seiko Prospex line is known for precise bezel action. The Christopher Ward C65 Trident has exceptional tactile feedback. Baltic's Aquascaphe offers vintage-style bezel with reliable ratcheting.",
       },
     ],
     faq: [
       {
-        question: "What is an automatic watch and how does it work?",
-        answer: "An automatic watch winds itself through wrist motion. A rotor (oscillating weight) rotates with arm movement, winding the mainspring via a series of gears. The wound mainspring releases energy steadily, powering the watch. Automatics require no battery or hand-winding - just regular wear. They're more complex than quartz (more friction points, more service required) but offer mechanical beauty and independence from batteries.",
+        question: "What is the best dive watch under $1,000?",
+        answer: "The best depends on your priority. For value and Japanese engineering: Seiko Prospex SPB143 ($700-900). For microbrand finishing and vintage aesthetics: Baltic Aquascaphe ($530-600). For in-house movement quality: Christopher Ward C65 Trident ($700-900). For Swiss water resistance: Tissot Seastar 1000 ($650-800) with 300m. All are professional-grade watches capable of actual diving.",
       },
       {
-        question: "Should I buy an automatic or quartz watch under $3,000?",
-        answer: "Automatics offer mechanical beauty, sustainability (no batteries), and aging character - ideal if you enjoy watches as objects. Quartz offers accuracy, lower maintenance, and reliability - ideal if you want a pure tool. At $3,000 budget, automatics dominate - the Seiko 5 Sports ($250) is unmatched for value. Quartz only makes sense if you specifically want chronographs or highly specialized functions.",
+        question: "Is Seiko Prospex good enough for diving?",
+        answer: "Absolutely. Seiko Prospex watches are used by professional divers worldwide. The SBDC101 and SPB143 meet ISO 6425 standards, feature screw-down crowns, robust movements (6R15, 6R35), and 200m water resistance - everything needed for recreational and professional diving. Seiko's reputation for durability in extreme conditions is well-earned.",
       },
       {
-        question: "How often do automatic watches need servicing?",
-        answer: "Every 3-5 years of regular wear. Japanese automatics (Seiko) are resilient and often go 5+ years trouble-free. Swiss automatics typically need service by 4-5 years. Service cost ranges from $300-1,000 depending on the brand and extent of needed repairs. Maintenance is the cost of automatic ownership - plan for it.",
+        question: "Should I choose a microbrand like Baltic over established brands?",
+        answer: "Yes, if you prioritize finishing and design. The Baltic Aquascaphe delivers case finishing and dial quality that surprises even experienced collectors, often comparing favorably to Swiss watches at double its price. The trade-off is slightly smaller service network and lower brand recognition. If reliability and brand prestige matter most, choose Swiss or Japanese. If you want the best-finished watch at this price, Baltic is genuine.",
       },
       {
-        question: "Can I replace an automatic watch's battery?",
-        answer: "Automatics don't have batteries - they're mechanically wound by motion. Some automatics (like Seiko Presage SPB167) have sufficient power reserve for 2-3 days without wearing. If your automatic stops, it needs winding or wearing to restart. If you need a 'no-maintenance' watch, quartz is the right choice.",
+        question: "Do I need 300m water resistance or is 200m enough?",
+        answer: "For daily wear and snorkeling, 200m is sufficient. 300m is professional-diving territory and provides extra margin through robust construction. Unless you actively dive, 200m is more than adequate. What matters more is that your watch meets ISO 6425 standards (screw-down crown, rotating bezel, lume, legibility) - all of these do.",
+      },
+      {
+        question: "What is the difference between the Seiko SBDC101 and SPB143?",
+        answer: "Both are excellent, but they serve different aesthetics. The SBDC101 features the 6R15 movement and a modern design optimized for everyday wear. The SPB143 is a modern reissue of the legendary 62MAS with the upgraded 6R35 movement (70-hour vs 50-hour power reserve), slightly different case finishing, and vintage-inspired styling. The SPB143 offers slightly better movement and more character; the SBDC101 is more versatile as an everyday watch. Both are under $900 and professional-grade.",
       },
     ],
     paa: [
       {
-        question: "What is the best automatic watch under $500?",
-        answer: "The Seiko 5 Sports SRPE55 at $250-350 is exceptional. The Swatch Sistem51 at $100 is philosophically remarkable. The Tissot PRX at $550-650 and Baltic Aquascaphe at $530-630 bridge the $500 boundary with Swiss or quality engineering.",
+        question: "What is the best dive watch under $1,000?",
+        answer: "The Seiko Prospex SPB143 ($700-900) is widely considered the best overall - 70-hour 6R35 movement, 200m water resistance, and vintage heritage. The Baltic Aquascaphe ($530-600) offers microbrand excellence. The Christopher Ward C65 Trident ($700-900) delivers in-house movement quality.",
       },
       {
-        question: "Will an automatic watch work in space?",
-        answer: "No - automatic watches require gravity and motion to wind. In zero gravity, the rotor won't turn and the mainspring won't wind. Manual wind (hand-wound) watches work in space because they don't depend on gravity. Astronauts typically wear hand-wound watches or quartz.",
+        question: "Is Seiko Prospex worth buying?",
+        answer: "Yes. Seiko Prospex watches are professional tools used by actual divers worldwide. At $700-900, you get a screw-down crown, ISO 6425 compliance, high-quality automatic movement, and Seiko's proven reliability - outstanding value for a dive watch.",
       },
       {
-        question: "How accurate are automatics compared to quartz?",
-        answer: "Typical automatic: ±15 seconds per day (±5,400 seconds per year). Typical quartz: ±15 seconds per month. COSC-certified automatics: ±4 seconds per day. For daily wear, automatics are acceptably accurate. If you need chronometer-grade precision, COSC-certified automatics or quartz are better choices.",
+        question: "Can you get a Swiss dive watch under $1,000?",
+        answer: "Yes. The Tissot Seastar 1000 ($650-800) offers 300m water resistance, sapphire crystal, and an 80-hour Powermatic 80 movement - professional Swiss dive watch capabilities at this budget.",
+      },
+      {
+        question: "Are microbrand dive watches reliable?",
+        answer: "Yes. The Baltic Aquascaphe uses the proven Miyota 9039 movement and has an excellent reputation among enthusiasts. Service is available through authorized Miyota dealers worldwide. Microbrand finishing quality often exceeds established brands at the same price.",
       },
     ],
-    conclusion: "The automatic watch celebrates mechanical engineering - thousands of moving parts working in perfect synchronization to measure time without batteries or hand-winding. Under $3,000, you can own automatics that represent the pinnacle of accessible watchmaking: Seiko's robust engineering, Swiss horological tradition, and independent makers proving that mechanical excellence needn't cost a fortune. Compare your favorites directly and discover which automatic resonates with your collecting philosophy.",
+    conclusion: "The dive watch under $1,000 is where serious watchmaking meets accessibility. Whether you choose the Seiko Prospex's legendary reliability, the Christopher Ward's in-house movement refinement, the Baltic Aquascaphe's microbrand finishing, or the Tissot Seastar's Swiss professional capability, you will own a watch genuinely capable of both daily wear and actual diving. Use our comparison tool to see exactly how these watches compare on specs, movement, water resistance, and community ratings before you decide.",
   },
 
   {
@@ -1011,109 +1028,13 @@ export const guides: Guide[] = [
     ],
     conclusion: "The dress watch under $500 proves that elegance is accessible to everyone. Whether you choose the Seiko Presage's exceptional engineering, Hamilton's Swiss heritage, or Frederique Constant's refined approach to affordable Swiss watchmaking, you will discover that genuine dress watches at this price serve as daily reminders that thoughtful design transcends price. Use our comparison tool to put your shortlist side-by-side and see exactly how specs, pricing, and collector ratings align before you decide.",
   },
-
   {
-    slug: "best-dive-watches-under-1000",
-    emoji: "🏊",
-    tagline: "Professional dive capability under $1,000 - Seiko Prospex, Christopher Ward, and more",
-    title: "Best Dive Watches Under $1,000 in 2026 - Professional & Reliable",
-    description: "The best dive watches under $1,000 in 2026. From Seiko Prospex to Christopher Ward, reviewed with full specs, water resistance, and movement details.",
-    h1: "Best Dive Watches Under $1,000 in 2026 - Professional & Reliable",
-    intro: "Under $1,000, you can get a dive watch with 200m+ water resistance, sapphire crystal, and a certified automatic movement. Best options:\n\nThe dive watch is the most versatile and honest category in watchmaking. The best models under $1,000 deliver ISO 6425 compliance, genuine tool-watch capability, and movements that will outlast their owners if properly maintained. This tier sits at a sweet spot: high enough to demand serious specifications, low enough to reward buyers who know what to prioritize.\n\nSeiko's professional Prospex line dominates here, offering Japan's best-kept secret: exceptional tool watch engineering that Swiss brands struggle to match at this price. Christopher Ward's C65 Trident brings genuine in-house movement quality to the category, while Baltic and Halios prove that microbrands can deliver finishing that surprises established Swiss makers. This guide focuses on dive watches that excel both as professional tools and daily-wear companions - watches with 200m+ water resistance, screw-down crowns, rotating bezels, and movements built to take a beating.",
-    recommendations: [
-      {
-        slug: "baltic-aquascaphe",
-        highlight: "Best value microbrand dive watch. French-made with domed sapphire, 200m water resistance, Miyota 9039 movement, and bi-compax vintage layout for $530-600. Finishing quality that shocks at this price - collectors regularly compare it to watches at three times its cost.",
-      },
-      {
-        slug: "seiko-prospex-sbdc101",
-        highlight: "Best Japanese dive watch under $800. The SBDC101 pairs the reliable 6R15 movement with 200m water resistance, sapphire crystal, and Seiko's legendary reputation for dive-watch durability. At $650-800, it is the benchmark for value-conscious professionals.",
-      },
-      {
-        slug: "christopher-ward-c65-trident",
-        highlight: "Best in-house movement at this price. British-designed with the SH21 in-house caliber offering 60-hour power reserve, 150m water resistance, and exceptional finishing for $700-900. Professional journalists call it the best value dive watch period.",
-      },
-      {
-        slug: "seiko-prospex-spb143",
-        highlight: "Best vintage-heritage dive watch. The modern reissue of the legendary 62MAS with 6R35 movement (70-hour power reserve), sapphire crystal, 200m water resistance, and textured dial that delivers character for $700-900.",
-      },
-      {
-        slug: "tissot-seastar-1000",
-        highlight: "Best 300m water resistance at this price. Swiss-made with Powermatic 80's 80-hour movement and professional-grade 300m water resistance for $650-800. Outspecifies many watches at triple the price - a no-nonsense tool watch.",
-      },
-    ],
-    buyingGuide: [
-      {
-        heading: "What Makes a Proper Dive Watch",
-        content: "A true dive watch follows ISO 6425 standards: minimum 100m water resistance (300m+ is professional-grade), a screw-down crown for pressure integrity, a unidirectional rotating bezel for elapsed-time tracking, legible lume markers, and secure bracelet attachment. All recommendations in this guide meet or exceed these standards. The difference between a 150m and 300m watch is practical - 150m is sufficient for snorkeling; 300m+ covers recreational and technical diving. The screw-down crown is not optional if you plan actual water time; it protects the movement from pressure changes.",
-      },
-      {
-        heading: "Japanese (Seiko Prospex) vs Swiss vs Microbrand",
-        content: "Seiko's Prospex collection represents Japanese professional watchmaking at peak value - robust movements (6R and 7S series), no compromises on specifications, and reliability proven over decades in actual professional use. Swiss options (Tissot Seastar) offer COSC-certified movements and Swiss heritage, but often at higher prices for comparable specs. Microbrands like Baltic use proven third-party movements (Miyota 9039) and compete through finishing quality and design - the Baltic Aquascaphe's domed sapphire and vintage aesthetics justify its cult status. At this price, all three approaches deliver genuine tool watches.",
-      },
-      {
-        heading: "Water Resistance: 200m vs 300m",
-        content: "For daily wear and occasional snorkeling, 200m is sufficient and standard among these recommendations. The difference between 200m and 300m is professional capability - 300m watches (Tissot Seastar 1000) handle moderate recreational diving. Neither rating means unlimited depth; always follow manufacturer guidance and get watches pressure-tested regularly. The real benefit of 300m is the redundancy built into the design - you get an extra margin of safety through more robust construction.",
-      },
-      {
-        heading: "Sapphire Crystal & Lume",
-        content: "All recommendations here include sapphire crystal - scratch resistance matters for watches you actually use underwater. Lume (luminescent material on markers and hands) is essential; all of these watches use either standard SuperLuminova or LumiNova, which glows visibly in darkness after sun charging. Seiko and Christopher Ward often use exceptional lume quality. Vintage aesthetic choices like the Baltic Aquascaphe use excellent lume that honors the design language without compromising functionality.",
-      },
-      {
-        heading: "Bezel Action: Smooth vs Ratcheted",
-        content: "All dive watches here feature a unidirectional rotating bezel - it only rotates counterclockwise, so if you accidentally bump it, you cannot accidentally advance your elapsed time. Test the bezel action in person if possible; smoothness and click clarity vary. The Seiko Prospex line is known for precise bezel action. The Christopher Ward C65 Trident has exceptional tactile feedback. Baltic's Aquascaphe offers vintage-style bezel with reliable ratcheting.",
-      },
-    ],
-    faq: [
-      {
-        question: "What is the best dive watch under $1,000?",
-        answer: "The best depends on your priority. For value and Japanese engineering: Seiko Prospex SPB143 ($700-900). For microbrand finishing and vintage aesthetics: Baltic Aquascaphe ($530-600). For in-house movement quality: Christopher Ward C65 Trident ($700-900). For Swiss water resistance: Tissot Seastar 1000 ($650-800) with 300m. All are professional-grade watches capable of actual diving.",
-      },
-      {
-        question: "Is Seiko Prospex good enough for diving?",
-        answer: "Absolutely. Seiko Prospex watches are used by professional divers worldwide. The SBDC101 and SPB143 meet ISO 6425 standards, feature screw-down crowns, robust movements (6R15, 6R35), and 200m water resistance - everything needed for recreational and professional diving. Seiko's reputation for durability in extreme conditions is well-earned.",
-      },
-      {
-        question: "Should I choose a microbrand like Baltic over established brands?",
-        answer: "Yes, if you prioritize finishing and design. The Baltic Aquascaphe delivers case finishing and dial quality that surprises even experienced collectors, often comparing favorably to Swiss watches at double its price. The trade-off is slightly smaller service network and lower brand recognition. If reliability and brand prestige matter most, choose Swiss or Japanese. If you want the best-finished watch at this price, Baltic is genuine.",
-      },
-      {
-        question: "Do I need 300m water resistance or is 200m enough?",
-        answer: "For daily wear and snorkeling, 200m is sufficient. 300m is professional-diving territory and provides extra margin through robust construction. Unless you actively dive, 200m is more than adequate. What matters more is that your watch meets ISO 6425 standards (screw-down crown, rotating bezel, lume, legibility) - all of these do.",
-      },
-      {
-        question: "What is the difference between the Seiko SBDC101 and SPB143?",
-        answer: "Both are excellent, but they serve different aesthetics. The SBDC101 features the 6R15 movement and a modern design optimized for everyday wear. The SPB143 is a modern reissue of the legendary 62MAS with the upgraded 6R35 movement (70-hour vs 50-hour power reserve), slightly different case finishing, and vintage-inspired styling. The SPB143 offers slightly better movement and more character; the SBDC101 is more versatile as an everyday watch. Both are under $900 and professional-grade.",
-      },
-    ],
-    paa: [
-      {
-        question: "What is the best dive watch under $1,000?",
-        answer: "The Seiko Prospex SPB143 ($700-900) is widely considered the best overall - 70-hour 6R35 movement, 200m water resistance, and vintage heritage. The Baltic Aquascaphe ($530-600) offers microbrand excellence. The Christopher Ward C65 Trident ($700-900) delivers in-house movement quality.",
-      },
-      {
-        question: "Is Seiko Prospex worth buying?",
-        answer: "Yes. Seiko Prospex watches are professional tools used by actual divers worldwide. At $700-900, you get a screw-down crown, ISO 6425 compliance, high-quality automatic movement, and Seiko's proven reliability - outstanding value for a dive watch.",
-      },
-      {
-        question: "Can you get a Swiss dive watch under $1,000?",
-        answer: "Yes. The Tissot Seastar 1000 ($650-800) offers 300m water resistance, sapphire crystal, and an 80-hour Powermatic 80 movement - professional Swiss dive watch capabilities at this budget.",
-      },
-      {
-        question: "Are microbrand dive watches reliable?",
-        answer: "Yes. The Baltic Aquascaphe uses the proven Miyota 9039 movement and has an excellent reputation among enthusiasts. Service is available through authorized Miyota dealers worldwide. Microbrand finishing quality often exceeds established brands at the same price.",
-      },
-    ],
-    conclusion: "The dive watch under $1,000 is where serious watchmaking meets accessibility. Whether you choose the Seiko Prospex's legendary reliability, the Christopher Ward's in-house movement refinement, the Baltic Aquascaphe's microbrand finishing, or the Tissot Seastar's Swiss professional capability, you will own a watch genuinely capable of both daily wear and actual diving. Use our comparison tool to see exactly how these watches compare on specs, movement, water resistance, and community ratings before you decide.",
-  },
-
-  {
-    slug: "best-pilot-watches-everyday-wear",
+    slug: "best-pilot-watches",
     emoji: "✈️",
     tagline: "Legible, reliable, and built for aviators - from $700 to $10,000",
-    title: "Best Pilot Watches for Everyday Wear in 2026",
-    description: "The best pilot watches for everyday wear in 2026. From the IWC Pilot Mark XVIII to the Breitling Navitimer, explore legible field watches with aviation heritage and clear dials.",
-    h1: "Best Pilot Watches for Everyday Wear in 2026 - Aviation Style Meets Function",
+    title: "Best Pilot Watches in 2026 — Aviation Heritage Meets Everyday Style",
+    description: "The best pilot watches in 2026. From the IWC Pilot Mark XVIII to the Breitling Navitimer, explore legible watches with aviation heritage, clear dials, and everyday wearability.",
+    h1: "Best Pilot Watches in 2026 — Aviation Heritage Meets Everyday Style",
 
     intro: "A true pilot watch is defined by three principles: legibility above all else, aviation heritage, and practical durability. The large crown, oversized Arabic numerals, and high-contrast dial aren't decoration - they're tools that evolved from actual cockpit demands. Today's best pilot watches blend that legacy with modern craftsmanship, delivering watches that are equally comfortable under a flight suit or a business shirt. Whether you're an aviator seeking genuine functionality or a collector drawn to field watch simplicity, a well-chosen pilot watch becomes your most reliable everyday companion.",
 
@@ -1438,13 +1359,13 @@ export const guides: Guide[] = [
     conclusion: "The $10,000 luxury watch market represents a genuine threshold-the point where brand heritage, in-house movements, and finishing quality become standard rather than premium. Whether you choose the technical innovation of the Omega Seamaster 300m, the heritage prestige of the Rolex Submariner, the refined elegance of the Cartier Santos, or the value proposition of the TAG Heuer Carrera, you are entering the domain of heirloom watchmaking. These watches are designed to last 50+ years, hold their value, and pass to future generations. Use our comparison tool to put your shortlist side-by-side-see exactly how the specs, price points, and community ratings compare before you invest in a watch that will outlast you.",
   },
   {
-    slug: "best-sports-watches-for-active-men",
+    slug: "best-sports-watches",
     emoji: "⌚",
     tagline: "Durable, reliable watches built for activity, sport, and rugged daily wear",
-    title: "Best Sports Watches for Active Men in 2026 - Expert Guide",
-    description: "The best sports watches for active men in 2026: durable, shock-resistant, water-resistant watches from Omega, Rolex, TAG Heuer, Seiko, and Tudor. Expert picks with real specs.",
-    h1: "Best Sports Watches for Active Men in 2026 - Dive, Field & Chronograph Picks",
-    intro: "The best sports watches for active men prioritize durability over decoration. They deliver shock resistance, genuine water resistance, reliable movements, and honest design that works as hard as you do.\n\nA true sports watch is not defined by chronographs or complex complications. It is defined by core engineering: a movement that can withstand impact and maintain accuracy under stress, a case that protects that movement, and a crystal and bezel designed for legibility and function in real conditions. The watches on this list-from the Omega Seamaster 300m to the TAG Heuer Aquaracer 300 to the Seiko Prospex SPB143-share a philosophy: build for the activity first, aesthetics second.\n\nWhether you are training for a triathlon, running marathons, hiking remote terrain, or simply refusing to baby your wrist wear, this guide covers the essential specifications, honest recommendations, and real-world considerations for active men who want a watch that proves itself through use.",
+    title: "Best Sports Watches in 2026 — Dive, Field & Chronograph Picks",
+    description: "The best sports watches in 2026: durable, shock-resistant, water-resistant watches from Omega, Rolex, TAG Heuer, Seiko, and Tudor. Expert picks with real specs.",
+    h1: "Best Sports Watches in 2026 — Dive, Field & Chronograph Picks",
+    intro: "The best sports watches prioritize durability over decoration. They deliver shock resistance, genuine water resistance, reliable movements, and honest design that works as hard as you do.\n\nA true sports watch is not defined by chronographs or complex complications. It is defined by core engineering: a movement that can withstand impact and maintain accuracy under stress, a case that protects that movement, and a crystal and bezel designed for legibility and function in real conditions. The watches on this list — from the Omega Seamaster 300m to the TAG Heuer Aquaracer 300 to the Seiko Prospex SPB143 — share a philosophy: build for the activity first, aesthetics second.\n\nWhether you are training for a triathlon, running marathons, hiking remote terrain, or simply refusing to baby your wrist wear, this guide covers the essential specifications, honest recommendations, and real-world considerations for anyone who wants a watch that proves itself through use.",
     recommendations: [
       {
         slug: "omega-seamaster-300m",
@@ -1526,12 +1447,12 @@ export const guides: Guide[] = [
     conclusion: "A sports watch is a tool first, a luxury second. Whether you choose the technical excellence of the Omega Seamaster 300m, the iconic heritage of the Rolex Submariner, the value proposition of the TAG Heuer Aquaracer, the elegant pragmatism of the Hamilton Khaki Field, or the Japanese reliability of the Seiko Prospex, you are investing in a watch that will prove itself through use. These watches are built for repetitive motion, shock, water, and sweat-the real conditions of active life. Use our comparison tool to put your shortlist side-by-side and see exactly how these watches differ in specs, pricing, and community ratings. The best sports watch is the one you will wear every day.",
   },
   {
-    slug: "best-watches-for-first-time-buyers",
+    slug: "best-watches-for-beginners",
     emoji: "🎯",
     tagline: "Everything you need to know before buying your first serious watch",
-    title: "Best Watches for First-Time Buyers in 2026 - Entry-Level Watch Guide",
-    description: "The best watches for first-time buyers in 2026. Covers budget ranges, quartz vs automatic movements, top beginner brands, and essential care tips. Expert picks for every price point from $100 to $1,000.",
-    h1: "Best Watches for First-Time Buyers in 2026 - Entry-Level Watch Guide",
+    title: "Best Watches for Beginners in 2026 — Entry-Level & Automatic Picks",
+    description: "The best watches for beginners in 2026. Covers budget ranges, quartz vs automatic movements, how automatics work, top brands, and essential care tips. Expert picks from $100 to $1,000.",
+    h1: "Best Watches for Beginners in 2026 — Entry-Level & Automatic Picks",
     intro: "Buying your first serious watch is one of the most rewarding purchases you can make - but the sheer number of options, unfamiliar terminology, and wildly varying prices can make it feel overwhelming. This guide cuts through the noise.\n\nWatches for beginners span an enormous range. At one end, the Swatch Sistem51 delivers a genuine Swiss automatic movement for under $150. At the other, the Seiko Prospex SPB143 or Hamilton Khaki Field offers Swiss or Japanese precision at $700-900 - prices that once seemed impossible for watches of this quality. The right entry point depends on your budget, how you plan to wear the watch, and whether you want a mechanical heirloom or a reliable daily companion.\n\nWhat makes a great first watch? Durability above all. A scratch-resistant sapphire crystal, a case built from solid stainless steel, and a movement known for reliability matter far more at this stage than complications or prestige. You want a watch that will survive daily wear, the occasional bump, and the curiosity that comes from wearing a mechanical object on your wrist for the first time.\n\nThis guide covers five standout picks across the most popular price tiers for first-time buyers, followed by everything you need to know about movements, brands, care, and where to buy.",
     recommendations: [
       {
@@ -1580,6 +1501,10 @@ export const guides: Guide[] = [
         heading: "Basic Watch Care and Maintenance",
         content: "Daily care is minimal: rinse your watch under lukewarm water after saltwater exposure, wipe the case and bracelet regularly with a soft cloth, and store it away from magnets (speakers, laptop bags, magnetic phone cases). Crown discipline matters most for water resistance - always push the crown fully in and gently screw it down if it's a screw crown before exposing the watch to water. For automatics, wearing the watch daily is sufficient to keep it running; if you leave it for more than 40-60 hours, you'll need to wind it manually through the crown. Service intervals for automatic movements are typically every 5-8 years for modern movements. Earlier servicing is warranted if the watch stops unexpectedly, gains or loses more than 30 seconds per day, or was exposed to water beyond its rated depth. Avoid polishing the case yourself - it permanently removes finishing character and reduces value on any watch worth reselling.",
       },
+      {
+        heading: "How Automatic Movements Work",
+        content: "An automatic movement stores energy in a coiled mainspring. A weighted rotor pivots with wrist movement, winding the spring through a series of gears. The escapement regulates energy release in precise intervals, driving the hands. Key specs: power reserve (38-80 hours typical), beats per hour (21,600 or 28,800 bph), jewels (synthetic ruby bearings that reduce friction), and accuracy (plus or minus 10-30 seconds per day is normal for entry-level automatics). The seconds hand sweeps smoothly on high-frequency movements, creating that satisfying mechanical rhythm.",
+      },
     ],
     faq: [
       {
@@ -1610,6 +1535,18 @@ export const guides: Guide[] = [
         question: "What watch straps should I buy for my first watch?",
         answer: "Most entry-level watches ship on bracelet or a basic rubber/leather strap. The real value of watch collecting comes from strap swapping - a single watch can look completely different on a black NATO, a tan leather, or a rubber sport strap. For versatility, start with a quality NATO strap ($15-30 from reputable sellers like WatchGecko or ZULUDIVER) in a neutral color. Leather straps from Hirsch or Cartier-cut alternatives dress a watch up for office or formal use. Make sure the lug width of your watch (measured between the strap lugs - commonly 18mm, 20mm, or 22mm) matches the strap width exactly. Most Seiko and Hamilton watches use 20mm straps, giving you the widest selection.",
       },
+      {
+        question: "Do automatic watches need a battery?",
+        answer: "No. Automatic watches are powered entirely by wrist movement. A weighted rotor winds an internal mainspring - no battery ever needed. If the watch stops after sitting unworn, wind it manually (20-30 crown turns) and reset the time.",
+      },
+      {
+        question: "How accurate should my first automatic watch be?",
+        answer: "Entry-level automatics typically run within plus or minus 10-30 seconds per day. This is normal and expected for mechanical movements at this price. If your watch is consistently outside this range it may need regulation, but within spec is fine.",
+      },
+      {
+        question: "What power reserve should a beginner automatic have?",
+        answer: "38-42 hours is adequate for daily wearers. 80-hour reserves let you wear a watch all week and leave it idle over the weekend without resetting. For a single-watch collection, 38+ hours is fine; for rotation, 80-hour reserve adds real convenience.",
+      },
     ],
     paa: [
       {
@@ -1623,95 +1560,6 @@ export const guides: Guide[] = [
     ],
     conclusion: "Your first watch purchase doesn't need to be perfect - it needs to be worn. The watches in this guide share one quality: they reward daily wear without demanding excessive care or worry. Whether you start with a Seiko 5 Sports as your gateway automatic or stretch to a Hamilton Khaki Field or Longines Hydroconquest as a long-term companion, you're making a purchase that will likely introduce you to one of the most engaging, tactile hobbies available. Use our comparison tool to put any two watches in this guide head-to-head - see how their specs, community scores, and prices stack up before you decide. The best first watch is the one on your wrist.",
   },
-  {
-    slug: "best-automatic-watches-for-beginners",
-    emoji: "⚙️",
-    tagline: "Your complete guide to buying a first mechanical watch",
-    title: "Best Automatic Watches for Beginners in 2026 — Top 5 Picks",
-    description: "New to automatic watches? Our expert buying guide covers the best automatic watches for beginners across every budget — with picks from Seiko, Tissot, Orient, Hamilton, and more.",
-    h1: "Best Automatic Watches for Beginners in 2026",
-    intro: "There has never been a better time to buy your first automatic watch. The segment between $100 and $700 is overflowing with genuinely excellent mechanical watches — pieces that would have seemed impossible at these prices a decade ago. But the abundance also makes the choice harder. Where do you start? What actually matters? And which watches are worth your money when you're just getting into the hobby?\n\nThis guide cuts through the noise. Whether you've caught the watch bug from a YouTube rabbit hole, want a more meaningful everyday carry than your smartphone, or simply appreciate the craft of mechanical horology, the best automatic watches for beginners share a clear set of qualities: reliable movements, solid build quality, versatile designs, and prices that won't sting if your taste changes in a year.\n\nWe'll cover what makes a great first automatic, how these movements actually work, our five top picks with honest assessments, maintenance basics, and how to think about price.",
-    recommendations: [
-      {
-        slug: "seiko-5-sports-srpe55",
-        highlight: "The gateway drug for watch enthusiasts. Reliable 4R36 movement, 100m water resistance, and genuine character for around $300 new. The most-recommended first automatic.",
-      },
-      {
-        slug: "tissot-prx-40",
-        highlight: "An integrated bracelet Swiss automatic under $700. The Powermatic 80 movement delivers an 80-hour power reserve — wear it all week, leave it Friday, pick it up Monday still running.",
-      },
-      {
-        slug: "hamilton-khaki-field-auto-38",
-        highlight: "Swiss-made ETA movement, sapphire crystal, 100m water resistance. Equally at home in an office or outdoors. One of the most honest watches at any price.",
-      },
-      {
-        slug: "longines-hydroconquest-41",
-        highlight: "Longines heritage meets modern design. Automatic movement, sapphire crystal, 300m water resistance. For beginners who want dive watch capability with a brand name and Swiss precision.",
-      },
-      {
-        slug: "swatch-sistem51",
-        highlight: "An engineering marvel under $150. Robot-assembled 51-component automatic with a remarkable 90-hour power reserve and maintenance-free design. Unusual but genuinely fascinating.",
-      },
-    ],
-    buyingGuide: [
-      {
-        heading: "Why Automatic Watches Matter",
-        content: "An automatic watch is an engineered object that does something remarkable: it runs entirely on the kinetic energy from your wrist. No battery. No charging cable. No subscriptions. A well-made automatic, properly serviced, can outlast its owner. Once you see the rotor spinning through the caseback, you can't unsee it. You're not just buying a timepiece — you're joining a tradition of people who love mechanical watches.",
-      },
-      {
-        heading: "How Automatic Movements Work",
-        content: "An automatic movement stores energy in a coiled mainspring. A weighted rotor pivots with wrist movement, winding the spring through a series of gears. The escapement regulates energy release in precise intervals, driving the hands. Key specs: power reserve (38–80 hours typical), beats per hour (21,600 or 28,800 bph), jewels (synthetic ruby bearings that reduce friction), and accuracy (±10–30 seconds/day is normal for entry-level automatics). The seconds hand sweeps smoothly on high-frequency movements, creating that satisfying mechanical rhythm.",
-      },
-      {
-        heading: "Choosing Your First Automatic",
-        content: "Consider these factors: brand track record (Seiko, Orient, Tissot, Hamilton have proven reliability), movement robustness (Japanese 4R/6R series and Swiss ETA calibers are safe choices), crystal material (Hardlex is durable, sapphire is premium), water resistance rating (100m is versatile, 50m adequate for non-swimmers), and design personality. Pick a style you genuinely want to wear daily — that matters more than any spec. An automatic only teaches you what works when you wear it.",
-      },
-      {
-        heading: "Price Ranges & Value",
-        content: "Under $200: genuine automatics from Orient and Swatch — mineral/Hardlex crystal, reliable movements. $200–$400: the sweet spot (Seiko 5 Sports) — proven calibers, strong community, excellent value. $400–$750: Swiss movements and sapphire crystal (Hamilton, Tissot) — better finishing and resale value. Above $750: Tudor, Longines, mid-range Omega — excellent but not the right starting point until you know your preferences.",
-      },
-      {
-        heading: "Maintenance Basics",
-        content: "Wear your watch regularly to keep the mainspring wound and lubricants distributed. If it stops, wind manually (20–30 crown turns) before setting the time. Avoid strong magnetic fields (bag clasps, speakers, some phone cases) — magnetization causes erratic fast running. Service every 5–7 years for daily wearers ($150–$400 depending on movement). Have water resistance tested every 2–3 years if water exposure matters. Don't obsess over accuracy — ±10–30 seconds per day is normal.",
-      },
-    ],
-    faq: [
-      {
-        question: "What is the best automatic watch for a beginner?",
-        answer: "The Seiko 5 Sports is the most consistently recommended first automatic. It offers a reliable caliber, 100m water resistance, and genuine character for around $300 new. For more budget, the Tissot PRX Powermatic 80 and Hamilton Khaki Field Automatic are excellent upgrades.",
-      },
-      {
-        question: "Do automatic watches need a battery?",
-        answer: "No. Automatic watches are powered entirely by wrist movement. A weighted rotor winds an internal mainspring — no battery ever needed. If the watch stops after sitting unworn, wind it manually (20–30 crown turns) and reset the time.",
-      },
-      {
-        question: "How accurate should my first automatic watch be?",
-        answer: "Entry-level automatics typically run within plus or minus 10–30 seconds per day. This is normal and expected for mechanical movements at this price. If your watch is consistently outside this range it may need regulation, but within spec is fine.",
-      },
-      {
-        question: "How long does an automatic watch last?",
-        answer: "A well-made automatic can last several lifetimes with proper care and periodic servicing. Many 1960s and 1970s automatics are still running today. Service every 5–7 years for daily wear — typically $150–$400 depending on movement complexity.",
-      },
-      {
-        question: "What power reserve should a beginner automatic have?",
-        answer: "38–42 hours is adequate for daily wearers. 80-hour reserves let you wear a watch all week and leave it idle over the weekend without resetting. For a single-watch collection, 38+ hours is fine; for rotation, 80-hour reserve adds real convenience.",
-      },
-      {
-        question: "Is Orient a good brand for a first automatic watch?",
-        answer: "Yes. Orient produces its own in-house automatic calibers at prices that undercut most competitors. Their movements include hacking and hand-winding capability where many rivals at the same price skip both. The Orient Bambino and Mako are community favorites.",
-      },
-      {
-        question: "Should I buy a new or used automatic watch as a beginner?",
-        answer: "For your first automatic, buying new from an authorized dealer gives you warranty protection and confidence in authenticity. Once you've worn a few watches and developed an eye for quality, used watches on platforms like Chrono24 offer significant value and protections. Always ask for service history if buying used.",
-      },
-      {
-        question: "What is the difference between automatic and manual wind watches?",
-        answer: "Both are mechanical watches powered by a wound mainspring. An automatic winds itself via a rotor that spins with wrist movement — no manual effort during wear. A manual wind watch requires you to wind the crown daily or every few days. Most beginner watches are automatic; manual wind watches are rarer and often more expensive at entry-level prices.",
-      },
-    ],
-    conclusion: "Your first automatic watch doesn't need to be perfect — it needs to be worn. The Seiko 5 Sports is the most-recommended starting point for good reason: it's reliable, characterful, and affordable enough to wear without anxiety. Once you've lived with a mechanical watch for six months, you'll know exactly what you want next. Use our comparison tool to put any two of these watches head-to-head before you decide.",
-  },
-
   {
     slug: "rolex-new-vs-pre-owned-buying-guide",
     emoji: "💰",

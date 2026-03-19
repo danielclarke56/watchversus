@@ -175,11 +175,11 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           ))}
         </div>
 
-        {/* Rankings Strip */}
+        {/* Browse All Strip */}
         <div className="mb-8 flex items-center justify-between bg-neutral border border-border rounded-xl px-5 py-3">
-          <p className="text-sm text-textSecond">See how these watches rank against the full database</p>
-          <Link href="/rankings" className="text-sm font-semibold text-accent hover:underline shrink-0 ml-4">
-            View Rankings Ã¢â€ â€™
+          <p className="text-sm text-textSecond">Browse and filter the full watch database by score, price, and style</p>
+          <Link href="/watches?sort=score" className="text-sm font-semibold text-accent hover:underline shrink-0 ml-4">
+            Browse All Watches →
           </Link>
         </div>
 
