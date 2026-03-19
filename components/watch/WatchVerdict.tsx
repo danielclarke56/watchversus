@@ -34,7 +34,7 @@ export default function WatchVerdict({ watch }: WatchVerdictProps) {
 
           <div className="card p-6">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-400 text-sm font-bold">✕</span>
+              <span className="w-8 h-8 rounded-full bg-surfaceAlt flex items-center justify-center text-loser text-sm font-bold">✕</span>
               <h3 className="text-lg font-bold text-textPrimary">Who should skip</h3>
             </div>
             <p className="text-textSecond leading-relaxed">{verdict.who_should_skip}</p>
@@ -60,7 +60,7 @@ export default function WatchVerdict({ watch }: WatchVerdictProps) {
             <ul className="space-y-3">
               {cons.map((con, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="text-red-400 text-lg flex-shrink-0 mt-0.5">✕</span>
+                  <span className="text-loser text-lg flex-shrink-0 mt-0.5">✕</span>
                   <span className="text-textSecond">{con}</span>
                 </li>
               ))}

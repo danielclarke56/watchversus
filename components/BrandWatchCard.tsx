@@ -21,7 +21,7 @@ export default function BrandWatchCard({ watch }: Props) {
   return (
     <Link
       href={`/watches/${watch.slug}`}
-      className="group bg-surface border border-border rounded-lg overflow-hidden hover:border-accent/40 hover:shadow-md transition-all duration-200 flex flex-col"
+      className="group bg-surface border border-border rounded-sm overflow-hidden hover:border-borderStrong hover:shadow-md transition-all duration-200 flex flex-col"
     >
       {/* Image area */}
       <div className="relative bg-surfaceAlt aspect-square flex items-center justify-center overflow-hidden">

@@ -20,11 +20,11 @@ export default function BrandPage({ params }: Props) {
     return (
       <div className="min-h-screen bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Brand Not Found</h1>
-          <p className="text-lg text-gray-600 mb-6">
+          <h1 className="text-4xl font-bold text-textPrimary mb-4">Brand Not Found</h1>
+          <p className="text-lg text-textSecond mb-6">
             The brand you&apos;re looking for doesn&apos;t exist in our database.
           </p>
-          <Link href="/brands" className="text-blue-600 hover:text-blue-800 font-semibold">
+          <Link href="/brands" className="text-accent hover:text-accentHover font-semibold">
             ← Back to Brands
           </Link>
         </div>
@@ -41,21 +41,21 @@ export default function BrandPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="border-b border-gray-200">
+      <nav className="border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link href="/brands" className="text-blue-600 hover:text-blue-800 font-semibold">
+          <Link href="/brands" className="text-accent hover:text-accentHover font-semibold">
             ← Back to Brands
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+      <div className="bg-gradient-to-r from-surfaceAlt to-neutral border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-5xl font-bold text-gray-900 mb-4">{brand.name}</h1>
-              <div className="flex gap-6 text-gray-600 mb-6">
+              <h1 className="text-5xl font-bold text-textPrimary mb-4">{brand.name}</h1>
+              <div className="flex gap-6 text-textSecond mb-6">
                 <div className="flex items-center gap-2">
                   <span>📍</span>
                   <span>{brand.country}</span>
@@ -67,40 +67,40 @@ export default function BrandPage({ params }: Props) {
               </div>
             </div>
           </div>
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-            <p className="text-lg font-semibold text-gray-900">{brand.heroFact}</p>
+          <div className="bg-accentLight border-l-4 border-accent p-4 rounded">
+            <p className="text-lg font-semibold text-textPrimary">{brand.heroFact}</p>
           </div>
         </div>
       </div>
 
       {/* Overview Section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">Heritage &amp; Overview</h2>
+        <h2 className="text-3xl font-bold text-textPrimary mb-6">Heritage &amp; Overview</h2>
         <div className="prose prose-lg max-w-none">
-          <p className="text-gray-700 leading-relaxed text-lg">{brand.overview}</p>
+          <p className="text-textSecond leading-relaxed text-lg">{brand.overview}</p>
         </div>
       </div>
 
       {/* Related Watches Section */}
       {brandWatches.length > 0 && (
-        <div className="bg-gray-50 border-t border-gray-200">
+        <div className="bg-surfaceAlt border-t border-border">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
+            <h2 className="text-3xl font-bold text-textPrimary mb-8">
               {brand.name} Watches in Our Database
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {brandWatches.map((watch) => (
                 <Link key={watch.id} href={`/watches/${watch.slug}`}>
-                  <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer border border-gray-200">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{watch.name}</h3>
-                    <p className="text-gray-600 mb-4">{watch.description}</p>
+                  <div className="bg-white rounded-sm shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer border border-border">
+                    <h3 className="text-xl font-bold text-textPrimary mb-2">{watch.name}</h3>
+                    <p className="text-textSecond mb-4">{watch.description}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-textMuted">
                         {watch.movement_type
                           ? watch.movement_type.charAt(0).toUpperCase() + watch.movement_type.slice(1)
                           : 'N/A'}
                       </span>
-                      <span className="text-sm text-blue-600 font-semibold">View Details →</span>
+                      <span className="text-sm text-accent font-semibold">View Details →</span>
                     </div>
                   </div>
                 </Link>
@@ -113,21 +113,21 @@ export default function BrandPage({ params }: Props) {
       {/* FAQ Section */}
       {brand.faq && brand.faq.length > 0 && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
+          <h2 className="text-3xl font-bold text-textPrimary mb-8">
             Frequently Asked Questions
           </h2>
           <div className="space-y-4">
             {brand.faq.map((item, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg">
+              <div key={index} className="border border-border rounded-sm">
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-surfaceAlt transition-colors"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 text-left">
+                  <h3 className="text-lg font-semibold text-textPrimary text-left">
                     {item.question}
                   </h3>
                   <span
-                    className={`text-gray-600 transition-transform flex-shrink-0 ml-4 inline-block ${
+                    className={`text-textSecond transition-transform flex-shrink-0 ml-4 inline-block ${
                       openFAQs.includes(index) ? 'rotate-180' : ''
                     }`}
                   >
@@ -135,8 +135,8 @@ export default function BrandPage({ params }: Props) {
                   </span>
                 </button>
                 {openFAQs.includes(index) && (
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <p className="text-gray-700 leading-relaxed">{item.answer}</p>
+                  <div className="px-6 py-4 bg-surfaceAlt border-t border-border">
+                    <p className="text-textSecond leading-relaxed">{item.answer}</p>
                   </div>
                 )}
               </div>
@@ -146,16 +146,16 @@ export default function BrandPage({ params }: Props) {
       )}
 
       {/* Compare Section */}
-      <div className="bg-blue-50 border-t border-gray-200">
+      <div className="bg-accentLight border-t border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Compare {brand.name}</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-3xl font-bold text-textPrimary mb-4">Compare {brand.name}</h2>
+          <p className="text-textSecond mb-6">
             Want to see how {brand.name} compares to other luxury watch brands? Head to our
             compare tool to explore side-by-side specifications and analysis.
           </p>
           <Link
             href="/compare"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-block bg-accent text-white px-6 py-3 rounded-sm font-semibold hover:bg-accentHover transition-colors"
           >
             Explore Comparisons
           </Link>
@@ -163,23 +163,23 @@ export default function BrandPage({ params }: Props) {
       </div>
 
       {/* Footer CTA */}
-      <div className="bg-white border-t border-gray-200">
+      <div className="bg-white border-t border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">More Information</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-2xl font-bold text-textPrimary mb-4">More Information</h2>
+          <p className="text-textSecond mb-6">
             For more detailed information about {brand.name} watches, market positioning, and where
             to buy, explore our comprehensive brand database and comparison tools.
           </p>
           <div className="flex gap-4">
             <Link
               href="/brands"
-              className="px-6 py-3 border border-gray-300 rounded-lg font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-borderStrong rounded-sm font-semibold text-textPrimary hover:bg-surfaceAlt transition-colors"
             >
               All Brands
             </Link>
             <Link
               href="/compare"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 bg-accent text-white rounded-sm font-semibold hover:bg-accentHover transition-colors"
             >
               Compare Watches
             </Link>

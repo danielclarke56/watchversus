@@ -8,7 +8,7 @@ export function VerdictCallout({ winnerName, verdictSummary }: VerdictCalloutPro
 
   return (
     <div
-      className={`rounded-xl p-5 md:p-6 mb-8 border-l-4 ${
+      className={`rounded-sm p-5 md:p-6 mb-8 border-l-4 ${
         isClose
           ? 'bg-accentLight border-accent'
           : 'bg-winnerBg border-winner'
@@ -22,7 +22,7 @@ export function VerdictCallout({ winnerName, verdictSummary }: VerdictCalloutPro
           <p className="text-xs font-bold uppercase tracking-wider text-textMuted">
             Our Verdict
           </p>
-          <p className={`text-lg md:text-xl font-black ${isClose ? 'text-accent' : 'text-winner'}`}>
+          <p className={`text-lg md:text-xl font-bold ${isClose ? 'text-accent' : 'text-winner'}`}>
             {isClose ? 'Too Close to Call' : winnerName}
           </p>
         </div>

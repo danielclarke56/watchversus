@@ -349,7 +349,7 @@ export default function WatchReviewsSection({
             {filterStar !== null && (
               <button
                 onClick={() => handleFilterStar(null)}
-                className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-full font-medium"
+                className="flex items-center gap-1 text-xs bg-accentLight text-accent px-2.5 py-1 rounded-full font-medium"
               >
                 {filterStar} star{filterStar !== 1 ? 's' : ''}
                 <span className="ml-0.5">&times;</span>
@@ -419,8 +419,8 @@ export default function WatchReviewsSection({
               onClick={() => handleVote('down')}
               className={`px-5 py-2 rounded-md font-semibold text-sm transition-all ${
                 rateVote === 'down'
-                  ? 'bg-red-400 text-white'
-                  : 'bg-surfaceAlt text-textPrimary hover:bg-red-50'
+                  ? 'bg-loser text-white'
+                  : 'bg-surfaceAlt text-textPrimary hover:bg-surfaceAlt'
               }`}
             >
               No

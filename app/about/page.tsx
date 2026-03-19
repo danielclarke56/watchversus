@@ -10,18 +10,18 @@ export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-[#0f172a] mb-3">About WatchVsWatch</h1>
-        <p className="text-[#475569] text-lg">Community-driven watch intelligence for enthusiasts at every level</p>
+        <h1 className="text-4xl font-bold text-textPrimary mb-3">About WatchVsWatch</h1>
+        <p className="text-textSecond text-lg">Community-driven watch intelligence for enthusiasts at every level</p>
       </div>
 
       <div className="space-y-10">
         {/* Mission */}
         <section className="card p-7">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#b8860b]/20 border border-[#b8860b]/30 flex items-center justify-center text-[#b8860b] text-sm font-bold shrink-0">01</span>
+          <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
+            <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">01</span>
             Our Mission
           </h2>
-          <div className="text-[#475569] space-y-3 leading-relaxed">
+          <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
               WatchVsWatch was built to be the comparison resource we always wished existed — honest, detailed, and
               driven by the people who actually own and wear these watches. The name says it all: this is a head-to-head
@@ -41,11 +41,11 @@ export default function AboutPage() {
 
         {/* How reviews work */}
         <section id="reviews" className="card p-7">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#b8860b]/20 border border-[#b8860b]/30 flex items-center justify-center text-[#b8860b] text-sm font-bold shrink-0">02</span>
+          <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
+            <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">02</span>
             How Reviews Work
           </h2>
-          <div className="text-[#475569] space-y-3 leading-relaxed">
+          <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
               Reviews on WatchVsWatch are submitted by authenticated community members who own or have owned the watches
               they review. We don&apos;t compensate reviewers, and all reviews are stored securely in our backend database
@@ -62,12 +62,12 @@ export default function AboutPage() {
                 ['Ownership Duration', 'How long you&apos;ve owned the watch (optional)'],
               ].map(([name, desc]) => (
                 <li key={name} className="flex gap-3">
-                  <span className="text-[#b8860b] shrink-0 mt-0.5">→</span>
-                  <span><strong className="text-[#0f172a]">{name}</strong> — {desc}</span>
+                  <span className="text-accent shrink-0 mt-0.5">→</span>
+                  <span><strong className="text-textPrimary">{name}</strong> — {desc}</span>
                 </li>
               ))}
             </ul>
-            <p className="text-[#94a3b8] text-sm mt-4">
+            <p className="text-textMuted text-sm mt-4">
               To submit a review, simply sign in with your account. Your review is published after a quick moderation
               check to prevent spam.
             </p>
@@ -76,11 +76,11 @@ export default function AboutPage() {
 
         {/* Data */}
         <section className="card p-7">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#b8860b]/20 border border-[#b8860b]/30 flex items-center justify-center text-[#b8860b] text-sm font-bold shrink-0">03</span>
+          <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
+            <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">03</span>
             Our Watch Database
           </h2>
-          <div className="text-[#475569] space-y-3 leading-relaxed">
+          <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
               Our database currently covers 50 watches spanning every price point, style, and brand tier — from the
               Swatch Sistem51 to the Patek Philippe Nautilus. Every specification is researched from official brand
@@ -95,19 +95,19 @@ export default function AboutPage() {
 
         {/* Contact */}
         <section id="contact" className="card p-7">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#b8860b]/20 border border-[#b8860b]/30 flex items-center justify-center text-[#b8860b] text-sm font-bold shrink-0">04</span>
+          <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
+            <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">04</span>
             Contact
           </h2>
-          <div className="text-[#475569] space-y-3">
+          <div className="text-textSecond space-y-3">
             <p>
               For watch additions, corrections, or general feedback:
             </p>
             <p>
-              <strong className="text-[#0f172a]">Email:</strong>{' '}
-              <span className="text-[#b8860b]">hello@WatchVsWatch.com</span>
+              <strong className="text-textPrimary">Email:</strong>{' '}
+              <span className="text-accent">hello@WatchVsWatch.com</span>
             </p>
-            <p className="text-[#94a3b8] text-sm">
+            <p className="text-textMuted text-sm">
               We read every email and respond to content inquiries within 48 hours.
             </p>
           </div>
@@ -115,9 +115,9 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="mt-12 text-center bg-[#F0F0F0] border border-[#E8E8E8] rounded-xl p-8">
-        <h3 className="text-[#0f172a] font-bold text-xl mb-2">Ready to find your perfect watch?</h3>
-        <p className="text-[#475569] mb-5">Take our 2-minute quiz or start comparing watches side-by-side</p>
+      <div className="mt-12 text-center bg-accentLight border border-borderStrong rounded-sm p-8">
+        <h3 className="text-textPrimary font-bold text-xl mb-2">Ready to find your perfect watch?</h3>
+        <p className="text-textSecond mb-5">Take our 2-minute quiz or start comparing watches side-by-side</p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/quiz" className="btn-gold">Take the Quiz</Link>
           <Link href="/compare" className="btn-outline">Compare Watches</Link>

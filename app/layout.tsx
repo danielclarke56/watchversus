@@ -72,7 +72,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className="bg-[#f8fafc] text-[#0f172a] antialiased min-h-screen flex flex-col">
+      <body className="bg-surfaceAlt text-textPrimary antialiased min-h-screen flex flex-col">
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
           strategy="afterInteractive"

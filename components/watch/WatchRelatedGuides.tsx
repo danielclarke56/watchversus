@@ -82,7 +82,7 @@ export default function WatchRelatedGuides({ watch }: { watch: Watch }) {
             <Link
               key={g.href}
               href={g.href}
-              className="inline-flex items-center gap-2 bg-surfaceAlt border border-border hover:border-accent text-textPrimary hover:text-accent text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-surfaceAlt border border-border hover:border-accent text-textPrimary hover:text-accent text-sm font-medium px-4 py-2.5 rounded-sm transition-colors"
             >
               <span>{g.emoji}</span>
               <span>{g.label}</span>

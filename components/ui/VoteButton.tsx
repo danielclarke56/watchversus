@@ -26,7 +26,7 @@ export function VoteButton({
     ? 'bg-accent text-white border-accent'
     : isDisabledState
     ? 'bg-surface text-textMuted border-border'
-    : 'bg-surface text-textPrimary border-border hover:border-accent/40';
+    : 'bg-surface text-textPrimary border-border hover:border-borderStrong';
 
   return (
     <button

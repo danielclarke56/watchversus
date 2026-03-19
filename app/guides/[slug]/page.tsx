@@ -168,7 +168,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
           {/* Category Badge */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/30">
+            <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-accentLight text-accent border border-borderStrong">
               Buying Guide
             </span>
             <span className="text-xs text-textMuted flex items-center gap-1">
@@ -252,7 +252,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
             {recommendedWatches.map(({ rec, watch }, index) => (
               <div key={watch.slug} className="card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 bg-accent/20 border border-accent/40 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 w-10 h-10 bg-accentLight border border-borderStrong rounded-full flex items-center justify-center">
                     <span className="text-accent font-bold text-sm">{index + 1}</span>
                   </div>
                   {watch.image && !watch.image.endsWith('.svg') && (
@@ -301,7 +301,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
+                    className="card p-4 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex-1 min-w-0">
@@ -354,12 +354,12 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         )}
 
         {/* Conclusion */}
-        <section className="mb-12 bg-neutral border border-border rounded-xl p-6">
+        <section className="mb-12 bg-neutral border border-border rounded-sm p-6">
           <p className="text-textSecond text-sm leading-relaxed">{guide.conclusion}</p>
         </section>
 
         {/* Browse All Strip — moved below content */}
-        <div className="mb-12 flex items-center justify-between bg-neutral border border-border rounded-xl px-5 py-3">
+        <div className="mb-12 flex items-center justify-between bg-neutral border border-border rounded-sm px-5 py-3">
           <p className="text-sm text-textSecond">Browse and filter the full watch database by score, price, and style</p>
           <Link href="/watches?sort=score" className="text-sm font-semibold text-accent hover:underline shrink-0 ml-4">
             Browse All Watches →
@@ -383,12 +383,12 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   <Link
                     key={g.slug}
                     href={`/guides/${g.slug}`}
-                    className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
+                    className="card p-5 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
                   >
                     {previewWatches.length > 0 && (
                       <div className="flex gap-1 mb-3">
                         {previewWatches.map((w) => (
-                          <div key={w.slug} className="h-10 w-10 rounded-md bg-white border border-[#e2e8f0] overflow-hidden shrink-0">
+                          <div key={w.slug} className="h-10 w-10 rounded-md bg-surface border border-border overflow-hidden shrink-0">
                             <Image src={w.image!} alt={w.name} width={40} height={40} className="h-10 w-10 object-contain" />
                           </div>
                         ))}
@@ -416,7 +416,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                 <Link
                   key={b.slug}
                   href={`/brands/${b.slug}`}
-                  className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group text-center"
+                  className="card p-4 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group text-center"
                 >
                   <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
                     {b.name}
@@ -430,7 +430,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         )}
 
         {/* CTA */}
-        <div className="text-center bg-neutral border border-border rounded-xl p-8">
+        <div className="text-center bg-neutral border border-border rounded-sm p-8">
           <h3 className="text-textPrimary font-heading font-semibold text-lg mb-2">Compare Any Two Watches</h3>
           <p className="text-textSecond text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
           <Link href="/compare" className="btn-gold">

@@ -59,7 +59,7 @@ export default function WatchImageZoom({ src, alt, watchName, containerClassName
             <img
               src={src}
               alt={alt}
-              className="max-w-[80vw] max-h-[80vh] object-contain rounded-xl shadow-lg"
+              className="max-w-[80vw] max-h-[80vh] object-contain rounded-sm shadow-lg"
             />
             <p className="text-textPrimary font-semibold text-lg">{watchName}</p>
             <button

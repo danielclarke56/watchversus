@@ -116,7 +116,6 @@ function scoreWatch(watch: Watch, answers: Record<string, string>): number {
 }
 
 export default function QuizClient({ watches }: Props) {
-  const [started, setStarted] = useState(false)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showResults, setShowResults] = useState(false)
@@ -179,65 +178,26 @@ export default function QuizClient({ watches }: Props) {
     return { topMatches: top, closeMatches: close }
   }, [showResults, watches, answers])
 
-  // --- Intro screen ---
-  if (!started) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <div className="w-14 h-14 rounded-full bg-[#b8860b]/15 border border-[#b8860b]/25 flex items-center justify-center mx-auto mb-6">
-          <svg className="w-7 h-7 text-[#b8860b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-3">
-          Find Your Perfect Watch
-        </h1>
-        <p className="text-[#475569] text-lg mb-2">
-          Answer 5 quick questions. Get personalized recommendations from {watches.length}+ watches.
-        </p>
-        <p className="text-[#94a3b8] text-sm mb-8">
-          No signup required. Takes under 60 seconds.
-        </p>
-
-        <button
-          onClick={() => setStarted(true)}
-          className="btn-gold text-base px-8 py-3 rounded-lg font-semibold"
-        >
-          Start Quiz
-        </button>
-
-        <p className="text-[#94a3b8] text-xs mt-8">
-          Powered by community ratings from watch enthusiasts
-        </p>
-
-        <div className="mt-6">
-          <Link href="/watches" className="text-[#475569] hover:text-[#b8860b] text-sm transition-colors">
-            Or browse all watches &rarr;
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
   // --- Results screen ---
   if (showResults) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="text-center mb-10">
-          <div className="w-12 h-12 rounded-full bg-[#b8860b]/20 border border-[#b8860b]/30 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-[#b8860b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 rounded-full bg-accentLight border border-borderStrong flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Your Top Matches</h1>
-          <p className="text-[#475569]">Based on your preferences, here are your best watch options</p>
+          <h1 className="text-3xl font-bold text-textPrimary mb-2">Your Top Matches</h1>
+          <p className="text-textSecond">Based on your preferences, here are your best watch options</p>
         </div>
 
         <div className="space-y-5 mb-8">
           {topMatches.map(({ watch }, i) => (
-            <div key={watch.id} className="card p-6 border-[#e2e8f0] hover:border-[#b8860b]/30 transition-colors">
+            <div key={watch.id} className="card p-6 border-border hover:border-borderStrong transition-colors">
               {watch.image && (
                 <div className="flex justify-center mb-5">
-                  <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] w-36 h-36 flex items-center justify-center overflow-hidden">
+                  <div className="bg-surfaceAlt rounded-sm border border-border w-36 h-36 flex items-center justify-center overflow-hidden">
                     <Image
                       src={watch.image}
                       alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
@@ -251,35 +211,35 @@ export default function QuizClient({ watches }: Props) {
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[#b8860b] font-bold text-sm">#{i + 1}</span>
-                    <span className="text-xs text-[#b8860b] font-semibold uppercase tracking-wider">{watch.brand}</span>
+                    <span className="text-accent font-bold text-sm">#{i + 1}</span>
+                    <span className="text-xs text-accent font-semibold uppercase tracking-wider">{watch.brand}</span>
                   </div>
-                  <h2 className="text-xl font-bold text-[#0f172a]">{watch.name}</h2>
-                  <p className="text-[#475569] text-sm">Ref. {watch.reference}</p>
+                  <h2 className="text-xl font-bold text-textPrimary">{watch.name}</h2>
+                  <p className="text-textSecond text-sm">Ref. {watch.reference}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs text-[#94a3b8]">New</p>
-                  <p className="text-[#b8860b] font-bold">{formatPrice(watch.price_new_usd)}</p>
+                  <p className="text-xs text-textMuted">New</p>
+                  <p className="text-accent font-bold">{formatPrice(watch.price_new_usd)}</p>
                 </div>
               </div>
 
-              <p className="text-[#475569] text-sm leading-relaxed mb-4">{watch.description}</p>
+              <p className="text-textSecond text-sm leading-relaxed mb-4">{watch.description}</p>
 
-              <div className="bg-[#f8fafc] rounded-lg p-3 mb-4">
-                <p className="text-xs text-[#94a3b8] uppercase tracking-wider mb-2">Why it matches</p>
+              <div className="bg-surfaceAlt rounded-sm p-3 mb-4">
+                <p className="text-xs text-textMuted uppercase tracking-wider mb-2">Why it matches</p>
                 <ul className="space-y-1">
                   {answers.style && watch.style.includes(answers.style) && (
-                    <li className="text-sm text-[#475569] flex items-center gap-2">
-                      <span className="text-[#b8860b]">&#10003;</span> {answers.style} style watch
+                    <li className="text-sm text-textSecond flex items-center gap-2">
+                      <span className="text-accent">&#10003;</span> {answers.style} style watch
                     </li>
                   )}
                   {(answers.movement === 'any' || watch.movement_type === answers.movement) && (
-                    <li className="text-sm text-[#475569] flex items-center gap-2">
-                      <span className="text-[#b8860b]">&#10003;</span> {watch.movement_type} movement
+                    <li className="text-sm text-textSecond flex items-center gap-2">
+                      <span className="text-accent">&#10003;</span> {watch.movement_type} movement
                     </li>
                   )}
-                  <li className="text-sm text-[#475569] flex items-center gap-2">
-                    <span className="text-[#b8860b]">&#10003;</span> {watch.case_diameter_mm}mm case, {watch.water_resistance_m}m water resistance
+                  <li className="text-sm text-textSecond flex items-center gap-2">
+                    <span className="text-accent">&#10003;</span> {watch.case_diameter_mm}mm case, {watch.water_resistance_m}m water resistance
                   </li>
                 </ul>
               </div>
@@ -296,16 +256,16 @@ export default function QuizClient({ watches }: Props) {
         {/* Close matches */}
         {closeMatches.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-[#0f172a] mb-4">Also Worth a Look</h2>
+            <h2 className="text-lg font-semibold text-textPrimary mb-4">Also Worth a Look</h2>
             <div className="space-y-3">
               {closeMatches.map(({ watch }) => (
                 <Link
                   key={watch.id}
                   href={`/watches/${watch.slug}`}
-                  className="card p-4 border-[#e2e8f0] hover:border-[#b8860b]/30 transition-colors flex items-center gap-4"
+                  className="card p-4 border-border hover:border-borderStrong transition-colors flex items-center gap-4"
                 >
                   {watch.image && (
-                    <div className="bg-[#f8fafc] rounded-lg border border-[#e2e8f0] w-16 h-16 flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="bg-surfaceAlt rounded-sm border border-border w-16 h-16 flex items-center justify-center overflow-hidden shrink-0">
                       <Image
                         src={watch.image}
                         alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
@@ -316,11 +276,11 @@ export default function QuizClient({ watches }: Props) {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-[#b8860b] font-semibold uppercase tracking-wider">{watch.brand}</p>
-                    <p className="text-sm font-bold text-[#0f172a] truncate">{watch.name}</p>
-                    <p className="text-xs text-[#475569]">{formatPrice(watch.price_new_usd)}</p>
+                    <p className="text-xs text-accent font-semibold uppercase tracking-wider">{watch.brand}</p>
+                    <p className="text-sm font-bold text-textPrimary truncate">{watch.name}</p>
+                    <p className="text-xs text-textSecond">{formatPrice(watch.price_new_usd)}</p>
                   </div>
-                  <span className="text-[#94a3b8] text-sm shrink-0">&rarr;</span>
+                  <span className="text-textMuted text-sm shrink-0">&rarr;</span>
                 </Link>
               ))}
             </div>
@@ -329,13 +289,13 @@ export default function QuizClient({ watches }: Props) {
 
         <div className="text-center space-y-3">
           <button
-            onClick={() => { setStep(0); setAnswers({}); setShowResults(false); setStarted(true) }}
-            className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
+            onClick={() => { setStep(0); setAnswers({}); setShowResults(false) }}
+            className="text-textSecond hover:text-textPrimary text-sm transition-colors"
           >
             &larr; Retake Quiz
           </button>
           <div>
-            <Link href="/watches" className="text-[#475569] hover:text-[#b8860b] text-sm transition-colors">
+            <Link href="/watches" className="text-textSecond hover:text-accent text-sm transition-colors">
               Browse all watches &rarr;
             </Link>
           </div>
@@ -347,15 +307,27 @@ export default function QuizClient({ watches }: Props) {
   // --- Quiz questions ---
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      {/* Intro header on first question */}
+      {step === 0 && (
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-textPrimary mb-2">
+            Find Your Perfect Watch
+          </h1>
+          <p className="text-textSecond text-sm">
+            {watches.length}+ watches &middot; 5 questions &middot; under 60 seconds
+          </p>
+        </div>
+      )}
+
       {/* Progress */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[#475569] text-sm">Question {step + 1} of {QUESTIONS.length}</span>
-          <span className="text-[#475569] text-sm">{Math.round(progress)}% complete</span>
+          <span className="text-textSecond text-sm">Question {step + 1} of {QUESTIONS.length}</span>
+          <span className="text-textSecond text-sm">{Math.round(progress)}% complete</span>
         </div>
-        <div className="h-1.5 bg-[#e2e8f0] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-border rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#5C5C5C] to-[#8A8A8A] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-accent to-accentHover rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -363,7 +335,7 @@ export default function QuizClient({ watches }: Props) {
 
       {/* Question */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#0f172a]">{currentQ.question}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-textPrimary">{currentQ.question}</h1>
       </div>
 
       {/* Options */}
@@ -372,12 +344,12 @@ export default function QuizClient({ watches }: Props) {
           <button
             key={opt.value}
             onClick={() => handleAnswer(opt.value)}
-            className="card p-5 text-left hover:border-[#b8860b]/50 hover:bg-[#b8860b]/5 transition-all group"
+            className="card p-5 text-left hover:border-borderStrong hover:bg-neutral transition-all group"
           >
             <span className="text-2xl mb-2 block">{opt.icon}</span>
-            <span className="text-[#0f172a] font-medium group-hover:text-[#b8860b] transition-colors">{opt.label}</span>
+            <span className="text-textPrimary font-medium group-hover:text-accent transition-colors">{opt.label}</span>
             {currentQ.id === 'budget' && (
-              <span className="block text-xs text-[#94a3b8] mt-1">
+              <span className="block text-xs text-textMuted mt-1">
                 {budgetCounts[opt.value as keyof typeof budgetCounts]} watches
               </span>
             )}
@@ -391,7 +363,7 @@ export default function QuizClient({ watches }: Props) {
           {step > 0 && (
             <button
               onClick={() => setStep(step - 1)}
-              className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
+              className="text-textSecond hover:text-textPrimary text-sm transition-colors"
             >
               &larr; Back
             </button>
@@ -400,11 +372,11 @@ export default function QuizClient({ watches }: Props) {
         <div className="flex items-center gap-4">
           <button
             onClick={handleSkip}
-            className="text-[#94a3b8] hover:text-[#475569] text-sm transition-colors"
+            className="text-textMuted hover:text-textSecond text-sm transition-colors"
           >
             Skip
           </button>
-          <Link href="/watches" className="text-[#94a3b8] hover:text-[#b8860b] text-sm transition-colors">
+          <Link href="/watches" className="text-textMuted hover:text-accent text-sm transition-colors">
             Browse all &rarr;
           </Link>
         </div>

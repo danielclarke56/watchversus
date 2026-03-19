@@ -24,7 +24,7 @@ export function Button({
     primary:
       'bg-accent text-white font-semibold rounded-md hover:bg-accentHover transition-colors',
     secondary:
-      'bg-accent/10 text-accent font-semibold rounded-md hover:bg-accent/20 transition-colors',
+      'bg-accentLight text-accent font-semibold rounded-md hover:bg-accentLight transition-colors',
     outline:
       'border border-accent text-accent font-semibold rounded-md hover:bg-accentLight transition-colors',
     ghost:

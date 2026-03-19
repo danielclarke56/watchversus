@@ -90,23 +90,23 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-[#94a3b8] mb-8">
-          <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
+        <nav className="flex items-center gap-2 text-sm text-textMuted mb-8">
+          <Link href="/" className="hover:text-accent transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/blog" className="hover:text-[#b8860b] transition-colors">Blog</Link>
+          <Link href="/blog" className="hover:text-accent transition-colors">Blog</Link>
           <span>/</span>
-          <span className="text-[#475569] truncate max-w-[200px] sm:max-w-none">{post.title}</span>
+          <span className="text-textSecond truncate max-w-[200px] sm:max-w-none">{post.title}</span>
         </nav>
 
         {/* Hero image */}
         {post.heroImage && (
-          <div className="relative w-full max-h-[480px] overflow-hidden rounded-xl mb-10">
+          <div className="relative w-full max-h-[480px] overflow-hidden rounded-sm mb-10">
             <Image
               src={post.heroImage}
               alt={post.title}
               width={1200}
               height={480}
-              className="w-full max-h-[480px] object-cover rounded-xl"
+              className="w-full max-h-[480px] object-cover rounded-sm"
               priority
             />
           </div>
@@ -115,41 +115,41 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         {/* Post header */}
         <header className="max-w-3xl mx-auto mb-8">
           <div className="flex items-center gap-3 mb-4 flex-wrap">
-            <time dateTime={post.date} className="text-xs text-[#94a3b8] font-medium">
+            <time dateTime={post.date} className="text-xs text-textMuted font-medium">
               {formatDate(post.date)}
             </time>
-            <span className="text-[#e2e8f0]">·</span>
-            <span className="text-xs text-[#94a3b8] font-medium">{post.readingTime}</span>
-            <span className="text-[#e2e8f0]">·</span>
+            <span className="text-border">·</span>
+            <span className="text-xs text-textMuted font-medium">{post.readingTime}</span>
+            <span className="text-border">·</span>
             <div className="flex gap-1.5 flex-wrap">
               {post.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs bg-[#fdf3dc] text-[#b8860b] px-2.5 py-0.5 rounded-full font-semibold"
+                  className="text-xs bg-accentLight text-accent px-2.5 py-0.5 rounded-full font-semibold"
                 >
                   {tag}
                 </span>
               ))}
             </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#0f172a] leading-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-textPrimary leading-tight mb-4">
             {post.title}
           </h1>
-          <p className="text-lg text-[#475569] leading-relaxed">{post.description}</p>
+          <p className="text-lg text-textSecond leading-relaxed">{post.description}</p>
         </header>
 
-        <hr className="border-[#e2e8f0] max-w-3xl mx-auto mb-10" />
+        <hr className="border-border max-w-3xl mx-auto mb-10" />
 
         {/* Article body */}
         <article className="max-w-3xl mx-auto prose prose-lg prose-slate
-          prose-headings:font-bold prose-headings:text-[#0f172a]
-          prose-h2:border-l-4 prose-h2:border-[#5C5C5C] prose-h2:pl-4 prose-h2:ml-0
-          prose-p:text-[#334155] prose-p:leading-8 prose-p:text-[1.05rem]
-          prose-strong:text-[#0f172a]
-          prose-blockquote:italic prose-blockquote:border-l-4 prose-blockquote:border-[#5C5C5C] prose-blockquote:bg-[#F0F0F0] prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:text-[#475569] prose-blockquote:not-italic
-          prose-li:text-[#334155]
-          prose-a:text-[#5C5C5C] prose-a:no-underline hover:prose-a:underline
-          prose-hr:border-[#e2e8f0]
+          prose-headings:font-bold prose-headings:text-textPrimary
+          prose-h2:border-l-4 prose-h2:border-accent prose-h2:pl-4 prose-h2:ml-0
+          prose-p:text-textSecond prose-p:leading-8 prose-p:text-[1.05rem]
+          prose-strong:text-textPrimary
+          prose-blockquote:italic prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-accentLight prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-sm prose-blockquote:text-textSecond prose-blockquote:not-italic
+          prose-li:text-textSecond
+          prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+          prose-hr:border-border
           max-w-none"
         >
           <ReactMarkdown>{post.content}</ReactMarkdown>
@@ -157,14 +157,14 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
         {/* Related articles */}
         {related.length > 0 && (
-          <section className="max-w-3xl mx-auto mt-16 pt-10 border-t border-[#e2e8f0]">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-6">Related Articles</h2>
+          <section className="max-w-3xl mx-auto mt-16 pt-10 border-t border-border">
+            <h2 className="text-xl font-bold text-textPrimary mb-6">Related Articles</h2>
             <div className="flex flex-col sm:flex-row gap-6">
               {related.map((rel) => (
                 <Link
                   key={rel.slug}
                   href={`/blog/${rel.slug}`}
-                  className="group flex gap-4 items-center flex-1 rounded-xl border border-[#e2e8f0] p-4 hover:shadow-md transition-shadow"
+                  className="group flex gap-4 items-center flex-1 rounded-sm border border-border p-4 hover:shadow-md transition-shadow"
                 >
                   {rel.heroImage && (
                     <div className="relative w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden">
