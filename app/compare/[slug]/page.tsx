@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
-import { getBrandsForComparison } from '@/lib/relatedContent'
 import { generateComparisonBadges } from '@/lib/comparisonBadges'
 import comparisonOverrides from '@/data/comparison-overrides.json'
 import RatingBar from '@/components/RatingBar'
@@ -229,9 +228,6 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
     },
   ]
 
-  // Get related brands for internal linking footer
-  const relatedBrands = getBrandsForComparison(slug1, slug2)
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -282,13 +278,29 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
     ],
   }
 
+  const stickyNavSections = [
+    { id: 'comparison-overview', label: 'Overview' },
+    { id: 'comparison-specs', label: 'Specs' },
+    { id: 'comparison-pros-cons', label: 'Pros & Cons' },
+    { id: 'comparison-verdict', label: 'Verdict' },
+    ...(avg1 || avg2 ? [{ id: 'comparison-ratings', label: 'Ratings' }] : []),
+    { id: 'comparison-faq', label: 'FAQ' },
+  ]
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ComparisonStickyNav slug1={w1.slug} slug2={w2.slug} watch1Name={w1.name} watch2Name={w2.name} verdict={verdictInfo.winnerName || 'Too Close to Call'} />
+      <ComparisonStickyNav
+        slug1={w1.slug}
+        slug2={w2.slug}
+        watch1Name={w1.name}
+        watch2Name={w2.name}
+        verdict={verdictInfo.winnerName || 'Too Close to Call'}
+        sections={stickyNavSections}
+      />
       <Container className="py-10 pt-28 sm:pt-20 lg:pt-16">
         {/* Breadcrumb */}
         <nav className="text-sm text-textMuted mb-6 flex items-center gap-2">
@@ -297,9 +309,22 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           <span className="text-textPrimary">{w1.name} vs {w2.name}</span>
         </nav>
 
-        {/* SEO lede — featured snippet target */}
-        <p className="text-textSecond text-base leading-relaxed mb-8 max-w-3xl">
-          Comparing the <strong className="text-textPrimary">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm) against the <strong className="text-textPrimary">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm) — specs, movement, community votes, and an expert verdict below.{' '}
+        {/* ── Header ─────────────────────────────────── */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-textPrimary leading-tight mb-2">
+            <span>{w1.brand} {w1.name}</span>
+            <span className="text-accent text-lg sm:text-2xl md:text-3xl mx-2">vs</span>
+            <span>{w2.brand} {w2.name}</span>
+          </h1>
+          <p className="text-textSecond text-base md:text-lg">{hookLine || 'Complete head-to-head comparison'}</p>
+          {tierEntry && tierEntry.tier === 1 && (
+            <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-accent/10 text-accent rounded-full">Featured Comparison</span>
+          )}
+        </div>
+
+        {/* SEO lede */}
+        <p className="text-textSecond text-sm leading-relaxed mb-8 max-w-3xl mx-auto text-center">
+          Comparing the <strong className="text-textPrimary">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm) against the <strong className="text-textPrimary">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm).{' '}
           {w1.price_new_usd.min !== w2.price_new_usd.min && (
             <span>
               The {w1.price_new_usd.min < w2.price_new_usd.min ? `${w1.brand} ${w1.name}` : `${w2.brand} ${w2.name}`} is the more affordable option by {formatPrice({ min: Math.abs(w1.price_new_usd.min - w2.price_new_usd.min), max: Math.abs(w1.price_new_usd.min - w2.price_new_usd.min) })}.
@@ -307,169 +332,135 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           )}
         </p>
 
-        {/* Verdict Callout — prominent visual summary */}
-        <VerdictCallout winnerName={verdictInfo.winnerName} verdictSummary={verdictInfo.summary} />
+        {/* ── Watch Cards + Quick Stats ──────────────── */}
+        <section id="comparison-overview" className="mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {[w1, w2].map((w, i) => {
+              const badges = i === 0 ? generateComparisonBadges(w1, w2) : generateComparisonBadges(w2, w1)
+              return (
+                <Card key={w.id} hover as="article" className="p-6">
+                  {badges.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {badges.map((badge) => {
+                        const variantMap: { [key: string]: 'winner' | 'loser' | 'accent' | 'neutral' } = {
+                          winner: 'winner', loser: 'loser', accent: 'accent', neutral: 'neutral',
+                        }
+                        return (
+                          <Badge key={badge.text} variant={variantMap[badge.color] || 'neutral'}>
+                            <span className="text-sm">{badge.icon}</span>
+                            {badge.text}
+                          </Badge>
+                        )
+                      })}
+                    </div>
+                  )}
 
-        {/* Hero Section — Enhanced */}
-        <section id="comparison-hero" className="bg-gradient-to-br from-accentLight via-white to-surfaceAlt border border-border rounded-2xl overflow-hidden mb-12 shadow-md">
-          <div className="px-6 md:px-10 py-10 md:py-14">
-            {/* Main headline */}
-            <div className="text-center mb-8">
-              <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-textPrimary leading-tight mb-3">
-                <span className="block">{w1.brand} {w1.name}</span>
-                <span className="text-accent text-xl sm:text-3xl md:text-5xl">vs</span>
-                <span className="block">{w2.brand} {w2.name}</span>
-              </h1>
-              <p className="text-textSecond text-lg md:text-xl">{hookLine || 'Complete head-to-head comparison'}</p>
-              {tierEntry && tierEntry.tier === 1 && (
-                <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-accent/10 text-accent rounded-full">Featured Comparison</span>
-              )}
-            </div>
+                  {w.image ? (
+                    <div className="bg-gradient-to-br from-surfaceAlt to-accentLight rounded-lg border border-border aspect-square flex items-center justify-center mb-4 overflow-hidden">
+                      <Image
+                        src={w.image}
+                        alt={w.imageAlt ?? `${w.brand} ${w.name}`}
+                        width={280}
+                        height={280}
+                        className="w-full h-full object-contain p-4"
+                        priority={i === 0}
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-surfaceAlt rounded-lg border border-border aspect-square flex items-center justify-center mb-4">
+                      <svg className="w-16 h-16 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" strokeWidth="1" />
+                        <path strokeLinejoin="round" strokeLinecap="round" strokeWidth="1" d="M12 7v5l3 3" />
+                      </svg>
+                    </div>
+                  )}
 
-            {/* Watch Cards — Side-by-side comparison layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
-              {[w1, w2].map((w, i) => {
-                const overall = i === 0 ? overall1 : overall2
-                const revCount = i === 0 ? reviews1.length : reviews2.length
-                const badges = i === 0 ? generateComparisonBadges(w1, w2) : generateComparisonBadges(w2, w1)
-                return (
-                  <div key={w.id} className="relative">
-                    <Card hover as="article" className="p-6 md:p-8">
-                      {/* Badges with improved styling */}
-                      {badges.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {badges.map((badge) => {
-                            const variantMap: { [key: string]: 'winner' | 'loser' | 'accent' | 'neutral' } = {
-                              'winner': 'winner',
-                              'loser': 'loser',
-                              'accent': 'accent',
-                              'neutral': 'neutral',
-                            }
-                            const variant = variantMap[badge.color] || 'neutral'
-                            return (
-                              <Badge key={badge.text} variant={variant}>
-                                <span className="text-sm">{badge.icon}</span>
-                                {badge.text}
-                              </Badge>
-                            )
-                          })}
-                        </div>
-                      )}
+                  <p className="text-xs text-accent font-black uppercase tracking-widest mb-1">{w.brand}</p>
+                  <h2 className="text-xl font-bold text-textPrimary mb-0.5">{w.name}</h2>
+                  <p className="text-textMuted text-xs mb-4">Ref. {w.reference}</p>
 
-                      {/* Watch Image — Larger and more prominent */}
-                      {w.image ? (
-                        <div className="bg-gradient-to-br from-surfaceAlt to-accentLight rounded-lg border-2 border-border aspect-square flex items-center justify-center mb-6 overflow-hidden">
-                          <Image
-                            src={w.image}
-                            alt={w.imageAlt ?? `${w.brand} ${w.name}`}
-                            width={280}
-                            height={280}
-                            className="w-full h-full object-contain p-4"
-                            priority={i === 0}
-                          />
-                        </div>
-                      ) : (
-                        <div className="bg-surfaceAlt rounded-lg border-2 border-border aspect-square flex items-center justify-center mb-6">
-                          <svg className="w-16 h-16 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="9" strokeWidth="1" />
-                            <path strokeLinejoin="round" strokeLinecap="round" strokeWidth="1" d="M12 7v5l3 3" />
-                          </svg>
-                        </div>
-                      )}
-
-                      {/* Watch Identity */}
-                      <div className="border-b border-border pb-4 mb-4">
-                        <p className="text-xs text-accent font-black uppercase tracking-widest mb-1">{w.brand}</p>
-                        <h2 className="text-2xl font-black text-textPrimary mb-1">{w.name}</h2>
-                        <p className="text-textMuted text-xs font-medium">Ref. {w.reference}</p>
-                      </div>
-
-                      {/* Price Highlight — Enhanced */}
-                      <div className="bg-accentLight border-2 border-accent/30 rounded-lg p-4 mb-4">
-                        <p className="text-xs text-textMuted font-semibold uppercase mb-1">New Price</p>
-                        <p className="text-2xl font-black text-accent">{formatPrice(w.price_new_usd)}</p>
-                        <p className="text-xs text-textSecond mt-2">Pre-owned: {formatPrice(w.price_preowned_usd)}</p>
-                      </div>
-
-                      {/* Key Specs — Visual Rows */}
-                      <div className="space-y-2.5 mb-6 pb-4 border-b border-border">
-                        <div className="flex justify-between items-center">
-                          <span className="text-textMuted text-xs font-semibold">Case</span>
-                          <span className="text-textPrimary font-bold text-sm">{w.case_diameter_mm}mm {w.case_material}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-textMuted text-xs font-semibold">Thickness</span>
-                          <span className="text-textPrimary font-bold text-sm">{w.case_thickness_mm}mm</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-textMuted text-xs font-semibold">Movement</span>
-                          <span className="text-textPrimary font-bold text-sm capitalize">{w.movement_type}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-textMuted text-xs font-semibold">Water Resistance</span>
-                          <span className="text-textPrimary font-bold text-sm">{w.water_resistance_m}m</span>
-                        </div>
-                      </div>
-
-                      {/* Rating Section */}
-                      {overall ? (
-                        <div className="flex flex-col items-center gap-2 py-4 mb-4">
-                          <div className="text-4xl font-black text-accent">{overall.toFixed(1)}</div>
-                          <StarRating rating={overall} size="sm" />
-                          <span className="text-xs text-textMuted font-medium">{revCount} review{revCount !== 1 ? 's' : ''}</span>
-                        </div>
-                      ) : (
-                        <div className="text-center py-4 mb-4">
-                          <span className="text-xs text-textMuted font-medium">No reviews yet</span>
-                        </div>
-                      )}
-
-                      {/* View Details Link */}
-                      <Link href={`/watches/${w.slug}`} className="block w-full text-center py-3 px-4 min-h-[48px] flex items-center justify-center bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all duration-200">
-                        View Full Specs →
-                      </Link>
-                    </Card>
+                  <div className="bg-accentLight border border-accent/30 rounded-lg p-3 mb-4">
+                    <p className="text-xl font-bold text-accent">{formatPrice(w.price_new_usd)}</p>
+                    <p className="text-xs text-textSecond mt-1">Pre-owned: {formatPrice(w.price_preowned_usd)}</p>
                   </div>
-                )
-              })}
+
+                  <Link href={`/watches/${w.slug}`} className="block w-full text-center py-2.5 bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all text-sm">
+                    View Full Profile →
+                  </Link>
+                </Card>
+              )
+            })}
+          </div>
+
+          {/* Quick differences — both values shown, winner highlighted */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-surface border border-border rounded-lg p-3">
+              <p className="text-xs text-textMuted font-semibold mb-2">Price</p>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w1.name}</span>
+                  <span className={`text-xs font-bold ${w1.price_new_usd.min <= w2.price_new_usd.min ? 'text-accent' : 'text-textSecond'}`}>
+                    {formatPrice(w1.price_new_usd)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w2.name}</span>
+                  <span className={`text-xs font-bold ${w2.price_new_usd.min <= w1.price_new_usd.min ? 'text-accent' : 'text-textSecond'}`}>
+                    {formatPrice(w2.price_new_usd)}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Quick Comparison Summary — 4-stat grid */}
-            <div className="bg-white/60 backdrop-blur border border-accent/20 rounded-xl p-4 md:p-6">
-              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:justify-center">
-                {/* Price diff */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
-                  <span className="text-xs text-textMuted font-semibold">Price</span>
-                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
-                    {w1.price_new_usd.min < w2.price_new_usd.min
-                      ? `${w1.name} cheaper`
-                      : `${w2.name} cheaper`}
+            <div className="bg-surface border border-border rounded-lg p-3">
+              <p className="text-xs text-textMuted font-semibold mb-2">Water Resistance</p>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w1.name}</span>
+                  <span className={`text-xs font-bold ${w1.water_resistance_m >= w2.water_resistance_m ? 'text-accent' : 'text-textSecond'}`}>
+                    {w1.water_resistance_m}m
                   </span>
                 </div>
-
-                {/* Water resistance */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
-                  <span className="text-xs text-textMuted font-semibold">H2O</span>
-                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
-                    {w1.water_resistance_m >= w2.water_resistance_m ? `${w1.name} (${w1.water_resistance_m}m)` : `${w2.name} (${w2.water_resistance_m}m)`}
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w2.name}</span>
+                  <span className={`text-xs font-bold ${w2.water_resistance_m >= w1.water_resistance_m ? 'text-accent' : 'text-textSecond'}`}>
+                    {w2.water_resistance_m}m
                   </span>
                 </div>
+              </div>
+            </div>
 
-                {/* Score */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
-                  <span className="text-xs text-textMuted font-semibold">Score</span>
-                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
-                    {w1.score >= w2.score ? `${w1.name} (${w1.score}/10)` : `${w2.name} (${w2.score}/10)`}
+            <div className="bg-surface border border-border rounded-lg p-3">
+              <p className="text-xs text-textMuted font-semibold mb-2">Score</p>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w1.name}</span>
+                  <span className={`text-xs font-bold ${w1.score >= w2.score ? 'text-accent' : 'text-textSecond'}`}>
+                    {w1.score}/10
                   </span>
                 </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w2.name}</span>
+                  <span className={`text-xs font-bold ${w2.score >= w1.score ? 'text-accent' : 'text-textSecond'}`}>
+                    {w2.score}/10
+                  </span>
+                </div>
+              </div>
+            </div>
 
-                {/* Buy Again */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 bg-accent/10 border border-accent/20 rounded-lg min-w-0">
-                  <span className="text-xs text-textMuted font-semibold">Repurchase</span>
-                  <span className="text-xs sm:text-sm font-bold text-textPrimary truncate">
-                    {w1.buy_again_pct >= w2.buy_again_pct
-                      ? `${w1.name} (${w1.buy_again_pct}%)`
-                      : `${w2.name} (${w2.buy_again_pct}%)`}
+            <div className="bg-surface border border-border rounded-lg p-3">
+              <p className="text-xs text-textMuted font-semibold mb-2">Repurchase</p>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w1.name}</span>
+                  <span className={`text-xs font-bold ${w1.buy_again_pct >= w2.buy_again_pct ? 'text-accent' : 'text-textSecond'}`}>
+                    {w1.buy_again_pct}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-textMuted truncate mr-1">{w2.name}</span>
+                  <span className={`text-xs font-bold ${w2.buy_again_pct >= w1.buy_again_pct ? 'text-accent' : 'text-textSecond'}`}>
+                    {w2.buy_again_pct}%
                   </span>
                 </div>
               </div>
@@ -477,374 +468,251 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           </div>
         </section>
 
-        {/* Brand Hubs / Pillar Pages — Topic Cluster Linking */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 my-10">
-          {[w1, w2].map((w) => {
-            const brandSlug = w.brand.toLowerCase().replace(/\s+/g, '-')
+        {/* ── Verdict ────────────────────────────────── */}
+        <VerdictCallout winnerName={verdictInfo.winnerName} verdictSummary={verdictInfo.summary} />
+
+        {/* ── Specs Table ────────────────────────────── */}
+        <section id="comparison-specs" className="card overflow-hidden mb-10">
+          <div className="bg-surfaceAlt px-4 py-3 border-b border-border">
+            <h2 className="text-textPrimary font-semibold">Specifications Compared</h2>
+          </div>
+          <div className="hidden sm:grid grid-cols-3 gap-2 py-3 border-b-2 border-borderStrong bg-surface text-xs font-bold text-textSecond uppercase tracking-wider">
+            <div className="text-center">Spec</div>
+            <div className="text-center">{w1.brand} {w1.name}</div>
+            <div className="text-center">{w2.brand} {w2.name}</div>
+          </div>
+          <div className="sm:hidden grid grid-cols-2 gap-2 py-2 px-4 border-b border-borderStrong bg-surface text-xs font-bold text-textSecond">
+            <div className="text-left truncate">{w1.name}</div>
+            <div className="text-right truncate">{w2.name}</div>
+          </div>
+          {SPEC_ROWS.map((row, i) => {
+            const v1 = row.fn(w1)
+            const v2 = row.fn(w2)
             return (
-              <div key={w.id} className="card p-5 md:p-6 border-l-4 border-accent bg-gradient-to-br from-accentLight/50 to-white hover:shadow-sm transition-shadow">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <p className="text-xs text-accent font-black uppercase tracking-wider mb-1">Explore Brand</p>
-                    <h3 className="text-lg font-bold text-textPrimary">{w.brand} Hub</h3>
-                  </div>
-                  <span className="text-2xl">🏛️</span>
-                </div>
-                <p className="text-sm text-textSecond mb-4">All {w.brand} watches, comparisons, and guides in one place</p>
-                <Link href={`/brands/${brandSlug}`} className="inline-block w-full text-center px-4 py-2.5 bg-accent/10 text-accent font-semibold rounded-lg hover:bg-accent/20 border border-accent/20 transition-colors">
-                  Visit {w.brand} Pillar Page →
-                </Link>
-              </div>
+              <SpecRow
+                key={row.label}
+                label={row.label}
+                value1={v1}
+                value2={v2}
+                watch1Name={w1.name}
+                watch2Name={w2.name}
+                highlight={i % 2 === 0}
+              />
             )
           })}
         </section>
 
-      {/* Quick Verdict — Enhanced */}
-      <section id="comparison-verdict" className="bg-accentLight border border-accent/40 rounded-xl p-6 md:p-8 my-10 shadow-sm">
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-accent text-lg">⚖️</span>
-          <h2 className="font-bold text-lg text-accent tracking-wide">Quick Verdict</h2>
-          {preferredWatch && (
-            <span className="ml-auto text-xs bg-accent/20 text-accent border border-accent/40 px-2 py-0.5 rounded-full font-semibold">
-              Community Pick: {preferredWatch.name}
-            </span>
-          )}
-        </div>
-
-        {/* Verdict text */}
-        <p className="text-textSecond text-sm leading-relaxed mb-5">{generateVerdict(w1, w2)}</p>
-
-        {/* Community ratings preference bar */}
-        <div className="mb-5">
-          <div className="flex justify-between text-xs mb-2">
-            <span className="font-semibold text-textPrimary">{w1.name}</span>
-            <span className="text-textSecond">Internet Community Rating</span>
-            <span className="font-semibold text-textPrimary">{w2.name}</span>
-          </div>
-          <div className="flex h-2.5 rounded-full overflow-hidden bg-border">
-            <div className="bg-accent transition-all" style={{ width: `${pref1}%` }} />
-            <div className="bg-borderStrong transition-all" style={{ width: `${pref2}%` }} />
-          </div>
-          <div className="flex justify-between text-xs mt-1.5">
-            <span className="text-accent font-bold">{pref1}%</span>
-            <span className="text-textMuted font-bold">{pref2}%</span>
-          </div>
-        </div>
-
-        <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} />
-
-      </section>
-
-      {/* Pros & Cons */}
-      <section id="comparison-pros-cons" className="mb-10">
-        <h2 className="text-xl font-bold text-textPrimary mb-5">Pros &amp; Cons</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {[
-            { w: w1, pros: w1.pros, cons: w1.cons },
-            { w: w2, pros: w2.pros, cons: w2.cons },
-          ].map(({ w, pros, cons }) => (
-            <div key={w.id} className="card p-5">
-              <h3 className="font-bold text-textPrimary mb-4">{w.brand} {w.name}</h3>
-              {pros.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Pros</p>
-                  <ul className="space-y-1.5">
-                    {pros.map((p, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
-                        <span className="text-winner mt-0.5 shrink-0">✓</span>
-                        <span>{p}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {cons.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">Cons</p>
-                  <ul className="space-y-1.5">
-                    {cons.map((c, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
-                        <span className="text-red-400 mt-0.5 shrink-0">✗</span>
-                        <span>{c}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Spec comparison table */}
-      <section id="comparison-specs" className="card overflow-hidden mb-10">
-        <div className="bg-surfaceAlt px-4 py-3 border-b border-border">
-          <h2 className="text-textPrimary font-semibold">Specifications Compared</h2>
-        </div>
-        {/* Desktop column headers */}
-        <div className="hidden sm:grid grid-cols-3 gap-2 py-3 border-b-2 border-borderStrong bg-surface text-xs font-bold text-textSecond uppercase tracking-wider">
-          <div className="text-center">Spec</div>
-          <div className="text-center">{w1.brand} {w1.name}</div>
-          <div className="text-center">{w2.brand} {w2.name}</div>
-        </div>
-        {/* Mobile column headers */}
-        <div className="sm:hidden grid grid-cols-2 gap-2 py-2 px-4 border-b border-borderStrong bg-surface text-xs font-bold text-textSecond">
-          <div className="text-left truncate">{w1.name}</div>
-          <div className="text-right truncate">{w2.name}</div>
-        </div>
-        {SPEC_ROWS.map((row, i) => {
-          const v1 = row.fn(w1)
-          const v2 = row.fn(w2)
-          return (
-            <SpecRow
-              key={row.label}
-              label={row.label}
-              value1={v1}
-              value2={v2}
-              watch1Name={w1.name}
-              watch2Name={w2.name}
-              highlight={i % 2 === 0}
-            />
-          )
-        })}
-      </section>
-
-      {/* Community ratings comparison */}
-      {(avg1 || avg2) && (
-        <section id="comparison-ratings" className="mb-10">
-          <h2 className="text-xl font-bold text-textPrimary mb-5">Community Ratings</h2>
+        {/* ── Pros & Cons ────────────────────────────── */}
+        <section id="comparison-pros-cons" className="mb-10">
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Pros &amp; Cons</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {[{ w: w1, avg: avg1, label: `${w1.brand} ${w1.name}` }, { w: w2, avg: avg2, label: `${w2.brand} ${w2.name}` }].map(({ w, avg, label }) => (
+            {[
+              { w: w1, pros: w1.pros, cons: w1.cons },
+              { w: w2, pros: w2.pros, cons: w2.cons },
+            ].map(({ w, pros, cons }) => (
               <div key={w.id} className="card p-5">
-                <h3 className="text-textPrimary font-semibold mb-4 text-sm">{label}</h3>
-                {avg ? (
-                  <div className="space-y-3">
-                    {Object.entries(avg).map(([key, val]) => (
-                      <RatingBar key={key} label={RATING_LABELS[key]} value={val} />
-                    ))}
+                <h3 className="font-bold text-textPrimary mb-4">{w.brand} {w.name}</h3>
+                {pros.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Pros</p>
+                    <ul className="space-y-1.5">
+                      {pros.map((p, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
+                          <span className="text-winner mt-0.5 shrink-0">✓</span>
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ) : (
-                  <p className="text-textMuted text-sm">No community ratings yet</p>
+                )}
+                {cons.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">Cons</p>
+                    <ul className="space-y-1.5">
+                      {cons.map((c, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
+                          <span className="text-red-400 mt-0.5 shrink-0">✗</span>
+                          <span>{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             ))}
           </div>
         </section>
-      )}
 
-      {/* FAQ Section */}
-      <section id="comparison-faq" className="mb-10">
-        <h2 className="text-xl font-bold text-textPrimary mb-5">Frequently Asked Questions</h2>
-        <div className="space-y-4">
-          {faqItems.map((item, i) => (
-            <details key={i} className="card p-5 group cursor-pointer">
-              <summary className="text-textPrimary font-semibold flex justify-between items-center list-none min-h-[48px]">
-                <span>{item.question}</span>
-                <span className="text-accent group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <p className="text-textSecond text-sm mt-4 leading-relaxed">{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* Related comparisons */}
-      {relatedComparisons.length > 0 && (
-        <section id="comparison-related" className="mb-10">
-          <h2 className="text-xl font-bold text-textPrimary mb-5">Related Comparisons</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {relatedComparisons.map((c) => {
-              const wa = getWatchBySlug(c.slug1)
-              const wb = getWatchBySlug(c.slug2)
-              if (!wa || !wb) return null
-              return (
-                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 min-h-[48px] hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
-                      <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
-                    </div>
-                    <div className="text-accent font-bold text-xs shrink-0">VS</div>
-                    <div className="flex-1 min-w-0 text-right">
-                      <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
-                      <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
+        {/* ── Verdict + Community Vote ────────────────── */}
+        <section id="comparison-verdict" className="bg-accentLight border border-accent/40 rounded-xl p-6 md:p-8 mb-10">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="font-bold text-lg text-accent tracking-wide">Community Verdict</h2>
+            {preferredWatch && (
+              <span className="ml-auto text-xs bg-accent/20 text-accent border border-accent/40 px-2 py-0.5 rounded-full font-semibold">
+                Community Pick: {preferredWatch.name}
+              </span>
+            )}
           </div>
-        </section>
-      )}
 
-      {/* Related guides */}
-      {relatedGuides.length > 0 && (
-        <section id="comparison-guides" className="mb-10">
-          <h2 className="text-xl font-bold text-textPrimary mb-5">Related Guides</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {relatedGuides.map((g) => (
-              <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
-                <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
-                <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{g.title}</h3>
-                <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
-                <p className="text-xs text-accent font-medium mt-4 inline-block">Read Guide →</p>
-              </Link>
+          <p className="text-textSecond text-sm leading-relaxed mb-5">{generateVerdict(w1, w2)}</p>
+
+          <div className="mb-5">
+            <div className="flex justify-between text-xs mb-2">
+              <span className="font-semibold text-textPrimary">{w1.name}</span>
+              <span className="text-textSecond">Community Rating</span>
+              <span className="font-semibold text-textPrimary">{w2.name}</span>
+            </div>
+            <div className="flex h-2.5 rounded-full overflow-hidden bg-border">
+              <div className="bg-accent transition-all" style={{ width: `${pref1}%` }} />
+              <div className="bg-borderStrong transition-all" style={{ width: `${pref2}%` }} />
+            </div>
+            <div className="flex justify-between text-xs mt-1.5">
+              <span className="text-accent font-bold">{pref1}%</span>
+              <span className="text-textMuted font-bold">{pref2}%</span>
+            </div>
+          </div>
+
+          <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} />
+        </section>
+
+        {/* ── Community Ratings ──────────────────────── */}
+        {(avg1 || avg2) && (
+          <section id="comparison-ratings" className="mb-10">
+            <h2 className="text-xl font-bold text-textPrimary mb-5">Community Ratings</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {[{ w: w1, avg: avg1, label: `${w1.brand} ${w1.name}` }, { w: w2, avg: avg2, label: `${w2.brand} ${w2.name}` }].map(({ w, avg, label }) => (
+                <div key={w.id} className="card p-5">
+                  <h3 className="text-textPrimary font-semibold mb-4 text-sm">{label}</h3>
+                  {avg ? (
+                    <div className="space-y-3">
+                      {Object.entries(avg).map(([key, val]) => (
+                        <RatingBar key={key} label={RATING_LABELS[key]} value={val} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-textMuted text-sm">No community ratings yet</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── FAQ ────────────────────────────────────── */}
+        <section id="comparison-faq" className="mb-10">
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqItems.map((item, i) => (
+              <details key={i} className="card p-5 group cursor-pointer">
+                <summary className="text-textPrimary font-semibold flex justify-between items-center list-none min-h-[48px]">
+                  <span>{item.question}</span>
+                  <span className="text-accent group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p className="text-textSecond text-sm mt-4 leading-relaxed">{item.answer}</p>
+              </details>
             ))}
           </div>
         </section>
-      )}
 
-      {/* Brand Hub Links */}
-      <section className="mb-10">
-        <h2 className="text-xl font-bold text-textPrimary mb-5">Explore These Brands</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Link
-            href={`/brands/${w1.brand.toLowerCase().replace(/\s+/g, '-')}`}
-            className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
-          >
-            <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
-            <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">
-              {w1.brand}
-            </h3>
-            <p className="text-sm text-textSecond mb-4">
-              Explore all {w1.brand} watches in our database and see how they compare
-            </p>
-            <p className="text-xs text-accent font-medium inline-block">View Brand Hub →</p>
-          </Link>
-
-          <Link
-            href={`/brands/${w2.brand.toLowerCase().replace(/\s+/g, '-')}`}
-            className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
-          >
-            <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
-            <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">
-              {w2.brand}
-            </h3>
-            <p className="text-sm text-textSecond mb-4">
-              Explore all {w2.brand} watches in our database and see how they compare
-            </p>
-            <p className="text-xs text-accent font-medium inline-block">View Brand Hub →</p>
-          </Link>
-        </div>
-      </section>
-
-      {/* Related brands footer */}
-      {relatedBrands.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-textPrimary mb-5">Explore Other Brands</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {relatedBrands.map((b) => (
-              <Link
-                key={b.slug}
-                href={`/brands/${b.slug}`}
-                className="card p-4 hover:border-accent/40 transition-colors group text-center"
-              >
-                <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
-                  {b.name}
-                </h3>
-                <p className="text-xs text-textSecond mt-2 line-clamp-2">{b.heroFact}</p>
-                <p className="text-xs text-accent font-medium mt-3 inline-block">Explore Brand →</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Alternatives */}
-      {(() => {
-        const altSet = new Set([...(w1.alternatives || []), ...(w2.alternatives || [])])
-        const altSlugs = Array.from(altSet)
-          .filter((s: string) => s !== w1.slug && s !== w2.slug)
-          .slice(0, 6)
-        const altWatches = altSlugs.map(getWatchBySlug).filter(Boolean) as Watch[]
-        if (altWatches.length === 0) return null
-        return (
+        {/* ── Related Comparisons ────────────────────── */}
+        {relatedComparisons.length > 0 && (
           <section className="mb-10">
-            <h2 className="text-xl font-bold text-textPrimary mb-2">Explore Alternatives</h2>
-            <p className="text-sm text-textSecond mb-5">Other watches worth considering in this category</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {altWatches.map((w: Watch) => (
-                <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-accent/40 transition-colors group text-center">
-                  <p className="text-[10px] text-textMuted uppercase font-semibold mb-1">{w.brand}</p>
-                  <p className="text-xs font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{w.name}</p>
-                  <p className="text-[10px] text-accent font-medium mt-2">View →</p>
+            <h2 className="text-xl font-bold text-textPrimary mb-5">Related Comparisons</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {relatedComparisons.map((c) => {
+                const wa = getWatchBySlug(c.slug1)
+                const wb = getWatchBySlug(c.slug2)
+                if (!wa || !wb) return null
+                return (
+                  <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
+                        <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
+                      </div>
+                      <div className="text-accent font-bold text-xs shrink-0">VS</div>
+                      <div className="flex-1 min-w-0 text-right">
+                        <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
+                        <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ── Related Guides ─────────────────────────── */}
+        {relatedGuides.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-xl font-bold text-textPrimary mb-5">Related Guides</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {relatedGuides.map((g) => (
+                <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                  <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
+                  <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{g.title}</h3>
+                  <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
+                  <p className="text-xs text-accent font-medium mt-4 inline-block">Read Guide →</p>
                 </Link>
               ))}
             </div>
           </section>
-        )
-      })()}
+        )}
 
-      {/* Related Comparisons */}
-      {relatedComparisons.length > 0 && (
+        {/* ── Brand Hubs ─────────────────────────────── */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-textPrimary mb-2">You May Also Like</h2>
-          <p className="text-sm text-textSecond mb-5">Other popular comparisons featuring {w1.brand} or {w2.brand}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {relatedComparisons.map((comp) => {
-              const cw1 = getWatchBySlug(comp.slug1)
-              const cw2 = getWatchBySlug(comp.slug2)
-              if (!cw1 || !cw2) return null
-              const compSlug = `${comp.slug1}-vs-${comp.slug2}`
-              return (
-                <Link
-                  key={compSlug}
-                  href={`/compare/${compSlug}`}
-                  className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
-                >
-                  {/* Comparison title */}
-                  <div className="flex gap-2 items-start mb-4">
-                    <div className="flex-1">
-                      <p className="text-xs text-textMuted font-semibold mb-1">COMPARISON</p>
-                      <p className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-1">
-                        {cw1.brand} {cw1.name}
-                      </p>
-                      <p className="text-xs text-textMuted text-center my-1.5">vs</p>
-                      <p className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-1">
-                        {cw2.brand} {cw2.name}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Price range */}
-                  <div className="bg-accentLight/30 rounded-lg p-3 mb-3">
-                    <p className="text-xs text-textMuted font-semibold mb-2">Price Range</p>
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <p className="text-[10px] text-textMuted mb-0.5">{cw1.brand}</p>
-                        <p className="text-sm font-bold text-textPrimary">{formatPrice(cw1.price_new_usd)}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] text-textMuted mb-0.5">{cw2.brand}</p>
-                        <p className="text-sm font-bold text-textPrimary">{formatPrice(cw2.price_new_usd)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tagline / specs teaser */}
-                  <div className="text-xs text-textSecond mb-3 line-clamp-2">
-                    <span className="font-semibold">Specs:</span> {cw1.case_diameter_mm}mm / {cw2.case_diameter_mm}mm • {cw1.water_resistance_m}m / {cw2.water_resistance_m}m WR
-                  </div>
-
-                  {/* CTA */}
-                  <p className="text-xs text-accent font-semibold inline-block group-hover:underline">Compare Now →</p>
-                </Link>
-              )
-            })}
+          <h2 className="text-xl font-bold text-textPrimary mb-5">Explore These Brands</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[w1, w2].map((w) => (
+              <Link
+                key={w.id}
+                href={`/brands/${w.brand.toLowerCase().replace(/\s+/g, '-')}`}
+                className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
+              >
+                <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
+                <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">{w.brand}</h3>
+                <p className="text-sm text-textSecond mb-3">All {w.brand} watches, comparisons, and guides</p>
+                <p className="text-xs text-accent font-medium">View Brand Hub →</p>
+              </Link>
+            ))}
           </div>
         </section>
-      )}
 
-      {/* Custom compare CTA */}
-      <div className="mt-8 text-center bg-surface border border-border rounded-xl p-8">
-        <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
-        <p className="text-textSecond text-sm mb-5">Pick any two watches from our database of 50</p>
-        <Link href="/compare" className="btn-outline inline-flex items-center justify-center min-h-[48px] px-6">
-          Start a New Comparison
-        </Link>
-      </div>
-    </Container>
+        {/* ── Alternatives ───────────────────────────── */}
+        {(() => {
+          const altSet = new Set([...(w1.alternatives || []), ...(w2.alternatives || [])])
+          const altSlugs = Array.from(altSet)
+            .filter((s: string) => s !== w1.slug && s !== w2.slug)
+            .slice(0, 6)
+          const altWatches = altSlugs.map(getWatchBySlug).filter(Boolean) as Watch[]
+          if (altWatches.length === 0) return null
+          return (
+            <section className="mb-10">
+              <h2 className="text-xl font-bold text-textPrimary mb-2">Explore Alternatives</h2>
+              <p className="text-sm text-textSecond mb-5">Other watches worth considering in this category</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {altWatches.map((w: Watch) => (
+                  <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-accent/40 transition-colors group text-center">
+                    <p className="text-[10px] text-textMuted uppercase font-semibold mb-1">{w.brand}</p>
+                    <p className="text-xs font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{w.name}</p>
+                    <p className="text-[10px] text-accent font-medium mt-2">View →</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )
+        })()}
+
+        {/* ── CTA Footer ─────────────────────────────── */}
+        <div className="text-center bg-surface border border-border rounded-xl p-8">
+          <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
+          <p className="text-textSecond text-sm mb-5">Pick any two watches from our database of 50</p>
+          <Link href="/compare" className="btn-outline inline-flex items-center justify-center min-h-[48px] px-6">
+            Start a New Comparison
+          </Link>
+        </div>
+      </Container>
     </>
   )
 }

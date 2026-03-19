@@ -3,36 +3,30 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+interface Section {
+  id: string
+  label: string
+}
+
 interface ComparisonStickyNavProps {
   slug1: string
   slug2: string
   watch1Name: string
   watch2Name: string
   verdict?: string | null
+  sections: Section[]
 }
 
-const sections = [
-  { id: 'comparison-hero', label: 'Overview' },
-  { id: 'comparison-verdict', label: 'Verdict' },
-  { id: 'comparison-pros-cons', label: 'Pros & Cons' },
-  { id: 'comparison-specs', label: 'Specs' },
-  { id: 'comparison-ratings', label: 'Ratings' },
-  { id: 'comparison-faq', label: 'FAQ' },
-  { id: 'comparison-related', label: 'Related' },
-  { id: 'comparison-guides', label: 'Guides' },
-]
-
-export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Name, verdict }: ComparisonStickyNavProps) {
-  const [activeSection, setActiveSection] = useState<string>('comparison-hero')
+export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Name, verdict, sections }: ComparisonStickyNavProps) {
+  const [activeSection, setActiveSection] = useState<string>(sections[0]?.id || '')
   const [isVisible, setIsVisible] = useState<boolean>(false)
 
   useEffect(() => {
-    const heroEl = document.getElementById('comparison-hero')
+    const heroEl = document.getElementById(sections[0]?.id || '')
     if (!heroEl) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Show sticky header when hero is NOT intersecting (scrolled past it)
         setIsVisible(!entry.isIntersecting)
       },
       { threshold: 0, rootMargin: '-80px 0px 0px 0px' }
@@ -41,7 +35,6 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
     observer.observe(heroEl)
 
     const handleScroll = () => {
-      // Determine active section
       for (const section of sections) {
         const element = document.getElementById(section.id)
         if (element) {
@@ -58,7 +51,7 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
       observer.disconnect()
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [])
+  }, [sections])
 
   const handleSectionClick = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -74,9 +67,7 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
       }`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        {/* Top row: watch names + verdict + desktop view links */}
         <div className="flex items-center justify-between h-12 sm:h-14">
-          {/* Watch names + verdict — more prominent on mobile */}
           <div className="min-w-0 flex-1">
             <div className="text-sm sm:text-sm font-bold text-textPrimary leading-tight">
               <span className="text-accent">{watch1Name}</span>
@@ -85,12 +76,11 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
             </div>
             {verdict && (
               <div className="text-[10px] sm:text-xs text-winner font-semibold leading-tight mt-0.5 truncate">
-                🏆 {verdict}
+                {verdict}
               </div>
             )}
           </div>
 
-          {/* Section navigation — desktop: inline */}
           <div className="flex-1 overflow-x-auto ml-4 hidden sm:block">
             <div className="flex gap-1 whitespace-nowrap">
               {sections.map((section) => (
@@ -109,7 +99,6 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
             </div>
           </div>
 
-          {/* View links — desktop only */}
           <div className="hidden lg:flex gap-2 ml-4 flex-shrink-0">
             <Link
               href={`/watches/${slug1}`}
@@ -126,7 +115,6 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
           </div>
         </div>
 
-        {/* Mobile section navigation — horizontal scroll, always visible */}
         <div className="sm:hidden -mx-3 px-3 pb-2 overflow-x-auto scrollbar-hide">
           <div className="flex gap-1 whitespace-nowrap">
             {sections.map((section) => (
