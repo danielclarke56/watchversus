@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -32,81 +32,12 @@ const ClerkAuth = hasClerk
     )
   : () => null
 
-type DropdownItem = { href: string; label: string; desc: string }
-type NavGroup = { label: string; items: DropdownItem[] }
-
-const navGroups: NavGroup[] = [
-  {
-    label: 'Watches',
-    items: [
-      { href: '/watches', label: 'All Watches', desc: 'Search, filter & sort by score' },
-      { href: '/compare', label: 'Compare', desc: 'Head-to-head showdowns' },
-    ],
-  },
-  {
-    label: 'Find Your Watch',
-    items: [
-      { href: '/quiz', label: 'Watch Quiz', desc: 'Answer 5 questions, get your match' },
-      { href: '/guides', label: 'Buying Guides', desc: 'Expert advice by category' },
-    ],
-  },
-  {
-    label: 'Community',
-    items: [
-      { href: '/about', label: 'About', desc: 'Our mission & methodology' },
-    ],
-  },
+const navLinks = [
+  { href: '/watches', label: 'Watches' },
+  { href: '/compare', label: 'Compare' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/quiz', label: 'Quiz' },
 ]
-
-function DropdownMenu({ label, items }: NavGroup) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function handleOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handleOutside)
-    return () => document.removeEventListener('mousedown', handleOutside)
-  }, [])
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-sm text-textSecond hover:text-accent transition-colors font-medium py-1"
-      >
-        {label}
-        <svg
-          className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {open && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-surface border border-border rounded-xl shadow-md overflow-hidden z-50">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="flex items-start gap-3 px-4 py-3 hover:bg-surfaceAlt transition-colors group border-b border-border last:border-0"
-            >
-              <div>
-                <div className="text-sm font-medium text-textPrimary group-hover:text-accent transition-colors">
-                  {item.label}
-                </div>
-                <div className="text-xs text-textMuted mt-0.5">{item.desc}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -124,8 +55,14 @@ export default function Navigation() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
-          {navGroups.map((g) => (
-            <DropdownMenu key={g.label} {...g} />
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm text-textSecond hover:text-accent transition-colors font-medium"
+            >
+              {link.label}
+            </Link>
           ))}
         </div>
 
@@ -157,25 +94,15 @@ export default function Navigation() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-surface border-t border-border px-4 pt-2 pb-6">
-          {navGroups.map((g) => (
-            <div key={g.label}>
-              <p className="text-[10px] uppercase tracking-widest text-textMuted mt-5 mb-1 font-semibold">
-                {g.label}
-              </p>
-              {g.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex justify-between items-center py-2.5 border-b border-border last:border-0 group"
-                >
-                  <span className="text-sm font-medium text-textPrimary group-hover:text-accent transition-colors">
-                    {item.label}
-                  </span>
-                  <span className="text-xs text-textMuted">{item.desc}</span>
-                </Link>
-              ))}
-            </div>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="block py-3 border-b border-border last:border-0 text-sm font-medium text-textPrimary hover:text-accent transition-colors"
+            >
+              {link.label}
+            </Link>
           ))}
 
           <div className="mt-5 pt-5 border-t border-border flex items-center justify-between">

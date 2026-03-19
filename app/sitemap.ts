@@ -10,9 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: base, priority: 1.0 },
     { url: `${base}/watches`, priority: 0.9 },
     { url: `${base}/compare`, priority: 0.9 },
-    { url: `${base}/guides`, priority: 0.85 },
-    { url: `${base}/quiz`, priority: 0.8 },
-    { url: `${base}/about`, priority: 0.5 },
+    { url: `${base}/guides`, priority: 0.9 },
+    { url: `${base}/quiz`, priority: 0.7 },
+    { url: `${base}/about`, priority: 0.3 },
   ].map((p) => ({
     ...p,
     lastModified: new Date(),
@@ -30,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${base}/guides/${g.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: 0.8,
+    priority: 0.85,
   }))
 
   const watchPages = watches.map((w) => ({
