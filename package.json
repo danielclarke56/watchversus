@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:auto": "node scripts/dev-auto.js",
     "validate": "tsx scripts/validate-integrity.ts",
     "generate-pairs": "tsx scripts/generate-pairs.ts",
     "prebuild": "npm run validate",
