@@ -1,19 +1,14 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, popularComparisons } from '@/lib/watches'
+import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating } from '@/lib/watches'
 import WatchHero from '@/components/watch/WatchHero'
-import WatchQuickActions from '@/components/watch/WatchQuickActions'
-import WatchProsConsSections from '@/components/watch/WatchProsConsSections'
+import WatchStickyNav from '@/components/watch/WatchStickyNav'
 import WatchVerdict from '@/components/watch/WatchVerdict'
 import WatchSpecs from '@/components/watch/WatchSpecs'
 import WatchOwnerPhotos from '@/components/watch/WatchOwnerPhotos'
-import WatchComparisons from '@/components/watch/WatchComparisons'
-import WatchAlternatives from '@/components/watch/WatchAlternatives'
-import WatchSuggestions from '@/components/watch/WatchSuggestions'
+import WatchReviewsSection from '@/components/watch/WatchReviewsSection'
+import WatchCompareSection from '@/components/watch/WatchCompareSection'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
-import WatchWhatPeopleSay from '@/components/watch/WatchWhatPeopleSay'
-import ReviewCard from '@/components/ReviewCard'
 import ReviewForm from './ReviewForm'
 import UserReviews from './UserReviews'
 
@@ -46,21 +41,6 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
   const reviews = getReviewsForWatch(watch.id)
   const avgRatings = calcAverageRatings(reviews)
   const overallRating = avgRatings ? calcOverallRating(avgRatings) : null
-
-  // Build up to 3 quick compare targets: popular comparisons first, then alternatives
-  const popOthers = popularComparisons
-    .filter(({ slug1, slug2 }) => slug1 === watch.slug || slug2 === watch.slug)
-    .map(({ slug1, slug2 }) => (slug1 === watch.slug ? slug2 : slug1))
-  const altSlugs = watch.alternatives ?? []
-  const seen = new Set<string>([watch.slug])
-  const quickCompareTargets: string[] = []
-  for (const s of [...popOthers, ...altSlugs]) {
-    if (s && !seen.has(s)) { seen.add(s); quickCompareTargets.push(s) }
-    if (quickCompareTargets.length === 3) break
-  }
-  const quickCompareWatches = quickCompareTargets
-    .map((s) => watches.find((w) => w.slug === s))
-    .filter((w): w is NonNullable<typeof w> => w !== undefined)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -129,96 +109,29 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* 1. Hero Section - watch image, name (H1), score, would-buy %, votes, verdict */}
+      {/* 1. Hero — image, name, price, score, tagline, anchor links */}
       <WatchHero watch={watch} reviewCount={reviews.length} />
 
-      {/* Compare strip — immediately below hero */}
-      {quickCompareWatches.length > 0 && (
-        <section className="bg-surfaceAlt border-b border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <p className="text-sm font-semibold text-textSecond shrink-0">Compare {watch.name} vs:</p>
-              <div className="flex flex-wrap gap-2">
-                {quickCompareWatches.map((other) => {
-                  const slugs = [watch.slug, other.slug].sort()
-                  const compareSlug = `${slugs[0]}-vs-${slugs[1]}`
-                  return (
-                    <Link
-                      key={other.slug}
-                      href={`/compare/${compareSlug}`}
-                      className="inline-flex items-center gap-1.5 bg-surface border border-border hover:border-accent text-textPrimary hover:text-accent text-sm font-medium px-3 py-1.5 rounded-full transition-colors"
-                    >
-                      {other.brand} {other.name}
-                      <span className="text-accent">→</span>
-                    </Link>
-                  )
-                })}
-              </div>
-              <Link
-                href="/compare"
-                className="text-xs text-textMuted hover:text-accent transition-colors sm:ml-auto shrink-0"
-              >
-                More comparisons →
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      {/* 2. Sticky section nav */}
+      <WatchStickyNav />
 
-      {/* 2. Quick Actions - Rate this watch (👍 👎) + Would you buy again (Y/N) */}
-      <WatchQuickActions watch={watch} />
-
-      {/* 3. Pros/Cons - Two-column layout with bullet points */}
-      <WatchProsConsSections watch={watch} />
-
-      {/* 4. Quick Verdict - Who it's for / Who should skip / Final take */}
+      {/* 3. The Verdict — final take + who it's for/skip + pros/cons */}
       <WatchVerdict watch={watch} />
 
-      {/* 5. Key Specs - 5 essential fields (case size, thickness, movement, water resistance, crystal) */}
+      {/* 4. Full Specifications — one consolidated table */}
       <WatchSpecs watch={watch} />
 
-      {/* 6. Real Owner Photos - MVP stub with placeholder gallery and upload modal */}
+      {/* 5. Owner Photos — only renders if real photos exist */}
       <WatchOwnerPhotos watch={watch} />
 
-      {/* 7. Comparison Section - 2–3 comparisons involving this watch */}
-      <WatchComparisons watch={watch} />
+      {/* 6. Reviews — unified feed + quick vote + form */}
+      <WatchReviewsSection
+        watchName={`${watch.brand} ${watch.name}`}
+        watchSlug={watch.slug}
+        reviews={reviews}
+      />
 
-      {/* 8. Alternatives Section - 3–5 similar watches from same brand */}
-      <WatchAlternatives watch={watch} />
-
-      {/* 8a. Suggestion Engine Section - 4–6 intelligent comparison suggestions */}
-      <WatchSuggestions watch={watch} />
-
-      {/* 8b. Related Buying Guides - contextual guide links based on category + price */}
-      <WatchRelatedGuides watch={watch} />
-
-      {/* 9. "What People Say" - Tag-cloud style pros/cons */}
-      <WatchWhatPeopleSay watch={watch} />
-
-      {/* Existing Reviews Section */}
-      <section className="py-8 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-textPrimary mb-6">
-            Community Reviews
-            {reviews.length > 0 && (
-              <span className="text-textMuted font-normal text-base ml-2">({reviews.length})</span>
-            )}
-          </h2>
-          {reviews.length === 0 ? (
-            <div className="card p-6 text-center text-textSecond">
-              No reviews yet — be the first!
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {reviews.map((r) => (
-                <ReviewCard key={r.id} review={r} showWatch={false} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* User reviews from Redis */}
+      {/* User reviews from Redis (client component) */}
       <div className="border-b border-border">
         <UserReviews watchId={watch.id} />
       </div>
@@ -227,6 +140,12 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
       <div className="py-8">
         <ReviewForm watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
       </div>
+
+      {/* 7. Compare & Alternatives — one unified section */}
+      <WatchCompareSection watch={watch} />
+
+      {/* 8. Related Buying Guides — supplemental, near bottom */}
+      <WatchRelatedGuides watch={watch} />
     </>
   )
 }

@@ -5,33 +5,67 @@ interface WatchVerdictProps {
 }
 
 /**
- * Quick Verdict - Three subsections for quick decision-making
+ * The Verdict — unified section combining final take, who it's for/skip, and pros/cons.
+ * Replaces the old separate WatchVerdict + WatchProsConsSections + WatchWhatPeopleSay.
  */
 export default function WatchVerdict({ watch }: WatchVerdictProps) {
-  const verdict = watch.verdict
+  const { verdict, pros, cons } = watch
 
   return (
-    <section className="py-8 border-b border-border">
+    <section id="verdict" className="py-10 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="card p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Who It&apos;s For */}
-            <div>
-              <h3 className="text-lg font-bold text-textPrimary mb-2">Who it&apos;s for</h3>
-              <p className="text-textSecond">{verdict.who_its_for}</p>
-            </div>
+        <h2 className="text-2xl font-bold text-textPrimary mb-8">The Verdict</h2>
 
-            {/* Who Should Skip */}
-            <div>
-              <h3 className="text-lg font-bold text-textPrimary mb-2">Who should skip</h3>
-              <p className="text-textSecond">{verdict.who_should_skip}</p>
-            </div>
+        {/* Final Take — lead with the most important content */}
+        <div className="card p-6 md:p-8 mb-8">
+          <p className="text-lg md:text-xl text-textPrimary leading-relaxed">
+            {verdict.final_take}
+          </p>
+        </div>
 
-            {/* Final Take */}
-            <div>
-              <h3 className="text-lg font-bold text-textPrimary mb-2">Final take</h3>
-              <p className="text-textSecond">{verdict.final_take}</p>
+        {/* Who it's for / Who should skip — side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="card p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-8 h-8 rounded-full bg-winnerBg flex items-center justify-center text-winner text-sm font-bold">✓</span>
+              <h3 className="text-lg font-bold text-textPrimary">Who it&apos;s for</h3>
             </div>
+            <p className="text-textSecond leading-relaxed">{verdict.who_its_for}</p>
+          </div>
+
+          <div className="card p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-400 text-sm font-bold">✕</span>
+              <h3 className="text-lg font-bold text-textPrimary">Who should skip</h3>
+            </div>
+            <p className="text-textSecond leading-relaxed">{verdict.who_should_skip}</p>
+          </div>
+        </div>
+
+        {/* Pros & Cons — supporting evidence */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="card p-6">
+            <h3 className="text-lg font-bold text-textPrimary mb-4">Pros</h3>
+            <ul className="space-y-3">
+              {pros.map((pro, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="text-winner text-lg flex-shrink-0 mt-0.5">✓</span>
+                  <span className="text-textSecond">{pro}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="card p-6">
+            <h3 className="text-lg font-bold text-textPrimary mb-4">Cons</h3>
+            <ul className="space-y-3">
+              {cons.map((con, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="text-red-400 text-lg flex-shrink-0 mt-0.5">✕</span>
+                  <span className="text-textSecond">{con}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
