@@ -54,6 +54,17 @@ const nextConfig = {
         destination: '/guides/best-pilot-watches',
         permanent: true,
       },
+      // Legacy comparison pages deleted — redirect to correct dynamic slugs
+      {
+        source: '/compare/hamilton-khaki-field-vs-seiko-prospex-spb',
+        destination: '/compare/hamilton-khaki-field-auto-38-vs-seiko-prospex-spb143',
+        permanent: true,
+      },
+      {
+        source: '/compare/vacheron-constantin-overseas-vs-iwc-portofino',
+        destination: '/compare/iwc-portofino-40-vs-vacheron-constantin-overseas-4500v',
+        permanent: true,
+      },
     ]
   },
 };

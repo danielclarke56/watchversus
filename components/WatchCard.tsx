@@ -39,7 +39,7 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
         )}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
           {watch.style.slice(0, 2).map((s) => (
-            <span key={s} className="text-[10px] uppercase tracking-wider bg-white/80 text-accent px-2 py-0.5 rounded-full border border-accent/30">
+            <span key={s} className="text-[10px] uppercase tracking-wider bg-white/80 text-accent px-2 py-0.5 rounded-full border border-borderStrong">
               {s}
             </span>
           ))}

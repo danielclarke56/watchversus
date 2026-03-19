@@ -28,7 +28,7 @@ const priorityStyles: Record<CTAPriority, string> = {
   primary:
     'bg-accent text-white font-bold rounded-md hover:bg-accentHover shadow-sm transition-colors',
   secondary:
-    'bg-accent/10 text-accent font-semibold rounded-md hover:bg-accent/20 border border-accent/20 transition-colors',
+    'bg-accentLight text-accent font-semibold rounded-md hover:bg-accentLight border border-borderStrong transition-colors',
   tertiary:
     'text-accent font-medium hover:underline underline-offset-2 transition-colors',
 };

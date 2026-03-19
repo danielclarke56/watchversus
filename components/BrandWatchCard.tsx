@@ -46,7 +46,7 @@ export default function BrandWatchCard({ watch }: Props) {
 
         {/* Category badge */}
         {watch.primary_category && (
-          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-wider bg-white/90 text-accent font-semibold px-2.5 py-1 rounded-full border border-accent/20">
+          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-wider bg-white/90 text-accent font-semibold px-2.5 py-1 rounded-full border border-borderStrong">
             {categoryLabels[watch.primary_category] ?? watch.primary_category}
           </span>
         )}
