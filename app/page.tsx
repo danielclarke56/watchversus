@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import { popularComparisons, getWatchBySlug } from '@/lib/watches'
+import { getWatchBySlug } from '@/lib/watches'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import { Button } from '@/components/ui/Button'
@@ -9,14 +8,76 @@ import { SearchForm } from '@/components/SearchForm'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'WatchVsWatch — Find Your Perfect Watch',
+  title: 'WatchVsWatch — Discover, Compare & Choose the Right Watch',
   description:
-    'Compare luxury watches, dive watches & sport watches head-to-head. Read honest reviews from the watch community. Find your perfect timepiece with expert insights.',
+    'Compare 160+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.',
 }
 
-export default function HomePage() {
-  const topComparisons = popularComparisons.slice(0, 8)
+const featuredComparisons: {
+  slug1: string
+  slug2: string
+  tagline: string
+}[] = [
+  {
+    slug1: 'rolex-submariner-41',
+    slug2: 'omega-seamaster-300m',
+    tagline: 'The ultimate luxury diver showdown',
+  },
+  {
+    slug1: 'rolex-submariner-41',
+    slug2: 'tudor-black-bay-58',
+    tagline: 'Heritage meets value — same DNA, different price',
+  },
+  {
+    slug1: 'omega-speedmaster-moonwatch',
+    slug2: 'breitling-navitimer-b01-42',
+    tagline: 'Two iconic chronographs, very different philosophies',
+  },
+  {
+    slug1: 'rolex-datejust-36',
+    slug2: 'omega-aqua-terra-38',
+    tagline: 'Dress-sport classics compared',
+  },
+  {
+    slug1: 'omega-seamaster-300m',
+    slug2: 'tudor-black-bay-58',
+    tagline: 'Mid-range vs entry luxury dive',
+  },
+  {
+    slug1: 'rolex-submariner-41',
+    slug2: 'tudor-pelagos-39',
+    tagline: "Rolex royalty vs Tudor's titanium challenger",
+  },
+]
 
+const researchCards = [
+  {
+    icon: '⚔️',
+    title: 'Compare Watches',
+    desc: 'Side-by-side specs, real differences, and community votes.',
+    href: '/compare',
+  },
+  {
+    icon: '🧭',
+    title: 'Take the Quiz',
+    desc: 'Answer 5 quick questions to find your match.',
+    href: '/quiz',
+  },
+  {
+    icon: '⌚',
+    title: 'Browse All Watches',
+    desc: '56 watches with full specs, pros & cons, and ratings.',
+    href: '/watches',
+  },
+  {
+    icon: '📖',
+    title: 'Buying Guides',
+    desc: 'Best watches by budget, style, and occasion.',
+    href: '/guides',
+  },
+]
+
+export default function HomePage() {
   return (
     <>
       {/* HERO */}
@@ -28,73 +89,49 @@ export default function HomePage() {
         <Container className="py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-textPrimary mb-6 leading-tight tracking-tight">
-              Compare watches. Pick the right one in seconds.
+              Discover, compare, and choose the right watch.
             </h1>
             <p className="text-xl md:text-2xl text-textSecond mb-8 leading-relaxed max-w-2xl mx-auto">
-              Side-by-side comparisons with real differences, pricing, and clear verdicts.
+              Side-by-side matchups, community insights, and buying guides —
+              everything you need to decide with confidence.
             </p>
-            <Button href="/compare" variant="primary" size="lg" className="mb-12">
-              Compare watches
-            </Button>
 
-            {/* Search Input */}
-            <SearchForm />
+            {/* Search Input — primary CTA */}
+            <SearchForm placeholder="Search watches or comparisons..." />
 
-            {/* Quick Links */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-              <Link 
+            {/* Quick Links — pill buttons */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Link
                 href="/compare/rolex-submariner-41-vs-omega-seamaster-300m"
-                className="text-accent hover:text-accentHover transition-colors underline"
+                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
               >
-                Submariner vs Seamaster →
+                Submariner vs Seamaster
               </Link>
-              <span className="text-textMuted hidden sm:inline">•</span>
-              <Link 
-                href="/compare/rolex-datejust-36-vs-omega-aqua-terra-38"
-                className="text-accent hover:text-accentHover transition-colors underline"
+              <Link
+                href="/guides/best-dive-watches-under-5000"
+                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
               >
-                Datejust vs Aqua Terra →
+                Best Dive Watches
               </Link>
-              <span className="text-textMuted hidden sm:inline">•</span>
-              <Link 
-                href="/compare/omega-speedmaster-moonwatch-vs-breitling-navitimer-b01-42"
-                className="text-accent hover:text-accentHover transition-colors underline"
+              <Link
+                href="/quiz"
+                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
               >
-                Speedmaster vs Navitimer →
+                Take the Quiz
               </Link>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* HOW IT WORKS */}
-      <Section py="md" bg="surface">
-        <Container>
-          <h2 className="text-3xl font-bold text-textPrimary text-center mb-12">How it works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { num: '1', title: 'Pick two watches', desc: 'Choose any watches from our database.' },
-              { num: '2', title: 'See side-by-side comparison', desc: 'Specs, price, and features aligned.' },
-              { num: '3', title: 'Get a clear winner + verdict', desc: 'Expert analysis and community votes.' },
-            ].map((step) => (
-              <div key={step.num} className="text-center">
-                <div className="w-12 h-12 rounded-full bg-accent text-white flex items-center justify-center text-xl font-bold mx-auto mb-4">
-                  {step.num}
-                </div>
-                <h3 className="text-xl font-semibold text-textPrimary mb-2">{step.title}</h3>
-                <p className="text-textSecond text-sm">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
       {/* POPULAR COMPARISONS */}
       <Section py="md">
         <Container>
-          <h2 className="text-3xl font-bold text-textPrimary mb-12">Popular comparisons</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {topComparisons.map((c) => {
+          <h2 className="text-3xl font-bold text-textPrimary mb-12">
+            Popular Comparisons
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {featuredComparisons.map((c) => {
               const wa = getWatchBySlug(c.slug1)
               const wb = getWatchBySlug(c.slug2)
               if (!wa || !wb) return null
@@ -102,97 +139,106 @@ export default function HomePage() {
                 <Card
                   key={`${c.slug1}-${c.slug2}`}
                   hover
-                  className="p-4 group"
+                  className="p-5 group"
                   as="article"
                 >
-                  <Link href={`/compare/${c.slug1}-vs-${c.slug2}`} className="block h-full">
-                    <div className="flex justify-center gap-3 mb-3">
-                      {[wa, wb].map((w) => (
-                        <div key={w.id} className="w-12 h-12 rounded-lg bg-surfaceAlt flex items-center justify-center overflow-hidden border border-border">
-                          {w.image ? (
-                            <Image src={w.image!} alt={w.name} width={48} height={48} className="w-full h-full object-contain" />
-                          ) : (
-                            <svg className="w-6 h-6 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2">
+                  <Link
+                    href={`/compare/${c.slug1}-vs-${c.slug2}`}
+                    className="block h-full"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-textMuted">{wa.brand}</p>
-                        <p className="text-textPrimary text-sm font-semibold truncate group-hover:text-accent transition-colors">
+                        <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors">
                           {wa.name}
                         </p>
                       </div>
-                      <div className="text-accent font-bold text-xs shrink-0">VS</div>
+                      <div className="text-accent font-bold text-sm shrink-0">
+                        VS
+                      </div>
                       <div className="flex-1 min-w-0 text-right">
                         <p className="text-xs text-textMuted">{wb.brand}</p>
-                        <p className="text-textPrimary text-sm font-semibold truncate group-hover:text-accent transition-colors">
+                        <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors">
                           {wb.name}
                         </p>
                       </div>
                     </div>
-                    <p className="text-xs text-accent font-medium mt-3 text-center">View comparison →</p>
+                    <p className="text-sm text-textSecond mb-3">
+                      {c.tagline}
+                    </p>
+                    <p className="text-sm text-accent font-medium">
+                      View comparison →
+                    </p>
                   </Link>
                 </Card>
               )
             })}
           </div>
+          <div className="text-center mt-8">
+            <Link
+              href="/compare"
+              className="text-accent hover:text-accentHover font-medium transition-colors"
+            >
+              See all 160+ comparisons →
+            </Link>
+          </div>
         </Container>
       </Section>
 
-      {/* WHY USE THIS */}
+      {/* YOUR WATCH RESEARCH STARTS HERE */}
       <Section py="md" bg="surface">
         <Container>
-          <h2 className="text-3xl font-bold text-textPrimary text-center mb-12">Why WatchVsWatch</h2>
-          <div className="max-w-2xl mx-auto space-y-4">
-            {[
-              'No fluff — only what matters',
-              'Clear winners, not endless specs',
-              'Real-world differences, not marketing',
-              'Updated pricing and data',
-            ].map((point, i) => (
-              <div key={i} className="flex gap-4 items-start">
-                <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center text-sm font-bold shrink-0">
-                  ✓
-                </div>
-                <p className="text-lg text-textPrimary pt-1">{point}</p>
-              </div>
+          <h2 className="text-3xl font-bold text-textPrimary text-center mb-12">
+            Your watch research starts here
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            {researchCards.map((card) => (
+              <Card key={card.href} hover className="p-5">
+                <Link href={card.href} className="block h-full">
+                  <div className="text-2xl mb-2">{card.icon}</div>
+                  <h3 className="text-lg font-semibold text-textPrimary mb-1">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-textSecond">{card.desc}</p>
+                </Link>
+              </Card>
             ))}
           </div>
         </Container>
       </Section>
 
-      {/* BUILT FOR CLARITY */}
-      <Section py="md">
+      {/* TRUST STRIP */}
+      <div className="border-y border-border py-8">
         <Container>
-          <h2 className="text-3xl font-bold text-textPrimary text-center mb-12">Built for clarity</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <p className="text-4xl md:text-5xl font-bold text-accent mb-2">50+</p>
-              <p className="text-textSecond">watches analyzed</p>
-            </div>
-            <div>
-              <p className="text-4xl md:text-5xl font-bold text-accent mb-2">160+</p>
-              <p className="text-textSecond">comparisons</p>
-            </div>
-            <div>
-              <p className="text-4xl md:text-5xl font-bold text-accent mb-2">📅</p>
-              <p className="text-textSecond">Updated regularly</p>
-            </div>
-          </div>
+          <p className="text-textSecond text-sm text-center">
+            56 watches · 160+ comparisons · Curated guides · Community-driven ·
+            No sponsored content
+          </p>
         </Container>
-      </Section>
+      </div>
 
       {/* FINAL CTA */}
       <section className="bg-textPrimary">
         <Container className="py-16 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Find the right watch faster</h2>
-          <Button href="/compare" variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-textPrimary">
-            Start comparing
-          </Button>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Still deciding? Start exploring.
+          </h2>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button
+              href="/compare"
+              variant="outline"
+              size="lg"
+              className="text-white border-white hover:bg-white hover:text-textPrimary"
+            >
+              Compare watches
+            </Button>
+            <Link
+              href="/quiz"
+              className="inline-flex items-center text-white underline text-base px-7 py-3 font-medium hover:opacity-80 transition-opacity"
+            >
+              Take the quiz
+            </Link>
+          </div>
         </Container>
       </section>
     </>

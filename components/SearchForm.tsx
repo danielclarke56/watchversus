@@ -4,7 +4,11 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
-export function SearchForm() {
+interface SearchFormProps {
+  placeholder?: string
+}
+
+export function SearchForm({ placeholder = 'Search: Submariner vs Seamaster…' }: SearchFormProps) {
   const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +27,7 @@ export function SearchForm() {
         <Input
           type="text"
           name="q"
-          placeholder="Search: Submariner vs Seamaster…"
+          placeholder={placeholder}
           className="flex-1"
         />
         <Button variant="secondary" size="md" type="submit">
