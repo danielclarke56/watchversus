@@ -116,7 +116,7 @@ export default function WatchCompareSection({ watch }: WatchCompareSectionProps)
               >
                 {/* Thumbnail */}
                 {other.image ? (
-                  <div className="relative w-16 h-16 bg-surfaceAlt rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative w-16 h-16 bg-surfaceAlt rounded-sm overflow-hidden flex-shrink-0">
                     <Image
                       src={other.image}
                       alt={`${other.brand} ${other.name}`}
@@ -125,7 +125,7 @@ export default function WatchCompareSection({ watch }: WatchCompareSectionProps)
                     />
                   </div>
                 ) : (
-                  <div className="w-16 h-16 bg-surfaceAlt rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 bg-surfaceAlt rounded-sm flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
@@ -141,7 +141,7 @@ export default function WatchCompareSection({ watch }: WatchCompareSectionProps)
                   </p>
                   <div className="flex items-center gap-2 mt-1.5 text-xs">
                     <span className="text-textSecond">{fmt(other.price_new_usd.min)}</span>
-                    <span className={`font-semibold ${priceDelta > 0 ? 'text-red-500' : priceDelta < 0 ? 'text-winner' : 'text-textMuted'}`}>
+                    <span className={`font-semibold ${priceDelta > 0 ? 'text-loser' : priceDelta < 0 ? 'text-winner' : 'text-textMuted'}`}>
                       {deltaLabel}
                     </span>
                   </div>

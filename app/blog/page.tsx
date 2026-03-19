@@ -15,10 +15,10 @@ function formatDate(iso: string) {
 const CATEGORIES = ['All', 'Reviews', 'Comparisons', 'Guides', 'Buying Advice']
 
 const CATEGORY_COLORS: Record<string, { badge: string; pill: string }> = {
-  Review: { badge: 'bg-blue-100 text-blue-700', pill: 'bg-blue-600' },
-  Comparison: { badge: 'bg-purple-100 text-purple-700', pill: 'bg-purple-600' },
-  Guide: { badge: 'bg-green-100 text-green-700', pill: 'bg-green-600' },
-  'Buying Advice': { badge: 'bg-orange-100 text-orange-700', pill: 'bg-orange-600' },
+  Review: { badge: 'bg-accentLight text-accent', pill: 'bg-accent' },
+  Comparison: { badge: 'bg-accentLight text-accent', pill: 'bg-accent' },
+  Guide: { badge: 'bg-accentLight text-accent', pill: 'bg-accent' },
+  'Buying Advice': { badge: 'bg-accentLight text-accent', pill: 'bg-accent' },
 }
 
 interface BlogPost {
@@ -63,29 +63,29 @@ export default function BlogIndex() {
   const [hero, ...rest] = filteredPosts
 
   if (loading) {
-    return <div className="bg-white min-h-screen flex items-center justify-center"><p>Loading...</p></div>
+    return <div className="bg-surface min-h-screen flex items-center justify-center"><p>Loading...</p></div>
   }
 
   return (
-    <main className="bg-white min-h-screen">
+    <main className="bg-surface min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Page header */}
         <header className="mb-10">
-          <h1 className="text-4xl font-bold text-[#0f172a] mb-3">Watch Blog</h1>
-          <p className="text-lg text-[#475569] mb-8">
+          <h1 className="text-4xl font-bold text-textPrimary mb-3">Watch Blog</h1>
+          <p className="text-lg text-textSecond mb-8">
             In-depth guides, reviews, and market insights.
           </p>
           
           {/* Category filter tabs */}
-          <div className="flex flex-wrap gap-3 border-b border-[#e2e8f0] pb-6">
+          <div className="flex flex-wrap gap-3 border-b border-border pb-6">
             {CATEGORIES.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 font-semibold text-sm transition-colors rounded-full ${
                   selectedCategory === category
-                    ? 'bg-[#0f172a] text-white'
-                    : 'bg-[#f1f5f9] text-[#475569] hover:bg-[#e2e8f0]'
+                    ? 'bg-accent text-white'
+                    : 'bg-neutral text-textSecond hover:bg-accentLight'
                 }`}
               >
                 {category}
@@ -97,7 +97,7 @@ export default function BlogIndex() {
         {/* Featured post (if exists) */}
         {hero && (
           <Link href={`/blog/${hero.slug}`} className="group block mb-16">
-            <article className="rounded-2xl overflow-hidden border border-[#e2e8f0] shadow-sm hover:shadow-lg transition-shadow">
+            <article className="rounded-sm overflow-hidden border border-border shadow-sm hover:shadow-lg transition-shadow">
               {hero.heroImage && (
                 <div className="relative w-full aspect-video">
                   <Image
@@ -113,7 +113,7 @@ export default function BlogIndex() {
                   <div className="absolute bottom-0 left-0 right-0 p-8">
                     <div className="flex items-center gap-3 mb-4 flex-wrap">
                       {hero.category && (
-                        <span className={`text-xs ${CATEGORY_COLORS[hero.category]?.pill || 'bg-gray-600'} text-white px-3 py-1 rounded-full font-semibold`}>
+                        <span className={`text-xs ${CATEGORY_COLORS[hero.category]?.pill || 'bg-textMuted'} text-white px-3 py-1 rounded-full font-semibold`}>
                           {hero.category}
                         </span>
                       )}
@@ -138,7 +138,7 @@ export default function BlogIndex() {
                       </time>
                       <span className="text-white/40">·</span>
                       <span className="text-white/70 text-xs font-medium">{hero.readingTime}</span>
-                      <span className="ml-2 inline-block bg-white/20 text-white text-sm font-semibold px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-[#0f172a] transition-colors">
+                      <span className="ml-2 inline-block bg-white/20 text-white text-sm font-semibold px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-textPrimary transition-colors">
                         Read article →
                       </span>
                     </div>
@@ -154,9 +154,9 @@ export default function BlogIndex() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rest.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
-                <article className="rounded-lg border border-[#e2e8f0] overflow-hidden shadow-sm hover:shadow-lg transition-shadow h-full flex flex-col bg-white">
+                <article className="rounded-sm border border-border overflow-hidden shadow-sm hover:shadow-lg transition-shadow h-full flex flex-col bg-surface">
                   {post.heroImage && (
-                    <div className="relative w-full aspect-video overflow-hidden bg-[#f1f5f9]">
+                    <div className="relative w-full aspect-video overflow-hidden bg-surfaceAlt">
                       <Image
                         src={post.heroImage}
                         alt={post.title}
@@ -170,29 +170,29 @@ export default function BlogIndex() {
                     {/* Category Badge */}
                     <div className="flex items-center gap-2 mb-3 flex-wrap">
                       {post.category && (
-                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${CATEGORY_COLORS[post.category]?.badge || 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${CATEGORY_COLORS[post.category]?.badge || 'bg-accentLight text-textSecond'}`}>
                           {post.category}
                         </span>
                       )}
-                      <span className="text-xs text-[#94a3b8] font-medium ml-auto">{post.readingTime}</span>
+                      <span className="text-xs text-textMuted font-medium ml-auto">{post.readingTime}</span>
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-lg font-bold text-[#0f172a] mb-2 leading-snug group-hover:text-[#b8860b] transition-colors">
+                    <h2 className="text-lg font-bold text-textPrimary mb-2 leading-snug group-hover:text-accent transition-colors">
                       {post.title}
                     </h2>
 
                     {/* Description */}
-                    <p className="text-[#475569] text-sm leading-relaxed flex-1 mb-4">
+                    <p className="text-textSecond text-sm leading-relaxed flex-1 mb-4">
                       {post.description}
                     </p>
 
                     {/* Meta footer */}
-                    <div className="flex items-center justify-between pt-3 border-t border-[#e2e8f0]">
-                      <time dateTime={post.date} className="text-xs text-[#94a3b8] font-medium">
+                    <div className="flex items-center justify-between pt-3 border-t border-border">
+                      <time dateTime={post.date} className="text-xs text-textMuted font-medium">
                         {formatDate(post.date)}
                       </time>
-                      <span className="text-sm font-semibold text-[#b8860b] group-hover:text-[#0f172a] transition-colors">
+                      <span className="text-sm font-semibold text-accent group-hover:text-textPrimary transition-colors">
                         Read →
                       </span>
                     </div>
@@ -203,10 +203,10 @@ export default function BlogIndex() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-[#475569] text-lg">No articles in this category yet.</p>
+            <p className="text-textSecond text-lg">No articles in this category yet.</p>
             <button
               onClick={() => setSelectedCategory('All')}
-              className="mt-4 px-4 py-2 bg-[#0f172a] text-white font-semibold rounded-lg hover:bg-[#1e293b] transition-colors"
+              className="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-sm hover:bg-accentHover transition-colors"
             >
               View all articles
             </button>

@@ -104,7 +104,7 @@ function WatchSelector({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full bg-[var(--bg-subtle)] border border-[var(--border-strong)] rounded-xl px-4 py-3 text-left flex items-center justify-between hover:border-[var(--accent)]/40 transition-colors focus:outline-none focus:border-[var(--accent)]"
+        className="w-full bg-[var(--bg-subtle)] border border-[var(--border-strong)] rounded-sm px-4 py-3 text-left flex items-center justify-between hover:border-borderStrong transition-colors focus:outline-none focus:border-[var(--accent)]"
       >
         {selected ? (
           <div>
@@ -125,7 +125,7 @@ function WatchSelector({
       </button>
 
       {open && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-[var(--border-strong)] rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-10 w-full mt-1 bg-surface border border-[var(--border-strong)] rounded-sm shadow-lg overflow-hidden">
           <div className="p-2 border-b border-[var(--border-strong)]">
             <input
               type="text"
@@ -133,7 +133,7 @@ function WatchSelector({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoFocus
-              className="w-full bg-[var(--bg-subtle)] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
+              className="w-full bg-[var(--bg-subtle)] rounded-sm px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
             />
           </div>
           <div className="max-h-64 overflow-y-auto">
@@ -152,7 +152,7 @@ function WatchSelector({
                       setQuery('')
                     }}
                     className={`w-full px-4 py-2.5 text-left hover:bg-[var(--bg-subtle)] transition-colors flex items-center justify-between ${
-                      value === w.slug ? 'bg-[var(--accent)]/10' : ''
+                      value === w.slug ? 'bg-accentLight' : ''
                     }`}
                   >
                     <div>
@@ -234,7 +234,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
         <div className="text-center mb-8">
           <Link
             href={`/compare/${watchA.slug}-vs-${watchB.slug}`}
-            className="inline-block bg-[var(--accent)] text-white font-semibold text-base px-8 py-3 rounded-xl hover:opacity-90 transition-opacity"
+            className="inline-block bg-[var(--accent)] text-white font-semibold text-base px-8 py-3 rounded-sm hover:opacity-90 transition-opacity"
           >
             View Full Comparison →
           </Link>
@@ -263,7 +263,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
                 activeCategory === cat
                   ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                  : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border-[var(--border-strong)] hover:border-[var(--accent)]/40'
+                  : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border-[var(--border-strong)] hover:border-borderStrong'
               }`}
             >
               {cat}
@@ -277,7 +277,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
             <Link
               key={`${c.slug1}-${c.slug2}`}
               href={`/compare/${c.slug1}-vs-${c.slug2}`}
-              className="block border border-[var(--border-strong)] rounded-xl p-5 hover:border-[var(--accent)]/40 transition-colors group bg-white"
+              className="block border border-[var(--border-strong)] rounded-sm p-5 hover:border-borderStrong transition-colors group bg-surface"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -325,7 +325,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
             <button
               type="button"
               onClick={() => setShowCount((prev) => prev + 12)}
-              className="px-6 py-2.5 rounded-xl border border-[var(--border-strong)] text-[var(--text-secondary)] font-medium hover:border-[var(--accent)]/40 hover:text-[var(--accent)] transition-colors"
+              className="px-6 py-2.5 rounded-sm border border-[var(--border-strong)] text-[var(--text-secondary)] font-medium hover:border-borderStrong hover:text-[var(--accent)] transition-colors"
             >
               Show More ({filteredComparisons.length - showCount} remaining)
             </button>

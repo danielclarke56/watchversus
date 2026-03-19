@@ -71,13 +71,13 @@ function GuideCard({ guide, badge }: { guide: typeof guides[0]; badge?: string }
   return (
     <Link
       href={`/guides/${guide.slug}`}
-      className="card p-6 hover:border-[#b8860b]/40 transition-colors group"
+      className="card p-6 hover:border-borderStrong transition-colors group"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         {hasImages ? (
           <div className="flex gap-1">
             {previewWatches.map((w) => (
-              <div key={w.slug} className="h-14 w-14 rounded-lg bg-white border border-[#e2e8f0] overflow-hidden shrink-0">
+              <div key={w.slug} className="h-14 w-14 rounded-sm bg-surface border border-border overflow-hidden shrink-0">
                 <Image src={w.image!} alt={w.name} width={56} height={56} className="h-14 w-14 object-contain" />
               </div>
             ))}
@@ -86,16 +86,16 @@ function GuideCard({ guide, badge }: { guide: typeof guides[0]; badge?: string }
           <div className="text-2xl">{guide.emoji ?? '📖'}</div>
         )}
         {badge && (
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-[#b8860b]/10 text-[#b8860b] border border-[#b8860b]/20 shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-accentLight text-accent border border-borderStrong shrink-0">
             {badge}
           </span>
         )}
       </div>
-      <h3 className="text-[#0f172a] font-bold text-base mb-2 group-hover:text-[#b8860b] transition-colors leading-snug">
+      <h3 className="text-textPrimary font-bold text-base mb-2 group-hover:text-accent transition-colors leading-snug">
         {displayTitle}
       </h3>
-      <p className="text-[#64748b] text-sm mb-2">{guide.tagline}</p>
-      <p className="text-[#94a3b8] text-xs">{count} {count === 1 ? 'pick' : 'picks'} · Updated 2026</p>
+      <p className="text-textSecond text-sm mb-2">{guide.tagline}</p>
+      <p className="text-textMuted text-xs">{count} {count === 1 ? 'pick' : 'picks'} · Updated 2026</p>
     </Link>
   )
 }
@@ -126,17 +126,17 @@ export default function GuidesPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
-        <span aria-hidden="true" className="text-[#cbd5e1]">›</span>
-        <span className="text-[#0f172a]">Guides</span>
+      <nav className="text-sm text-textMuted mb-6 flex items-center gap-2" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-accent transition-colors">Home</Link>
+        <span aria-hidden="true" className="text-border">›</span>
+        <span className="text-textPrimary">Guides</span>
       </nav>
 
-      <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-3">Watch Buying Guides</h1>
-      <p className="text-[#475569] mb-2 leading-relaxed">
+      <h1 className="text-3xl md:text-4xl font-bold text-textPrimary mb-3">Watch Buying Guides</h1>
+      <p className="text-textSecond mb-2 leading-relaxed">
         Expert guides by category and budget — with honest recommendations, buying advice, and direct links to head-to-head comparisons.
       </p>
-      <p className="text-[#94a3b8] text-sm mb-10">
+      <p className="text-textMuted text-sm mb-10">
         Each guide includes expert picks, head-to-head comparisons, and a buying checklist.
       </p>
 
@@ -144,13 +144,13 @@ export default function GuidesPage() {
       {featured && (
         <Link
           href={`/guides/${featured.slug}`}
-          className="card p-8 hover:border-[#b8860b]/40 transition-colors group block mb-10"
+          className="card p-8 hover:border-borderStrong transition-colors group block mb-10"
         >
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             {featuredPreviewWatches.length > 0 && (
               <div className="flex gap-2 shrink-0">
                 {featuredPreviewWatches.map((w) => (
-                  <div key={w.slug} className="h-16 w-16 rounded-lg bg-white border border-[#e2e8f0] overflow-hidden shrink-0">
+                  <div key={w.slug} className="h-16 w-16 rounded-sm bg-surface border border-border overflow-hidden shrink-0">
                     <Image src={w.image!} alt={w.name} width={64} height={64} className="h-16 w-16 object-contain" />
                   </div>
                 ))}
@@ -158,18 +158,18 @@ export default function GuidesPage() {
             )}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="inline-block text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#b8860b]/10 text-[#b8860b]">
+                <span className="inline-block text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-accentLight text-accent">
                   Most Popular
                 </span>
-                <span className="inline-block text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#0f172a]/5 text-[#64748b]">
+                <span className="inline-block text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-neutral text-textSecond">
                   Under $500
                 </span>
               </div>
-              <h2 className="text-[#0f172a] font-bold text-xl md:text-2xl mb-2 group-hover:text-[#b8860b] transition-colors">
+              <h2 className="text-textPrimary font-bold text-xl md:text-2xl mb-2 group-hover:text-accent transition-colors">
                 {featured.h1}
               </h2>
-              <p className="text-[#64748b] text-sm mb-2">{featured.tagline}</p>
-              <p className="text-[#94a3b8] text-xs">{featuredCount} {featuredCount === 1 ? 'pick' : 'picks'} · Updated 2026</p>
+              <p className="text-textSecond text-sm mb-2">{featured.tagline}</p>
+              <p className="text-textMuted text-xs">{featuredCount} {featuredCount === 1 ? 'pick' : 'picks'} · Updated 2026</p>
             </div>
           </div>
         </Link>
@@ -178,7 +178,7 @@ export default function GuidesPage() {
       {/* By Budget */}
       {remainingBudget.length > 0 && (
         <>
-          <h2 className="text-xl font-bold text-[#0f172a] mb-4">By Budget</h2>
+          <h2 className="text-xl font-bold text-textPrimary mb-4">By Budget</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
             {remainingBudget.map((guide) => (
               <GuideCard key={guide.slug} guide={guide} badge={priceBadges[guide.slug]} />
@@ -188,9 +188,9 @@ export default function GuidesPage() {
       )}
 
       {/* CTA between sections */}
-      <div className="text-center bg-white border border-[#e2e8f0] rounded-xl p-6 mb-10">
-        <p className="text-[#0f172a] font-semibold mb-1">Not sure where to start?</p>
-        <p className="text-[#475569] text-sm mb-4">Answer a few questions and get a personalized recommendation</p>
+      <div className="text-center bg-surface border border-border rounded-sm p-6 mb-10">
+        <p className="text-textPrimary font-semibold mb-1">Not sure where to start?</p>
+        <p className="text-textSecond text-sm mb-4">Answer a few questions and get a personalized recommendation</p>
         <Link href="/quiz" className="btn-gold">
           Take the Quiz
         </Link>
@@ -199,7 +199,7 @@ export default function GuidesPage() {
       {/* By Style */}
       {styleGuides.length > 0 && (
         <>
-          <h2 className="text-xl font-bold text-[#0f172a] mb-4">By Style</h2>
+          <h2 className="text-xl font-bold text-textPrimary mb-4">By Style</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {styleGuides.map((guide, i) => (
               <GuideCard

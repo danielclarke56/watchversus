@@ -57,8 +57,8 @@ export default async function AdminReviewsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a] mb-1">Pending Reviews</h1>
-        <p className="text-[#475569] text-sm">{pending.length} review{pending.length !== 1 ? 's' : ''} awaiting moderation</p>
+        <h1 className="text-2xl font-bold text-textPrimary mb-1">Pending Reviews</h1>
+        <p className="text-textSecond text-sm">{pending.length} review{pending.length !== 1 ? 's' : ''} awaiting moderation</p>
       </div>
       <AdminReviewList initialReviews={pending} watchNames={watchNames} />
     </div>

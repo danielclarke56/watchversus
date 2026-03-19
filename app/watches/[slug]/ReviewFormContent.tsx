@@ -130,7 +130,7 @@ export default function ReviewFormContent({ watchId, watchName, onSuccess }: Pro
             <span className="ml-2 text-textMuted">
               {body.length}/1000
               {body.length > 0 && body.length < 50 && (
-                <span className="text-amber-500"> (min 50)</span>
+                <span className="text-accent"> (min 50)</span>
               )}
             </span>
           </label>

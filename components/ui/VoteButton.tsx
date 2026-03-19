@@ -32,7 +32,7 @@ export function VoteButton({
     <button
       onClick={() => onVote(side)}
       disabled={isDisabledState}
-      className={`flex flex-col items-center gap-1 px-5 py-3 rounded-lg border font-semibold text-sm transition-all ${buttonClass}`}
+      className={`flex flex-col items-center gap-1 px-5 py-3 rounded-sm border font-semibold text-sm transition-all ${buttonClass}`}
     >
       <span className="truncate">{watchName}</span>
       <span

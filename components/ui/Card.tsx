@@ -16,7 +16,7 @@ export function Card({
   as: Component = 'div',
 }: CardProps) {
   const hoverClass = hover ? 'hover:shadow-sm transition-all duration-200' : '';
-  const borderClass = 'border border-[#F9F9F9]';
+  const borderClass = 'border border-neutral';
 
   return React.createElement(
     Component,

@@ -167,7 +167,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                   className="group flex gap-4 items-center flex-1 rounded-sm border border-border p-4 hover:shadow-md transition-shadow"
                 >
                   {rel.heroImage && (
-                    <div className="relative w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden">
+                    <div className="relative w-20 h-16 flex-shrink-0 rounded-sm overflow-hidden">
                       <Image
                         src={rel.heroImage}
                         alt={rel.title}
@@ -178,10 +178,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#0f172a] leading-snug group-hover:text-[#b8860b] transition-colors line-clamp-2">
+                    <p className="text-sm font-semibold text-textPrimary leading-snug group-hover:text-accent transition-colors line-clamp-2">
                       {rel.title}
                     </p>
-                    <span className="text-xs text-[#b8860b] font-medium mt-1 inline-block">Read →</span>
+                    <span className="text-xs text-accent font-medium mt-1 inline-block">Read →</span>
                   </div>
                 </Link>
               ))}
@@ -190,17 +190,17 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         )}
 
         {/* Footer actions */}
-        <div className="max-w-3xl mx-auto mt-12 pt-6 border-t border-[#e2e8f0] flex flex-col sm:flex-row items-start sm:items-center gap-6">
+        <div className="max-w-3xl mx-auto mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <Link
             href="/blog"
-            className="text-sm font-semibold text-[#b8860b] hover:underline"
+            className="text-sm font-semibold text-accent hover:underline"
           >
             ← Back to Blog
           </Link>
 
           <Link
             href="/compare"
-            className="flex-1 block bg-[#5C5C5C] text-white font-bold text-center px-6 py-4 rounded-xl hover:bg-[#404040] transition-colors"
+            className="flex-1 block bg-accent text-white font-bold text-center px-6 py-4 rounded-sm hover:bg-accentHover transition-colors"
           >
             Compare watches side by side →
           </Link>

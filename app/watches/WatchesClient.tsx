@@ -325,7 +325,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
       </div>
 
       {/* Filters */}
-      <div className="bg-surface border border-border rounded-lg p-3 mb-6 flex flex-wrap gap-2">
+      <div className="bg-surface border border-border rounded-sm p-3 mb-6 flex flex-wrap gap-2">
         <input
           type="text"
           placeholder="Search name, brand, ref..."
@@ -396,7 +396,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
 
       {/* Table */}
       {filtered.length > 0 ? (
-        <div className="bg-surface border border-border rounded-lg overflow-hidden">
+        <div className="bg-surface border border-border rounded-sm overflow-hidden">
           {/* Column headers — desktop */}
           <div className="hidden md:grid grid-cols-[48px_1fr_64px_80px_76px_60px_88px] items-center gap-x-3 px-4 py-2 bg-surfaceAlt border-b border-border">
             <span />

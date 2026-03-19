@@ -18,7 +18,7 @@ export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
           {/* Watch Image */}
           <div className="md:col-span-2">
             {watch.image ? (
-              <div className="relative w-full h-80 md:h-96 bg-surfaceAlt rounded-xl border border-border flex items-center justify-center overflow-hidden">
+              <div className="relative w-full h-80 md:h-96 bg-surfaceAlt rounded-sm border border-border flex items-center justify-center overflow-hidden">
                 <Image
                   src={watch.image}
                   alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
@@ -28,7 +28,7 @@ export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
                 />
               </div>
             ) : (
-              <div className="w-full h-80 md:h-96 bg-surfaceAlt rounded-xl border border-border flex items-center justify-center">
+              <div className="w-full h-80 md:h-96 bg-surfaceAlt rounded-sm border border-border flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-border flex items-center justify-center">
                     <svg className="w-8 h-8 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">

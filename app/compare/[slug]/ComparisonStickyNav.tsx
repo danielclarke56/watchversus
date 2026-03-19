@@ -62,7 +62,7 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-border transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-border transition-all duration-300 lg:hidden ${
         isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
       }`}
     >

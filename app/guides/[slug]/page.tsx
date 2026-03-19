@@ -256,7 +256,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                     <span className="text-accent font-bold text-sm">{index + 1}</span>
                   </div>
                   {watch.image && !watch.image.endsWith('.svg') && (
-                    <div className="shrink-0 w-20 h-20 rounded-lg bg-neutral border border-border overflow-hidden">
+                    <div className="shrink-0 w-20 h-20 rounded-sm bg-neutral border border-border overflow-hidden">
                       <Image src={watch.image} alt={watch.name} width={80} height={80} className="w-20 h-20 object-contain" />
                     </div>
                   )}
