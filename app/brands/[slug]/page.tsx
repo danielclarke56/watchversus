@@ -255,7 +255,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:shadow-sm transition-all group"
+                    className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
@@ -308,7 +308,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                 <Link
                   key={g.slug}
                   href={`/guides/${g.slug}`}
-                  className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:shadow-sm transition-all group"
+                  className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
                 >
                   <p className="text-[10px] uppercase text-textMuted font-semibold tracking-wider mb-2">Buying Guide</p>
                   <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">
@@ -331,7 +331,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                 <Link
                   key={b.slug}
                   href={`/brands/${b.slug}`}
-                  className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:shadow-sm transition-all group text-center"
+                  className="bg-surface border border-border rounded-lg p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group text-center"
                 >
                   <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
                     {b.name}

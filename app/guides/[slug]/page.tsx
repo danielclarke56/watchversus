@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getRelatedGuidesByBrand, getBrandsInGuide } from '@/lib/relatedContent'
+import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 
 export async function generateStaticParams() {
   return guides.map((g) => ({ slug: g.slug }))
@@ -56,7 +57,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       if (found) internalComparisons.push(found)
     }
   }
-  // Merge internal pairs first, then other related — dedupe, max 6
+  // Merge internal pairs first, then other related Ã¢â‚¬â€ dedupe, max 6
   const seenComps = new Set<string>()
   const topComparisons = [...internalComparisons, ...relatedComparisons]
     .filter((c) => {
@@ -116,15 +117,14 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-[#fffbf0] to-white border-b border-[#e2e8f0] mb-0">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Breadcrumb */}
-          <nav className="text-sm text-[#94a3b8] mb-6 flex items-center gap-2">
-            <Link href="/" className="hover:text-[#b8860b] transition-colors">Home</Link>
+      <div className="bg-gradient-to-br from-neutral to-surface border-b border-border mb-0">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">`n          {/* Breadcrumb */}
+          <nav className="text-sm text-textMuted mb-6 flex items-center gap-2">
+            <Link href="/" className="hover:text-accent transition-colors">Home</Link>
             <span>/</span>
-            <Link href="/guides" className="hover:text-[#b8860b] transition-colors">Guides</Link>
+            <Link href="/guides" className="hover:text-accent transition-colors">Guides</Link>
             <span>/</span>
-            <span className="text-[#0f172a]">{guide.h1}</span>
+            <span className="text-textPrimary">{guide.h1}</span>
           </nav>
 
           {/* Category Badge + H1 */}
@@ -140,70 +140,82 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
             const readTime = Math.ceil(allText.split(' ').length / 200)
             return (
               <div className="flex items-center gap-3 mb-4">
-                <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#b8860b]/10 text-[#b8860b] border border-[#b8860b]/30">
+                <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/30">
                   Buying Guide
                 </span>
-                <span className="text-xs text-[#94a3b8] flex items-center gap-1">
-                  📖 {readTime} min read
+                <span className="text-xs text-textMuted flex items-center gap-1">
+                  Ã°Å¸â€œâ€“ {readTime} min read
                 </span>
               </div>
             )
           })()}
 
-          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-4">{guide.h1}</h1>
-          <p className="text-lg text-[#475569] leading-relaxed">{guide.description}</p>
+          <h1 className="text-3xl md:text-5xl font-heading font-bold text-textPrimary mb-4">{guide.h1}</h1>
+          <p className="text-lg text-textSecond leading-relaxed">{guide.description}</p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex gap-8">
+        {/* Sticky TOC Sidebar */}
+        <GuideTableOfContents
+          sections={[
+            { id: 'our-picks', label: 'Our Picks' },
+            ...(topComparisons.length > 0 ? [{ id: 'compare-head-to-head', label: 'Compare Head-to-Head' }] : []),
+            { id: 'buying-guide', label: 'Buying Guide' },
+            { id: 'faq', label: 'FAQ' },
+            ...(guide.paa && guide.paa.length > 0 ? [{ id: 'people-also-ask', label: 'People Also Ask' }] : []),
+            ...(relatedGuides.length > 0 ? [{ id: 'more-guides', label: 'More Guides' }] : []),
+          ]}
+        />
+        <div className="flex-1 min-w-0">
         {/* Intro */}
-        <div className="text-[#475569] leading-relaxed mb-10 space-y-4">
+        <div className="text-textSecond leading-relaxed mb-10 space-y-4">
           {guide.intro.split('\n\n').map((para, i) => (
             <p key={i}>{para.trim()}</p>
           ))}
         </div>
 
         {/* Rankings Strip */}
-        <div className="mb-8 flex items-center justify-between bg-[#f8fafc] border border-[#e2e8f0] rounded-xl px-5 py-3">
-          <p className="text-sm text-[#475569]">See how these watches rank against the full database</p>
-          <Link href="/rankings" className="text-sm font-semibold text-[#b8860b] hover:underline shrink-0 ml-4">
-            View Rankings →
+        <div className="mb-8 flex items-center justify-between bg-neutral border border-border rounded-xl px-5 py-3">
+          <p className="text-sm text-textSecond">See how these watches rank against the full database</p>
+          <Link href="/rankings" className="text-sm font-semibold text-accent hover:underline shrink-0 ml-4">
+            View Rankings Ã¢â€ â€™
           </Link>
         </div>
 
         {/* Recommendations */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Our Picks</h2>
+        <section id="our-picks" className="mb-12 scroll-mt-24">
+          <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Our Picks</h2>
           <div className="space-y-6">
             {recommendedWatches.map(({ rec, watch }, index) => (
               <div key={watch.slug} className="card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 bg-[#b8860b]/20 border border-[#b8860b]/40 rounded-full flex items-center justify-center">
-                    <span className="text-[#b8860b] font-bold text-sm">{index + 1}</span>
+                  <div className="shrink-0 w-10 h-10 bg-accent/20 border border-accent/40 rounded-full flex items-center justify-center">
+                    <span className="text-accent font-bold text-sm">{index + 1}</span>
                   </div>
                   {watch.image && !watch.image.endsWith('.svg') && (
-                    <div className="shrink-0 w-20 h-20 rounded-lg bg-white border border-[#e2e8f0] overflow-hidden">
+                    <div className="shrink-0 w-20 h-20 rounded-lg bg-neutral border border-border overflow-hidden">
                       <Image src={watch.image} alt={watch.name} width={80} height={80} className="w-20 h-20 object-contain" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="text-xs text-[#b8860b] font-bold uppercase tracking-wider">{watch.brand}</span>
-                      <span className="text-[#0f172a] font-bold text-lg">{watch.name}</span>
+                      <span className="text-xs text-accent font-bold uppercase tracking-wider">{watch.brand}</span>
+                      <span className="text-textPrimary font-bold text-lg">{watch.name}</span>
                     </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-[#94a3b8] mb-3">
+                    <div className="flex flex-wrap gap-3 text-xs text-textMuted mb-3">
                       <span>{watch.case_diameter_mm}mm</span>
                       <span>{watch.movement_type}</span>
                       <span>{formatPrice(watch.price_new_usd)} new</span>
                       {watch.water_resistance_m >= 100 && <span>{watch.water_resistance_m}m WR</span>}
                     </div>
-                    <p className="text-[#475569] text-sm leading-relaxed mb-4">{rec.highlight}</p>
+                    <p className="text-textSecond text-sm leading-relaxed mb-4">{rec.highlight}</p>
                     <div className="flex flex-wrap gap-3">
                       <Link
                         href={`/watches/${watch.slug}`}
-                        className="text-xs text-[#b8860b] hover:underline"
+                        className="text-xs text-accent hover:underline"
                       >
-                        Full specs →
+                        Full specs Ã¢â€ â€™
                       </Link>
                       {popularComparisons
                         .filter((c) => c.slug1 === watch.slug || c.slug2 === watch.slug)
@@ -216,9 +228,9 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                             <Link
                               key={`${comp.slug1}-${comp.slug2}`}
                               href={`/compare/${comp.slug1}-vs-${comp.slug2}`}
-                              className="text-xs text-[#475569] hover:text-[#b8860b] hover:underline transition-colors"
+                              className="text-xs text-textSecond hover:text-accent hover:underline transition-colors"
                             >
-                              vs {otherWatch.brand} {otherWatch.name} →
+                              vs {otherWatch.brand} {otherWatch.name} Ã¢â€ â€™
                             </Link>
                           )
                         })}
@@ -230,11 +242,11 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           </div>
         </section>
 
-        {/* Compare These Watches — surfaced above buying guide */}
+        {/* Compare These Watches Ã¢â‚¬â€ surfaced above buying guide */}
         {topComparisons.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-2">Compare These Watches Head-to-Head</h2>
-            <p className="text-sm text-[#475569] mb-5">Side-by-side specs, community votes, and expert scores</p>
+          <section id="compare-head-to-head" className="mb-12 scroll-mt-24">
+            <h2 className="text-xl font-heading font-bold text-textPrimary mb-2">Compare These Watches Head-to-Head</h2>
+            <p className="text-sm text-textSecond mb-5">Side-by-side specs, community votes, and expert scores</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {topComparisons.map((c) => {
                 const wa = watches.find((w) => w.slug === c.slug1)
@@ -244,20 +256,20 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
+                    className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
-                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wa.name}</p>
+                        <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
+                        <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
                       </div>
-                      <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                      <div className="text-accent font-bold text-xs shrink-0">VS</div>
                       <div className="flex-1 min-w-0 text-right">
-                        <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
-                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wb.name}</p>
+                        <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
+                        <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
                       </div>
                     </div>
-                    <p className="text-[10px] text-[#b8860b] font-medium mt-2">Compare →</p>
+                    <p className="text-[10px] text-accent font-medium mt-2">Compare Ã¢â€ â€™</p>
                   </Link>
                 )
               })}
@@ -266,43 +278,43 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         )}
 
         {/* Buying Guide */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Buying Guide</h2>
+        <section id="buying-guide" className="mb-12 scroll-mt-24">
+          <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Buying Guide</h2>
           <div className="space-y-6">
             {guide.buyingGuide.map((section) => (
               <div key={section.heading} className="card p-6">
-                <h3 className="text-[#0f172a] font-semibold text-lg mb-3">{section.heading}</h3>
-                <p className="text-[#475569] text-sm leading-relaxed">{section.content}</p>
+                <h3 className="text-textPrimary font-heading font-semibold text-lg mb-3">{section.heading}</h3>
+                <p className="text-textSecond text-sm leading-relaxed">{section.content}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-[#0f172a] mb-6">Frequently Asked Questions</h2>
+        <section id="faq" className="mb-12 scroll-mt-24">
+          <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {guide.faq.map((item, i) => (
               <details key={i} className="card p-5 group cursor-pointer">
-                <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
+                <summary className="text-textPrimary font-semibold flex justify-between items-center list-none">
                   <span>{item.question}</span>
-                  <span className="text-[#b8860b] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                  <span className="text-accent group-open:rotate-180 transition-transform ml-4 shrink-0">Ã¢â€“Â¼</span>
                 </summary>
-                <p className="text-[#475569] text-sm mt-4 leading-relaxed">{item.answer}</p>
+                <p className="text-textSecond text-sm mt-4 leading-relaxed">{item.answer}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* Conclusion */}
-        <section className="mb-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
-          <p className="text-[#475569] text-sm leading-relaxed">{guide.conclusion}</p>
+        <section className="mb-12 bg-neutral border border-border rounded-xl p-6">
+          <p className="text-textSecond text-sm leading-relaxed">{guide.conclusion}</p>
         </section>
 
         {/* Related Comparisons */}
         {relatedComparisons.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Related Comparisons</h2>
+            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">Related Comparisons</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {relatedComparisons.map((c) => {
                 const wa = watches.find((w) => w.slug === c.slug1)
@@ -312,17 +324,17 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   <Link
                     key={`${c.slug1}-${c.slug2}`}
                     href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-[#b8860b]/40 transition-colors group"
+                    className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-[#94a3b8] uppercase">{wa.brand}</p>
-                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wa.name}</p>
+                        <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
+                        <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
                       </div>
-                      <div className="text-[#b8860b] font-bold text-xs shrink-0">VS</div>
+                      <div className="text-accent font-bold text-xs shrink-0">VS</div>
                       <div className="flex-1 min-w-0 text-right">
-                        <p className="text-[10px] text-[#94a3b8] uppercase">{wb.brand}</p>
-                        <p className="text-[#0f172a] text-xs font-semibold truncate">{wb.name}</p>
+                        <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
+                        <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
                       </div>
                     </div>
                   </Link>
@@ -334,16 +346,16 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
         {/* People Also Ask */}
         {guide.paa && guide.paa.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-[#0f172a] mb-6">People Also Ask</h2>
+          <section id="people-also-ask" className="mb-12 scroll-mt-24">
+            <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">People Also Ask</h2>
             <div className="space-y-3">
               {guide.paa.map((item, i) => (
                 <details key={i} className="card p-5 group cursor-pointer">
-                  <summary className="text-[#0f172a] font-semibold flex justify-between items-center list-none">
+                  <summary className="text-textPrimary font-semibold flex justify-between items-center list-none">
                     <span>{item.question}</span>
-                    <span className="text-[#b8860b] group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
+                    <span className="text-accent group-open:rotate-180 transition-transform ml-4 shrink-0">Ã¢â€“Â¼</span>
                   </summary>
-                  <p className="text-[#475569] text-sm mt-3 leading-relaxed">{item.answer}</p>
+                  <p className="text-textSecond text-sm mt-3 leading-relaxed">{item.answer}</p>
                 </details>
               ))}
             </div>
@@ -352,21 +364,21 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
         {/* Related Guides Footer */}
         {relatedGuides.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-5">More Buying Guides</h2>
+          <section id="more-guides" className="mb-12 scroll-mt-24">
+            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">More Buying Guides</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {relatedGuides.map((g) => (
                 <Link
                   key={g.slug}
                   href={`/guides/${g.slug}`}
-                  className="card p-5 hover:border-[#b8860b]/40 transition-colors group"
+                  className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
                 >
-                  <p className="text-xs uppercase text-[#94a3b8] font-semibold mb-2">Buying Guide</p>
-                  <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors line-clamp-2">
+                  <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
+                  <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">
                     {g.title}
                   </h3>
-                  <p className="text-xs text-[#475569] mt-3 line-clamp-1">{g.description}</p>
-                  <p className="text-xs text-[#b8860b] font-medium mt-4 inline-block">Read Guide →</p>
+                  <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
+                  <p className="text-xs text-accent font-medium mt-4 inline-block">Read Guide Ã¢â€ â€™</p>
                 </Link>
               ))}
             </div>
@@ -376,19 +388,19 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         {/* Related Brands Footer */}
         {featuredBrands.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#0f172a] mb-5">Brands Featured in This Guide</h2>
+            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">Brands Featured in This Guide</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {featuredBrands.map((b) => (
                 <Link
                   key={b.slug}
                   href={`/brands/${b.slug}`}
-                  className="card p-4 hover:border-[#b8860b]/40 transition-colors group text-center"
+                  className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group text-center"
                 >
-                  <h3 className="text-sm font-bold text-[#0f172a] group-hover:text-[#b8860b] transition-colors">
+                  <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
                     {b.name}
                   </h3>
-                  <p className="text-xs text-[#475569] mt-2 line-clamp-2">{b.heroFact}</p>
-                  <p className="text-xs text-[#b8860b] font-medium mt-3 inline-block">Explore Brand →</p>
+                  <p className="text-xs text-textSecond mt-2 line-clamp-2">{b.heroFact}</p>
+                  <p className="text-xs text-accent font-medium mt-3 inline-block">Explore Brand Ã¢â€ â€™</p>
                 </Link>
               ))}
             </div>
@@ -396,12 +408,13 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         )}
 
         {/* CTA */}
-        <div className="text-center bg-white border border-[#e2e8f0] rounded-xl p-8">
-          <h3 className="text-[#0f172a] font-semibold text-lg mb-2">Compare Any Two Watches</h3>
-          <p className="text-[#475569] text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
+        <div className="text-center bg-neutral border border-border rounded-xl p-8">
+          <h3 className="text-textPrimary font-heading font-semibold text-lg mb-2">Compare Any Two Watches</h3>
+          <p className="text-textSecond text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
           <Link href="/compare" className="btn-gold">
             Start a Comparison
           </Link>
+        </div>
         </div>
       </div>
     </>

@@ -649,7 +649,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               const wb = getWatchBySlug(c.slug2)
               if (!wa || !wb) return null
               return (
-                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 min-h-[48px] hover:border-accent/40 transition-colors group">
+                <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 min-h-[48px] hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
@@ -674,7 +674,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
           <h2 className="text-xl font-bold text-textPrimary mb-5">Related Guides</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {relatedGuides.map((g) => (
-              <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-accent/40 transition-colors group">
+              <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                 <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
                 <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{g.title}</h3>
                 <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
@@ -691,7 +691,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Link
             href={`/brands/${w1.brand.toLowerCase().replace(/\s+/g, '-')}`}
-            className="card p-5 hover:border-accent/40 transition-colors group"
+            className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
           >
             <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
             <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">
@@ -705,7 +705,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
           <Link
             href={`/brands/${w2.brand.toLowerCase().replace(/\s+/g, '-')}`}
-            className="card p-5 hover:border-accent/40 transition-colors group"
+            className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
           >
             <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
             <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">
@@ -781,7 +781,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 <Link
                   key={compSlug}
                   href={`/compare/${compSlug}`}
-                  className="card p-5 hover:border-accent/40 transition-all hover:shadow-md group"
+                  className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
                 >
                   {/* Comparison title */}
                   <div className="flex gap-2 items-start mb-4">
