@@ -1711,4 +1711,119 @@ export const guides: Guide[] = [
     ],
     conclusion: "Your first automatic watch doesn't need to be perfect — it needs to be worn. The Seiko 5 Sports is the most-recommended starting point for good reason: it's reliable, characterful, and affordable enough to wear without anxiety. Once you've lived with a mechanical watch for six months, you'll know exactly what you want next. Use our comparison tool to put any two of these watches head-to-head before you decide.",
   },
+
+  {
+    slug: "rolex-new-vs-pre-owned-buying-guide",
+    emoji: "💰",
+    tagline: "Navigate the decision between buying new Rolex and pre-owned",
+    title: "Rolex New vs Pre-Owned Buying Guide 2026",
+    description: "Complete guide to buying Rolex watches. Compare new vs pre-owned pricing, warranty, certification, where to buy, and price preservation.",
+    h1: "Rolex New vs Pre-Owned: The Complete Buying Guide",
+    intro: "The Rolex decision is one of the most consequential in luxury watchmaking. Do you buy new from an authorized dealer and secure the warranty, or venture into the pre-owned market and capture the value discount? This guide walks through the financial, practical, and emotional considerations so you can decide with confidence.\n\nRolex occupies a unique position in watchmaking: genuine tool watches with decades of track record, strong brand heritage, and reliable appreciation in value. But that value comes at a price. A new Submariner costs $9,100+, a Datejust $6,500+, and a Day-Date $35,000+. Pre-owned options can cut 30-40% off those prices — but with considerations around warranty, service history, and authenticity risk. This guide breaks down the economics, the emotional calculus, and the practical steps to buying smart in either market.",
+    recommendations: [
+      {
+        slug: "rolex-submariner-41",
+        highlight: "The icon. Oystersteel, 300m water resistance, Cal. 3235 with 70-hour power reserve, ceramic bezel. New: $9,100-$9,600. Pre-owned: $6,500-$8,000 (depending on age and condition). The most collectible sports Rolex.",
+      },
+      {
+        slug: "rolex-datejust-36",
+        highlight: "The everyday Rolex. Steel, perpetual calendar, 100m water resistance, Cal. 3235. New: $6,500-$7,200. Pre-owned: $4,500-$6,000. Dress watch versatility at a more accessible entry price than sports models.",
+      },
+      {
+        slug: "rolex-gmt-master-ii-pepsi",
+        highlight: "The traveler's Rolex. Oystersteel, dual time zone, ceramic Pepsi bezel, 100m water resistance, Cal. 3285. New: $15,000-$16,500. Pre-owned: $10,000-$14,000. Commands higher pricing due to iconic status.",
+      },
+      {
+        slug: "rolex-explorer-36",
+        highlight: "The minimalist. Oystersteel, 100m water resistance, 3130 movement, no date complication. New: $6,200-$6,700. Pre-owned: $4,200-$5,500. Best value entry to Rolex sports tooling.",
+      },
+      {
+        slug: "rolex-day-date-40",
+        highlight: "The president. Gold/platinum, perpetual calendar, 100m water resistance, Cal. 3255. New: $35,000+ (gold). Pre-owned: $20,000-$30,000. Dress watch prestige; precious metals provide inherent value floor.",
+      },
+    ],
+    buyingGuide: [
+      {
+        heading: "Why This Decision Matters",
+        content: "A Rolex is typically a 5-10 year commitment and usually the most expensive watch someone ever owns. The difference between new and pre-owned isn't just financial — it affects your warranty protection, service relationship, availability of parts, and how you feel wearing it. New Rolex from authorized dealers comes with a 5-year international warranty. Pre-owned eliminates that safety net but can cut $2,000-$4,000 off the price. This decision shapes your ownership experience for years.",
+      },
+      {
+        heading: "Buying a New Rolex: Pros and Cons",
+        content: "A new Rolex from an authorized dealer gives you: (1) Full 5-year international warranty covering manufacturing defects and normal service. (2) Authentic certification and original box/papers, crucial for future resale. (3) Latest movement technology — current Cal. 3235/3285 movements offer 70-hour power reserve and improved accuracy. (4) Availability of all original parts and service through Rolex directly. (5) Peace of mind that nothing has been damaged, serviced poorly, or polished excessively.\n\nThe downsides: (1) Retail prices are at an all-time high — a Submariner costs $9,100+ today versus $6,500 pre-owned. (2) Authorization and availability can be challenging — many Rolex dealers have waitlists. (3) The first owner takes the depreciation hit — a new watch often drops 15-20% in year one. (4) You're locked into Rolex's official service pricing ($500-$900 for a basic service). (5) The emotional question: spending $15,000 on a watch when a certified pre-owned version exists for $11,000 requires conviction.",
+      },
+      {
+        heading: "Buying Pre-Owned Rolex: Pros and Cons",
+        content: "Pre-owned Rolex offers substantial financial advantages: (1) Price savings of 30-40% versus new — a Submariner at $6,500 instead of $9,100, or a GMT at $12,000 instead of $16,500. (2) Model availability — discontinued watches like older Submariners or GMT-Master II with aluminum bezels are only available pre-owned. (3) The watch has already taken its depreciation hit — resale value tends to stabilize after 3-5 years. (4) Access to independent watchmakers and service options, often at lower cost than Rolex authorized service. (5) Immediate ownership — no dealer waitlists or allocation games.\n\nThe risks: (1) Loss of manufacturer warranty — pre-owned typically comes with dealer warranty only (6-24 months depending on platform). (2) Unknown service history — if the watch was poorly serviced or never serviced, hidden damage may exist. (3) Wear and polishing — a heavily used case loses tool watch authenticity, even if mechanically sound. (4) Authentication risk — counterfeits exist; buying from reputable platforms (Chrono24, WatchBox, Hodinkee) is essential. (5) The emotional angle: wearing a pre-owned watch sometimes carries a subtle 'second' feeling, though this fades quickly once worn.",
+      },
+      {
+        heading: "Certification and Warranty Comparison",
+        content: "New Rolex: Comes with full box, papers, and 5-year international warranty direct from Rolex. Service is covered under warranty for manufacturing defects and normal wear. After 5 years, you pay Rolex service rates.\n\nPre-Owned Certifications: Reputable platforms offer their own certifications:\n- Chrono24 Authenticity Guarantee covers authentication but not mechanical defects\n- WatchBox certified watches typically include 1-2 year dealer warranty\n- Hodinkee shop watches include authentication and limited warranty\n- Local jewelers may offer 6-month to 1-year warranty on pre-owned stock\n\nKey difference: pre-owned warranty is from the seller, not Rolex. It covers mechanics for a limited time, then you're on your own. This makes knowing service history crucial — ask for documentation that the watch was serviced within the past 3-5 years.",
+      },
+      {
+        heading: "Where to Buy New Rolex",
+        content: "Your options are limited: Authorized Rolex dealers. These are the only source for new Rolex with manufacturer warranty. Most major cities have them (jewelry stores, specialty watch retailers). Building a relationship with your local AD helps with allocation and getting watches you want off the waitlist. Some ADs show preference to customers who buy other brands or have purchase history. Gray market dealers exist online but sell at or near retail without the AD advantage of access to harder-to-find models.",
+      },
+      {
+        heading: "Where to Buy Pre-Owned Rolex",
+        content: "Several trusted platforms dominate pre-owned Rolex sales:\n\nChrono24: Europe-based, the largest global marketplace. Thousands of listings from dealers and private sellers. Strong buyer protection and authentication guarantee. Better for variety and international access; expect typical marketplace pricing.\n\nWatchBox: Los Angeles-based boutique specializing in pre-owned luxury watches. Curated inventory, typically mid-tier pricing, includes 1-2 year dealer warranty. Excellent customer service and detailed condition descriptions.\n\nHodinkee Shop: New York-based community favorite. Smaller inventory but very selective. Fair pricing and excellent sourcing. Strong authentication and condition grading.\n\nLocal preowned dealers and jewelry stores: Can offer personal inspection, relationship-based service, and sometimes better pricing if buying in person. Risk: less consumer protection than online platforms.\n\nPrivate sales and forums: Watch forums sometimes have sales between members. Lowest cost but highest authentication and fraud risk — only pursue if you can inspect in person or buy from members with strong community history.",
+      },
+      {
+        heading: "Price Preservation: New vs Pre-Owned",
+        content: "This matters: will your watch hold value?\n\nNew Rolex: Depreciates 15-20% in year one as it becomes pre-owned, then stabilizes. A $9,100 Submariner drops to ~$7,500 after 12 months, then holds at $7,200-$8,500 for years afterward. The biggest hit happens when the original owner sells; future buyers are investing in a known quantity.\n\nPre-Owned Rolex: Pricing is more stable since depreciation has already occurred. A watch you buy for $6,500 may resell for $6,200-$6,700 in 2-3 years depending on condition and market. This is better holding value than taking the new-watch depreciation hit.\n\nThe math: Buy new at $9,100, sell in 3 years at $7,500 = -$1,600 loss (17.6%). Buy pre-owned at $6,500, sell in 3 years at $6,300 = -$200 loss (3%). Pre-owned makes economic sense if you're planning to sell; new makes sense if you're keeping it for 10+ years and the warranty matters to you.",
+      },
+      {
+        heading: "Common Mistakes When Buying Rolex",
+        content: "Mistake #1: Buying at retail pricing on the gray market. Some online retailers sell 'new' Rolex slightly under retail (8-12% off), claiming they're AD stock. This violates Rolex warranty terms — gray market watches often have limited or no warranty. Authorized dealers exist for a reason.\n\nMistake #2: Assuming all pre-owned Rolex are authentic. They're not. Buy only from reputable platforms (Chrono24, WatchBox, Hodinkee, established local dealers) that guarantee authentication. A $500 savings isn't worth a counterfeit or problem watch.\n\nMistake #3: Ignoring service history. A pre-owned Rolex that hasn't been serviced in 10 years may have internal issues that aren't visible. Ask when it was last serviced and by whom. Budget $600-$1,000 for a full service as part of your purchase decision.\n\nMistake #4: Over-valuing cosmetic condition. A pre-owned Rolex with a polished case and light scratches is often the best buy — it's experienced normal wear, proving it was worn and enjoyed. A mint, unpolished case often signals a watch that sat unworn or was poorly maintained.\n\nMistake #5: Buying purely as an investment. Rolex watches are tools first, investments second. If you don't love it enough to wear daily, the financial math doesn't work. Buy the watch you'll actually use.",
+      },
+      {
+        heading: "The Final Verdict",
+        content: "Buy new Rolex if: (1) You have authorized dealer access and don't mind the retail premium. (2) You plan to own for 10+ years and value the 5-year warranty. (3) You want the latest movement technology and absolute peace of mind. (4) You're buying a precious metal (gold/platinum) where material value provides a cost floor.\n\nBuy pre-owned Rolex if: (1) You want a specific discontinued model only available used. (2) You're budget-conscious and comfortable with dealer warranty instead of manufacturer coverage. (3) You want to minimize depreciation — pre-owned holds value better long-term. (4) You've found a specific watch on a reputable platform that checks all your boxes. (5) You're comfortable having the watch serviced independently rather than through Rolex official service.\n\nThe reality: both are good choices for different buyers. New Rolex is about security and relationship; pre-owned Rolex is about value and freedom. The 'right' answer is the one you'll be happy wearing for the next five years."
+      },
+    ],
+    faq: [
+      {
+        question: "Should I buy a new or pre-owned Rolex?",
+        answer: "Buy new if you want the 5-year warranty, latest movement technology, and peace of mind — expect to pay retail. Buy pre-owned if you want 30-40% savings, a discontinued model, or better value holding — but lose manufacturer warranty. For most buyers, pre-owned Rolex from a reputable platform (Chrono24, WatchBox, Hodinkee) offers better value.",
+      },
+      {
+        question: "How much does a new Rolex depreciate?",
+        answer: "A new Rolex typically drops 15-20% in the first year as it becomes pre-owned, then stabilizes. A $9,100 Submariner might resell for $7,500 after 12 months, then hold in the $7,200-$8,500 range. Precious metal Rolex hold value better due to material content.",
+      },
+      {
+        question: "Is it safe to buy pre-owned Rolex online?",
+        answer: "Yes, if you buy from established platforms: Chrono24 (largest marketplace with authentication guarantee), WatchBox (curated, 1-2 year warranty), or Hodinkee Shop (curated, strong sourcing). These platforms stand behind their watches. Avoid unknown sellers or sites that seem too cheap.",
+      },
+      {
+        question: "Can I get a warranty on a pre-owned Rolex?",
+        answer: "Yes — most reputable dealers offer 6 months to 2 years of dealer warranty. Chrono24 sellers often include Authenticity Guarantee. WatchBox includes 1-2 year warranty on certified pre-owned. However, it's dealer warranty, not manufacturer warranty — budget for potential service costs.",
+      },
+      {
+        question: "What should I ask about a pre-owned Rolex before buying?",
+        answer: "Ask: (1) When was it last serviced and by whom? (2) Does it come with original box and papers? (3) Has the case been polished or refinished? (4) Are there any outstanding service issues? (5) What warranty does the seller offer? Service history is crucial — an unserviced pre-owned Rolex may have hidden damage.",
+      },
+      {
+        question: "Is buying Rolex gray market a good idea?",
+        answer: "No. Gray market Rolex may be sold 8-12% under retail, but often come with limited or no warranty — violating Rolex terms. Authorized dealers exist for a reason. The small savings isn't worth the warranty loss. For better value, buy certified pre-owned instead.",
+      },
+    ],
+    paa: [
+      {
+        question: "Should I buy a new or pre-owned Rolex?",
+        answer: "Buy new for warranty and peace of mind; buy pre-owned for 30-40% savings. Both are good choices. Pre-owned from reputable platforms (Chrono24, WatchBox) offers better value for most buyers.",
+      },
+      {
+        question: "How much does a Rolex cost new?",
+        answer: "Rolex sports watches (Submariner, GMT, Yacht-Master) range $6,200-$16,500 new. Dress watches (Datejust, Day-Date) range $6,500-$35,000+. Precious metal prices are significantly higher.",
+      },
+      {
+        question: "Is it safe to buy Rolex pre-owned online?",
+        answer: "Yes, from established platforms. Chrono24 (largest), WatchBox, and Hodinkee Shop all offer authentication guarantees and buyer protection. Avoid unknown sellers.",
+      },
+      {
+        question: "Why is Rolex so expensive?",
+        answer: "Rolex prices reflect: brand heritage (since 1908), proven durability, strong resale value, limited production, and demand far exceeding supply. Waitlists at authorized dealers confirm demand.",
+      },
+    ],
+    conclusion: "The new vs pre-owned Rolex decision is deeply personal. New Rolex offers warranty security and the latest refinements; pre-owned offers substantial value and access to discontinued references. Both paths lead to owning an exceptional tool watch with a track record spanning decades. Use this guide to weigh the financial, practical, and emotional factors, then make the choice that aligns with how you want to own and wear your Rolex.",
+  },
 ]
