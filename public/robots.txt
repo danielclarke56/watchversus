@@ -1,28 +1,26 @@
-# Primary robots directive for WatchVsWatch
-# Note: app/robots.ts takes precedence in Next.js 14. This is a fallback.
+# WatchVsWatch — SEO Robots Configuration
+# Next.js 14 app/robots.ts takes precedence for dynamic routes.
+# This file provides fallback rules for static assets and bot discovery.
 
-# Default rules for all crawlers
+# Primary directives for all crawlers
 User-agent: *
+
+# Allow all public content areas
+Allow: /compare/*
+Allow: /guides/*
+Allow: /brands/*
+Allow: /watches/*
+Allow: /app/*
 Allow: /
-Allow: /compare
-Allow: /brand
-Allow: /brands
-Allow: /watches
-Allow: /guides
-Allow: /quiz
-Allow: /rankings
-Allow: /reviews
-Allow: /about
 
-# Block private/system routes
-Disallow: /api
-Disallow: /admin
-Disallow: /sign-in
-Disallow: /sign-up
-Disallow: /_next
+# Block private and system routes
+Disallow: /api/*
+Disallow: /admin/*
+Disallow: /_next/
+Disallow: /private/
 
-# Crawl-delay settings (in seconds)
+# Performance optimization
 Crawl-delay: 1
 
-# Specify sitemap location
+# Sitemap for optimal crawl efficiency
 Sitemap: https://watchvswatch.com/sitemap.xml
