@@ -10,6 +10,7 @@ import WatchSpecs from '@/components/watch/WatchSpecs'
 import WatchOwnerPhotos from '@/components/watch/WatchOwnerPhotos'
 import WatchComparisons from '@/components/watch/WatchComparisons'
 import WatchAlternatives from '@/components/watch/WatchAlternatives'
+import WatchSuggestions from '@/components/watch/WatchSuggestions'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
 import WatchWhatPeopleSay from '@/components/watch/WatchWhatPeopleSay'
 import ReviewCard from '@/components/ReviewCard'
@@ -184,6 +185,9 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
 
       {/* 8. Alternatives Section - 3–5 similar watches from same brand */}
       <WatchAlternatives watch={watch} />
+
+      {/* 8a. Suggestion Engine Section - 4–6 intelligent comparison suggestions */}
+      <WatchSuggestions watch={watch} />
 
       {/* 8b. Related Buying Guides - contextual guide links based on category + price */}
       <WatchRelatedGuides watch={watch} />
