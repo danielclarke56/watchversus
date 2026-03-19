@@ -22,7 +22,7 @@ export default function Footer() {
               {[
                 { href: '/watches', label: 'Watch Index' },
                 { href: '/compare', label: 'Compare Watches' },
-                { href: '/reviews', label: 'Community Reviews' },
+                { href: '/guides', label: 'Buying Guides' },
                 { href: '/quiz', label: 'Find My Watch Quiz' },
               ].map((l) => (
                 <li key={l.href}>

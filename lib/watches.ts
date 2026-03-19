@@ -18,12 +18,6 @@ export function getReviewsForWatch(watchId: string): Review[] {
   return seedReviews.filter((r) => r.watch_id === watchId)
 }
 
-export function getAllReviews(): Review[] {
-  return [...seedReviews].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )
-}
-
 export function calcAverageRatings(reviews: Review[]): ReviewRatings | null {
   if (reviews.length === 0) return null
   const keys: (keyof ReviewRatings)[] = [

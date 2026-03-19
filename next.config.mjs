@@ -22,6 +22,12 @@ const nextConfig = {
         destination: '/watches',
         permanent: true,
       },
+      // Reviews retired — reviews live on individual watch pages
+      {
+        source: '/reviews',
+        destination: '/watches',
+        permanent: true,
+      },
       // Guide slug renames & merges
       {
         source: '/guides/best-automatic-watches-under-3000',

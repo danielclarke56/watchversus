@@ -53,7 +53,6 @@ const navGroups: NavGroup[] = [
   {
     label: 'Community',
     items: [
-      { href: '/reviews', label: 'Owner Reviews', desc: 'Real insights from real owners' },
       { href: '/about', label: 'About', desc: 'Our mission & methodology' },
     ],
   },
