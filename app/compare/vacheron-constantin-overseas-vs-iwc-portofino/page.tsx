@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { Card } from '@/components/ui/Card'
 import { VerdictCallout } from '@/components/ui/VerdictCallout'
@@ -79,23 +78,23 @@ const faqItems = [
   },
   {
     question: 'Which movement is more reliable long-term?',
-    answer: `Both are bulletproof in-house mechanisms. The VC 1120/1 is legendary for precision and longevity—many examples run perfectly after 30+ years with minimal service. The IWC 79320 is deployed across Portofino and Doppelchronograph lines with millions of service hours logged. The 79320 may actually have broader service support globally due to IWC's larger authorized dealer network. For raw reliability, statistically they're equal; the VC edges ahead in legendary track record, but the IWC's modular design means easier servicing at broader centers.`,
+    answer: `Both are bulletproof in-house mechanisms. The VC 1120/1 is legendary for precision and longevity&mdash;many examples run perfectly after 30+ years with minimal service. The IWC 79320 is deployed across Portofino and Doppelchronograph lines with millions of service hours logged. The 79320 may actually have broader service support globally due to IWC&apos;s larger authorized dealer network. For raw reliability, statistically they&apos;re equal; the VC edges ahead in legendary track record, but the IWC&apos;s modular design means easier servicing at broader centers.`,
   },
   {
     question: 'What about case finishing and polishing?',
-    answer: `This is where luxury watchmaking reveals itself. Vacheron Constantin applies angle polishing to the bevels of the Overseas case—a hand-craft process that takes a specialist hours per watch. The result is a mirror-like bevel that catches light from specific angles. IWC applies excellent but mechanized satin finishing and controlled polishing. Both are objectively "finished to a high standard," but VC's Overseas represents the upper extreme of finishing ambition. If you examine both under magnification, the VC's bevels will show evidence of hand work and artisanal care; the IWC shows precise, repeatable manufacturing excellence.`,
+    answer: `This is where luxury watchmaking reveals itself. Vacheron Constantin applies angle polishing to the bevels of the Overseas case&mdash;a hand-craft process that takes a specialist hours per watch. The result is a mirror-like bevel that catches light from specific angles. IWC applies excellent but mechanized satin finishing and controlled polishing. Both are objectively &quot;finished to a high standard,&quot; but VC&apos;s Overseas represents the upper extreme of finishing ambition. If you examine both under magnification, the VC&apos;s bevels will show evidence of hand work and artisanal care; the IWC shows precise, repeatable manufacturing excellence.`,
   },
   {
     question: 'Which is the better investment for resale value?',
-    answer: `The Vacheron Constantin Overseas, especially steel models, commands one of the strongest secondary markets in watchmaking. They appreciate or hold value remarkably well—some have appreciated 10–20% over 3–5 years due to production limits and brand prestige. The IWC Portofino, while respected, depreciates more typically: 20–30% in the first two years, then stabilizes. If investment potential influences your decision, VC is the clear winner. You can lose money on either, but the VC is structured to preserve capital more reliably.`,
+    answer: `The Vacheron Constantin Overseas, especially steel models, commands one of the strongest secondary markets in watchmaking. They appreciate or hold value remarkably well&mdash;some have appreciated 10&ndash;20% over 3&ndash;5 years due to production limits and brand prestige. The IWC Portofino, while respected, depreciates more typically: 20&ndash;30% in the first two years, then stabilizes. If investment potential influences your decision, VC is the clear winner. You can lose money on either, but the VC is structured to preserve capital more reliably.`,
   },
   {
     question: 'Which watch is more versatile for different outfits?',
-    answer: `The IWC Portofino is the more versatile dress-to-casual piece. Its cleaner dial (no subdials on base model), slender proportions, and integrated bracelet flow seamlessly from a business suit to weekend casual. The Vacheron Overseas, while classically sporty-elegant, broadcasts "prestige timepiece" louder due to its integrated bracelet geometry and the sheer gravitas of the brand. Both excel in dress-casual, but the IWC transitions slightly more naturally from formal to casual contexts without commanding attention. The VC, by contrast, is a statement piece—it announces you have arrived.`,
+    answer: `The IWC Portofino is the more versatile dress-to-casual piece. Its cleaner dial (no subdials on base model), slender proportions, and integrated bracelet flow seamlessly from a business suit to weekend casual. The Vacheron Overseas, while classically sporty-elegant, broadcasts &quot;prestige timepiece&quot; louder due to its integrated bracelet geometry and the sheer gravitas of the brand. Both excel in dress-casual, but the IWC transitions slightly more naturally from formal to casual contexts without commanding attention. The VC, by contrast, is a statement piece&mdash;it announces you have arrived.`,
   },
   {
     question: 'Should I choose based on movement finishing or wearability?',
-    answer: `If movement finishing and artisanal case work excite you, buy the Vacheron. Collectors who love examining their watches under magnification, opening the caseback, and appreciating hand-polished bevels will find VC transcendent. If daily wearability, versatility, and intelligent engineering matter more, the IWC Portofino is the smarter choice. It's also 4x more affordable, leaving capital for a second or third watch. The VC is a "one perfect watch" purchase; the IWC is a "cornerstone of a collection" purchase.`,
+    answer: `If movement finishing and artisanal case work excite you, buy the Vacheron. Collectors who love examining their watches under magnification, opening the caseback, and appreciating hand-polished bevels will find VC transcendent. If daily wearability, versatility, and intelligent engineering matter more, the IWC Portofino is the smarter choice. It&apos;s also 4x more affordable, leaving capital for a second or third watch. The VC is a &quot;one perfect watch&quot; purchase; the IWC is a &quot;cornerstone of a collection&quot; purchase.`,
   },
 ]
 
@@ -151,7 +150,7 @@ export default function ComparisonPage() {
 
         {/* SEO lede */}
         <p className="text-slate-700 text-base leading-relaxed mb-8 max-w-3xl">
-          Comparing the <strong className="text-slate-900">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm, in-house 1120/1) against the <strong className="text-slate-900">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm, 79320 chronograph) — specs, heritage, movement analysis, and expert verdict below.
+          Comparing the <strong className="text-slate-900">{w1.brand} {w1.name}</strong> ({formatPrice(w1.price_new_usd)}, {w1.water_resistance_m}m WR, {w1.case_diameter_mm}mm, in-house 1120/1) against the <strong className="text-slate-900">{w2.brand} {w2.name}</strong> ({formatPrice(w2.price_new_usd)}, {w2.water_resistance_m}m WR, {w2.case_diameter_mm}mm, 79320 chronograph) &mdash; specs, heritage, movement analysis, and expert verdict below.
         </p>
 
         {/* Verdict Callout */}
@@ -174,7 +173,7 @@ export default function ComparisonPage() {
 
           {/* Watch Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
-            {[w1, w2].map((w, i) => (
+            {[w1, w2].map((w) => (
               <div key={w.slug} className="relative">
                 <Card className="p-6 md:p-8">
                   {/* Watch Identity */}
@@ -213,8 +212,7 @@ export default function ComparisonPage() {
 
                   {/* Rating */}
                   <div className="flex flex-col items-center gap-2 py-4 mb-4">
-                    <div className="text-4xl font-black text-amber-600">{w.score.toFixed(1)}</div>
-                    <StarRating rating={w.score} size="sm" />
+                    <div className="text-4xl font-black text-amber-600">{w.score.toFixed(1)} / 10</div>
                     <span className="text-xs text-slate-600 font-medium">{w.buy_again_pct}% would buy again</span>
                   </div>
 
@@ -230,38 +228,38 @@ export default function ComparisonPage() {
 
         {/* Detailed Comparison Content */}
         <section className="max-w-4xl mx-auto my-12">
-          <h2 className="text-3xl font-black text-slate-900 mb-6">Heritage & Legacy</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-6">Heritage &amp; Legacy</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The Vacheron Constantin Overseas and IWC Portofino represent two distinct philosophies in luxury watchmaking's upper echelon. Vacheron Constantin, founded 1755, is the oldest continuously operating watchmaker on Earth. The Overseas line, launched 1977, evolved from the Integrated collection and embodies VC's commitment to refined sports watches for discerning collectors. Every Overseas is assembled by hand, with movements visible through a caseback exhibition that showcases decades of in-house caliber refinement.
+            The Vacheron Constantin Overseas and IWC Portofino represent two distinct philosophies in luxury watchmaking&apos;s upper echelon. Vacheron Constantin, founded 1755, is the oldest continuously operating watchmaker on Earth. The Overseas line, launched 1977, evolved from the Integrated collection and embodies VC&apos;s commitment to refined sports watches for discerning collectors. Every Overseas is assembled by hand, with movements visible through a caseback exhibition that showcases decades of in-house caliber refinement.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             The IWC Portofino, descended from the Aquatimer family and modernized into its current dress-sport form, carries IWC's schaffhausen engineering ethos: precision, reliability, and intelligent innovation. While younger than VC, IWC (founded 1868) has a 150-year legacy of making watches for professionals and collectors who value dependability above ornament. The Portofino is engineered for the executive who wants luxury without pretense.
           </p>
 
-          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Movement Architecture & In-House Calibers</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Movement Architecture &amp; In-House Calibers</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The Vacheron Constantin Overseas is powered by the caliber 1120/1, a fully in-house automatic movement developed and refined over decades. This movement is a time capsule of old-school Swiss watchmaking philosophy: symmetrical decoration on both sides, hand-engraved balance cocks, Genevese stripes applied by hand at VC's Geneva workshops, and finishing that borders on jewel-like. The 48-hour power reserve ensures the watch survives a weekend without winding. The 1120/1 beats at 4 Hz (28,800 bph), a slightly lower frequency than competitors, which contributes to legendary accuracy and component longevity—parts experience less stress at this rhythm.
+            The Vacheron Constantin Overseas is powered by the caliber 1120/1, a fully in-house automatic movement developed and refined over decades. This movement is a time capsule of old-school Swiss watchmaking philosophy: symmetrical decoration on both sides, hand-engraved balance cocks, Genevese stripes applied by hand at VC&apos;s Geneva workshops, and finishing that borders on jewel-like. The 48-hour power reserve ensures the watch survives a weekend without winding. The 1120/1 beats at 4 Hz (28,800 bph), a slightly lower frequency than competitors, which contributes to legendary accuracy and component longevity&mdash;parts experience less stress at this rhythm.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The IWC Portofino Chronograph 42 houses the caliber 79320, also fully in-house but engineered for the modern production environment. The 79320 is a column-wheel chronograph with 42-hour power reserve, deployed across multiple IWC collections. It's equally reliable as the VC 1120/1 but optimized for manufacturing efficiency and modular repair. The 79320 beats at 4 Hz as well, showing IWC's similar philosophy on stress reduction. Where they diverge: VC finishes the 1120/1 to transcendent standards visible only under magnification; IWC finishes the 79320 to exacting factory standards sufficient for luxury but not approaching VC's investment in hand-work.
-          </p>
-
-          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Case Design & Finishing Mastery</h2>
-          <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The Vacheron Constantin Overseas 4500V features an integrated bracelet case design that appears simple but represents engineering precision. The case is polished and brushed with intentional contrast—polished surfaces on top surfaces, brushed on sides—but the real artistry lies in the bevels. VC applies angle polishing to all bevels, a hand-craft operation where a specialist takes hours with fine abrasives to achieve a mirror-like finish on the bevel facets. When you examine an Overseas under light, the bevels catch and reflect with a distinctive glow. The caseback is hand-engraved with the VC hallmark and individual serial detailing. Thickness of 12.5mm keeps it elegant; the 50mm lug-to-lug makes it wearable on most wrists despite its 42.5mm width.
-          </p>
-          <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The IWC Portofino Chronograph 42 applies excellent but more standardized finishing. The case is polished and brushed with sharp transitions, achieved through CNC tooling and automated finishing lines. The result is consistent, sharp, and objectively beautiful. However, under magnification, you'll see the hand-craft that VC lavishes is absent—everything is mechanically repeatable. The IWC case measures 13.8mm thick and 49.5mm lug-to-lug, marginally larger than the VC, giving it a slightly more assertive presence. Both feature sapphire crystals and equally robust stainless steel construction, but VC's finishing philosophy takes case artistry to a higher plane.
+            The IWC Portofino Chronograph 42 houses the caliber 79320, also fully in-house but engineered for the modern production environment. The 79320 is a column-wheel chronograph with 42-hour power reserve, deployed across multiple IWC collections. It&apos;s equally reliable as the VC 1120/1 but optimized for manufacturing efficiency and modular repair. The 79320 beats at 4 Hz as well, showing IWC&apos;s similar philosophy on stress reduction. Where they diverge: VC finishes the 1120/1 to transcendent standards visible only under magnification; IWC finishes the 79320 to exacting factory standards sufficient for luxury but not approaching VC&apos;s investment in hand-work.
           </p>
 
-          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Water Resistance & Practical Engineering</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Case Design &amp; Finishing Mastery</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The Vacheron Constantin Overseas offers 150m water resistance—adequate for swimming and snorkeling, occasional saltwater exposure. The IWC Portofino offers 100m, suitable for daily splash and light water contact. In practical terms, both are water-resistant dress sports watches, not diving instruments. The difference is marginal; neither invites submersion beyond their rating. Both feature integrated bracelets with secure clasps, and both hold tightness over decades of use through VC's and IWC's legendary service standards.
+            The Vacheron Constantin Overseas 4500V features an integrated bracelet case design that appears simple but represents engineering precision. The case is polished and brushed with intentional contrast&mdash;polished surfaces on top surfaces, brushed on sides&mdash;but the real artistry lies in the bevels. VC applies angle polishing to all bevels, a hand-craft operation where a specialist takes hours with fine abrasives to achieve a mirror-like finish on the bevel facets. When you examine an Overseas under light, the bevels catch and reflect with a distinctive glow. The caseback is hand-engraved with the VC hallmark and individual serial detailing. Thickness of 12.5mm keeps it elegant; the 50mm lug-to-lug makes it wearable on most wrists despite its 42.5mm width.
+          </p>
+          <p className="text-slate-700 text-lg leading-relaxed mb-6">
+            The IWC Portofino Chronograph 42 applies excellent but more standardized finishing. The case is polished and brushed with sharp transitions, achieved through CNC tooling and automated finishing lines. The result is consistent, sharp, and objectively beautiful. However, under magnification, you&apos;ll see the hand-craft that VC lavishes is absent&mdash;everything is mechanically repeatable. The IWC case measures 13.8mm thick and 49.5mm lug-to-lug, marginally larger than the VC, giving it a slightly more assertive presence. Both feature sapphire crystals and equally robust stainless steel construction, but VC&apos;s finishing philosophy takes case artistry to a higher plane.
+          </p>
+
+          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Water Resistance &amp; Practical Engineering</h2>
+          <p className="text-slate-700 text-lg leading-relaxed mb-6">
+            The Vacheron Constantin Overseas offers 150m water resistance&mdash;adequate for swimming and snorkeling, occasional saltwater exposure. The IWC Portofino offers 100m, suitable for daily splash and light water contact. In practical terms, both are water-resistant dress sports watches, not diving instruments. The difference is marginal; neither invites submersion beyond their rating. Both feature integrated bracelets with secure clasps, and both hold tightness over decades of use through VC&apos;s and IWC&apos;s legendary service standards.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Price Positioning & Market Reality</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The Vacheron Constantin Overseas retails $32,000–$38,000 USD, putting it in the rarefied "haute horlogerie" price bracket. This reflects not just the 1120/1 movement and stainless steel, but the hand-craft in finishing, the heritage premium, and scarcity (VC produces a fraction of what competitors make). On the secondary market, it holds value remarkably—used examples command $24,000–$32,000, recovering 65–75% of retail even after several years of ownership. Some examples appreciate due to discontinued references or strong collector demand.
+            The Vacheron Constantin Overseas retails $32,000&ndash;$38,000 USD, putting it in the rarefied &quot;haute horlogerie&quot; price bracket. This reflects not just the 1120/1 movement and stainless steel, but the hand-craft in finishing, the heritage premium, and scarcity (VC produces a fraction of what competitors make). On the secondary market, it holds value remarkably&mdash;used examples command $24,000&ndash;$32,000, recovering 65&ndash;75% of retail even after several years of ownership. Some examples appreciate due to discontinued references or strong collector demand.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             The IWC Portofino Chronograph 42 retails $7,500–$8,500, roughly one-fifth the VC price. It's a legitimate luxury watch but accessible to a broader collector base. Secondary market pricing typically runs $5,500–$7,000 (70–80% of retail), showing solid but less dramatic retention than VC. The IWC is a smart luxury purchase; the VC is an investment-grade purchase. If capital preservation matters to your decision, VC is the mathematically superior choice.
@@ -272,15 +270,15 @@ export default function ComparisonPage() {
             The Vacheron Constantin Overseas appeals to established collectors with significant timepiece experience. Buyers typically own multiple watches already and appreciate artisanal finishing, heritage storytelling, and investment characteristics. VC collectors are often attracted to the craft, not just the function. They examine movements under magnification, read books about watchmaking history, and view watches as portable jewelry and mechanical art. Overseas buyers often wear their purchases infrequently (rotating through a collection) to preserve value.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The IWC Portofino appeals to the sophisticated professional who wants a serious luxury watch but prioritizes practicality and versatility. Portofino buyers tend to wear their watches daily, in professional and casual contexts. IWC's reputation for durability and service support appeals to users who want the luxury without collecting obsession. Portofino is a "buy once, wear forever" watch; Overseas is a "cornerstone of a collection" watch.
+            The IWC Portofino appeals to the sophisticated professional who wants a serious luxury watch but prioritizes practicality and versatility. Portofino buyers tend to wear their watches daily, in professional and casual contexts. IWC&apos;s reputation for durability and service support appeals to users who want the luxury without collecting obsession. Portofino is a &quot;buy once, wear forever&quot; watch; Overseas is a &quot;cornerstone of a collection&quot; watch.
           </p>
 
-          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Service & Long-Term Maintenance</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Service &amp; Long-Term Maintenance</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Vacheron Constantin service is available globally but limited; VC has fewer authorized service centers than mainstream luxury brands. A full movement service (overhaul, cleaning, lubrication) typically costs $2,500–$4,000 and takes 4–8 weeks. However, VC movement quality is so superior that many examples go 10–15 years between services without issue. Spare parts are expensive and made to order, adding to servicing costs. VC service philosophy is "build it right the first time, then care for it methodically."
+            Vacheron Constantin service is available globally but limited; VC has fewer authorized service centers than mainstream luxury brands. A full movement service (overhaul, cleaning, lubrication) typically costs $2,500&ndash;$4,000 and takes 4&ndash;8 weeks. However, VC movement quality is so superior that many examples go 10&ndash;15 years between services without issue. Spare parts are expensive and made to order, adding to servicing costs. VC service philosophy is &quot;build it right the first time, then care for it methodically.&quot;
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            IWC service is more readily accessible, with authorized centers in most major cities. A comparable movement service runs $1,500–$2,500. The 79320 caliber is standardized across multiple references, so spare parts are sometimes available from stock. IWC's modular design means certain components can be replaced without full overhauls, potentially reducing service costs for minor work. For collectors who plan to wear their watches actively, IWC's broader service infrastructure is a practical advantage.
+            IWC service is more readily accessible, with authorized centers in most major cities. A comparable movement service runs $1,500&ndash;$2,500. The 79320 caliber is standardized across multiple references, so spare parts are sometimes available from stock. IWC&apos;s modular design means certain components can be replaced without full overhauls, potentially reducing service costs for minor work. For collectors who plan to wear their watches actively, IWC&apos;s broader service infrastructure is a practical advantage.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Final Verdict</h2>
@@ -288,7 +286,7 @@ export default function ComparisonPage() {
             If you are an experienced collector, appreciate hand-craft finishing, and view watches as art objects with investment characteristics, the Vacheron Constantin Overseas is transcendent. It represents the pinnacle of watch finishing philosophy and carries a 270-year legacy of watchmaking excellence. The 1120/1 movement is a masterpiece; the case finishing is visible testimony to old-world artisanal care. Buy it if capital preservation and collecting passion justify the premium.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
-            If you want a serious, prestige luxury watch to wear daily, appreciate intelligent engineering over ornamental finishing, and prefer broader service accessibility, the IWC Portofino is the smarter choice. It's equally reliable, beautifully made, and offers exceptional value relative to VC. You'll have capital left over for additional watches, travel, or life experiences. Buy it if practicality and versatility matter more than investment grade positioning.
+            If you want a serious, prestige luxury watch to wear daily, appreciate intelligent engineering over ornamental finishing, and prefer broader service accessibility, the IWC Portofino is the smarter choice. It&apos;s equally reliable, beautifully made, and offers exceptional value relative to VC. You&apos;ll have capital left over for additional watches, travel, or life experiences. Buy it if practicality and versatility matter more than investment grade positioning.
           </p>
         </section>
 
