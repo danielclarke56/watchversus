@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
 import { Card } from '@/components/ui/Card'
 import { VerdictCallout } from '@/components/ui/VerdictCallout'
-import { StarRating } from '@/components/StarRating'
+import StarRating from '@/components/StarRating'
 
 // Hardcoded watch data
 const hamilton = {

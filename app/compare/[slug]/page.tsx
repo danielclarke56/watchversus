@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons, getComparisonTier } from '@/lib/watches'
+import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getBrandsForComparison } from '@/lib/relatedContent'
 import { generateComparisonBadges } from '@/lib/comparisonBadges'
@@ -82,9 +82,10 @@ function getVerdictInfo(w1: Watch, w2: Watch, preferredWatch: Watch | null): { w
 }
 
 export async function generateStaticParams() {
-  return popularComparisons.map((c) => ({
-    slug: `${c.slug1}-vs-${c.slug2}`,
-  }))
+  // Pre-generate Tier 1 & 2 at build time; Tier 3 uses on-demand ISR
+  return comparisonTiers
+    .filter((c) => c.tier <= 2)
+    .map((c) => ({ slug: `${c.slug1}-vs-${c.slug2}` }))
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -180,7 +181,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
   const preferredWatch = pref1 > pref2 ? w1 : pref2 > pref1 ? w2 : null
   const verdictInfo = getVerdictInfo(w1, w2, preferredWatch)
 
-  const relatedComparisons = popularComparisons
+  const relatedComparisons = comparisonTiers
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
     .slice(0, 4)
 
