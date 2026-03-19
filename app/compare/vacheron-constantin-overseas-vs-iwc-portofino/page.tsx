@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { Card } from '@/components/ui/Card'
 import { StarRating } from '@/components/ui/StarRating'
@@ -8,7 +7,7 @@ import { VerdictCallout } from '@/components/ui/VerdictCallout'
 
 // Hardcoded watch data
 const vacheron = {
-  slug: 'vacheron-constantin-overseas-42',
+  slug: 'vacheron-constantin-overseas-4500v',
   name: 'Overseas 42',
   brand: 'Vacheron Constantin',
   reference: '4500V/110A-B674',
@@ -31,7 +30,7 @@ const vacheron = {
 const iwc = {
   slug: 'iwc-portofino-40',
   name: 'Portofino 40',
-  brand: 'IWC Schaffhausen',
+  brand: 'IWC',
   reference: 'IW356504',
   case_diameter_mm: 40,
   case_thickness_mm: 8.15,

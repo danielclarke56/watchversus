@@ -3216,5 +3216,64 @@
                              "nomos-tangente-38",
                              "seiko-presage-spb167"
                          ]
+    },
+    {
+        "id":  "57",
+        "slug":  "iwc-portofino-40",
+        "name":  "Portofino 40",
+        "brand":  "IWC",
+        "reference":  "IW356504",
+        "year_introduced":  2019,
+        "case_diameter_mm":  40,
+        "case_thickness_mm":  8.15,
+        "lug_width_mm":  18,
+        "lug_to_lug_mm":  46,
+        "movement_type":  "automatic",
+        "movement_caliber":  "Cal. 35111",
+        "power_reserve_hours":  42,
+        "water_resistance_m":  100,
+        "crystal":  "sapphire",
+        "case_material":  "Stainless Steel",
+        "bracelet_material":  "Leather strap",
+        "price_new_usd":  {
+                              "min":  6500,
+                              "max":  8000
+                          },
+        "price_preowned_usd":  {
+                                   "min":  5000,
+                                   "max":  6500
+                               },
+        "style":  [
+                      "dress",
+                      "luxury"
+                  ],
+        "description":  "The IWC Portofino is a refined dress watch that epitomizes understated elegance. With its ultra-thin 8.15mm profile and minimalist design, it represents IWC\u0027s commitment to functional beauty. The in-house Caliber 35111 automatic movement ensures reliable timekeeping while maintaining the watch\u0027s sleek appearance.",
+        "image":  "/images/watches/iwc-portofino-40.webp",
+        "imageAlt":  "IWC Portofino 40 official product image",
+        "primary_category":  "dress",
+        "tagline":  "IWC Portofino - refined dress watch with ultra-thin profile and timeless elegance.",
+        "score":  8,
+        "buy_again_pct":  82,
+        "pros":  [
+                     "Ultra-thin 8.15mm profile",
+                     "Versatile dress watch design",
+                     "In-house Caliber 35111 movement",
+                     "Reasonable pricing for luxury brand",
+                     "Strong resale value"
+                 ],
+        "cons":  [
+                     "Limited water resistance (100m)",
+                     "Not suitable for water sports"
+                 ],
+        "verdict":  {
+                        "who_its_for":  "Professionals and collectors seeking a refined, elegant dress watch that prioritizes aesthetics and wearability without compromising quality engineering.",
+                        "who_should_skip":  "Those requiring significant water resistance or active sports watch capability. Also not ideal for collectors seeking larger sports watches.",
+                        "final_take":  "The IWC Portofino represents the pinnacle of dress watch philosophy—understated elegance merged with technical excellence. Its ultra-thin profile ensures it disappears under shirt cuffs, while the refined proportions work equally well with formal and smart-casual attire. At $6,500–$8,000, it offers exceptional value for IWC\u0027s in-house engineering and heritage."
+                    },
+        "alternatives":  [
+                             "iwc-portugieser-40",
+                             "longines-master-collection",
+                             "rolex-datejust-36"
+                         ]
     }
 ]
