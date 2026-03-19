@@ -12,7 +12,7 @@ function fmt(usd: number): string {
 
 export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
   return (
-    <section id="overview" className="py-10 md:py-14 border-b border-border">
+    <section className="py-10 md:py-14 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center">
           {/* Watch Image */}
@@ -96,33 +96,6 @@ export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
               Ref. {watch.reference} · Introduced {watch.year_introduced}
             </p>
 
-            {/* Anchor CTAs */}
-            <div className="flex flex-wrap gap-3 pt-1">
-              <a
-                href="#verdict"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline"
-              >
-                Read verdict <span>↓</span>
-              </a>
-              <a
-                href="#specs"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline"
-              >
-                Full specs <span>↓</span>
-              </a>
-              <a
-                href="#reviews"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline"
-              >
-                Reviews <span>↓</span>
-              </a>
-              <a
-                href="#compare"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline"
-              >
-                Compare <span>↓</span>
-              </a>
-            </div>
           </div>
         </div>
       </div>

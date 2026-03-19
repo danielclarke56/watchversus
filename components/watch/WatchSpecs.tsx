@@ -25,8 +25,7 @@ export default function WatchSpecs({ watch }: WatchSpecsProps) {
   ]
 
   return (
-    <section id="specs" className="py-10 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="specs" className="pb-10 border-b border-border">
         <h2 className="text-2xl font-bold text-textPrimary mb-6">Full Specifications</h2>
 
         <div className="card overflow-hidden">
@@ -48,7 +47,6 @@ export default function WatchSpecs({ watch }: WatchSpecsProps) {
             </tbody>
           </table>
         </div>
-      </div>
     </section>
   )
 }

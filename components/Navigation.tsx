@@ -39,10 +39,9 @@ const navGroups: NavGroup[] = [
   {
     label: 'Watches',
     items: [
-      { href: '/watches', label: 'All Watches', desc: 'Browse our full catalogue' },
-      { href: '/brands', label: 'By Brand', desc: 'Rolex, Tudor, Seiko & more' },
+      { href: '/rankings', label: 'Best Watches', desc: 'Ranked by score & category' },
+      { href: '/watches', label: 'All Watches', desc: 'Search & filter our database' },
       { href: '/compare', label: 'Compare', desc: 'Head-to-head showdowns' },
-      { href: '/rankings', label: 'Rankings', desc: 'Ranked by score & category' },
     ],
   },
   {

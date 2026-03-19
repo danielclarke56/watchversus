@@ -30,8 +30,7 @@ export default function WatchReviewsSection({
   }
 
   return (
-    <section id="reviews" className="py-10 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="reviews" className="pb-10 border-b border-border">
         <h2 className="text-2xl font-bold text-textPrimary mb-6">
           Reviews
           {reviews.length > 0 && (
@@ -85,7 +84,6 @@ export default function WatchReviewsSection({
             ))}
           </div>
         )}
-      </div>
     </section>
   )
 }

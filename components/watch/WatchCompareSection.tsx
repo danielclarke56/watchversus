@@ -88,8 +88,7 @@ export default function WatchCompareSection({ watch }: WatchCompareSectionProps)
   if (entries.length === 0) return null
 
   return (
-    <section id="compare" className="py-10 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="compare" className="pb-10 border-b border-border">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-textPrimary">Compare & Alternatives</h2>
           <Link
@@ -161,7 +160,6 @@ export default function WatchCompareSection({ watch }: WatchCompareSectionProps)
         >
           All comparisons →
         </Link>
-      </div>
     </section>
   )
 }

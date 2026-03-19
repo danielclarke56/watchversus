@@ -12,8 +12,7 @@ export default function WatchVerdict({ watch }: WatchVerdictProps) {
   const { verdict, pros, cons } = watch
 
   return (
-    <section id="verdict" className="py-10 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="verdict" className="pb-10 border-b border-border">
         <h2 className="text-2xl font-bold text-textPrimary mb-8">The Verdict</h2>
 
         {/* Final Take — lead with the most important content */}
@@ -68,7 +67,6 @@ export default function WatchVerdict({ watch }: WatchVerdictProps) {
             </ul>
           </div>
         </div>
-      </div>
     </section>
   )
 }

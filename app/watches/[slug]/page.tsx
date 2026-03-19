@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating } from '@/lib/watches'
 import WatchHero from '@/components/watch/WatchHero'
-import WatchStickyNav from '@/components/watch/WatchStickyNav'
+import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import WatchVerdict from '@/components/watch/WatchVerdict'
 import WatchSpecs from '@/components/watch/WatchSpecs'
 import WatchOwnerPhotos from '@/components/watch/WatchOwnerPhotos'
@@ -109,43 +109,42 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* 1. Hero — image, name, price, score, tagline, anchor links */}
+      {/* Hero — full-width, above the two-column layout */}
       <WatchHero watch={watch} reviewCount={reviews.length} />
 
-      {/* 2. Sticky section nav */}
-      <WatchStickyNav />
+      {/* Two-column layout: sidenav + content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex gap-8">
+        {/* Sticky sidebar TOC — hidden below lg breakpoint */}
+        <GuideTableOfContents
+          sections={[
+            { id: 'verdict', label: 'The Verdict' },
+            { id: 'specs', label: 'Full Specs' },
+            { id: 'reviews', label: 'Reviews' },
+            { id: 'compare', label: 'Compare & Alternatives' },
+            { id: 'guides', label: 'Buying Guides' },
+          ]}
+        />
 
-      {/* 3. The Verdict — final take + who it's for/skip + pros/cons */}
-      <WatchVerdict watch={watch} />
+        {/* Main content column */}
+        <div className="flex-1 min-w-0 space-y-10">
+          <WatchVerdict watch={watch} />
+          <WatchSpecs watch={watch} />
+          <WatchOwnerPhotos watch={watch} />
 
-      {/* 4. Full Specifications — one consolidated table */}
-      <WatchSpecs watch={watch} />
+          <WatchReviewsSection
+            watchName={`${watch.brand} ${watch.name}`}
+            watchSlug={watch.slug}
+            reviews={reviews}
+          />
 
-      {/* 5. Owner Photos — only renders if real photos exist */}
-      <WatchOwnerPhotos watch={watch} />
+          <UserReviews watchId={watch.id} />
 
-      {/* 6. Reviews — unified feed + quick vote + form */}
-      <WatchReviewsSection
-        watchName={`${watch.brand} ${watch.name}`}
-        watchSlug={watch.slug}
-        reviews={reviews}
-      />
+          <ReviewForm watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
 
-      {/* User reviews from Redis (client component) */}
-      <div className="border-b border-border">
-        <UserReviews watchId={watch.id} />
+          <WatchCompareSection watch={watch} />
+          <WatchRelatedGuides watch={watch} />
+        </div>
       </div>
-
-      {/* Review form */}
-      <div className="py-8">
-        <ReviewForm watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
-      </div>
-
-      {/* 7. Compare & Alternatives — one unified section */}
-      <WatchCompareSection watch={watch} />
-
-      {/* 8. Related Buying Guides — supplemental, near bottom */}
-      <WatchRelatedGuides watch={watch} />
     </>
   )
 }

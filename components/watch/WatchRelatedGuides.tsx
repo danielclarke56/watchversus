@@ -79,8 +79,7 @@ export default function WatchRelatedGuides({ watch }: { watch: Watch }) {
   if (guides.length === 0) return null
 
   return (
-    <section className="py-8 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="guides">
         <h2 className="text-xl font-bold text-textPrimary mb-4">Related Buying Guides</h2>
         <div className="flex flex-wrap gap-3">
           {guides.map((g) => (
@@ -95,7 +94,6 @@ export default function WatchRelatedGuides({ watch }: { watch: Watch }) {
             </Link>
           ))}
         </div>
-      </div>
     </section>
   )
 }

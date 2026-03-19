@@ -10,6 +10,7 @@ interface Props {
   initialBrand: string
   initialStyle: string
   initialPrice: string
+  initialSort: string
 }
 
 const PRICE_RANGES = [
@@ -21,11 +22,19 @@ const PRICE_RANGES = [
   { label: '$15,000+', value: '15000p' },
 ]
 
-export default function WatchesClient({ watches, initialSearch, initialBrand, initialStyle, initialPrice }: Props) {
+const SORT_OPTIONS = [
+  { label: 'Default', value: '' },
+  { label: 'Top Rated', value: 'score' },
+  { label: 'Price: Low → High', value: 'price-asc' },
+  { label: 'Price: High → Low', value: 'price-desc' },
+]
+
+export default function WatchesClient({ watches, initialSearch, initialBrand, initialStyle, initialPrice, initialSort }: Props) {
   const [search, setSearch] = useState(initialSearch)
   const [brand, setBrand] = useState(initialBrand)
   const [style, setStyle] = useState(initialStyle)
   const [price, setPrice] = useState(initialPrice)
+  const [sort, setSort] = useState(initialSort)
 
   const brands = useMemo(() => {
     const set = new Set(watches.map((w) => w.brand))
@@ -38,7 +47,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
   }, [watches])
 
   const filtered = useMemo(() => {
-    return watches.filter((w) => {
+    let result = watches.filter((w) => {
       if (search) {
         const q = search.toLowerCase()
         if (!w.name.toLowerCase().includes(q) && !w.brand.toLowerCase().includes(q) && !w.reference.toLowerCase().includes(q)) return false
@@ -55,13 +64,25 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
       }
       return true
     })
-  }, [watches, search, brand, style, price])
+
+    if (sort === 'score') {
+      result = [...result].sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+    } else if (sort === 'price-asc') {
+      result = [...result].sort((a, b) => a.price_new_usd.min - b.price_new_usd.min)
+    } else if (sort === 'price-desc') {
+      result = [...result].sort((a, b) => b.price_new_usd.min - a.price_new_usd.min)
+    }
+
+    return result
+  }, [watches, search, brand, style, price, sort])
+
+  const hasFilters = search || brand || style || price || sort
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Watch Index</h1>
-        <p className="text-[#475569]">Browse {watches.length} watches — filter by brand, style, or price</p>
+        <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Find Your Watch</h1>
+        <p className="text-[#475569]">Search and filter {watches.length} watches by brand, style, price, or score</p>
       </div>
 
       {/* Filters */}
@@ -100,9 +121,18 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
             <option key={p.value} value={p.value}>{p.label}</option>
           ))}
         </select>
-        {(search || brand || style || price) && (
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-2 text-sm text-[#0f172a] focus:outline-none focus:border-[#b8860b] transition-colors"
+        >
+          {SORT_OPTIONS.map((s) => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
+        </select>
+        {hasFilters && (
           <button
-            onClick={() => { setSearch(''); setBrand(''); setStyle(''); setPrice('') }}
+            onClick={() => { setSearch(''); setBrand(''); setStyle(''); setPrice(''); setSort('') }}
             className="text-sm text-[#475569] hover:text-[#0f172a] transition-colors px-3 py-2"
           >
             Clear filters
@@ -113,6 +143,9 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
       {/* Results count */}
       <p className="text-[#475569] text-sm mb-5">
         Showing <span className="text-[#0f172a] font-semibold">{filtered.length}</span> of {watches.length} watches
+        {sort === 'score' && ' — sorted by score'}
+        {sort === 'price-asc' && ' — lowest price first'}
+        {sort === 'price-desc' && ' — highest price first'}
       </p>
 
       {/* Grid */}
@@ -126,7 +159,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         <div className="text-center py-20">
           <p className="text-[#475569] text-lg mb-3">No watches match your filters</p>
           <button
-            onClick={() => { setSearch(''); setBrand(''); setStyle(''); setPrice('') }}
+            onClick={() => { setSearch(''); setBrand(''); setStyle(''); setPrice(''); setSort('') }}
             className="btn-gold"
           >
             Clear All Filters

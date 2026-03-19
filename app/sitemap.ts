@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/watches`, priority: 0.9 },
     { url: `${base}/compare`, priority: 0.9 },
     { url: `${base}/rankings`, priority: 0.9 },
-    { url: `${base}/brands`, priority: 0.85 },
+    // /brands index removed — brand detail pages still indexed below
     { url: `${base}/guides`, priority: 0.85 },
     { url: `${base}/reviews`, priority: 0.8 },
     { url: `${base}/quiz`, priority: 0.8 },
