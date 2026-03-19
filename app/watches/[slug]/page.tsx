@@ -9,8 +9,6 @@ import WatchOwnerPhotos from '@/components/watch/WatchOwnerPhotos'
 import WatchReviewsSection from '@/components/watch/WatchReviewsSection'
 import WatchCompareSection from '@/components/watch/WatchCompareSection'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
-import ReviewForm from './ReviewForm'
-import UserReviews from './UserReviews'
 
 export async function generateStaticParams() {
   return watches.map((w) => ({ slug: w.slug }))
@@ -134,12 +132,9 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
           <WatchReviewsSection
             watchName={`${watch.brand} ${watch.name}`}
             watchSlug={watch.slug}
+            watchId={watch.id}
             reviews={reviews}
           />
-
-          <UserReviews watchId={watch.id} />
-
-          <ReviewForm watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
 
           <WatchCompareSection watch={watch} />
           <WatchRelatedGuides watch={watch} />

@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 interface Props {
   watchId: string
   watchName: string
+  onSuccess?: () => void
 }
 
 // Load the Clerk-aware form only on the client (ssr:false prevents prerender crash)
@@ -14,8 +15,8 @@ const ReviewFormContent = dynamic(() => import('./ReviewFormContent'), { ssr: fa
 function ReviewFormDisabled({ watchName }: Props) {
   return (
     <div className="card p-6 text-center">
-      <h3 className="text-[#0f172a] font-semibold mb-2">Write a Review</h3>
-      <p className="text-[#475569] text-sm mb-4">
+      <h3 className="text-textPrimary font-semibold mb-2">Write a Review</h3>
+      <p className="text-textSecond text-sm mb-4">
         Sign in to share your experience with the {watchName}.
       </p>
       <button

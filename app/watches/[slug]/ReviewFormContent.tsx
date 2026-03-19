@@ -6,9 +6,10 @@ import { useUser, SignInButton } from '@clerk/nextjs'
 interface Props {
   watchId: string
   watchName: string
+  onSuccess?: () => void
 }
 
-export default function ReviewFormContent({ watchId, watchName }: Props) {
+export default function ReviewFormContent({ watchId, watchName, onSuccess }: Props) {
   const { isSignedIn, isLoaded } = useUser()
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
@@ -44,6 +45,7 @@ export default function ReviewFormContent({ watchId, watchName }: Props) {
         setStatus('error')
       } else {
         setStatus('success')
+        onSuccess?.()
       }
     } catch {
       setErrorMsg('Network error — please try again.')
