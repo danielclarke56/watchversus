@@ -311,14 +311,14 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
         {/* ── Header ─────────────────────────────────── */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-textPrimary leading-tight mb-2">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-textPrimary leading-tight mb-2">
             <span>{w1.brand} {w1.name}</span>
             <span className="text-accent text-lg sm:text-2xl md:text-3xl mx-2">vs</span>
             <span>{w2.brand} {w2.name}</span>
           </h1>
           <p className="text-textSecond text-base md:text-lg">{hookLine || 'Complete head-to-head comparison'}</p>
           {tierEntry && tierEntry.tier === 1 && (
-            <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-accent/10 text-accent rounded-full">Featured Comparison</span>
+            <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-accentLight text-accent rounded-full">Featured Comparison</span>
           )}
         </div>
 
@@ -356,7 +356,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                   )}
 
                   {w.image ? (
-                    <div className="bg-gradient-to-br from-surfaceAlt to-accentLight rounded-lg border border-border aspect-square flex items-center justify-center mb-4 overflow-hidden">
+                    <div className="bg-gradient-to-br from-surfaceAlt to-accentLight rounded-sm border border-border aspect-square flex items-center justify-center mb-4 overflow-hidden">
                       <Image
                         src={w.image}
                         alt={w.imageAlt ?? `${w.brand} ${w.name}`}
@@ -367,7 +367,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                       />
                     </div>
                   ) : (
-                    <div className="bg-surfaceAlt rounded-lg border border-border aspect-square flex items-center justify-center mb-4">
+                    <div className="bg-surfaceAlt rounded-sm border border-border aspect-square flex items-center justify-center mb-4">
                       <svg className="w-16 h-16 text-borderStrong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" strokeWidth="1" />
                         <path strokeLinejoin="round" strokeLinecap="round" strokeWidth="1" d="M12 7v5l3 3" />
@@ -375,16 +375,16 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                     </div>
                   )}
 
-                  <p className="text-xs text-accent font-black uppercase tracking-widest mb-1">{w.brand}</p>
+                  <p className="text-xs text-accent font-bold uppercase tracking-wider mb-1">{w.brand}</p>
                   <h2 className="text-xl font-bold text-textPrimary mb-0.5">{w.name}</h2>
                   <p className="text-textMuted text-xs mb-4">Ref. {w.reference}</p>
 
-                  <div className="bg-accentLight border border-accent/30 rounded-lg p-3 mb-4">
+                  <div className="bg-accentLight border border-borderStrong rounded-sm p-3 mb-4">
                     <p className="text-xl font-bold text-accent">{formatPrice(w.price_new_usd)}</p>
                     <p className="text-xs text-textSecond mt-1">Pre-owned: {formatPrice(w.price_preowned_usd)}</p>
                   </div>
 
-                  <Link href={`/watches/${w.slug}`} className="block w-full text-center py-2.5 bg-accent/10 text-accent hover:bg-accent hover:text-white font-bold rounded-lg transition-all text-sm">
+                  <Link href={`/watches/${w.slug}`} className="btn-outline block w-full text-center">
                     View Full Profile →
                   </Link>
                 </Card>
@@ -394,7 +394,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
           {/* Quick differences — both values shown, winner highlighted */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-surface border border-border rounded-lg p-3">
+            <div className="bg-surface border border-border rounded-sm p-3">
               <p className="text-xs text-textMuted font-semibold mb-2">Price</p>
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
@@ -412,7 +412,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               </div>
             </div>
 
-            <div className="bg-surface border border-border rounded-lg p-3">
+            <div className="bg-surface border border-border rounded-sm p-3">
               <p className="text-xs text-textMuted font-semibold mb-2">Water Resistance</p>
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
@@ -430,7 +430,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               </div>
             </div>
 
-            <div className="bg-surface border border-border rounded-lg p-3">
+            <div className="bg-surface border border-border rounded-sm p-3">
               <p className="text-xs text-textMuted font-semibold mb-2">Score</p>
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
@@ -448,7 +448,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               </div>
             </div>
 
-            <div className="bg-surface border border-border rounded-lg p-3">
+            <div className="bg-surface border border-border rounded-sm p-3">
               <p className="text-xs text-textMuted font-semibold mb-2">Repurchase</p>
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
@@ -514,7 +514,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 <h3 className="font-bold text-textPrimary mb-4">{w.brand} {w.name}</h3>
                 {pros.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Pros</p>
+                    <p className="text-xs font-semibold text-winner uppercase tracking-wide mb-2">Pros</p>
                     <ul className="space-y-1.5">
                       {pros.map((p, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
@@ -527,11 +527,11 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 )}
                 {cons.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">Cons</p>
+                    <p className="text-xs font-semibold text-loser uppercase tracking-wide mb-2">Cons</p>
                     <ul className="space-y-1.5">
                       {cons.map((c, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-textSecond">
-                          <span className="text-red-400 mt-0.5 shrink-0">✗</span>
+                          <span className="text-loser mt-0.5 shrink-0">✗</span>
                           <span>{c}</span>
                         </li>
                       ))}
@@ -544,11 +544,11 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         </section>
 
         {/* ── Verdict + Community Vote ────────────────── */}
-        <section id="comparison-verdict" className="bg-accentLight border border-accent/40 rounded-xl p-6 md:p-8 mb-10">
+        <section id="comparison-verdict" className="bg-accentLight border border-borderStrong rounded-sm p-6 md:p-8 mb-10">
           <div className="flex items-center gap-2 mb-4">
             <h2 className="font-bold text-lg text-accent tracking-wide">Community Verdict</h2>
             {preferredWatch && (
-              <span className="ml-auto text-xs bg-accent/20 text-accent border border-accent/40 px-2 py-0.5 rounded-full font-semibold">
+              <span className="ml-auto text-xs bg-accentLight text-accent border border-borderStrong px-2 py-0.5 rounded-full font-semibold">
                 Community Pick: {preferredWatch.name}
               </span>
             )}
@@ -624,7 +624,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 const wb = getWatchBySlug(c.slug2)
                 if (!wa || !wb) return null
                 return (
-                  <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                  <Link key={`${c.slug1}-${c.slug2}`} href={`/compare/${c.slug1}-vs-${c.slug2}`} className="card p-4 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group">
                     <div className="flex items-center gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
@@ -649,7 +649,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
             <h2 className="text-xl font-bold text-textPrimary mb-5">Related Guides</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {relatedGuides.map((g) => (
-                <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                <Link key={g.slug} href={`/guides/${g.slug}`} className="card p-5 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group">
                   <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
                   <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{g.title}</h3>
                   <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
@@ -668,7 +668,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               <Link
                 key={w.id}
                 href={`/brands/${w.brand.toLowerCase().replace(/\s+/g, '-')}`}
-                className="card p-5 hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-md transition-all group"
+                className="card p-5 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
               >
                 <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
                 <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">{w.brand}</h3>
@@ -693,7 +693,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               <p className="text-sm text-textSecond mb-5">Other watches worth considering in this category</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {altWatches.map((w: Watch) => (
-                  <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-accent/40 transition-colors group text-center">
+                  <Link key={w.slug} href={`/watches/${w.slug}`} className="card p-3 hover:border-borderStrong transition-colors group text-center">
                     <p className="text-[10px] text-textMuted uppercase font-semibold mb-1">{w.brand}</p>
                     <p className="text-xs font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">{w.name}</p>
                     <p className="text-[10px] text-accent font-medium mt-2">View →</p>
@@ -705,7 +705,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         })()}
 
         {/* ── CTA Footer ─────────────────────────────── */}
-        <div className="text-center bg-surface border border-border rounded-xl p-8">
+        <div className="text-center bg-surface border border-border rounded-sm p-8">
           <h3 className="text-textPrimary font-semibold text-lg mb-2">Build Your Own Comparison</h3>
           <p className="text-textSecond text-sm mb-5">Pick any two watches from our database of 50</p>
           <Link href="/compare" className="btn-outline inline-flex items-center justify-center min-h-[48px] px-6">

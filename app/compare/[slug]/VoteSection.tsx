@@ -34,7 +34,6 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
   async function handleVote(choice: 'watch1' | 'watch2') {
     if (voted) return
 
-    // Optimistic update
     setVotes((prev) => ({
       watch1: prev.watch1 + (choice === 'watch1' ? 1 : 0),
       watch2: prev.watch2 + (choice === 'watch2' ? 1 : 0),
@@ -61,26 +60,23 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
   const votedName = voted === 'watch1' ? watch1Name : voted === 'watch2' ? watch2Name : null
 
   return (
-    <div
-      className="rounded-xl p-5 mt-2"
-      style={{ background: '#fffbf0', border: '1px solid rgba(184,134,11,0.3)' }}
-    >
+    <div className="rounded-sm border border-borderStrong bg-neutral p-5 mt-2">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-[#b8860b] text-sm">🗳️</span>
-        <span className="text-xs font-semibold text-[#0f172a] uppercase tracking-wide">WatchVsWatch Community Vote</span>
+        <span className="text-accent text-sm">🗳️</span>
+        <span className="text-xs font-semibold text-textPrimary uppercase tracking-wide">Community Vote</span>
         {votes.total > 0 && (
-          <span className="ml-auto text-xs text-[#475569]">{votes.total.toLocaleString()} vote{votes.total !== 1 ? 's' : ''}</span>
+          <span className="ml-auto text-xs text-textSecond">{votes.total.toLocaleString()} vote{votes.total !== 1 ? 's' : ''}</span>
         )}
       </div>
 
       {voted && votedName && (
-        <p className="text-xs text-[#b8860b] font-semibold mb-3 mt-1">
+        <p className="text-xs text-accent font-semibold mb-3 mt-1">
           You voted for {votedName}
         </p>
       )}
 
       {loading ? (
-        <div className="text-xs text-[#94a3b8] py-2">Loading...</div>
+        <div className="text-xs text-textMuted py-2">Loading...</div>
       ) : (
         <div className="grid grid-cols-2 gap-3 my-3">
           <VoteButton
@@ -112,20 +108,19 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
 
       {votes.total > 0 && (
         <>
-          <div className="flex h-2 rounded-full overflow-hidden bg-[#e2e8f0]">
-            <div className="bg-[#b8860b] transition-all duration-500" style={{ width: `${pct1}%` }} />
-            <div className="bg-[#cbd5e1] transition-all duration-500" style={{ width: `${pct2}%` }} />
+          <div className="flex h-2 rounded-full overflow-hidden bg-border">
+            <div className="bg-accent transition-all duration-500" style={{ width: `${pct1}%` }} />
+            <div className="bg-borderStrong transition-all duration-500" style={{ width: `${pct2}%` }} />
           </div>
           <div className="flex justify-between text-xs mt-1.5">
-            <span className="text-[#b8860b] font-bold">{pct1}%</span>
-            <span className="text-[#94a3b8] font-bold">{pct2}%</span>
+            <span className="text-accent font-bold">{pct1}%</span>
+            <span className="text-textMuted font-bold">{pct2}%</span>
           </div>
 
-          {/* Winner banner — show if one watch ≥55% and votes ≥5 */}
           {votes.total >= 5 && (pct1 >= 55 || pct2 >= 55) && (
-            <div className="mt-4 p-3 rounded-lg bg-gradient-to-r from-[#b8860b]/20 to-[#b8860b]/10 border border-[#b8860b]/40">
-              <p className="text-sm font-bold text-[#b8860b] text-center">
-                🏆 {pct1 >= 55 ? watch1Name : watch2Name} is leading ({pct1 >= 55 ? pct1 : pct2}% of {votes.total} vote{votes.total !== 1 ? 's' : ''})
+            <div className="mt-4 p-3 rounded-sm bg-winnerBg border border-winner/30">
+              <p className="text-sm font-bold text-winner text-center">
+                {pct1 >= 55 ? watch1Name : watch2Name} is leading ({pct1 >= 55 ? pct1 : pct2}% of {votes.total} vote{votes.total !== 1 ? 's' : ''})
               </p>
             </div>
           )}

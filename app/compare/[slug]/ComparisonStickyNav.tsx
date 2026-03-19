@@ -87,10 +87,10 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
                 <button
                   key={section.id}
                   onClick={() => handleSectionClick(section.id)}
-                  className={`px-3 py-2 text-xs font-semibold rounded-lg transition-all ${
+                  className={`px-3 py-2 text-xs font-semibold rounded-sm transition-all ${
                     activeSection === section.id
-                      ? 'text-accent bg-accent/10'
-                      : 'text-textSecond hover:text-accent hover:bg-accent/5'
+                      ? 'text-accent bg-accentLight'
+                      : 'text-textSecond hover:text-accent hover:bg-neutral'
                   }`}
                 >
                   {section.label}
@@ -102,13 +102,13 @@ export default function ComparisonStickyNav({ slug1, slug2, watch1Name, watch2Na
           <div className="hidden lg:flex gap-2 ml-4 flex-shrink-0">
             <Link
               href={`/watches/${slug1}`}
-              className="px-3 py-2 text-xs font-semibold text-accent hover:text-white hover:bg-accent rounded-lg transition-colors"
+              className="px-3 py-2 text-xs font-semibold text-accent hover:text-white hover:bg-accent rounded-sm transition-colors"
             >
               {watch1Name}
             </Link>
             <Link
               href={`/watches/${slug2}`}
-              className="px-3 py-2 text-xs font-semibold text-accent hover:text-white hover:bg-accent rounded-lg transition-colors"
+              className="px-3 py-2 text-xs font-semibold text-accent hover:text-white hover:bg-accent rounded-sm transition-colors"
             >
               {watch2Name}
             </Link>
