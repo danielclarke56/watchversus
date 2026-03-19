@@ -6,7 +6,7 @@ Read this before doing anything.
 - Live at: https://watchvswatch.com
 - GitHub: https://github.com/danielclarke56/watchversus
 - Stack: Next.js 14, TypeScript strict, Tailwind
-- Deploy: Netlify (auto-deploys on push to master)
+- Deploy: Vercel (auto-deploys on push to master)
 - **After every code change: `git add -A && git commit -m "..." && git push`**
 
 ## Hard Rules

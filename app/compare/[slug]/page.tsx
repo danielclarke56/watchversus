@@ -6,7 +6,7 @@ import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRati
 import { guides } from '@/lib/guideData'
 import { getBrandsForComparison } from '@/lib/relatedContent'
 import { generateComparisonBadges } from '@/lib/comparisonBadges'
-import { comparisonMetaDescriptions } from '@/data/comparisons'
+import comparisonOverrides from '@/data/comparison-overrides.json'
 import RatingBar from '@/components/RatingBar'
 import StarRating from '@/components/StarRating'
 import type { Watch } from '@/lib/types'
@@ -18,7 +18,8 @@ import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { SpecRow } from '@/components/ui/SpecRow'
 
-
+export const dynamicParams = true
+export const revalidate = 86400
 
 function generateVerdict(w1: Watch, w2: Watch): string {
   const sentences: string[] = []
@@ -98,9 +99,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const year = new Date().getFullYear()
   const canonicalUrl = `https://watchvswatch.com/compare/${slug1}-vs-${slug2}`
   
-  // Use optimized meta description from comparisons.ts, fallback to generated
-  const customDescription = comparisonMetaDescriptions[params.slug]
-  const description = customDescription || `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Compare specs, movement, pricing & design. Find the perfect luxury watch for you.`
+  // Use optimized meta description from comparison-overrides.json, fallback to generated
+  const override = comparisonOverrides.find((o) => o.slug === params.slug)
+  const description = override?.meta_description || `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name} — Compare specs, movement, pricing & design. Find the perfect luxury watch for you.`
   
   return {
     title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better? (${year})`,
