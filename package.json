@@ -8,7 +8,10 @@
     "prebuild": "npm run validate",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "monitor:cwv": "node scripts/monitor-core-web-vitals.mjs",
+    "monitor:gsc": "node scripts/fetch-gsc-metrics.mjs",
+    "setup:cwv-cron": "powershell -ExecutionPolicy Bypass -File scripts/setup-cwv-cron.ps1"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.39.0",
