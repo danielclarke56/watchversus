@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { isValidSlug } from '@/lib/validation'
+import { getRedis } from '@/lib/redis'
 
 type VoteData = { watch1: number; watch2: number }
 
 // In-memory fallback for local dev when Redis env vars not set
 const memoryStore = new Map<string, VoteData>()
-
-function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Redis } = require('@upstash/redis')
-  return new Redis({ url, token })
-}
 
 async function getVotes(slug: string): Promise<VoteData> {
   try {

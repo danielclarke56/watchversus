@@ -4,15 +4,8 @@ import { watches } from '@/lib/watches'
 import AdminReviewList, { type PendingReviewRow } from './AdminReviewList'
 import AdminPhotoList from './AdminPhotoList'
 import type { PendingPhoto } from '@/lib/photos'
-
-function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Redis } = require('@upstash/redis')
-  return new Redis({ url, token })
-}
+import { getRedis } from '@/lib/redis'
+import { checkAdmin } from '@/lib/admin'
 
 async function getPendingReviews(): Promise<PendingReviewRow[]> {
   const redis = getRedis()
@@ -22,7 +15,7 @@ async function getPendingReviews(): Promise<PendingReviewRow[]> {
   let cursor = 0
 
   do {
-    const [nextCursor, keys] = await redis.scan(cursor, { match: 'reviews:pending:*', count: 100 }) as [number, string[]]
+    const [nextCursor, keys] = await redis.scan(cursor, { match: 'reviews:pending:*', count: 100 }) as unknown as [number, string[]]
     cursor = nextCursor
     for (const key of keys) {
       const reviews = await redis.get(key) as PendingReviewRow[] | null
@@ -44,7 +37,7 @@ async function getPendingPhotos(): Promise<PendingPhoto[]> {
   let cursor = 0
 
   do {
-    const [nextCursor, keys] = await redis.scan(cursor, { match: 'photos:pending:*', count: 100 }) as [number, string[]]
+    const [nextCursor, keys] = await redis.scan(cursor, { match: 'photos:pending:*', count: 100 }) as unknown as [number, string[]]
     cursor = nextCursor
     for (const key of keys) {
       const photos = await redis.get(key) as PendingPhoto[] | null
@@ -62,8 +55,7 @@ export default async function AdminReviewsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const adminUserId = process.env.ADMIN_USER_ID
-  if (adminUserId && userId !== adminUserId) {
+  if (!checkAdmin(userId)) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center">
         <p className="text-red-400">Access denied.</p>

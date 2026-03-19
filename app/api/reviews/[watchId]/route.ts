@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
+import { getRedis } from '@/lib/redis'
+import { checkRateLimit } from '@/lib/ratelimit'
 
 export interface PendingReview {
   id: string
@@ -26,15 +28,6 @@ export interface ApprovedReview {
   approved: true
 }
 
-function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Redis } = require('@upstash/redis')
-  return new Redis({ url, token })
-}
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: { watchId: string } }
@@ -58,6 +51,9 @@ export async function POST(
 
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { success } = await checkRateLimit(userId)
+  if (!success) return NextResponse.json({ error: 'Too many submissions. Try again later.' }, { status: 429 })
 
   const body = await req.json() as { rating?: number; title?: string; body?: string; ownerFor?: string }
   const { rating, title, body: reviewBody, ownerFor } = body

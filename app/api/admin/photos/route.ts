@@ -3,21 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { del } from '@vercel/blob'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import { isValidSlug } from '@/lib/validation'
-
-function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Redis } = require('@upstash/redis')
-  return new Redis({ url, token })
-}
-
-function checkAdmin(userId: string): boolean {
-  const adminUserId = process.env.ADMIN_USER_ID
-  if (!adminUserId) return false
-  return userId === adminUserId
-}
+import { getRedis } from '@/lib/redis'
+import { checkAdmin } from '@/lib/admin'
 
 /** GET /api/admin/photos — list all pending photos */
 export async function GET() {
@@ -35,7 +22,7 @@ export async function GET() {
     const [nextCursor, keys] = (await redis.scan(cursor, {
       match: 'photos:pending:*',
       count: 100,
-    })) as [number, string[]]
+    })) as unknown as [number, string[]]
     cursor = nextCursor
     for (const key of keys) {
       const photos = (await redis.get(key)) as PendingPhoto[] | null

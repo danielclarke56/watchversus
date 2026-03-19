@@ -4,6 +4,8 @@ import { put } from '@vercel/blob'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import { ACCEPTED_TYPES, MAX_FILE_SIZE } from '@/lib/photos'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
+import { getRedis } from '@/lib/redis'
+import { checkRateLimit } from '@/lib/ratelimit'
 
 // JPEG: FF D8 FF, PNG: 89 50 4E 47, WebP: 52 49 46 46 ... 57 45 42 50
 const MAGIC_BYTES: Record<string, number[]> = {
@@ -18,15 +20,6 @@ async function verifyMagicBytes(file: File): Promise<boolean> {
   const buffer = await file.slice(0, 12).arrayBuffer()
   const bytes = new Uint8Array(buffer)
   return expected.every((b, i) => bytes[i] === b)
-}
-
-function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Redis } = require('@upstash/redis')
-  return new Redis({ url, token })
 }
 
 /** GET /api/photos/[watchId] — fetch approved photos */
@@ -55,6 +48,11 @@ export async function POST(
   const { userId } = await auth()
   if (!userId) {
     return NextResponse.json({ error: 'Sign in to submit photos' }, { status: 401 })
+  }
+
+  const { success } = await checkRateLimit(userId)
+  if (!success) {
+    return NextResponse.json({ error: 'Too many submissions. Try again later.' }, { status: 429 })
   }
 
   const user = await currentUser()

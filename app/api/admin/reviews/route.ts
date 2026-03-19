@@ -1,21 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { isValidSlug } from '@/lib/validation'
-
-function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Redis } = require('@upstash/redis')
-  return new Redis({ url, token })
-}
-
-function checkAdmin(userId: string): boolean {
-  const adminUserId = process.env.ADMIN_USER_ID
-  if (!adminUserId) return false
-  return userId === adminUserId
-}
+import { getRedis } from '@/lib/redis'
+import { checkAdmin } from '@/lib/admin'
 
 export async function GET() {
   const { userId } = await auth()
@@ -29,7 +16,7 @@ export async function GET() {
   let cursor = 0
 
   do {
-    const [nextCursor, keys] = await redis.scan(cursor, { match: 'reviews:pending:*', count: 100 }) as [number, string[]]
+    const [nextCursor, keys] = await redis.scan(cursor, { match: 'reviews:pending:*', count: 100 }) as unknown as [number, string[]]
     cursor = nextCursor
     for (const key of keys) {
       const reviews = await redis.get(key) as unknown[] | null
