@@ -18,8 +18,15 @@ const watchesPath = path.join(ROOT, 'data', 'watches.json')
 const watches: { slug: string }[] = JSON.parse(fs.readFileSync(watchesPath, 'utf-8'))
 const watchSlugs = new Set(watches.map(w => w.slug))
 
-// guideData.ts — parse guides via dynamic import workaround
-// We'll use a regex approach to extract slugs since we can't easily import TS with path aliases
+// comparison-tiers.json — single source of truth for comparisons
+const tiersPath = path.join(ROOT, 'data', 'comparison-tiers.json')
+const tiersData: { comparisons: { slug1: string; slug2: string; tier: number; priority: number; tags: string[]; reason: string }[] } = JSON.parse(fs.readFileSync(tiersPath, 'utf-8'))
+
+// comparison-overrides.json — promoted pairs with SEO overrides
+const overridesPath = path.join(ROOT, 'data', 'comparison-overrides.json')
+const overrides: { slug: string; promoted: boolean }[] = JSON.parse(fs.readFileSync(overridesPath, 'utf-8'))
+
+// guideData.ts — parse guides via regex
 const guideDataPath = path.join(ROOT, 'lib', 'guideData.ts')
 const guideDataSource = fs.readFileSync(guideDataPath, 'utf-8')
 
@@ -27,27 +34,10 @@ const guideDataSource = fs.readFileSync(guideDataPath, 'utf-8')
 const comparisonsPath = path.join(ROOT, 'data', 'comparisons.ts')
 const comparisonsSource = fs.readFileSync(comparisonsPath, 'utf-8')
 
-// watches.ts (popularComparisons)
-const watchesTsPath = path.join(ROOT, 'lib', 'watches.ts')
-const watchesTsSource = fs.readFileSync(watchesTsPath, 'utf-8')
-
-// ── Helper: extract all comparison slug pairs from popularComparisons ──
-
-function extractPopularComparisons(source: string): { slug1: string; slug2: string }[] {
-  const pairs: { slug1: string; slug2: string }[] = []
-  const re = /{\s*slug1:\s*['"]([^'"]+)['"]\s*,\s*slug2:\s*['"]([^'"]+)['"]\s*}/g
-  let m: RegExpExecArray | null
-  while ((m = re.exec(source)) !== null) {
-    pairs.push({ slug1: m[1], slug2: m[2] })
-  }
-  return pairs
-}
-
 // ── Helper: extract guide slugs from guideData ──
 
 function extractGuideSlugs(source: string): string[] {
   const slugs: string[] = []
-  // Match slug: "some-slug" at the guide level (indented 4 spaces typically)
   const re = /^\s{4}slug:\s*["']([^"']+)["']/gm
   let m: RegExpExecArray | null
   while ((m = re.exec(source)) !== null) {
@@ -60,23 +50,17 @@ function extractGuideSlugs(source: string): string[] {
 
 function extractRecommendationSlugs(source: string): { guideName: string; watchSlug: string }[] {
   const results: { guideName: string; watchSlug: string }[] = []
-  
-  // Find all guide blocks: look for slug: "guide-slug" followed by recommendations
   const guideRegex = /slug:\s*["']([^"']+)["'][\s\S]*?recommendations:\s*\[([\s\S]*?)\]\s*,\s*\n\s*buyingGuide/g
   let guideMatch: RegExpExecArray | null
-  
   while ((guideMatch = guideRegex.exec(source)) !== null) {
     const guideSlug = guideMatch[1]
     const recsBlock = guideMatch[2]
-    
-    // Extract watch slugs from recommendations block
     const slugRe = /slug:\s*["']([^"']+)["']/g
     let slugMatch: RegExpExecArray | null
     while ((slugMatch = slugRe.exec(recsBlock)) !== null) {
       results.push({ guideName: guideSlug, watchSlug: slugMatch[1] })
     }
   }
-  
   return results
 }
 
@@ -92,17 +76,8 @@ function extractComparisonKeys(source: string): string[] {
   return keys
 }
 
-// ── Build comparison lookup from popularComparisons ──
-
-function makeComparisonSlug(slug1: string, slug2: string): string {
-  // Comparisons are slug1-vs-slug2 (order matters based on the pair)
-  return `${slug1}-vs-${slug2}`
-}
-
 // ══════════════════════════════════════════════════════════════════════
 // CHECK 1: Guides index completeness
-// Every guide slug in guideData.ts should be a valid slug
-// (Since guides are auto-derived from the array, this checks for empty/invalid slugs)
 // ══════════════════════════════════════════════════════════════════════
 
 console.log('\n🔍 Check 1: Guides index completeness')
@@ -121,7 +96,6 @@ if (guideSlugs.length === 0) {
       errors.push(`❌ BROKEN: empty guide slug found in guideData.ts`)
     }
   }
-  // Check for duplicates
   const seen = new Set<string>()
   for (const slug of guideSlugs) {
     if (seen.has(slug)) {
@@ -135,19 +109,17 @@ if (guideSlugs.length === 0) {
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// CHECK 2: Watch slug references in comparisons
-// Every watchA/watchB (slug1/slug2) in popularComparisons must exist in watches.json
+// CHECK 2: Watch slug references in comparison-tiers.json
 // ══════════════════════════════════════════════════════════════════════
 
-console.log('\n🔍 Check 2: Watch slug references in comparisons')
-const popComparisons = extractPopularComparisons(watchesTsSource)
+console.log('\n🔍 Check 2: Watch slug references in comparison-tiers.json')
 const check2ErrorsBefore = errors.length
 
-if (popComparisons.length === 0) {
-  errors.push('❌ BROKEN: No popularComparisons found in lib/watches.ts — parsing may be broken')
+if (tiersData.comparisons.length === 0) {
+  errors.push('❌ BROKEN: No comparisons found in data/comparison-tiers.json')
 } else {
-  console.log(`   Found ${popComparisons.length} comparison pair(s)`)
-  for (const pair of popComparisons) {
+  console.log(`   Found ${tiersData.comparisons.length} comparison pair(s)`)
+  for (const pair of tiersData.comparisons) {
     if (!watchSlugs.has(pair.slug1)) {
       errors.push(`❌ BROKEN: comparison '${pair.slug1}-vs-${pair.slug2}' references unknown watch slug '${pair.slug1}'`)
     }
@@ -162,7 +134,6 @@ if (popComparisons.length === 0) {
 
 // ══════════════════════════════════════════════════════════════════════
 // CHECK 3: Watch slug references in guides
-// Every watch slug in guide recommendations must exist in watches.json
 // ══════════════════════════════════════════════════════════════════════
 
 console.log('\n🔍 Check 3: Watch slug references in guides')
@@ -184,39 +155,75 @@ if (recSlugs.length === 0) {
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// CHECK 4: PopularComparisons integrity
-// Every comparison slug in comparisonMetaDescriptions must correspond to
-// a popularComparisons entry (or vice versa check)
+// CHECK 4: Comparison-tiers integrity
+// - No duplicate pairs (A-vs-B and B-vs-A)
+// - Valid tier values (1, 2, or 3)
+// - Priority within expected range
+// - All Tier 1 promoted pairs have overrides
 // ══════════════════════════════════════════════════════════════════════
 
-console.log('\n🔍 Check 4: PopularComparisons integrity')
+console.log('\n🔍 Check 4: Comparison-tiers integrity')
 const check4ErrorsBefore = errors.length
 
-// Build set of valid comparison slugs from popularComparisons
-const validComparisonSlugs = new Set<string>()
-for (const pair of popComparisons) {
-  validComparisonSlugs.add(makeComparisonSlug(pair.slug1, pair.slug2))
+// Check for duplicates (both same-order and reversed)
+const seenPairs = new Set<string>()
+for (const pair of tiersData.comparisons) {
+  const canonical = pair.slug1 < pair.slug2
+    ? `${pair.slug1}|${pair.slug2}`
+    : `${pair.slug2}|${pair.slug1}`
+  if (seenPairs.has(canonical)) {
+    errors.push(`❌ BROKEN: duplicate comparison pair '${pair.slug1}-vs-${pair.slug2}' in comparison-tiers.json`)
+  }
+  seenPairs.add(canonical)
 }
 
-// Check comparisonMetaDescriptions keys reference valid comparisons
-const metaKeys = extractComparisonKeys(comparisonsSource)
-console.log(`   Found ${metaKeys.length} comparison meta description(s)`)
-console.log(`   Found ${validComparisonSlugs.size} popularComparison pair(s)`)
-
-for (const key of metaKeys) {
-  if (!validComparisonSlugs.has(key)) {
-    errors.push(`❌ BROKEN: comparisonMetaDescriptions has key '${key}' with no matching popularComparisons entry`)
+// Check valid tiers and priorities
+for (const pair of tiersData.comparisons) {
+  if (![1, 2, 3].includes(pair.tier)) {
+    errors.push(`❌ BROKEN: comparison '${pair.slug1}-vs-${pair.slug2}' has invalid tier ${pair.tier}`)
+  }
+  if (pair.priority < 0 || pair.priority > 100) {
+    errors.push(`❌ BROKEN: comparison '${pair.slug1}-vs-${pair.slug2}' has priority ${pair.priority} outside range 0-100`)
   }
 }
 
-// Info only: how many comparisons lack meta descriptions (not an error)
-const missingMeta = Array.from(validComparisonSlugs).filter(s => !metaKeys.includes(s))
-if (missingMeta.length > 0) {
-  console.log(`   ℹ️  ${missingMeta.length} comparison(s) have no custom meta description (not an error)`)
+// Check that promoted overrides have matching tier entries
+const tierSlugs = new Set(tiersData.comparisons.map(c => `${c.slug1}-vs-${c.slug2}`))
+const promotedOverrides = overrides.filter(o => o.promoted)
+for (const o of promotedOverrides) {
+  if (!tierSlugs.has(o.slug)) {
+    // Also check reversed order
+    const parts = o.slug.split('-vs-')
+    const reversed = parts.length === 2 ? `${parts[1]}-vs-${parts[0]}` : ''
+    if (!tierSlugs.has(reversed)) {
+      errors.push(`❌ BROKEN: promoted override '${o.slug}' has no matching entry in comparison-tiers.json`)
+    }
+  }
+}
+
+// Tier distribution info
+const tierCounts = { 1: 0, 2: 0, 3: 0 }
+for (const pair of tiersData.comparisons) {
+  if (pair.tier in tierCounts) tierCounts[pair.tier as 1 | 2 | 3]++
+}
+console.log(`   Tier distribution: T1=${tierCounts[1]}, T2=${tierCounts[2]}, T3=${tierCounts[3]} (total: ${tiersData.comparisons.length})`)
+
+// Check meta descriptions reference valid comparisons
+const metaKeys = extractComparisonKeys(comparisonsSource)
+console.log(`   Found ${metaKeys.length} comparison meta description(s) in comparisons.ts`)
+
+for (const key of metaKeys) {
+  if (!tierSlugs.has(key)) {
+    const parts = key.split('-vs-')
+    const reversed = parts.length === 2 ? `${parts[1]}-vs-${parts[0]}` : ''
+    if (!tierSlugs.has(reversed)) {
+      errors.push(`❌ BROKEN: comparisonMetaDescriptions has key '${key}' with no matching comparison-tiers.json entry`)
+    }
+  }
 }
 
 if (errors.length === check4ErrorsBefore) {
-  console.log('   ✅ All meta description keys reference valid comparisons')
+  console.log('   ✅ All comparison-tiers integrity checks passed')
 }
 
 // ══════════════════════════════════════════════════════════════════════

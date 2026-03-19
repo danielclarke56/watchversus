@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { Card } from '@/components/ui/Card'
 import { VerdictCallout } from '@/components/ui/VerdictCallout'
+import { StarRating } from '@/components/StarRating'
 
 // Hardcoded watch data
 const hamilton = {
@@ -174,7 +174,7 @@ export default function ComparisonPage() {
 
           {/* Watch Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
-            {[w1, w2].map((w, i) => (
+            {[w1, w2].map((w) => (
               <div key={w.slug} className="relative">
                 <Card className="p-6 md:p-8">
                   {/* Watch Identity */}
@@ -240,42 +240,42 @@ export default function ComparisonPage() {
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Movement & Power Reserve</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Hamilton's H-10 caliber is a technical marvel: an 80-hour power reserve means you can wear this watch Monday and set it aside until Friday without winding. For those who rotate watches frequently, this is invaluable. The movement is visible through a caseback, offering a transparent window into the engineering. It's not decorated to haute horlogerie standards, but it's honest and robust.
+            Hamilton&apos;s H-10 caliber is a technical marvel: an 80-hour power reserve means you can wear this watch Monday and set it aside until Friday without winding. For those who rotate watches frequently, this is invaluable. The movement is visible through a caseback, offering a transparent window into the engineering. It&apos;s not decorated to haute horlogerie standards, but it&apos;s honest and robust.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Seiko's 6R35 is the workhorse of the Prospex collection—proven across dozens of models and tens of thousands of wrists. A 70-hour reserve is respectable, though five hours behind the Hamilton. What the 6R35 lacks in reserve, it makes up in market confidence; this movement has a proven track record spanning over a decade. For many collectors, proven reliability trumps superior specs on paper.
+            Seiko&apos;s 6R35 is the workhorse of the Prospex collection&mdash;proven across dozens of models and tens of thousands of wrists. A 70-hour reserve is respectable, though five hours behind the Hamilton. What the 6R35 lacks in reserve, it makes up in market confidence; this movement has a proven track record spanning over a decade. For many collectors, proven reliability trumps superior specs on paper.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Water Resistance & Durability</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The Hamilton's 100m rating covers swimming and snorkeling—adequate for daily life and recreational use, but not diving. The Seiko's 200m rating invites actual underwater exploration. For professional or semi-professional divers, the Seiko is the mandate. For everyone else, the Hamilton is more than sufficient and significantly lighter on the wrist thanks to its thinner profile.
+            The Hamilton&apos;s 100m rating covers swimming and snorkeling&mdash;adequate for daily life and recreational use, but not diving. The Seiko&apos;s 200m rating invites actual underwater exploration. For professional or semi-professional divers, the Seiko is the mandate. For everyone else, the Hamilton is more than sufficient and significantly lighter on the wrist thanks to its thinner profile.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Both watches feature sapphire crystals and stainless steel cases built to withstand decades of use. The Hamilton's 10mm thickness makes it exceptionally wearable under shirt cuffs; the Seiko's 13.2mm profile commands attention. For durability, both are equal—this isn't a differentiator, but rather a confirmation that both manufacturers have mastered the fundamentals.
+            Both watches feature sapphire crystals and stainless steel cases built to withstand decades of use. The Hamilton&apos;s 10mm thickness makes it exceptionally wearable under shirt cuffs; the Seiko&apos;s 13.2mm profile commands attention. For durability, both are equal&mdash;this isn&apos;t a differentiator, but rather a confirmation that both manufacturers have mastered the fundamentals.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Price Positioning & Value</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            At $650–$750 retail, the Hamilton Khaki Field Auto 38 offers remarkable value for Swiss-made automation and 80-hour reserve. It undercuts its bigger brother (the 42mm version) and most "accessible luxury" competitors significantly. The Seiko Prospex SPB143, ranging $700–$900, sits at a natural premium due to its dive credentials and Prospex heritage.
+            At $650&ndash;$750 retail, the Hamilton Khaki Field Auto 38 offers remarkable value for Swiss-made automation and 80-hour reserve. It undercuts its bigger brother (the 42mm version) and most &quot;accessible luxury&quot; competitors significantly. The Seiko Prospex SPB143, ranging $700&ndash;$900, sits at a natural premium due to its dive credentials and Prospex heritage.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            On the secondary market, both converge around $500–$700, though the Seiko typically commands a slightly stronger position due to diving desirability. If budget is primary, the Hamilton wins. If you specifically need a diver's watch, the Seiko's premium is justified and recovers well in resale.
+            On the secondary market, both converge around $500&ndash;$700, though the Seiko typically commands a slightly stronger position due to diving desirability. If budget is primary, the Hamilton wins. If you specifically need a diver&apos;s watch, the Seiko&apos;s premium is justified and recovers well in resale.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Ideal Use Cases</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Choose the <strong>Hamilton Khaki Field Auto 38</strong> if you want a single watch that works everywhere: hiking trails, office meetings, formal dinners, casual weekends. Its compact size, field aesthetics, and exceptional power reserve make it the ultimate daily carry. It's the watch for travelers who don't want to pack multiples.
+            Choose the <strong>Hamilton Khaki Field Auto 38</strong> if you want a single watch that works everywhere: hiking trails, office meetings, formal dinners, casual weekends. Its compact size, field aesthetics, and exceptional power reserve make it the ultimate daily carry. It&apos;s the watch for travelers who don&apos;t want to pack multiples.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Choose the <strong>Seiko Prospex SPB143</strong> if you're an active diver, frequent swimmer, or simply want a watch explicitly engineered for water immersion. It's the watch for ocean-focused adventurers and those who value proven dive watch heritage. It also works as a capable casual watch, but it's optimized for the water first.
+            Choose the <strong>Seiko Prospex SPB143</strong> if you&apos;re an active diver, frequent swimmer, or simply want a watch explicitly engineered for water immersion. It&apos;s the watch for ocean-focused adventurers and those who value proven dive watch heritage. It also works as a capable casual watch, but it&apos;s optimized for the water first.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Final Verdict</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Neither watch is objectively "better." The Hamilton Khaki Field Auto 38 is the smarter buy for most people: exceptional value, uncompromising daily versatility, and a power reserve that redefines convenience. The Seiko Prospex SPB143 is the choice for those who need or want genuine dive credentials and are willing to pay the premium for proven submersible heritage.
+            Neither watch is objectively &quot;better.&quot; The Hamilton Khaki Field Auto 38 is the smarter buy for most people: exceptional value, uncompromising daily versatility, and a power reserve that redefines convenience. The Seiko Prospex SPB143 is the choice for those who need or want genuine dive credentials and are willing to pay the premium for proven submersible heritage.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
-            If you own only one watch, the Hamilton. If you're building a collection and need a diver, the Seiko.
+            If you own only one watch, the Hamilton. If you&apos;re building a collection and need a diver, the Seiko.
           </p>
         </section>
 

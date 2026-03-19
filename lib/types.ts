@@ -64,6 +64,19 @@ export interface Review {
   helpful_count: number
 }
 
+export interface ComparisonTierEntry {
+  slug1: string
+  slug2: string
+  tier: 1 | 2 | 3
+  priority: number
+  tags: string[]
+  reason: string
+}
+
+export interface ComparisonTiersData {
+  comparisons: ComparisonTierEntry[]
+}
+
 export interface QuizAnswers {
   budget?: string
   style?: string

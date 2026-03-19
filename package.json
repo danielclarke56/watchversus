@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "validate": "tsx scripts/validate-integrity.ts",
+    "generate-pairs": "tsx scripts/generate-pairs.ts",
     "prebuild": "npm run validate",
     "build": "next build",
     "start": "next start",

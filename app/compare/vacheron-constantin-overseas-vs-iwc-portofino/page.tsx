@@ -233,7 +233,7 @@ export default function ComparisonPage() {
             The Vacheron Constantin Overseas and IWC Portofino represent two distinct philosophies in luxury watchmaking&apos;s upper echelon. Vacheron Constantin, founded 1755, is the oldest continuously operating watchmaker on Earth. The Overseas line, launched 1977, evolved from the Integrated collection and embodies VC&apos;s commitment to refined sports watches for discerning collectors. Every Overseas is assembled by hand, with movements visible through a caseback exhibition that showcases decades of in-house caliber refinement.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The IWC Portofino, descended from the Aquatimer family and modernized into its current dress-sport form, carries IWC's schaffhausen engineering ethos: precision, reliability, and intelligent innovation. While younger than VC, IWC (founded 1868) has a 150-year legacy of making watches for professionals and collectors who value dependability above ornament. The Portofino is engineered for the executive who wants luxury without pretense.
+            The IWC Portofino, descended from the Aquatimer family and modernized into its current dress-sport form, carries IWC&apos;s schaffhausen engineering ethos: precision, reliability, and intelligent innovation. While younger than VC, IWC (founded 1868) has a 150-year legacy of making watches for professionals and collectors who value dependability above ornament. The Portofino is engineered for the executive who wants luxury without pretense.
           </p>
 
           <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Movement Architecture &amp; In-House Calibers</h2>
@@ -257,15 +257,15 @@ export default function ComparisonPage() {
             The Vacheron Constantin Overseas offers 150m water resistance&mdash;adequate for swimming and snorkeling, occasional saltwater exposure. The IWC Portofino offers 100m, suitable for daily splash and light water contact. In practical terms, both are water-resistant dress sports watches, not diving instruments. The difference is marginal; neither invites submersion beyond their rating. Both feature integrated bracelets with secure clasps, and both hold tightness over decades of use through VC&apos;s and IWC&apos;s legendary service standards.
           </p>
 
-          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Price Positioning & Market Reality</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Price Positioning &amp; Market Reality</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             The Vacheron Constantin Overseas retails $32,000&ndash;$38,000 USD, putting it in the rarefied &quot;haute horlogerie&quot; price bracket. This reflects not just the 1120/1 movement and stainless steel, but the hand-craft in finishing, the heritage premium, and scarcity (VC produces a fraction of what competitors make). On the secondary market, it holds value remarkably&mdash;used examples command $24,000&ndash;$32,000, recovering 65&ndash;75% of retail even after several years of ownership. Some examples appreciate due to discontinued references or strong collector demand.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The IWC Portofino Chronograph 42 retails $7,500–$8,500, roughly one-fifth the VC price. It's a legitimate luxury watch but accessible to a broader collector base. Secondary market pricing typically runs $5,500–$7,000 (70–80% of retail), showing solid but less dramatic retention than VC. The IWC is a smart luxury purchase; the VC is an investment-grade purchase. If capital preservation matters to your decision, VC is the mathematically superior choice.
+            The IWC Portofino Chronograph 42 retails $7,500&ndash;$8,500, roughly one-fifth the VC price. It&apos;s a legitimate luxury watch but accessible to a broader collector base. Secondary market pricing typically runs $5,500&ndash;$7,000 (70&ndash;80% of retail), showing solid but less dramatic retention than VC. The IWC is a smart luxury purchase; the VC is an investment-grade purchase. If capital preservation matters to your decision, VC is the mathematically superior choice.
           </p>
 
-          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Target Audience & Positioning</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-6 mt-10">Target Audience &amp; Positioning</h2>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             The Vacheron Constantin Overseas appeals to established collectors with significant timepiece experience. Buyers typically own multiple watches already and appreciate artisanal finishing, heritage storytelling, and investment characteristics. VC collectors are often attracted to the craft, not just the function. They examine movements under magnification, read books about watchmaking history, and view watches as portable jewelry and mechanical art. Overseas buyers often wear their purchases infrequently (rotating through a collection) to preserve value.
           </p>

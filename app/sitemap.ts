@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next'
-import { watches, popularComparisons } from '@/lib/watches'
+import { watches, comparisonTiers } from '@/lib/watches'
 import { brands } from '@/lib/brandData'
 import { guides } from '@/lib/guideData'
-import comparisonOverrides from '@/data/comparison-overrides.json'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://watchvswatch.com'
@@ -44,26 +43,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  // Build comparison pages from both sources, deduplicating
-  // Promoted overrides get higher priority; popularComparisons fill the rest
+  // Build comparison pages from tier data with tier-based priority
+  const tierPriorityMap = { 1: 0.80, 2: 0.70, 3: 0.60 } as const
   const comparisonSlugs = new Set<string>()
   const comparisonPages: MetadataRoute.Sitemap = []
 
-  // 1. Promoted overrides first (higher priority)
-  for (const o of comparisonOverrides) {
-    if (o.promoted && !comparisonSlugs.has(o.slug)) {
-      comparisonSlugs.add(o.slug)
-      comparisonPages.push({
-        url: `${base}/compare/${o.slug}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.75,
-      })
-    }
-  }
-
-  // 2. All curated popularComparisons (standard priority, skip duplicates)
-  for (const c of popularComparisons) {
+  for (const c of comparisonTiers) {
     const slug = `${c.slug1}-vs-${c.slug2}`
     if (!comparisonSlugs.has(slug)) {
       comparisonSlugs.add(slug)
@@ -71,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url: `${base}/compare/${slug}`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
-        priority: 0.7,
+        priority: tierPriorityMap[c.tier],
       })
     }
   }

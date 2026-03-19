@@ -1,0 +1,3485 @@
+{
+  "comparisons": [
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "tudor-pelagos-39",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "tag-heuer-carrera-42",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both sport watches"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "omega-constellation-39",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "tudor-pelagos-39",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "omega-constellation-39",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "seiko-prospex-sbdc101",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "longines-master-collection-40",
+      "slug2": "seiko-presage-spb167",
+      "tier": 1,
+      "priority": 100,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 1,
+      "priority": 98,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Mutual alternatives"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "grand-seiko-sbgw231",
+      "tier": 1,
+      "priority": 98,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "tudor-black-bay-gmt",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "gmt",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both gmt watches; Mutual alternatives"
+    },
+    {
+      "slug1": "nomos-tangente-38",
+      "slug2": "longines-master-collection-40",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both dress watches; Mutual alternatives"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "rolex-datejust-36",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Mutual alternatives"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "seiko-presage-spb167",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Mutual alternatives"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "grand-seiko-sbgw231",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "same-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "nomos-tangente-38",
+      "slug2": "seiko-presage-spb167",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both dress watches; Mutual alternatives"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "omega-seamaster-300m",
+      "tier": 1,
+      "priority": 93,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "tudor-black-bay-58",
+      "tier": 1,
+      "priority": 93,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "breitling-superocean-42",
+      "tier": 1,
+      "priority": 93,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-10 brands; Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "breitling-superocean-42",
+      "tier": 1,
+      "priority": 93,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "rolex-submariner-date",
+      "tier": 1,
+      "priority": 93,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "breitling-navitimer-b01-42",
+      "tier": 1,
+      "priority": 90,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Promoted: Both top-10 brands; Similar price range; Both sport watches"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "tudor-black-bay-58",
+      "tier": 1,
+      "priority": 88,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-submariner-date",
+      "slug2": "tudor-black-bay-58",
+      "tier": 1,
+      "priority": 88,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "tudor-black-bay-gmt",
+      "slug2": "omega-seamaster-300m",
+      "tier": 1,
+      "priority": 88,
+      "tags": [
+        "price-match",
+        "sport",
+        "dive",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "cartier-ronde-solo",
+      "tier": 1,
+      "priority": 88,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Promoted: Both top-10 brands; Both dress watches; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "cartier-santos",
+      "tier": 1,
+      "priority": 88,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "cartier-ronde-solo",
+      "slug2": "cartier-tank-must",
+      "tier": 1,
+      "priority": 88,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "breitling-superocean-42",
+      "tier": 1,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-10 brands; Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 1,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 1,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 1,
+      "priority": 83,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-10 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 1,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "tudor-pelagos-39",
+      "tier": 1,
+      "priority": 80,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 1,
+      "priority": 80,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands; Both dive watches"
+    },
+    {
+      "slug1": "ap-royal-oak-15500",
+      "slug2": "patek-philippe-nautilus-5711",
+      "tier": 1,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Similar price range; Both sport watches; Mutual alternatives"
+    },
+    {
+      "slug1": "breitling-navitimer-b01-42",
+      "slug2": "tag-heuer-carrera-42",
+      "tier": 1,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-10 brands; Both sport watches"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "panerai-luminor-44-pam01312",
+      "tier": 1,
+      "priority": 73,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 1,
+      "priority": 73,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Promoted: Both top-10 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "breitling-superocean-42",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-10 brands; Both dive watches"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Promoted: Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "breitling-superocean-42",
+      "slug2": "panerai-luminor-44-pam01312",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both dive watches"
+    },
+    {
+      "slug1": "baltic-aquascaphe",
+      "slug2": "halios-seaforth",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both dive watches"
+    },
+    {
+      "slug1": "halios-tropik",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "omega-seamaster-300m",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "price-adjacent",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both top-5 brands"
+    },
+    {
+      "slug1": "patek-philippe-calatrava-5119",
+      "slug2": "jaeger-lecoultre-master-ultra-thin",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "dress",
+        "luxury",
+        "formal",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Both dress watches; Mutual alternatives"
+    },
+    {
+      "slug1": "iwc-portugieser-automatic",
+      "slug2": "longines-master-collection",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Promoted: Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-date",
+      "slug2": "ap-royal-oak-15500",
+      "tier": 1,
+      "priority": 70,
+      "tags": [
+        "sport",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Algorithmically matched"
+    },
+    {
+      "slug1": "tissot-seastar-1000",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Mutual alternatives"
+    },
+    {
+      "slug1": "omega-constellation-39",
+      "slug2": "cartier-santos",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "cartier-santos",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "iwc-portugieser-40",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "cartier-santos",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "rolex-explorer-36",
+      "slug2": "omega-speedmaster-moonwatch",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Both sport watches"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "tissot-seastar-1000",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Mutual alternatives"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "omega-constellation-39",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "omega-constellation-39",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "omega-constellation-39",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 85,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "halios-seaforth",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "panerai-luminor-44-pam01312",
+      "slug2": "rolex-submariner-41",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "tudor-black-bay-58",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "omega-seamaster-300m",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "baltic-aquascaphe",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "omega-speedmaster-moonwatch",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "rolex-gmt-master-ii-pepsi",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "seiko-prospex-sbdc101",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "jaeger-lecoultre-reverso-classic",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both dress watches; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "omega-constellation-39",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "seiko-prospex-sbdc101",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "same-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "seiko-presage-spb167",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "tag-heuer-carrera-42",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "sport",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both sport watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tag-heuer-aquaracer-300",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "halios-tropik",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "mido-ocean-star-tribute",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "rolex-submariner-date",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "baltic-aquascaphe",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "halios-seaforth",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "halios-tropik",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "mido-ocean-star-tribute",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "rolex-submariner-date",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-5-sports-srpe55",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "sport",
+        "dive",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both sport watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "omega-constellation-39",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "frederique-constant-classics-auto",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dress watches; Listed as alternative"
+    },
+    {
+      "slug1": "seiko-presage-spb167",
+      "slug2": "omega-constellation-39",
+      "tier": 2,
+      "priority": 83,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "cartier-tank-must",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "dress",
+        "luxury",
+        "same-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Mutual alternatives"
+    },
+    {
+      "slug1": "ap-royal-oak-15500",
+      "slug2": "vacheron-constantin-overseas-4500v",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both sport watches; Mutual alternatives"
+    },
+    {
+      "slug1": "patek-philippe-nautilus-5711",
+      "slug2": "vacheron-constantin-overseas-4500v",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both sport watches; Mutual alternatives"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "rolex-submariner-date",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Both dive watches"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-adjacent",
+        "sport",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Both sport watches"
+    },
+    {
+      "slug1": "tag-heuer-aquaracer-300",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Both dive watches"
+    },
+    {
+      "slug1": "tag-heuer-aquaracer-300",
+      "slug2": "seiko-prospex-sbdc101",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Both dive watches"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "iwc-portugieser-40",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "cartier-santos",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "jaeger-lecoultre-reverso-classic",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "cartier-tank-must",
+      "slug2": "nomos-club-campus",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Mutual alternatives"
+    },
+    {
+      "slug1": "longines-master-collection-40",
+      "slug2": "longines-master-collection",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "same-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "hamilton-jazzmaster-40",
+      "slug2": "frederique-constant-classics-auto",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dress watches; Mutual alternatives"
+    },
+    {
+      "slug1": "jaeger-lecoultre-reverso-classic",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "jaeger-lecoultre-reverso-classic",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-automatic",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 80,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "hamilton-khaki-field-auto-38",
+      "slug2": "iwc-pilot-mark-xviii",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "field",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both field watches; Mutual alternatives; Cross-tier price comparison"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "rolex-day-date-40",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "rolex-explorer-36",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "rolex-explorer-36",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "seiko-presage-spb165",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "seiko-presage-spb167",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "jaeger-lecoultre-master-ultra-thin",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dress watches; Listed as alternative"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "tag-heuer-carrera-42",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "tudor-black-bay-gmt",
+      "slug2": "breitling-superocean-42",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "price-match",
+        "sport",
+        "dive",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "omega-speedmaster-moonwatch",
+      "tier": 2,
+      "priority": 78,
+      "tags": [
+        "price-match",
+        "sport",
+        "same-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 2,
+      "priority": 76,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Listed as alternative; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "zenith-el-primero-chronomaster",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Similar price range; Both sport watches"
+    },
+    {
+      "slug1": "breitling-superocean-42",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Both dive watches"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "cartier-tank-must",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "dress",
+        "casual",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "rolex-submariner-date",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Same brand (Rolex)"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Both dive watches"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "rolex-submariner-date",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-5 brands; Similar price range"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "tag-heuer-carrera-42",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "cartier-tank-must",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "iwc-portofino-40",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "seiko-prospex-spb143",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "dive",
+        "sport",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Mutual alternatives; Same brand (Seiko)"
+    },
+    {
+      "slug1": "seiko-prospex-sbdc101",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "dive",
+        "sport",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Mutual alternatives; Same brand (Seiko)"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "cartier-tank-must",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "cartier-ronde-solo",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "jaeger-lecoultre-master-ultra-thin",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "cartier-tank-must",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "cartier-ronde-solo",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "jaeger-lecoultre-master-ultra-thin",
+      "tier": 2,
+      "priority": 75,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dress watches"
+    },
+    {
+      "slug1": "cartier-tank-must",
+      "slug2": "nomos-tangente-38",
+      "tier": 2,
+      "priority": 73,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both dress watches; Listed as alternative"
+    },
+    {
+      "slug1": "longines-master-collection-40",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 2,
+      "priority": 73,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "longines-master-collection-40",
+      "tier": 2,
+      "priority": 73,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "cartier-santos",
+      "tier": 2,
+      "priority": 73,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "breitling-navitimer-b01-42",
+      "slug2": "zenith-el-primero-chronomaster",
+      "tier": 2,
+      "priority": 70,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both sport watches"
+    },
+    {
+      "slug1": "nomos-club-campus",
+      "slug2": "longines-master-collection-40",
+      "tier": 2,
+      "priority": 70,
+      "tags": [
+        "price-match",
+        "casual",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Mutual alternatives"
+    },
+    {
+      "slug1": "omega-constellation-39",
+      "slug2": "longines-master-collection-40",
+      "tier": 2,
+      "priority": 70,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Both dress watches"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "cartier-santos",
+      "tier": 2,
+      "priority": 70,
+      "tags": [
+        "price-match",
+        "sport",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range"
+    },
+    {
+      "slug1": "iwc-pilot-mark-xviii",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 2,
+      "priority": 70,
+      "tags": [
+        "price-match",
+        "casual",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "breitling-navitimer-b01-42",
+      "tier": 2,
+      "priority": 68,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "longines-master-collection-40",
+      "tier": 2,
+      "priority": 68,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "longines-hydroconquest-41",
+      "slug2": "tissot-seastar-1000",
+      "tier": 2,
+      "priority": 68,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both dive watches; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "patek-philippe-nautilus-5711",
+      "tier": 2,
+      "priority": 68,
+      "tags": [
+        "price-match",
+        "dress",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "rolex-yacht-master-40",
+      "slug2": "tudor-pelagos-39",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "sport",
+        "dive",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands"
+    },
+    {
+      "slug1": "seiko-5-sports-srpe55",
+      "slug2": "tissot-prx-40",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-adjacent",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both sport watches"
+    },
+    {
+      "slug1": "longines-hydroconquest-41",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both dive watches"
+    },
+    {
+      "slug1": "baltic-aquascaphe",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "halios-seaforth",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "halios-tropik",
+      "slug2": "baltic-aquascaphe",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Both dive watches"
+    },
+    {
+      "slug1": "halios-tropik",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both dive watches"
+    },
+    {
+      "slug1": "mido-ocean-star-tribute",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-adjacent",
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both dive watches"
+    },
+    {
+      "slug1": "frederique-constant-classics-auto",
+      "slug2": "longines-master-collection-40",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both dress watches"
+    },
+    {
+      "slug1": "nomos-tangente-38",
+      "slug2": "seiko-presage-spb165",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both dress watches"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "longines-master-collection-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "longines-master-collection-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "patek-philippe-nautilus-5711",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both sport watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "halios-seaforth",
+      "slug2": "tudor-pelagos-39",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-constellation-39",
+      "slug2": "patek-philippe-calatrava-5119",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb167",
+      "slug2": "iwc-portugieser-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "frederique-constant-classics-auto",
+      "slug2": "omega-constellation-39",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "nomos-tangente-38",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "baltic-aquascaphe",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "halios-seaforth",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "halios-tropik",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "mido-ocean-star-tribute",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "longines-master-collection-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "jaeger-lecoultre-master-ultra-thin",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "longines-master-collection",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "baltic-aquascaphe",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "halios-seaforth",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "halios-tropik",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-black-bay-58",
+      "slug2": "mido-ocean-star-tribute",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "vintage",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "baltic-aquascaphe",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "halios-tropik",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tudor-pelagos-39",
+      "slug2": "mido-ocean-star-tribute",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "baltic-aquascaphe",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "halios-tropik",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "mido-ocean-star-tribute",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "seiko-prospex-sbdc101",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "seiko-presage-spb165",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "casual",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "baltic-bicompax-001",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "casual",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both sport watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "seiko-presage-spb167",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "casual",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "hamilton-jazzmaster-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "omega-aqua-terra-38",
+      "slug2": "frederique-constant-classics-auto",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tag-heuer-carrera-42",
+      "slug2": "tissot-prx-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "sport",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both sport watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "tag-heuer-aquaracer-300",
+      "slug2": "panerai-luminor-44-pam01312",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "grand-seiko-sbgw231",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "iwc-portugieser-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "cartier-santos",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "iwc-portugieser-automatic",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "iwc-portofino-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "hamilton-jazzmaster-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "grand-seiko-sbga211-snowflake",
+      "slug2": "frederique-constant-classics-auto",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "grand-seiko-sbgw231",
+      "slug2": "seiko-presage-spb167",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "iwc-portugieser-40",
+      "slug2": "longines-master-collection",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "panerai-luminor-44-pam01312",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dive watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "panerai-luminor-44-pam01312",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "price-match",
+        "dive",
+        "sport",
+        "luxury",
+        "cross-brand"
+      ],
+      "reason": "Similar price range; Listed as alternative"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "seiko-presage-spb167",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "longines-master-collection",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "cartier-tank-must",
+      "slug2": "hamilton-jazzmaster-40",
+      "tier": 3,
+      "priority": 63,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-gmt-master-ii-pepsi",
+      "slug2": "tag-heuer-carrera-42",
+      "tier": 3,
+      "priority": 60,
+      "tags": [
+        "price-adjacent",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands"
+    },
+    {
+      "slug1": "tag-heuer-carrera-42",
+      "slug2": "iwc-pilot-mark-xviii",
+      "tier": 3,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range"
+    },
+    {
+      "slug1": "jaeger-lecoultre-reverso-classic",
+      "slug2": "cartier-ronde-solo",
+      "tier": 3,
+      "priority": 60,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both dress watches"
+    },
+    {
+      "slug1": "jaeger-lecoultre-master-ultra-thin",
+      "slug2": "cartier-ronde-solo",
+      "tier": 3,
+      "priority": 60,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both dress watches"
+    },
+    {
+      "slug1": "tag-heuer-carrera-42",
+      "slug2": "zenith-el-primero-chronomaster",
+      "tier": 3,
+      "priority": 60,
+      "tags": [
+        "price-adjacent",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both sport watches"
+    },
+    {
+      "slug1": "vacheron-constantin-overseas-4500v",
+      "slug2": "rolex-day-date-40",
+      "tier": 3,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "luxury",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "nomos-tangente-38",
+      "tier": 3,
+      "priority": 58,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "movement-contrast",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "ap-royal-oak-15500",
+      "slug2": "rolex-day-date-40",
+      "tier": 3,
+      "priority": 58,
+      "tags": [
+        "price-adjacent",
+        "luxury",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Listed as alternative"
+    },
+    {
+      "slug1": "rolex-yacht-master-40",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 3,
+      "priority": 58,
+      "tags": [
+        "sport",
+        "dive",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "seiko-5-sports-srpe55",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 3,
+      "priority": 58,
+      "tags": [
+        "sport",
+        "dive",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "baltic-bicompax-001",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 3,
+      "priority": 58,
+      "tags": [
+        "sport",
+        "casual",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both sport watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-explorer-36",
+      "slug2": "hamilton-khaki-field-auto-38",
+      "tier": 3,
+      "priority": 56,
+      "tags": [
+        "sport",
+        "field",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Listed as alternative; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-submariner-41",
+      "slug2": "patek-philippe-nautilus-5711",
+      "tier": 3,
+      "priority": 56,
+      "tags": [
+        "sport",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Listed as alternative; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-explorer-36",
+      "slug2": "tudor-black-bay-58",
+      "tier": 3,
+      "priority": 55,
+      "tags": [
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands"
+    },
+    {
+      "slug1": "panerai-luminor-44-pam01312",
+      "slug2": "tudor-black-bay-58",
+      "tier": 3,
+      "priority": 55,
+      "tags": [
+        "dive",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both dive watches"
+    },
+    {
+      "slug1": "omega-speedmaster-moonwatch",
+      "slug2": "iwc-pilot-mark-xviii",
+      "tier": 3,
+      "priority": 55,
+      "tags": [
+        "price-adjacent",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "longines-master-collection-40",
+      "slug2": "iwc-pilot-mark-xviii",
+      "tier": 3,
+      "priority": 55,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "hamilton-jazzmaster-40",
+      "slug2": "nomos-tangente-38",
+      "tier": 3,
+      "priority": 55,
+      "tags": [
+        "dress",
+        "casual",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both dress watches"
+    },
+    {
+      "slug1": "rolex-explorer-36",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 3,
+      "priority": 53,
+      "tags": [
+        "sport",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "rolex-submariner-41",
+      "tier": 3,
+      "priority": 53,
+      "tags": [
+        "luxury",
+        "same-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Same brand (Rolex); Cross-tier price comparison"
+    },
+    {
+      "slug1": "rolex-day-date-40",
+      "slug2": "rolex-yacht-master-40",
+      "tier": 3,
+      "priority": 53,
+      "tags": [
+        "luxury",
+        "same-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-5 brands; Same brand (Rolex); Cross-tier price comparison"
+    },
+    {
+      "slug1": "hamilton-jazzmaster-40",
+      "slug2": "cartier-santos",
+      "tier": 3,
+      "priority": 53,
+      "tags": [
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both dress watches; Cross-tier price comparison"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "iwc-pilot-mark-xviii",
+      "tier": 3,
+      "priority": 50,
+      "tags": [
+        "price-adjacent",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "tissot-prx-40",
+      "slug2": "hamilton-khaki-field-auto-38",
+      "tier": 3,
+      "priority": 50,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Similar price range"
+    },
+    {
+      "slug1": "hamilton-khaki-field-auto-38",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 3,
+      "priority": 50,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range"
+    },
+    {
+      "slug1": "tissot-prx-40",
+      "slug2": "omega-constellation-39",
+      "tier": 3,
+      "priority": 48,
+      "tags": [
+        "casual",
+        "dress",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Cross-tier price comparison"
+    },
+    {
+      "slug1": "breitling-superocean-42",
+      "slug2": "breitling-navitimer-b01-42",
+      "tier": 3,
+      "priority": 48,
+      "tags": [
+        "sport",
+        "same-brand"
+      ],
+      "reason": "Both top-10 brands; Listed as alternative; Same brand (Breitling)"
+    },
+    {
+      "slug1": "tudor-black-bay-gmt",
+      "slug2": "breitling-navitimer-b01-42",
+      "tier": 3,
+      "priority": 45,
+      "tags": [
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "iwc-pilot-mark-xviii",
+      "slug2": "breitling-navitimer-b01-42",
+      "tier": 3,
+      "priority": 45,
+      "tags": [
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "swatch-sistem51",
+      "slug2": "seiko-5-sports-srpe55",
+      "tier": 3,
+      "priority": 45,
+      "tags": [
+        "casual",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "seiko-presage-spb165",
+      "slug2": "tag-heuer-aquaracer-300",
+      "tier": 3,
+      "priority": 45,
+      "tags": [
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands"
+    },
+    {
+      "slug1": "seiko-5-sports-srpe55",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 3,
+      "priority": 45,
+      "tags": [
+        "sport",
+        "dive",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "patek-philippe-nautilus-5711",
+      "tier": 3,
+      "priority": 43,
+      "tags": [
+        "dress",
+        "luxury",
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Cross-tier price comparison"
+    },
+    {
+      "slug1": "hamilton-jazzmaster-40",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 3,
+      "priority": 40,
+      "tags": [
+        "price-match",
+        "cross-brand"
+      ],
+      "reason": "Similar price range"
+    },
+    {
+      "slug1": "seiko-5-sports-srpe55",
+      "slug2": "hamilton-khaki-field-auto-38",
+      "tier": 3,
+      "priority": 40,
+      "tags": [
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "cartier-tank-must",
+      "tier": 3,
+      "priority": 40,
+      "tags": [
+        "price-adjacent",
+        "cross-brand",
+        "movement-contrast"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "iwc-pilot-mark-xviii",
+      "slug2": "zenith-el-primero-chronomaster",
+      "tier": 3,
+      "priority": 40,
+      "tags": [
+        "price-adjacent",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "longines-master-collection-40",
+      "slug2": "tudor-black-bay-58",
+      "tier": 3,
+      "priority": 35,
+      "tags": [
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands"
+    },
+    {
+      "slug1": "longines-hydroconquest-41",
+      "slug2": "rolex-datejust-36",
+      "tier": 3,
+      "priority": 33,
+      "tags": [
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Both top-10 brands; Cross-tier price comparison"
+    },
+    {
+      "slug1": "nomos-club-campus",
+      "slug2": "hamilton-jazzmaster-40",
+      "tier": 3,
+      "priority": 30,
+      "tags": [
+        "casual",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "swatch-sistem51",
+      "slug2": "tissot-prx-40",
+      "tier": 3,
+      "priority": 30,
+      "tags": [
+        "casual",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "rolex-explorer-36",
+      "slug2": "nomos-club-campus",
+      "tier": 3,
+      "priority": 28,
+      "tags": [
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Cross-tier price comparison"
+    },
+    {
+      "slug1": "hamilton-khaki-field-auto-38",
+      "slug2": "nomos-club-campus",
+      "tier": 3,
+      "priority": 25,
+      "tags": [
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "tissot-prx-40",
+      "slug2": "nomos-club-campus",
+      "tier": 3,
+      "priority": 25,
+      "tags": [
+        "casual",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Algorithmically matched"
+    },
+    {
+      "slug1": "omega-seamaster-300m",
+      "slug2": "patek-philippe-calatrava-5119",
+      "tier": 3,
+      "priority": 23,
+      "tags": [
+        "cross-brand",
+        "cross-tier"
+      ],
+      "reason": "Cross-tier price comparison"
+    }
+  ]
+}

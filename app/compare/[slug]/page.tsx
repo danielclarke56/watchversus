@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons } from '@/lib/watches'
+import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, popularComparisons, getComparisonTier } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getBrandsForComparison } from '@/lib/relatedContent'
 import { generateComparisonBadges } from '@/lib/comparisonBadges'
@@ -160,6 +160,11 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
   if (!w1 || !w2) notFound()
 
+  // Tier data for this comparison
+  const tierEntry = getComparisonTier(slug1, slug2)
+  const override = comparisonOverrides.find((o) => o.slug === params.slug)
+  const hookLine = override?.hook_line || null
+
   const reviews1 = getReviewsForWatch(w1.id)
   const reviews2 = getReviewsForWatch(w2.id)
   const avg1 = calcAverageRatings(reviews1)
@@ -314,7 +319,10 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 <span className="text-accent text-xl sm:text-3xl md:text-5xl">vs</span>
                 <span className="block">{w2.brand} {w2.name}</span>
               </h1>
-              <p className="text-textSecond text-lg md:text-xl">Complete head-to-head comparison</p>
+              <p className="text-textSecond text-lg md:text-xl">{hookLine || 'Complete head-to-head comparison'}</p>
+              {tierEntry && tierEntry.tier === 1 && (
+                <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-accent/10 text-accent rounded-full">Featured Comparison</span>
+              )}
             </div>
 
             {/* Watch Cards — Side-by-side comparison layout */}
