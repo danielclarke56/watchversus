@@ -8,9 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/compare',
-          '/brand',
-          '/brands',
-          '/watches',
+'/watches',
           '/guides',
           '/quiz',
           '/about',

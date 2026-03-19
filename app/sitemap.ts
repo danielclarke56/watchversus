@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next'
 import { watches, comparisonTiers } from '@/lib/watches'
-import { brands } from '@/lib/brandData'
 import { guides } from '@/lib/guideData'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -12,21 +11,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/compare`, priority: 0.9 },
     { url: `${base}/guides`, priority: 0.9 },
     { url: `${base}/quiz`, priority: 0.7 },
-    { url: `${base}/about`, priority: 0.3 },
+{ url: `${base}/about`, priority: 0.3 },
   ].map((p) => ({
     ...p,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
   }))
 
-  const brandPages = brands.map((b) => ({
-    url: `${base}/brands/${b.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.75,
-  }))
-
-  const guidePages = guides.map((g) => ({
+const guidePages = guides.map((g) => ({
     url: `${base}/guides/${g.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
@@ -58,5 +50,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  return [...staticPages, ...brandPages, ...guidePages, ...watchPages, ...comparisonPages]
+  return [...staticPages, ...guidePages, ...watchPages, ...comparisonPages]
 }

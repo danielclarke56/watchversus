@@ -649,26 +649,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               </section>
             )}
 
-            {/* Brand Hubs */}
-            <section className="mb-10">
-              <h2 className="text-xl font-bold text-textPrimary mb-5">Explore These Brands</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[w1, w2].map((w) => (
-                  <Link
-                    key={w.id}
-                    href={`/brands/${w.brand.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="card p-5 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
-                  >
-                    <p className="text-xs uppercase text-textMuted font-semibold mb-2">Brand Hub</p>
-                    <h3 className="text-lg font-bold text-textPrimary group-hover:text-accent transition-colors mb-2">{w.brand}</h3>
-                    <p className="text-sm text-textSecond mb-3">All {w.brand} watches, comparisons, and guides</p>
-                    <p className="text-xs text-accent font-medium">View Brand Hub →</p>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            {/* Alternatives */}
+{/* Alternatives */}
             {(() => {
               const altSet = new Set([...(w1.alternatives || []), ...(w2.alternatives || [])])
               const altSlugs = Array.from(altSet)

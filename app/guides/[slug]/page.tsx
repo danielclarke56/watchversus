@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
-import { getRelatedGuidesByBrand, getBrandsInGuide } from '@/lib/relatedContent'
+import { getRelatedGuidesByBrand } from '@/lib/relatedContent'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 
 export async function generateStaticParams() {
@@ -83,10 +83,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
   // Find related guides and brands
   const relatedGuides = getRelatedGuidesByBrand(guide.slug)
-  const brandsInThisGuide = getBrandsInGuide(guide)
-  const featuredBrands = brandsInThisGuide.slice(0, 4)
-
-  // Compute read time and stats
+// Compute read time and stats
   const allText = [
     guide.h1,
     guide.intro,
@@ -407,29 +404,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           </section>
         )}
 
-        {/* Related Brands Footer */}
-        {featuredBrands.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">Brands Featured in This Guide</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {featuredBrands.map((b) => (
-                <Link
-                  key={b.slug}
-                  href={`/brands/${b.slug}`}
-                  className="card p-4 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group text-center"
-                >
-                  <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
-                    {b.name}
-                  </h3>
-                  <p className="text-xs text-textSecond mt-2 line-clamp-2">{b.heroFact}</p>
-                  <p className="text-xs text-accent font-medium mt-3 inline-block">Explore Brand →</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* CTA */}
+{/* CTA */}
         <div className="text-center bg-neutral border border-border rounded-sm p-8">
           <h3 className="text-textPrimary font-heading font-semibold text-lg mb-2">Compare Any Two Watches</h3>
           <p className="text-textSecond text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
