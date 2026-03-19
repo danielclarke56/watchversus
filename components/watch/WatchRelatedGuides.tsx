@@ -8,7 +8,7 @@ interface GuideLink {
 }
 
 function getRelatedGuides(watch: Watch): GuideLink[] {
-  const { primary_category, movement_type } = watch
+  const { primary_category } = watch
   const priceMax = watch.price_new_usd?.max ?? 0
   const guides: GuideLink[] = []
 

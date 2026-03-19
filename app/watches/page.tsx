@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function WatchesPage({ searchParams }: { searchParams: { search?: string; brand?: string; style?: string; price?: string; sort?: string } }) {
+export default function WatchesPage({ searchParams }: { searchParams: { search?: string; brand?: string; style?: string; price?: string; sort?: string; page?: string } }) {
   // JSON-LD ItemList for the full collection
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -45,6 +45,7 @@ export default function WatchesPage({ searchParams }: { searchParams: { search?:
         initialStyle={searchParams.style || ''}
         initialPrice={searchParams.price || ''}
         initialSort={searchParams.sort || ''}
+        initialPage={Math.max(1, parseInt(searchParams.page || '1', 10) || 1)}
       />
     </>
   )

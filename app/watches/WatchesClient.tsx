@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import type { Watch } from '@/lib/types'
 import { formatPrice } from '@/lib/watches'
 
@@ -13,7 +14,10 @@ interface Props {
   initialStyle: string
   initialPrice: string
   initialSort: string
+  initialPage: number
 }
+
+const PAGE_SIZE = 25
 
 const PRICE_RANGES = [
   { label: 'All Prices', value: '' },
@@ -34,9 +38,6 @@ const SORT_OPTIONS: { label: string; value: SortKey }[] = [
   { label: 'Name A–Z', value: 'name' },
   { label: 'Brand A–Z', value: 'brand' },
 ]
-
-// Batch size for progressive rendering
-const BATCH_SIZE = 40
 
 function matchesPrice(w: Watch, price: string): boolean {
   if (!price) return true
@@ -93,9 +94,8 @@ function WatchRow({ watch }: { watch: Watch }) {
   return (
     <Link
       href={`/watches/${watch.slug}`}
-      className="group grid grid-cols-[40px_1fr_60px_72px_70px_56px_80px] md:grid-cols-[48px_1fr_64px_80px_76px_60px_88px] items-center gap-x-2 md:gap-x-3 px-3 md:px-4 py-2.5 border-b border-border hover:bg-surfaceAlt/50 transition-colors"
+      className="group grid grid-cols-[40px_1fr_60px_72px_70px_56px_80px] md:grid-cols-[48px_1fr_64px_80px_76px_60px_88px] items-center gap-x-2 md:gap-x-3 px-3 md:px-4 py-2.5 border-b border-border last:border-0 hover:bg-surfaceAlt/50 transition-colors"
     >
-      {/* Thumbnail */}
       <div className="w-10 h-10 md:w-12 md:h-12 rounded bg-surfaceAlt overflow-hidden shrink-0 flex items-center justify-center">
         {watch.image ? (
           <Image
@@ -113,7 +113,6 @@ function WatchRow({ watch }: { watch: Watch }) {
         )}
       </div>
 
-      {/* Name + brand */}
       <div className="min-w-0">
         <p className="text-xs font-semibold text-textPrimary truncate group-hover:text-accent transition-colors">
           {watch.name}
@@ -121,24 +120,17 @@ function WatchRow({ watch }: { watch: Watch }) {
         <p className="text-[10px] text-textMuted truncate">{watch.brand}</p>
       </div>
 
-      {/* Score */}
       <div className="text-right">
         <span className="text-xs font-semibold text-textPrimary">{watch.score.toFixed(1)}</span>
         <span className="text-[10px] text-textMuted">/10</span>
       </div>
 
-      {/* Price */}
       <p className="text-xs font-medium text-textPrimary text-right tabular-nums">
         {formatPrice(watch.price_new_usd)}
       </p>
 
-      {/* Size */}
       <p className="text-xs text-textSecond text-right tabular-nums">{watch.case_diameter_mm}mm</p>
-
-      {/* WR */}
       <p className="text-xs text-textSecond text-right tabular-nums">{watch.water_resistance_m}m</p>
-
-      {/* Movement */}
       <p className="text-xs text-textSecond text-right capitalize truncate">{watch.movement_type}</p>
     </Link>
   )
@@ -149,9 +141,8 @@ function WatchRowMobile({ watch }: { watch: Watch }) {
   return (
     <Link
       href={`/watches/${watch.slug}`}
-      className="group flex items-center gap-3 px-3 py-3 border-b border-border hover:bg-surfaceAlt/50 transition-colors"
+      className="group flex items-center gap-3 px-3 py-3 border-b border-border last:border-0 hover:bg-surfaceAlt/50 transition-colors"
     >
-      {/* Thumbnail */}
       <div className="w-11 h-11 rounded bg-surfaceAlt overflow-hidden shrink-0 flex items-center justify-center">
         {watch.image ? (
           <Image
@@ -169,7 +160,6 @@ function WatchRowMobile({ watch }: { watch: Watch }) {
         )}
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-textPrimary truncate group-hover:text-accent transition-colors">
           {watch.name}
@@ -179,7 +169,6 @@ function WatchRowMobile({ watch }: { watch: Watch }) {
         </p>
       </div>
 
-      {/* Right side: score + price */}
       <div className="shrink-0 text-right">
         <p className="text-sm font-semibold text-textPrimary">{formatPrice(watch.price_new_usd)}</p>
         <p className="text-[11px] text-textMuted">{watch.score.toFixed(1)}/10</p>
@@ -188,15 +177,74 @@ function WatchRowMobile({ watch }: { watch: Watch }) {
   )
 }
 
+/* ── Pagination ───────────────────────────────────────────── */
+function Pagination({ current, total, onPage }: { current: number; total: number; onPage: (p: number) => void }) {
+  if (total <= 1) return null
+
+  // Build page number array with ellipsis
+  const pages: (number | '...')[] = []
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    if (current > 3) pages.push('...')
+    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+      pages.push(i)
+    }
+    if (current < total - 2) pages.push('...')
+    pages.push(total)
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1 pt-4 pb-2">
+      <button
+        onClick={() => onPage(current - 1)}
+        disabled={current === 1}
+        className="px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-textSecond hover:text-textPrimary hover:bg-surfaceAlt"
+      >
+        Prev
+      </button>
+
+      {pages.map((p, i) =>
+        p === '...' ? (
+          <span key={`ellipsis-${i}`} className="px-1 text-xs text-textMuted">...</span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onPage(p)}
+            className={`min-w-[32px] py-1.5 text-xs font-medium rounded-md transition-colors ${
+              p === current
+                ? 'bg-accent text-white'
+                : 'text-textSecond hover:text-textPrimary hover:bg-surfaceAlt'
+            }`}
+          >
+            {p}
+          </button>
+        )
+      )}
+
+      <button
+        onClick={() => onPage(current + 1)}
+        disabled={current === total}
+        className="px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-textSecond hover:text-textPrimary hover:bg-surfaceAlt"
+      >
+        Next
+      </button>
+    </div>
+  )
+}
+
 /* ── Main component ───────────────────────────────────────── */
-export default function WatchesClient({ watches, initialSearch, initialBrand, initialStyle, initialPrice, initialSort }: Props) {
+export default function WatchesClient({ watches, initialSearch, initialBrand, initialStyle, initialPrice, initialSort, initialPage }: Props) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
   const [search, setSearch] = useState(initialSearch)
   const [brand, setBrand] = useState(initialBrand)
   const [style, setStyle] = useState(initialStyle)
   const [price, setPrice] = useState(initialPrice)
   const [sort, setSort] = useState<SortKey>((initialSort as SortKey) || '')
-  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE)
-  const sentinelRef = useRef<HTMLDivElement>(null)
+  const [page, setPage] = useState(initialPage)
 
   const brands = useMemo(() => {
     const set = new Set(watches.map((w) => w.brand))
@@ -226,30 +274,43 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
     return sortWatches(result, sort)
   }, [watches, search, brand, style, price, sort])
 
-  // Reset visible count when filters change
-  useEffect(() => {
-    setVisibleCount(BATCH_SIZE)
-  }, [search, brand, style, price, sort])
-
-  // Infinite scroll: observe sentinel element
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, filtered.length))
-        }
-      },
-      { rootMargin: '200px' }
-    )
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [filtered.length])
-
-  const visible = filtered.slice(0, visibleCount)
-  const hasMore = visibleCount < filtered.length
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const startIdx = (safePage - 1) * PAGE_SIZE
+  const visible = filtered.slice(startIdx, startIdx + PAGE_SIZE)
   const hasFilters = search || brand || style || price || sort
+
+  // Sync URL when page/filters change
+  const updateUrl = useCallback((newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (newPage > 1) params.set('page', String(newPage))
+    else params.delete('page')
+    if (search) params.set('search', search); else params.delete('search')
+    if (brand) params.set('brand', brand); else params.delete('brand')
+    if (style) params.set('style', style); else params.delete('style')
+    if (price) params.set('price', price); else params.delete('price')
+    if (sort) params.set('sort', sort); else params.delete('sort')
+    const qs = params.toString()
+    router.replace(`/watches${qs ? `?${qs}` : ''}`, { scroll: false })
+  }, [router, searchParams, search, brand, style, price, sort])
+
+  // Reset to page 1 when filters change, and sync URL
+  const handleFilterChange = useCallback(<T,>(setter: (v: T) => void, value: T) => {
+    setter(value)
+    setPage(1)
+    // URL sync happens on next render via the page change handler
+    setTimeout(() => {
+      const params = new URLSearchParams()
+      // We can't read the new state here, so we update URL in the goToPage function
+    }, 0)
+  }, [])
+
+  const goToPage = useCallback((p: number) => {
+    const clamped = Math.max(1, Math.min(p, totalPages))
+    setPage(clamped)
+    updateUrl(clamped)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [totalPages, updateUrl])
 
   const clearAll = useCallback(() => {
     setSearch('')
@@ -257,10 +318,13 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
     setStyle('')
     setPrice('')
     setSort('')
-  }, [])
+    setPage(1)
+    router.replace('/watches', { scroll: false })
+  }, [router])
 
   const handleSort = useCallback((key: SortKey) => {
     setSort(key)
+    setPage(1)
   }, [])
 
   return (
@@ -277,12 +341,12 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
           type="text"
           placeholder="Search name, brand, ref..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
           className="flex-1 min-w-[180px] bg-surfaceAlt border border-border rounded-md px-3 py-1.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent transition-colors"
         />
         <select
           value={brand}
-          onChange={(e) => setBrand(e.target.value)}
+          onChange={(e) => { setBrand(e.target.value); setPage(1) }}
           className="bg-surfaceAlt border border-border rounded-md px-2.5 py-1.5 text-sm text-textPrimary focus:outline-none focus:border-accent transition-colors"
         >
           {brands.map((b) => (
@@ -291,7 +355,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         </select>
         <select
           value={style}
-          onChange={(e) => setStyle(e.target.value)}
+          onChange={(e) => { setStyle(e.target.value); setPage(1) }}
           className="bg-surfaceAlt border border-border rounded-md px-2.5 py-1.5 text-sm text-textPrimary focus:outline-none focus:border-accent transition-colors capitalize"
         >
           {styles.map((s) => (
@@ -300,7 +364,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         </select>
         <select
           value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          onChange={(e) => { setPrice(e.target.value); setPage(1) }}
           className="bg-surfaceAlt border border-border rounded-md px-2.5 py-1.5 text-sm text-textPrimary focus:outline-none focus:border-accent transition-colors"
         >
           {PRICE_RANGES.map((p) => (
@@ -310,7 +374,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         {/* Sort dropdown visible on mobile only — desktop uses column headers */}
         <select
           value={sort}
-          onChange={(e) => setSort(e.target.value as SortKey)}
+          onChange={(e) => { setSort(e.target.value as SortKey); setPage(1) }}
           className="md:hidden bg-surfaceAlt border border-border rounded-md px-2.5 py-1.5 text-sm text-textPrimary focus:outline-none focus:border-accent transition-colors"
         >
           {SORT_OPTIONS.map((s) => (
@@ -327,19 +391,26 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         )}
       </div>
 
-      {/* Results count */}
-      <p className="text-textMuted text-xs mb-2">
-        {filtered.length === watches.length
-          ? `${watches.length} watches`
-          : `${filtered.length} of ${watches.length} watches`}
-      </p>
+      {/* Results count + range */}
+      <div className="flex items-baseline justify-between mb-2">
+        <p className="text-textMuted text-xs">
+          {filtered.length === watches.length
+            ? `${watches.length} watches`
+            : `${filtered.length} of ${watches.length} watches`}
+        </p>
+        {filtered.length > PAGE_SIZE && (
+          <p className="text-textMuted text-xs">
+            {startIdx + 1}–{Math.min(startIdx + PAGE_SIZE, filtered.length)}
+          </p>
+        )}
+      </div>
 
       {/* Table */}
       {filtered.length > 0 ? (
         <div className="bg-surface border border-border rounded-lg overflow-hidden">
           {/* Column headers — desktop */}
           <div className="hidden md:grid grid-cols-[48px_1fr_64px_80px_76px_60px_88px] items-center gap-x-3 px-4 py-2 bg-surfaceAlt border-b border-border">
-            <span /> {/* thumbnail spacer */}
+            <span />
             <SortHeader label="Watch" sortKey="name" currentSort={sort} onSort={handleSort} />
             <SortHeader label="Score" sortKey="score" currentSort={sort} onSort={handleSort} className="text-right" />
             <SortHeader label="Price" sortKey="price-asc" currentSort={sort} onSort={handleSort} className="text-right" />
@@ -362,12 +433,8 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
             ))}
           </div>
 
-          {/* Infinite scroll sentinel */}
-          {hasMore && (
-            <div ref={sentinelRef} className="py-6 text-center">
-              <span className="text-xs text-textMuted">Loading more...</span>
-            </div>
-          )}
+          {/* Pagination */}
+          <Pagination current={safePage} total={totalPages} onPage={goToPage} />
         </div>
       ) : (
         <div className="text-center py-16">
