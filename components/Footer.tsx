@@ -1,6 +1,27 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function Footer() {
+  const pathname = usePathname()
+  const isQuiz = pathname === '/quiz'
+
+  if (isQuiz) {
+    return (
+      <footer className="border-t border-border mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-textMuted text-xs">
+            &copy; {new Date().getFullYear()} WatchVsWatch. All rights reserved.
+          </p>
+          <Link href="/" className="text-textMuted hover:text-textSecond text-xs transition-colors">
+            WatchVsWatch Home
+          </Link>
+        </div>
+      </footer>
+    )
+  }
+
   return (
     <footer className="bg-surfaceAlt border-t border-border mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

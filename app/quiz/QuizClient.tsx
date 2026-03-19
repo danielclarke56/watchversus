@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Watch } from '@/lib/types'
@@ -11,16 +11,6 @@ interface Props {
 }
 
 const QUESTIONS = [
-  {
-    id: 'budget',
-    question: 'What is your budget?',
-    options: [
-      { value: 'u500', label: 'Under $500', icon: '💰' },
-      { value: '500-2000', label: '$500 – $2,000', icon: '💰💰' },
-      { value: '2000-5000', label: '$2,000 – $5,000', icon: '💰💰💰' },
-      { value: '5000p', label: '$5,000+', icon: '👑' },
-    ],
-  },
   {
     id: 'style',
     question: 'What style are you drawn to?',
@@ -34,6 +24,15 @@ const QUESTIONS = [
     ],
   },
   {
+    id: 'usecase',
+    question: 'How will you wear it?',
+    options: [
+      { value: 'daily', label: 'Daily beater', icon: '📅' },
+      { value: 'special', label: 'Special occasions', icon: '🥂' },
+      { value: 'both', label: 'Both', icon: '🌟' },
+    ],
+  },
+  {
     id: 'movement',
     question: 'Do you have a movement preference?',
     options: [
@@ -41,15 +40,6 @@ const QUESTIONS = [
       { value: 'manual', label: 'Manual Wind', icon: '🔧' },
       { value: 'quartz', label: 'Quartz (battery)', icon: '⚡' },
       { value: 'any', label: 'No preference', icon: '🔄' },
-    ],
-  },
-  {
-    id: 'usecase',
-    question: 'How will you wear it?',
-    options: [
-      { value: 'daily', label: 'Daily beater', icon: '📅' },
-      { value: 'special', label: 'Special occasions', icon: '🥂' },
-      { value: 'both', label: 'Both', icon: '🌟' },
     ],
   },
   {
@@ -61,13 +51,24 @@ const QUESTIONS = [
       { value: 'indie', label: 'Independent / microbrand', icon: '🛠️' },
     ],
   },
+  {
+    id: 'budget',
+    question: 'What is your budget?',
+    options: [
+      { value: 'u500', label: 'Under $500', icon: '💰' },
+      { value: '500-2000', label: '$500 - $2,000', icon: '💰💰' },
+      { value: '2000-5000', label: '$2,000 - $5,000', icon: '💰💰💰' },
+      { value: '5000p', label: '$5,000+', icon: '👑' },
+    ],
+  },
 ]
+
+function countWatchesInBudget(watches: Watch[], budget: string): number {
+  return watches.filter((w) => budgetMatches(w, budget)).length
+}
 
 function budgetMatches(watch: Watch, budget: string): boolean {
   const min = watch.price_new_usd.min
-  // Use minimum price as the canonical tier assignment for a watch.
-  // This ensures each watch belongs to exactly one tier and future watches
-  // auto-categorize correctly without overlap.
   if (budget === 'u500') return min < 500
   if (budget === '500-2000') return min >= 500 && min < 2000
   if (budget === '2000-5000') return min >= 2000 && min < 5000
@@ -78,25 +79,21 @@ function budgetMatches(watch: Watch, budget: string): boolean {
 function scoreWatch(watch: Watch, answers: Record<string, string>): number {
   let score = 0
 
-  // Budget — hard-filtered before scoring, but still reward exact matches
   const midPrice = (watch.price_new_usd.min + watch.price_new_usd.max) / 2
   if (answers.budget === 'u500' && midPrice < 500) score += 30
   else if (answers.budget === '500-2000' && midPrice >= 500 && midPrice <= 2000) score += 30
   else if (answers.budget === '2000-5000' && midPrice >= 2000 && midPrice <= 5000) score += 30
   else if (answers.budget === '5000p' && midPrice >= 5000) score += 30
-  else score += 5 // edge-of-range bonus (won't appear unless no exact-match candidates)
+  else score += 5
 
-  // Style
   if (answers.style && watch.style.includes(answers.style)) score += 25
 
-  // Movement
   if (answers.movement && answers.movement !== 'any') {
     if (watch.movement_type === answers.movement) score += 20
   } else {
-    score += 10 // neutral
+    score += 10
   }
 
-  // Use case
   if (answers.usecase === 'daily') {
     if (watch.water_resistance_m >= 100) score += 10
     if (watch.case_diameter_mm <= 42) score += 5
@@ -106,7 +103,6 @@ function scoreWatch(watch: Watch, answers: Record<string, string>): number {
     score += 5
   }
 
-  // Prestige
   const prestigeBrands = ['Rolex', 'Audemars Piguet', 'Patek Philippe', 'Vacheron Constantin']
   const valueBrands = ['Seiko', 'Tissot', 'Hamilton', 'Longines', 'Mido']
   const indieBrands = ['Baltic', 'Halios', 'Christopher Ward', 'Nomos Glashütte']
@@ -120,12 +116,20 @@ function scoreWatch(watch: Watch, answers: Record<string, string>): number {
 }
 
 export default function QuizClient({ watches }: Props) {
+  const [started, setStarted] = useState(false)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showResults, setShowResults] = useState(false)
 
   const currentQ = QUESTIONS[step]
   const progress = ((step) / QUESTIONS.length) * 100
+
+  const budgetCounts = useMemo(() => ({
+    'u500': countWatchesInBudget(watches, 'u500'),
+    '500-2000': countWatchesInBudget(watches, '500-2000'),
+    '2000-5000': countWatchesInBudget(watches, '2000-5000'),
+    '5000p': countWatchesInBudget(watches, '5000p'),
+  }), [watches])
 
   const handleAnswer = (value: string) => {
     const newAnswers = { ...answers, [currentQ.id]: value }
@@ -137,19 +141,84 @@ export default function QuizClient({ watches }: Props) {
     }
   }
 
-  const results = showResults
-    ? (() => {
-        // Hard-filter by budget — never show watches outside the selected range
-        const pool = answers.budget
-          ? watches.filter((w) => budgetMatches(w, answers.budget))
-          : watches
-        return pool
-          .map((w) => ({ watch: w, score: scoreWatch(w, answers) }))
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 3)
-      })()
-    : []
+  const handleSkip = () => {
+    if (step < QUESTIONS.length - 1) {
+      setStep(step + 1)
+    } else {
+      setShowResults(true)
+    }
+  }
 
+  const { topMatches, closeMatches } = useMemo(() => {
+    if (!showResults) return { topMatches: [], closeMatches: [] }
+
+    const pool = answers.budget
+      ? watches.filter((w) => budgetMatches(w, answers.budget))
+      : watches
+
+    const scored = pool
+      .map((w) => ({ watch: w, score: scoreWatch(w, answers) }))
+      .sort((a, b) => b.score - a.score)
+
+    const top = scored.slice(0, 3)
+
+    // If fewer than 3 exact matches in budget, pull close matches from adjacent tiers
+    let close: typeof scored = []
+    if (top.length < 3 && answers.budget) {
+      const remaining = watches
+        .filter((w) => !budgetMatches(w, answers.budget))
+        .map((w) => ({ watch: w, score: scoreWatch(w, answers) }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3 - top.length)
+      close = remaining
+    } else if (top.length >= 3) {
+      // Show 2 close matches outside the top 3 from the same pool
+      close = scored.slice(3, 5)
+    }
+
+    return { topMatches: top, closeMatches: close }
+  }, [showResults, watches, answers])
+
+  // --- Intro screen ---
+  if (!started) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <div className="w-14 h-14 rounded-full bg-[#b8860b]/15 border border-[#b8860b]/25 flex items-center justify-center mx-auto mb-6">
+          <svg className="w-7 h-7 text-[#b8860b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold text-[#0f172a] mb-3">
+          Find Your Perfect Watch
+        </h1>
+        <p className="text-[#475569] text-lg mb-2">
+          Answer 5 quick questions. Get personalized recommendations from {watches.length}+ watches.
+        </p>
+        <p className="text-[#94a3b8] text-sm mb-8">
+          No signup required. Takes under 60 seconds.
+        </p>
+
+        <button
+          onClick={() => setStarted(true)}
+          className="btn-gold text-base px-8 py-3 rounded-lg font-semibold"
+        >
+          Start Quiz
+        </button>
+
+        <p className="text-[#94a3b8] text-xs mt-8">
+          Powered by community ratings from watch enthusiasts
+        </p>
+
+        <div className="mt-6">
+          <Link href="/watches" className="text-[#475569] hover:text-[#b8860b] text-sm transition-colors">
+            Or browse all watches &rarr;
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Results screen ---
   if (showResults) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -164,7 +233,7 @@ export default function QuizClient({ watches }: Props) {
         </div>
 
         <div className="space-y-5 mb-8">
-          {results.map(({ watch }, i) => (
+          {topMatches.map(({ watch }, i) => (
             <div key={watch.id} className="card p-6 border-[#e2e8f0] hover:border-[#b8860b]/30 transition-colors">
               {watch.image && (
                 <div className="flex justify-center mb-5">
@@ -196,22 +265,21 @@ export default function QuizClient({ watches }: Props) {
 
               <p className="text-[#475569] text-sm leading-relaxed mb-4">{watch.description}</p>
 
-              {/* Why it matches */}
               <div className="bg-[#f8fafc] rounded-lg p-3 mb-4">
                 <p className="text-xs text-[#94a3b8] uppercase tracking-wider mb-2">Why it matches</p>
                 <ul className="space-y-1">
-                  {watch.style.includes(answers.style) && (
+                  {answers.style && watch.style.includes(answers.style) && (
                     <li className="text-sm text-[#475569] flex items-center gap-2">
-                      <span className="text-[#b8860b]">✓</span> {watch.style.includes(answers.style) ? `${answers.style} style` : ''} watch
+                      <span className="text-[#b8860b]">&#10003;</span> {answers.style} style watch
                     </li>
                   )}
                   {(answers.movement === 'any' || watch.movement_type === answers.movement) && (
                     <li className="text-sm text-[#475569] flex items-center gap-2">
-                      <span className="text-[#b8860b]">✓</span> {watch.movement_type} movement
+                      <span className="text-[#b8860b]">&#10003;</span> {watch.movement_type} movement
                     </li>
                   )}
                   <li className="text-sm text-[#475569] flex items-center gap-2">
-                    <span className="text-[#b8860b]">✓</span> {watch.case_diameter_mm}mm case, {watch.water_resistance_m}m water resistance
+                    <span className="text-[#b8860b]">&#10003;</span> {watch.case_diameter_mm}mm case, {watch.water_resistance_m}m water resistance
                   </li>
                 </ul>
               </div>
@@ -225,18 +293,58 @@ export default function QuizClient({ watches }: Props) {
           ))}
         </div>
 
-        <div className="text-center">
+        {/* Close matches */}
+        {closeMatches.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-[#0f172a] mb-4">Also Worth a Look</h2>
+            <div className="space-y-3">
+              {closeMatches.map(({ watch }) => (
+                <Link
+                  key={watch.id}
+                  href={`/watches/${watch.slug}`}
+                  className="card p-4 border-[#e2e8f0] hover:border-[#b8860b]/30 transition-colors flex items-center gap-4"
+                >
+                  {watch.image && (
+                    <div className="bg-[#f8fafc] rounded-lg border border-[#e2e8f0] w-16 h-16 flex items-center justify-center overflow-hidden shrink-0">
+                      <Image
+                        src={watch.image}
+                        alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain p-1"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-[#b8860b] font-semibold uppercase tracking-wider">{watch.brand}</p>
+                    <p className="text-sm font-bold text-[#0f172a] truncate">{watch.name}</p>
+                    <p className="text-xs text-[#475569]">{formatPrice(watch.price_new_usd)}</p>
+                  </div>
+                  <span className="text-[#94a3b8] text-sm shrink-0">&rarr;</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="text-center space-y-3">
           <button
-            onClick={() => { setStep(0); setAnswers({}); setShowResults(false) }}
+            onClick={() => { setStep(0); setAnswers({}); setShowResults(false); setStarted(true) }}
             className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
           >
-            ← Retake Quiz
+            &larr; Retake Quiz
           </button>
+          <div>
+            <Link href="/watches" className="text-[#475569] hover:text-[#b8860b] text-sm transition-colors">
+              Browse all watches &rarr;
+            </Link>
+          </div>
         </div>
       </div>
     )
   }
 
+  // --- Quiz questions ---
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       {/* Progress */}
@@ -268,20 +376,39 @@ export default function QuizClient({ watches }: Props) {
           >
             <span className="text-2xl mb-2 block">{opt.icon}</span>
             <span className="text-[#0f172a] font-medium group-hover:text-[#b8860b] transition-colors">{opt.label}</span>
+            {currentQ.id === 'budget' && (
+              <span className="block text-xs text-[#94a3b8] mt-1">
+                {budgetCounts[opt.value as keyof typeof budgetCounts]} watches
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {step > 0 && (
-        <div className="text-center mt-6">
-          <button
-            onClick={() => setStep(step - 1)}
-            className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
-          >
-            ← Back
-          </button>
+      {/* Navigation: back + skip + browse */}
+      <div className="flex items-center justify-between mt-6">
+        <div>
+          {step > 0 && (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="text-[#475569] hover:text-[#0f172a] text-sm transition-colors"
+            >
+              &larr; Back
+            </button>
+          )}
         </div>
-      )}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleSkip}
+            className="text-[#94a3b8] hover:text-[#475569] text-sm transition-colors"
+          >
+            Skip
+          </button>
+          <Link href="/watches" className="text-[#94a3b8] hover:text-[#b8860b] text-sm transition-colors">
+            Browse all &rarr;
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

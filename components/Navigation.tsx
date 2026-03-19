@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
@@ -40,6 +41,8 @@ const navLinks = [
 ]
 
 export default function Navigation() {
+  const pathname = usePathname()
+  const isQuiz = pathname === '/quiz'
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -68,12 +71,21 @@ export default function Navigation() {
 
         {/* Right side: CTA + auth */}
         <div className="hidden md:flex items-center gap-4 shrink-0">
-          <Link
-            href="/compare"
-            className="btn-gold text-xs px-4 py-2 rounded-md font-semibold"
-          >
-            Compare Now
-          </Link>
+          {isQuiz ? (
+            <Link
+              href="/guides"
+              className="text-sm text-textSecond hover:text-accent transition-colors font-medium"
+            >
+              Need help? Read our guides
+            </Link>
+          ) : (
+            <Link
+              href="/compare"
+              className="btn-gold text-xs px-4 py-2 rounded-md font-semibold"
+            >
+              Compare Now
+            </Link>
+          )}
           <ClerkAuth avatarSize="w-8 h-8" />
         </div>
 
@@ -106,9 +118,15 @@ export default function Navigation() {
           ))}
 
           <div className="mt-5 pt-5 border-t border-border flex items-center justify-between">
-            <Link href="/compare" className="btn-gold text-xs px-4 py-2 rounded-md font-semibold">
-              Compare Now
-            </Link>
+            {isQuiz ? (
+              <Link href="/guides" className="text-sm text-textSecond hover:text-accent transition-colors font-medium">
+                Read our guides
+              </Link>
+            ) : (
+              <Link href="/compare" className="btn-gold text-xs px-4 py-2 rounded-md font-semibold">
+                Compare Now
+              </Link>
+            )}
             <ClerkAuth />
           </div>
         </div>
