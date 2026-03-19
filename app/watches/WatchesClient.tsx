@@ -294,17 +294,6 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
     router.replace(`/watches${qs ? `?${qs}` : ''}`, { scroll: false })
   }, [router, searchParams, search, brand, style, price, sort])
 
-  // Reset to page 1 when filters change, and sync URL
-  const handleFilterChange = useCallback(<T,>(setter: (v: T) => void, value: T) => {
-    setter(value)
-    setPage(1)
-    // URL sync happens on next render via the page change handler
-    setTimeout(() => {
-      const params = new URLSearchParams()
-      // We can't read the new state here, so we update URL in the goToPage function
-    }, 0)
-  }, [])
-
   const goToPage = useCallback((p: number) => {
     const clamped = Math.max(1, Math.min(p, totalPages))
     setPage(clamped)
