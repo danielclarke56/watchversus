@@ -98,7 +98,7 @@ export default function RolexBuyingGuidePage() {
 
         {/* SEO Introduction */}
         <p className="text-slate-700 text-base leading-relaxed mb-8 max-w-3xl">
-          Rolex watches represent some of the world's most coveted timepieces, combining Swiss precision engineering with legendary reliability and design. But when it comes to purchasing a Rolex, one critical decision awaits: do you buy new from an authorized dealer or pre-owned from the secondary market? This comprehensive guide breaks down the pros, cons, pricing, warranty implications, and value preservation factors to help you make an informed decision aligned with your budget and priorities.
+          Rolex watches represent some of the world&apos;s most coveted timepieces, combining Swiss precision engineering with legendary reliability and design. But when it comes to purchasing a Rolex, one critical decision awaits: do you buy new from an authorized dealer or pre-owned from the secondary market? This comprehensive guide breaks down the pros, cons, pricing, warranty implications, and value preservation factors to help you make an informed decision aligned with your budget and priorities.
         </p>
 
         {/* Verdict Callout */}
@@ -114,7 +114,7 @@ export default function RolexBuyingGuidePage() {
             Purchasing a Rolex is not a casual transaction. These watches command premiums ranging from $6,000 to over $50,000, with rare vintage and sports references sometimes exceeding six figures. A single decision—new or pre-owned—can save or cost you thousands of dollars while dramatically affecting your ownership experience.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            The decision is further complicated by Rolex's controlled distribution model. Authorized dealers maintain long waitlists for popular sports models (Submariner, Daytona, GMT-Master II), sometimes extending 2–5 years. Meanwhile, the pre-owned market offers immediate access to the exact reference you want—but at the cost of warranty and the risk of counterfeit products if you're not careful.
+            The decision is further complicated by Rolex&apos;s controlled distribution model. Authorized dealers maintain long waitlists for popular sports models (Submariner, Daytona, GMT-Master II), sometimes extending 2–5 years. Meanwhile, the pre-owned market offers immediate access to the exact reference you want—but at the cost of warranty and the risk of counterfeit products if you&apos;re not careful.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
             Understanding the full spectrum of implications—not just the price tag—empowers you to choose the path that aligns with your values, timeline, and financial situation.
@@ -127,16 +127,16 @@ export default function RolexBuyingGuidePage() {
           
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-8">Advantages of Buying New</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Full Warranty Coverage.</strong> New Rolex watches come with a 5-year international warranty covering manufacturing defects. If a problem arises within this period, you're covered for repairs at no cost (beyond your initial purchase). This peace of mind is invaluable, especially for first-time Rolex buyers concerned about mechanical reliability.
+            <strong className="text-slate-900">Full Warranty Coverage.</strong> New Rolex watches come with a 5-year international warranty covering manufacturing defects. If a problem arises within this period, you&apos;re covered for repairs at no cost (beyond your initial purchase). This peace of mind is invaluable, especially for first-time Rolex buyers concerned about mechanical reliability.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Known Service History.</strong> You own the watch from day one, meaning you control all maintenance records. There's no mystery about prior repairs, replacements, or alterations. This transparency is crucial for future resale and your confidence in the watch's mechanical integrity.
+            <strong className="text-slate-900">Known Service History.</strong> You own the watch from day one, meaning you control all maintenance records. There&apos;s no mystery about prior repairs, replacements, or alterations. This transparency is crucial for future resale and your confidence in the watch&apos;s mechanical integrity.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Latest Specifications and Technology.</strong> New watches reflect Rolex's latest caliber improvements, bracelet designs, and dial variations. If you prioritize owning the current-generation version, buying new guarantees this. Modern Rolex movements are more chronometer-certified and refined than older calibers.
+            <strong className="text-slate-900">Latest Specifications and Technology.</strong> New watches reflect Rolex&apos;s latest caliber improvements, bracelet designs, and dial variations. If you prioritize owning the current-generation version, buying new guarantees this. Modern Rolex movements are more chronometer-certified and refined than older calibers.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">No Risk of Counterfeits.</strong> Buying from an authorized Rolex dealer eliminates counterfeiting risk entirely. For watches costing $10,000+, this assurance is worth the premium alone. There's no need for third-party authentication or watchmaker inspections.
+            <strong className="text-slate-900">No Risk of Counterfeits.</strong> Buying from an authorized Rolex dealer eliminates counterfeiting risk entirely. For watches costing $10,000+, this assurance is worth the premium alone. There&apos;s no need for third-party authentication or watchmaker inspections.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
             <strong className="text-slate-900">Prestige of Ownership from Day One.</strong> You receive the watch with its original box, papers, and hang tag—the complete package that signals authenticity and cared-for provenance to future collectors or buyers.
@@ -147,13 +147,13 @@ export default function RolexBuyingGuidePage() {
             <strong className="text-slate-900">Premium Pricing and Annual Increases.</strong> Rolex prices rise 2–3% annually, often without warning. A Submariner that cost $8,400 in 2020 now exceeds $9,600. Buying new means absorbing these increases immediately. Pre-owned buyers sidestep this annual markup.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Waitlist Delays (2–5 Years for Popular Models).</strong> Authorized dealers cannot guarantee availability of sports watches. Popular references like the Submariner, Daytona, and GMT-Master II face long waitlists. Unless you're a good customer or Rolex VIP, expect to wait years. This delay can be frustrating for watch enthusiasts eager to start enjoying their purchase.
+            <strong className="text-slate-900">Waitlist Delays (2–5 Years for Popular Models).</strong> Authorized dealers cannot guarantee availability of sports watches. Popular references like the Submariner, Daytona, and GMT-Master II face long waitlists. Unless you&apos;re a good customer or Rolex VIP, expect to wait years. This delay can be frustrating for watch enthusiasts eager to start enjoying their purchase.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Initial Depreciation (5–10% in Year One).</strong> A new watch depreciates in its first year simply because it's no longer "unworn." This is unavoidable; by year two, depreciation stabilizes, and the watch enters stable territory.
+            <strong className="text-slate-900">Initial Depreciation (5–10% in Year One).</strong> A new watch depreciates in its first year simply because it&apos;s no longer &quot;unworn.&quot; This is unavoidable; by year two, depreciation stabilizes, and the watch enters stable territory.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Limited Availability of Discontinued Models.</strong> If you want a reference that's been out of production for 10+ years, authorized dealers can't help you. You'll be forced to the pre-owned market, negating the advantage of buying new.
+            <strong className="text-slate-900">Limited Availability of Discontinued Models.</strong> If you want a reference that&apos;s been out of production for 10+ years, authorized dealers can&apos;t help you. You&apos;ll be forced to the pre-owned market, negating the advantage of buying new.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
             <strong className="text-slate-900">Dealer Politics and Purchasing Requirements.</strong> Many authorized dealers require you to purchase costume jewelry, leather goods, or other items to get on the waitlist for sports watches. This artificial demand inflation adds cost and frustration.
@@ -169,13 +169,13 @@ export default function RolexBuyingGuidePage() {
             <strong className="text-slate-900">Significant Cost Savings (20–40% Discount).</strong> Pre-owned Rolex watches typically sell for 60–80% of retail new price. A Submariner costing $9,600 new might be found pre-owned for $5,800–$7,000. This savings compounds across multiple watches and frees capital for other investments.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Immediate Access to Any Reference.</strong> Want a Daytona? The pre-owned market has dozens available today. Want a discontinued reference from 2005? They're readily available. You're no longer constrained by dealer availability or waitlists. This freedom is immensely valuable for collectors with specific acquisition targets.
+            <strong className="text-slate-900">Immediate Access to Any Reference.</strong> Want a Daytona? The pre-owned market has dozens available today. Want a discontinued reference from 2005? They&apos;re readily available. You&apos;re no longer constrained by dealer availability or waitlists. This freedom is immensely valuable for collectors with specific acquisition targets.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             <strong className="text-slate-900">Better Value on Vintage and Discontinued Models.</strong> Older Rolex watches often appreciate or hold value exceptionally well. A vintage 1970s Submariner purchased pre-owned for $4,000 today might be worth the same or more in five years. Buying new, you lose this appreciation potential.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Price Stability After Purchase.</strong> You've already absorbed the initial depreciation hit; the watch now trades in a stable secondary market. Unlike new watches that depreciate 5–10% in year one, a pre-owned watch purchased wisely holds relatively steady.
+            <strong className="text-slate-900">Price Stability After Purchase.</strong> You&apos;ve already absorbed the initial depreciation hit; the watch now trades in a stable secondary market. Unlike new watches that depreciate 5–10% in year one, a pre-owned watch purchased wisely holds relatively steady.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
             <strong className="text-slate-900">Access to Unique Variations and Rare Dials.</strong> The pre-owned market offers discontinued dial colors, bracelet combinations, and references never produced in large volumes. Collectors seeking specific configurations find vastly more options pre-owned than new.
@@ -183,19 +183,19 @@ export default function RolexBuyingGuidePage() {
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-10">Disadvantages of Buying Pre-Owned</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">No Manufacturer Warranty (Rolex Warrants Original Owner Only).</strong> A pre-owned Rolex arrives with no factory warranty. Your recourse is the seller's guarantee: reputable dealers offer 30–90-day warranties; private sellers typically offer none. After the warranty period, any service cost is on you.
+            <strong className="text-slate-900">No Manufacturer Warranty (Rolex Warrants Original Owner Only).</strong> A pre-owned Rolex arrives with no factory warranty. Your recourse is the seller&apos;s guarantee: reputable dealers offer 30–90-day warranties; private sellers typically offer none. After the warranty period, any service cost is on you.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Unknown Service History and Prior Repairs.</strong> You inherit whatever work a previous owner (or owners) performed. Non-original components, amateur repairs, or undisclosed damage could lurk inside. Transparency depends entirely on the seller's honesty.
+            <strong className="text-slate-900">Unknown Service History and Prior Repairs.</strong> You inherit whatever work a previous owner (or owners) performed. Non-original components, amateur repairs, or undisclosed damage could lurk inside. Transparency depends entirely on the seller&apos;s honesty.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             <strong className="text-slate-900">Counterfeit Risk (Especially at Untrustworthy Sources).</strong> The pre-owned market is rife with sophisticated counterfeits, particularly on high-demand sports models. Buying from unknown private sellers or unreliable dealers exposes you to the risk of acquiring a fake—a catastrophic loss. Due diligence is mandatory.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Cosmetic Wear and Aging.</strong> Most pre-owned watches show signs of use: scratches on the caseback, clasp polishing, bezel fading. While these don't affect function, they're aesthetically different from a pristine new watch. Some collectors are unbothered; others find this unacceptable.
+            <strong className="text-slate-900">Cosmetic Wear and Aging.</strong> Most pre-owned watches show signs of use: scratches on the caseback, clasp polishing, bezel fading. While these don&apos;t affect function, they&apos;re aesthetically different from a pristine new watch. Some collectors are unbothered; others find this unacceptable.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
-            <strong className="text-slate-900">Limited or No Documentation.</strong> Pre-owned watches often lack original boxes, papers, or documentation. While Rolex service doesn't require papers, their absence makes resale more difficult and raises red flags about authenticity. Budget for authentication services.
+            <strong className="text-slate-900">Limited or No Documentation.</strong> Pre-owned watches often lack original boxes, papers, or documentation. While Rolex service doesn&apos;t require papers, their absence makes resale more difficult and raises red flags about authenticity. Budget for authentication services.
           </p>
         </section>
 
@@ -208,12 +208,12 @@ export default function RolexBuyingGuidePage() {
             Rolex provides a 5-year international warranty on new watches. This covers manufacturing defects, mechanical failures (within normal use), and replacement of defective parts. The warranty transfers to your heirs but not to subsequent owners; it remains valid only for the original purchaser.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            What's NOT covered: accidental damage, water damage from impact (watches with water damage from submersion beyond rated depth), user-installed aftermarket parts, and normal wear-and-tear. This warranty is complementary to Rolex's legendary reliability; it's not a replacement guarantee.
+            What&apos;s NOT covered: accidental damage, water damage from impact (watches with water damage from submersion beyond rated depth), user-installed aftermarket parts, and normal wear-and-tear. This warranty is complementary to Rolex&apos;s legendary reliability; it&apos;s not a replacement guarantee.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-10">Dealer Certification (Pre-Owned)</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Reputable pre-owned dealers (e.g., WatchBox, Tourneau, Govberg) often provide "certified pre-owned" guarantees that include:
+            Reputable pre-owned dealers (e.g., WatchBox, Tourneau, Govberg) often provide &quot;certified pre-owned&quot; guarantees that include:
           </p>
           <ul className="list-disc list-inside text-slate-700 text-lg leading-relaxed mb-6 space-y-2">
             <li>30–90 day return windows</li>
@@ -222,12 +222,12 @@ export default function RolexBuyingGuidePage() {
             <li>Sometimes extended warranties (12–24 months) for an additional fee</li>
           </ul>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            These certifications are valuable but not as comprehensive as Rolex's factory warranty. They exist to build confidence in the secondary market; they're a seller's promise, not a manufacturer's obligation.
+            These certifications are valuable but not as comprehensive as Rolex&apos;s factory warranty. They exist to build confidence in the secondary market; they&apos;re a seller&apos;s promise, not a manufacturer&apos;s obligation.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-10">Private Sales (Unprotected)</h3>
           <p className="text-slate-700 text-lg leading-relaxed">
-            Buying a Rolex privately—from a collector, pawn shop, or online marketplace—offers no formal protection. "As-is" sales are standard. Unless the seller voluntarily extends a return window (rare), you own all liability from the moment of purchase. This is why private purchases require professional authentication before committing funds.
+            Buying a Rolex privately—from a collector, pawn shop, or online marketplace—offers no formal protection. &quot;As-is&quot; sales are standard. Unless the seller voluntarily extends a return window (rare), you own all liability from the moment of purchase. This is why private purchases require professional authentication before committing funds.
           </p>
         </section>
 
@@ -240,7 +240,7 @@ export default function RolexBuyingGuidePage() {
             <strong className="text-slate-900">Authorized Rolex Dealers.</strong> The only legitimate source for new Rolex watches. Visit retailers authorized by Rolex in your region (boutiques, department stores like Saks Fifth Avenue, Tourneau). They handle registration, warranty activation, and after-sale service. Service is professional and consistent, though waitlists for sports models can be long.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
-            Avoid: grey market dealers, online marketplaces claiming "new" inventory, and unauthorized sellers offering "discounts." These sources often have murky supply chains and may not properly register your watch's warranty.
+            Avoid: grey market dealers, online marketplaces claiming &quot;new&quot; inventory, and unauthorized sellers offering &quot;discounts.&quot; These sources often have murky supply chains and may not properly register your watch&apos;s warranty.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-10">Buying Pre-Owned Rolex</h3>
@@ -248,13 +248,13 @@ export default function RolexBuyingGuidePage() {
             <strong className="text-slate-900">Certified Pre-Owned Dealers.</strong> WatchBox, Tourneau, Govberg, and similar established retailers specialize in certified pre-owned watches. They provide authentication guarantees, mechanical inspections, and return policies. Pricing is higher than private sales (typically 70–80% of retail vs. 60–70%), but the protection justifies the premium.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            <strong className="text-slate-900">Trusted Online Marketplaces.</strong> Chrono24 (with its buyer protection program) and TrueFacet offer vetted sellers and dispute resolution. They're ideal for comparing listings across multiple dealers. Always buy from sellers with strong ratings and feedback; factor in authentication guarantees into your decision.
+            <strong className="text-slate-900">Trusted Online Marketplaces.</strong> Chrono24 (with its buyer protection program) and TrueFacet offer vetted sellers and dispute resolution. They&apos;re ideal for comparing listings across multiple dealers. Always buy from sellers with strong ratings and feedback; factor in authentication guarantees into your decision.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             <strong className="text-slate-900">Local Pawn Shops and Luxury Consignment.</strong> Some pawn shops carry quality pre-owned watches, though inventory varies wildly and expertise is inconsistent. Consignment shops are often a safer bet, as they have reputational incentive to stand behind products.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
-            <strong className="text-slate-900">Private Sales (Collectors, Forums).</strong> Buying directly from another collector can offer the best prices (60–70% of retail), but requires significant due diligence: authentication, inspection by a trusted watchmaker, and transaction protection (escrow services). Only pursue private sales if you're experienced with watch authentication or willing to invest in professional verification.
+            <strong className="text-slate-900">Private Sales (Collectors, Forums).</strong> Buying directly from another collector can offer the best prices (60–70% of retail), but requires significant due diligence: authentication, inspection by a trusted watchmaker, and transaction protection (escrow services). Only pursue private sales if you&apos;re experienced with watch authentication or willing to invest in professional verification.
           </p>
         </section>
 
@@ -268,7 +268,7 @@ export default function RolexBuyingGuidePage() {
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-8">New Rolex Depreciation Curve</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            A new watch loses 5–10% of value in its first year, primarily from transitioning from "new/unworn" to "used." This depreciation is unavoidable and happens the moment you wear the watch. After year one, the curve flattens dramatically. Over 5 years, a new Rolex typically retains 80–90% of its original retail price—a respectable preservation rate.
+            A new watch loses 5–10% of value in its first year, primarily from transitioning from &quot;new/unworn&quot; to &quot;used.&quot; This depreciation is unavoidable and happens the moment you wear the watch. After year one, the curve flattens dramatically. Over 5 years, a new Rolex typically retains 80–90% of its original retail price—a respectable preservation rate.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
             Example: A $9,600 Submariner purchased new depreciates to ~$8,500–$9,100 in year one, then holds around $8,000–$8,500 for the next 4–5 years. Over a decade, depreciation accelerates more noticeably, but the watch remains liquid and valuable.
@@ -276,7 +276,7 @@ export default function RolexBuyingGuidePage() {
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-8">Pre-Owned Price Stability</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            A pre-owned watch purchased at market value (70–75% of retail) enters a mature secondary market where prices are largely stable. If you buy a $7,000 pre-owned Submariner, you'll likely recover $6,500–$7,200 in 5 years—minimal fluctuation. The major depreciation has already occurred; you're trading in a relatively stable market.
+            A pre-owned watch purchased at market value (70–75% of retail) enters a mature secondary market where prices are largely stable. If you buy a $7,000 pre-owned Submariner, you&apos;ll likely recover $6,500–$7,200 in 5 years—minimal fluctuation. The major depreciation has already occurred; you&apos;re trading in a relatively stable market.
           </p>
           <p className="text-slate-700 text-lg leading-relaxed">
             However, pre-owned prices are sensitive to fashion shifts. Discontinued dial colors, vintage references, and rare variations may appreciate if collecting trends favor them. Conversely, models falling out of fashion may depreciate more than current-generation watches.
@@ -284,7 +284,7 @@ export default function RolexBuyingGuidePage() {
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-8">Key Takeaway: Buying Strategy for Value Preservation</h3>
           <p className="text-slate-700 text-lg leading-relaxed">
-            If you plan to keep the watch 5+ years, buying pre-owned at 70–75% of retail preserves more total dollars than buying new (absorbing 10% year-one depreciation). If you plan to keep it only 1–2 years, buying new offers full warranty coverage that may offset the depreciation. Neither option is objectively "better" for value; your ownership timeline determines the optimal choice.
+            If you plan to keep the watch 5+ years, buying pre-owned at 70–75% of retail preserves more total dollars than buying new (absorbing 10% year-one depreciation). If you plan to keep it only 1–2 years, buying new offers full warranty coverage that may offset the depreciation. Neither option is objectively &quot;better&quot; for value; your ownership timeline determines the optimal choice.
           </p>
         </section>
 
@@ -294,30 +294,30 @@ export default function RolexBuyingGuidePage() {
           
           <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #1: Skipping Authentication on Pre-Owned Purchases</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Counterfeits are sophisticated and rampant. Never buy pre-owned without: (1) purchasing from a reputable dealer with authentication guarantees, or (2) having a trusted watchmaker or third-party authenticator inspect the watch before payment. Spending $100 on authentication to avoid a $5,000 fake is a trivial cost. Don't gamble.
+            Counterfeits are sophisticated and rampant. Never buy pre-owned without: (1) purchasing from a reputable dealer with authentication guarantees, or (2) having a trusted watchmaker or third-party authenticator inspect the watch before payment. Spending $100 on authentication to avoid a $5,000 fake is a trivial cost. Don&apos;t gamble.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #2: Buying New Without Understanding Waitlist Realities</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Many first-time buyers approach authorized dealers expecting to walk out with a sports watch within months. Reality: waitlists for Daytona, Submariner, and GMT-Master II are 2–5 years long, and there's no guarantee you'll ever get to the top. If speed to ownership is your priority, the pre-owned market is mandatory.
+            Many first-time buyers approach authorized dealers expecting to walk out with a sports watch within months. Reality: waitlists for Daytona, Submariner, and GMT-Master II are 2–5 years long, and there&apos;s no guarantee you&apos;ll ever get to the top. If speed to ownership is your priority, the pre-owned market is mandatory.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #3: Ignoring Service Costs</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Rolex service (full overhaul) costs $400–$800+, depending on the model. Pre-owned buyers should budget for service within 12–24 months of purchase. New watch owners benefit from the 5-year warranty, but eventually they'll face the same service costs. Factor this into your total cost of ownership.
+            Rolex service (full overhaul) costs $400–$800+, depending on the model. Pre-owned buyers should budget for service within 12–24 months of purchase. New watch owners benefit from the 5-year warranty, but eventually they&apos;ll face the same service costs. Factor this into your total cost of ownership.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #4: Obsessing Over Condition When Buying Pre-Owned</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            A pre-owned watch with light scratches and polished surfaces is infinitely better than a fake new watch. If you're uncomfortable with any cosmetic imperfections, buy new. But if you're primarily concerned with owning a genuine, functioning Rolex, accept that pre-owned watches show use. These marks are part of their history and rarely affect value.
+            A pre-owned watch with light scratches and polished surfaces is infinitely better than a fake new watch. If you&apos;re uncomfortable with any cosmetic imperfections, buy new. But if you&apos;re primarily concerned with owning a genuine, functioning Rolex, accept that pre-owned watches show use. These marks are part of their history and rarely affect value.
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #5: Buying Without a Clear Purpose or Use Case</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            Are you buying to wear daily, as an investment, for occasional special occasions, or as a collection piece? Your use case should drive your new vs. pre-owned decision. Daily wear benefits from new's warranty; collection building benefits from pre-owned's access and pricing. Impulse purchases rarely satisfy long-term.
+            Are you buying to wear daily, as an investment, for occasional special occasions, or as a collection piece? Your use case should drive your new vs. pre-owned decision. Daily wear benefits from new&apos;s warranty; collection building benefits from pre-owned&apos;s access and pricing. Impulse purchases rarely satisfy long-term.
           </p>
 
-          <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #6: Ignoring the Dealer's Reputation</h3>
+          <h3 className="text-2xl font-bold text-slate-900 mb-4">Mistake #6: Ignoring the Dealer&apos;s Reputation</h3>
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
             Buying from an unknown seller to save $500 is tempting but reckless. Reputation is your primary defense against counterfeits and hidden damage. Established dealers, certification bodies, and community forums are your best sources for validation. Pay the premium for peace of mind.
           </p>
@@ -328,14 +328,14 @@ export default function RolexBuyingGuidePage() {
           <h2 className="text-3xl font-black text-slate-900 mb-6">Final Verdict</h2>
           
           <p className="text-slate-700 text-lg leading-relaxed mb-6">
-            There is no universal "right" answer to the new vs. pre-owned question. Instead, the optimal choice depends on your specific situation:
+            There is no universal &quot;right&quot; answer to the new vs. pre-owned question. Instead, the optimal choice depends on your specific situation:
           </p>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-8">Buy New If:</h3>
           <ul className="list-disc list-inside text-slate-700 text-lg leading-relaxed mb-6 space-y-2">
             <li>You want the 5-year warranty and peace of mind regarding service history</li>
-            <li>You're buying your first Rolex and value stress-free ownership</li>
-            <li>You're willing to wait 2–5 years on a waitlist for a specific sports model</li>
+            <li>You&apos;re buying your first Rolex and value stress-free ownership</li>
+            <li>You&apos;re willing to wait 2–5 years on a waitlist for a specific sports model</li>
             <li>You prefer owning current-generation specifications and latest caliber improvements</li>
             <li>You want the complete package (box, papers, hang tag) for future resale</li>
             <li>You prioritize zero counterfeiting risk</li>
@@ -345,11 +345,11 @@ export default function RolexBuyingGuidePage() {
           <ul className="list-disc list-inside text-slate-700 text-lg leading-relaxed mb-6 space-y-2">
             <li>You want to save 20–40% off retail pricing</li>
             <li>You need immediate ownership (no waiting on dealer lists)</li>
-            <li>You're hunting for a discontinued reference or vintage variation</li>
-            <li>You're building a collection and want to maximize capital efficiency</li>
-            <li>You're an experienced collector comfortable with authentication due diligence</li>
+            <li>You&apos;re hunting for a discontinued reference or vintage variation</li>
+            <li>You&apos;re building a collection and want to maximize capital efficiency</li>
+            <li>You&apos;re an experienced collector comfortable with authentication due diligence</li>
             <li>You plan to keep the watch long-term (5+ years) and value price stability over warranty</li>
-            <li>You're buying from a reputable dealer with guarantees and return policies</li>
+            <li>You&apos;re buying from a reputable dealer with guarantees and return policies</li>
           </ul>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-8">The Balanced Approach (For Most Collectors)</h3>
@@ -358,7 +358,7 @@ export default function RolexBuyingGuidePage() {
           </p>
 
           <p className="text-slate-700 text-lg leading-relaxed">
-            Ultimately, the "right" Rolex purchase is one you'll wear and enjoy for years to come. Whether you buy new or pre-owned, focus on selecting a reference that matches your lifestyle, authenticating thoroughly, and purchasing from trustworthy sources. A well-selected Rolex—regardless of origin—remains a timeless companion and a sound addition to any watch collection.
+            Ultimately, the &quot;right&quot; Rolex purchase is one you&apos;ll wear and enjoy for years to come. Whether you buy new or pre-owned, focus on selecting a reference that matches your lifestyle, authenticating thoroughly, and purchasing from trustworthy sources. A well-selected Rolex—regardless of origin—remains a timeless companion and a sound addition to any watch collection.
           </p>
         </section>
 

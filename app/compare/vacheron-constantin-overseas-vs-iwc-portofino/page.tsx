@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
 import { Card } from '@/components/ui/Card'
-import { StarRating } from '@/components/ui/StarRating'
 import { VerdictCallout } from '@/components/ui/VerdictCallout'
 
 // Hardcoded watch data
