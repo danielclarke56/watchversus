@@ -5,7 +5,7 @@ import WatchHero from '@/components/watch/WatchHero'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import WatchVerdict from '@/components/watch/WatchVerdict'
 import WatchSpecs from '@/components/watch/WatchSpecs'
-import WatchOwnerPhotos from '@/components/watch/WatchOwnerPhotos'
+import WatchGallery from '@/components/watch/WatchGallery'
 import WatchReviewsSection from '@/components/watch/WatchReviewsSection'
 import WatchCompareSection from '@/components/watch/WatchCompareSection'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
@@ -117,6 +117,7 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
           sections={[
             { id: 'verdict', label: 'The Verdict' },
             { id: 'specs', label: 'Full Specs' },
+            { id: 'gallery', label: 'Photos' },
             { id: 'reviews', label: 'Reviews' },
             { id: 'compare', label: 'Compare & Alternatives' },
             { id: 'guides', label: 'Buying Guides' },
@@ -127,7 +128,7 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
         <div className="flex-1 min-w-0 space-y-10">
           <WatchVerdict watch={watch} />
           <WatchSpecs watch={watch} />
-          <WatchOwnerPhotos watch={watch} />
+          <WatchGallery watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
 
           <WatchReviewsSection
             watchName={`${watch.brand} ${watch.name}`}
