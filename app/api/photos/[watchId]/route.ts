@@ -3,6 +3,22 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { put } from '@vercel/blob'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import { ACCEPTED_TYPES, MAX_FILE_SIZE } from '@/lib/photos'
+import { isValidSlug, sanitizeText } from '@/lib/validation'
+
+// JPEG: FF D8 FF, PNG: 89 50 4E 47, WebP: 52 49 46 46 ... 57 45 42 50
+const MAGIC_BYTES: Record<string, number[]> = {
+  'image/jpeg': [0xFF, 0xD8, 0xFF],
+  'image/png': [0x89, 0x50, 0x4E, 0x47],
+  'image/webp': [0x52, 0x49, 0x46, 0x46],
+}
+
+async function verifyMagicBytes(file: File): Promise<boolean> {
+  const expected = MAGIC_BYTES[file.type]
+  if (!expected) return false
+  const buffer = await file.slice(0, 12).arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+  return expected.every((b, i) => bytes[i] === b)
+}
 
 function getRedis() {
   const url = process.env.UPSTASH_REDIS_REST_URL
@@ -18,6 +34,9 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { watchId: string } }
 ) {
+  if (!isValidSlug(params.watchId)) {
+    return NextResponse.json([], { status: 400 })
+  }
   const redis = getRedis()
   if (!redis) return NextResponse.json([])
   const photos = (await redis.get(`photos:${params.watchId}`)) as ApprovedPhoto[] | null
@@ -29,6 +48,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { watchId: string } }
 ) {
+  if (!isValidSlug(params.watchId)) {
+    return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
+  }
+
   const { userId } = await auth()
   if (!userId) {
     return NextResponse.json({ error: 'Sign in to submit photos' }, { status: 401 })
@@ -57,6 +80,12 @@ export async function POST(
     return NextResponse.json({ error: 'Photo must be under 5 MB' }, { status: 400 })
   }
 
+  // Verify file content matches declared MIME type
+  const validContent = await verifyMagicBytes(file)
+  if (!validContent) {
+    return NextResponse.json({ error: 'File content does not match declared type' }, { status: 400 })
+  }
+
   // Upload to Vercel Blob
   const blobToken = process.env.BLOB_READ_WRITE_TOKEN
   if (!blobToken) {
@@ -64,23 +93,23 @@ export async function POST(
   }
 
   const ext = file.type.split('/')[1] === 'jpeg' ? 'jpg' : file.type.split('/')[1]
-  const filename = `user-photos/${params.watchId}/${Date.now()}-${userId.slice(-6)}.${ext}`
+  const filename = `user-photos/${params.watchId}/${Date.now()}.${ext}`
 
   const blob = await put(filename, file, {
     access: 'public',
     token: blobToken,
-    addRandomSuffix: false,
+    addRandomSuffix: true,
   })
 
   const photo: PendingPhoto = {
     id: Date.now().toString(),
     watchId: params.watchId,
     userId,
-    userName,
+    userName: sanitizeText(userName, 50),
     url: blob.url,
-    caption,
-    wristSize,
-    strapBracelet,
+    caption: caption ? sanitizeText(caption, 120) : undefined,
+    wristSize: wristSize ? sanitizeText(wristSize, 30) : undefined,
+    strapBracelet: strapBracelet ? sanitizeText(strapBracelet, 50) : undefined,
     createdAt: new Date().toISOString(),
     approved: false,
   }

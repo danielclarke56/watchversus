@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { del } from '@vercel/blob'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
+import { isValidSlug } from '@/lib/validation'
 
 function getRedis() {
   const url = process.env.UPSTASH_REDIS_REST_URL
@@ -14,7 +15,7 @@ function getRedis() {
 
 function checkAdmin(userId: string): boolean {
   const adminUserId = process.env.ADMIN_USER_ID
-  if (!adminUserId) return true
+  if (!adminUserId) return false
   return userId === adminUserId
 }
 
@@ -61,6 +62,12 @@ export async function POST(req: NextRequest) {
 
   if (!action || !watchId || !photoId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+  }
+  if (action !== 'approve' && action !== 'delete') {
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+  }
+  if (!isValidSlug(watchId)) {
+    return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
   }
 
   const redis = getRedis()

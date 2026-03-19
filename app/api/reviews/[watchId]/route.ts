@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import { isValidSlug, sanitizeText } from '@/lib/validation'
 
 export interface PendingReview {
   id: string
@@ -38,6 +39,9 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { watchId: string } }
 ) {
+  if (!isValidSlug(params.watchId)) {
+    return NextResponse.json([], { status: 400 })
+  }
   const redis = getRedis()
   if (!redis) return NextResponse.json([])
   const reviews = await redis.get(`reviews:${params.watchId}`) as ApprovedReview[] | null
@@ -48,13 +52,17 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { watchId: string } }
 ) {
+  if (!isValidSlug(params.watchId)) {
+    return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
+  }
+
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json() as { rating?: number; title?: string; body?: string; ownerFor?: string }
   const { rating, title, body: reviewBody, ownerFor } = body
 
-  if (!rating || rating < 1 || rating > 5) {
+  if (!rating || !Number.isInteger(rating) || rating < 1 || rating > 5) {
     return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 })
   }
   if (!title || title.trim().length === 0 || title.length > 80) {
@@ -69,9 +77,9 @@ export async function POST(
     watchId: params.watchId,
     userId,
     rating,
-    title: title.trim(),
-    body: reviewBody.trim(),
-    ...(ownerFor ? { ownerFor } : {}),
+    title: sanitizeText(title, 80),
+    body: sanitizeText(reviewBody, 1000),
+    ...(ownerFor ? { ownerFor: sanitizeText(ownerFor, 50) } : {}),
     createdAt: new Date().toISOString(),
     approved: false,
   }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isValidSlug } from '@/lib/validation'
 
 type VoteData = { watch1: number; watch2: number }
 
@@ -51,6 +52,9 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  if (!isValidSlug(params.slug)) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
+  }
   const votes = await getVotes(params.slug)
   return NextResponse.json({ ...votes, total: votes.watch1 + votes.watch2 })
 }
@@ -59,10 +63,28 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  if (!isValidSlug(params.slug)) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
+  }
+
   const body = await req.json() as { choice?: string }
   const choice = body.choice
   if (choice !== 'watch1' && choice !== 'watch2') {
     return NextResponse.json({ error: 'Invalid choice' }, { status: 400 })
+  }
+
+  // Basic IP-based rate limit: 1 vote per slug per IP per day
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  const redis = getRedis()
+  if (redis && ip !== 'unknown') {
+    const rateKey = `vote-limit:${params.slug}:${ip}`
+    const existing = await redis.get(rateKey)
+    if (existing) {
+      // Already voted from this IP today — return current totals without incrementing
+      const votes = await getVotes(params.slug)
+      return NextResponse.json({ ...votes, total: votes.watch1 + votes.watch2 })
+    }
+    await redis.set(rateKey, '1', { ex: 86400 }) // expires in 24h
   }
 
   const votes = await incrementVote(params.slug, choice)
