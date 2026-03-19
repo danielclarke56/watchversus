@@ -131,7 +131,6 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
 
           <WatchReviewsSection
             watchName={`${watch.brand} ${watch.name}`}
-            watchSlug={watch.slug}
             watchId={watch.id}
             reviews={reviews}
           />

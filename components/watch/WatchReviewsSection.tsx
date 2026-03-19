@@ -41,7 +41,6 @@ const REVIEWS_PER_PAGE = 5
 
 interface Props {
   watchName: string
-  watchSlug: string
   watchId: string
   reviews: Review[] // seed reviews from data/reviews.json
 }
@@ -202,7 +201,6 @@ function ReviewItem({ review }: { review: NormalizedReview }) {
 
 export default function WatchReviewsSection({
   watchName,
-  watchSlug,
   watchId,
   reviews: seedReviews,
 }: Props) {
