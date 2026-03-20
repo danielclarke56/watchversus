@@ -1775,6 +1775,31 @@
         "cross-brand"
       ],
       "reason": "Both top-10 brands; Similar price range; Luxury everyday watch comparison"
+    },
+    {
+      "slug1": "baltic-aquascaphe",
+      "slug2": "halios-seaforth",
+      "tier": 2,
+      "priority": 65,
+      "tags": [
+        "dive",
+        "microbrand",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Microbrand diver heritage. Compare handmade finishing, case geometry & brand authenticity."
+    },
+    {
+      "slug1": "halios-tropik",
+      "slug2": "christopher-ward-c65-trident",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "dive",
+        "sport",
+        "craftsmanship",
+        "cross-brand"
+      ],
+      "reason": "Promoted: Direct-to-consumer craftsmanship tiers. Analyze dial depth, bezel color variants & value."
     }
   ]
 }
