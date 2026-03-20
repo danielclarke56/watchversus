@@ -34,11 +34,13 @@ export const metadata: Metadata = {
     title: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
     url: 'https://watchvswatch.com',
+    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
     description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
+    images: ['https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews'],
   },
   verification: {
     google: 'uJXK23x_lAigHXvAoywJqmmZAaZXeEpAntrOo_KV4gM',

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getWatchBySlug } from '@/lib/watches'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
@@ -11,6 +12,9 @@ export const metadata: Metadata = {
   title: 'WatchVsWatch — Discover, Compare & Choose the Right Watch',
   description:
     'Compare 160+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.',
+  alternates: {
+    canonical: 'https://watchvswatch.com',
+  },
 }
 
 const featuredComparisons: {
@@ -147,20 +151,34 @@ export default function HomePage() {
                     className="block h-full"
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-textMuted">{wa.brand}</p>
-                        <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors">
-                          {wa.name}
-                        </p>
+                      <div className="flex-1 min-w-0 flex items-center gap-3">
+                        {wa.image && (
+                          <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden shrink-0 flex items-center justify-center transition-transform duration-200 hover:scale-150 hover:z-10 hover:shadow-lg">
+                            <Image src={wa.image} alt={wa.imageAlt ?? `${wa.brand} ${wa.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs text-textMuted">{wa.brand}</p>
+                          <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors">
+                            {wa.name}
+                          </p>
+                        </div>
                       </div>
                       <div className="text-accent font-bold text-sm shrink-0">
                         VS
                       </div>
-                      <div className="flex-1 min-w-0 text-right">
-                        <p className="text-xs text-textMuted">{wb.brand}</p>
-                        <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors">
-                          {wb.name}
-                        </p>
+                      <div className="flex-1 min-w-0 flex items-center justify-end gap-3">
+                        <div className="min-w-0 text-right">
+                          <p className="text-xs text-textMuted">{wb.brand}</p>
+                          <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors">
+                            {wb.name}
+                          </p>
+                        </div>
+                        {wb.image && (
+                          <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden shrink-0 flex items-center justify-center transition-transform duration-200 hover:scale-150 hover:z-10 hover:shadow-lg">
+                            <Image src={wb.image} alt={wb.imageAlt ?? `${wb.brand} ${wb.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                          </div>
+                        )}
                       </div>
                     </div>
                     <p className="text-sm text-textSecond mb-3">

@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import type { Watch } from '@/lib/types'
 
 interface WatchHeroProps {
@@ -14,6 +15,15 @@ export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
   return (
     <section className="py-10 md:py-14 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
+        <nav className="text-sm text-textMuted mb-6 flex items-center gap-2" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-accent transition-colors">Home</Link>
+          <span aria-hidden="true" className="text-textMuted">›</span>
+          <Link href="/watches" className="hover:text-accent transition-colors">Watches</Link>
+          <span aria-hidden="true" className="text-textMuted">›</span>
+          <span className="text-textPrimary">{watch.brand} {watch.name}</span>
+        </nav>
+
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center">
           {/* Watch Image */}
           <div className="md:col-span-2">

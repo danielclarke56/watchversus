@@ -13,6 +13,13 @@ export const metadata: Metadata = {
     description: `Browse ${watches.length} watches. Filter by brand, price, style, and sort by score.`,
     url: 'https://watchvswatch.com/watches',
     type: 'website',
+    images: [{ url: `https://watchvswatch.com/api/og?title=Watch+Database&subtitle=${encodeURIComponent(watches.length + ' watches — search by brand, price, style & specs')}`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Find Your Watch — Search & Filter All Watches',
+    description: `Browse ${watches.length} watches. Filter by brand, price, style, and sort by score.`,
+    images: [`https://watchvswatch.com/api/og?title=Watch+Database&subtitle=${encodeURIComponent(watches.length + ' watches — search by brand, price, style & specs')}`],
   },
 }
 

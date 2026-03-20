@@ -28,6 +28,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: watch.description,
       url: `https://watchvswatch.com/watches/${watch.slug}`,
       type: 'website',
+      images: [{ url: `https://watchvswatch.com/api/og?type=watch&title=${encodeURIComponent(watch.brand + ' ' + watch.name)}&subtitle=${encodeURIComponent(watch.reference + ' — Full Specs, Reviews & Pricing')}`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${watch.brand} ${watch.name} Review & Specs`,
+      description: watch.description.slice(0, 200),
+      images: [`https://watchvswatch.com/api/og?type=watch&title=${encodeURIComponent(watch.brand + ' ' + watch.name)}&subtitle=${encodeURIComponent(watch.reference + ' — Full Specs, Reviews & Pricing')}`],
     },
   }
 }

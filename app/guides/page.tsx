@@ -15,6 +15,13 @@ export const metadata: Metadata = {
     description: 'Expert watch buying guides by category and budget.',
     url: 'https://watchvswatch.com/guides',
     type: 'website',
+    images: [{ url: 'https://watchvswatch.com/api/og?type=guide&title=Watch+Buying+Guides', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Watch Buying Guides | WatchVsWatch',
+    description: 'Expert watch buying guides by category and budget.',
+    images: ['https://watchvswatch.com/api/og?type=guide&title=Watch+Buying+Guides'],
   },
 }
 

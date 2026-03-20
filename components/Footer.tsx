@@ -71,6 +71,21 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+
+            <h4 className="text-textPrimary font-semibold text-sm mb-4 mt-6">Popular Guides</h4>
+            <ul className="space-y-2">
+              {[
+                { href: '/guides/best-watches-under-500', label: 'Best Under $500' },
+                { href: '/guides/best-dive-watches', label: 'Best Dive Watches' },
+                { href: '/guides/best-dress-watches', label: 'Best Dress Watches' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-textSecond hover:text-accent text-sm transition-colors">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
@@ -81,7 +96,8 @@ export default function Footer() {
           <div className="flex gap-5">
             <Link href="/about" className="text-textMuted hover:text-textSecond text-xs transition-colors">About</Link>
             <Link href="/about#contact" className="text-textMuted hover:text-textSecond text-xs transition-colors">Contact</Link>
-
+            <Link href="/privacy" className="text-textMuted hover:text-textSecond text-xs transition-colors">Privacy</Link>
+            <Link href="/terms" className="text-textMuted hover:text-textSecond text-xs transition-colors">Terms</Link>
           </div>
         </div>
       </div>

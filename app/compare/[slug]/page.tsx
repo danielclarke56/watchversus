@@ -4,14 +4,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
-import { generateComparisonBadges } from '@/lib/comparisonBadges'
 import comparisonOverrides from '@/data/comparison-overrides.json'
 import RatingBar from '@/components/RatingBar'
 import type { Watch } from '@/lib/types'
 import VoteSection from './VoteSection'
 import ComparisonStickyNav from './ComparisonStickyNav'
 import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
 import { SpecRow } from '@/components/ui/SpecRow'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 
@@ -93,11 +91,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: description,
       url: canonicalUrl,
       type: 'website',
+      images: [{ url: `https://watchvswatch.com/api/og?type=compare&w1=${encodeURIComponent(w1.brand + ' ' + w1.name)}&w2=${encodeURIComponent(w2.brand + ' ' + w2.name)}`, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better?`,
       description: description,
+      images: [`https://watchvswatch.com/api/og?type=compare&w1=${encodeURIComponent(w1.brand + ' ' + w1.name)}&w2=${encodeURIComponent(w2.brand + ' ' + w2.name)}`],
     },
   }
 }
@@ -285,6 +285,8 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-28 sm:pt-20 lg:pt-10">
         {/* Breadcrumb */}
         <nav className="text-sm text-textMuted mb-6 flex items-center gap-2" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-accent transition-colors">Home</Link>
+          <span aria-hidden="true" className="text-textMuted">›</span>
           <Link href="/compare" className="hover:text-accent transition-colors">Compare</Link>
           <span aria-hidden="true" className="text-textMuted">›</span>
           <span className="text-textPrimary">{w1.name} vs {w2.name}</span>
@@ -323,25 +325,8 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
             <section id="comparison-overview" className="mb-10 scroll-mt-24">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 {[w1, w2].map((w, i) => {
-                  const badges = i === 0 ? generateComparisonBadges(w1, w2) : generateComparisonBadges(w2, w1)
                   return (
                     <Card key={w.id} hover as="article" className="p-6">
-                      {badges.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {badges.map((badge) => {
-                            const variantMap: { [key: string]: 'winner' | 'loser' | 'accent' | 'neutral' } = {
-                              winner: 'winner', loser: 'loser', accent: 'accent', neutral: 'neutral',
-                            }
-                            return (
-                              <Badge key={badge.text} variant={variantMap[badge.color] || 'neutral'}>
-                                <span className="text-sm">{badge.icon}</span>
-                                {badge.text}
-                              </Badge>
-                            )
-                          })}
-                        </div>
-                      )}
-
                       {w.image ? (
                         <div className="bg-gradient-to-br from-surfaceAlt to-accentLight rounded-sm border border-border aspect-square flex items-center justify-center mb-4 overflow-hidden">
                           <Image

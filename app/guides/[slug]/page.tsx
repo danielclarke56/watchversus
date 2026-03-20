@@ -25,6 +25,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: guide.description,
       url: `https://watchvswatch.com/guides/${guide.slug}`,
       type: 'article',
+      images: [{ url: `https://watchvswatch.com/api/og?type=guide&title=${encodeURIComponent(guide.title)}`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: guide.title,
+      description: guide.description.slice(0, 200),
+      images: [`https://watchvswatch.com/api/og?type=guide&title=${encodeURIComponent(guide.title)}`],
     },
   }
 }

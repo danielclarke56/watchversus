@@ -7,7 +7,7 @@ Read this before doing anything.
 - GitHub: https://github.com/danielclarke56/watchversus
 - Stack: Next.js 14, TypeScript strict, Tailwind
 - Deploy: Vercel (auto-deploys on push to master)
-- **After every code change: `git add -A && git commit -m "..." && git push`**
+- **Do NOT auto-commit or push.** Make changes locally, let the user test, then commit only when asked.
 
 ## Hard Rules
 - NO affiliate links, no affiliate URLs, no partner CTAs — anywhere in the codebase

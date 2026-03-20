@@ -11,7 +11,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/compare`, priority: 0.9 },
     { url: `${base}/guides`, priority: 0.9 },
     { url: `${base}/quiz`, priority: 0.7 },
-{ url: `${base}/about`, priority: 0.3 },
+    { url: `${base}/about`, priority: 0.3 },
+    { url: `${base}/privacy`, priority: 0.2 },
+    { url: `${base}/terms`, priority: 0.2 },
   ].map((p) => ({
     ...p,
     lastModified: new Date(),

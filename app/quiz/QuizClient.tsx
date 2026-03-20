@@ -287,6 +287,17 @@ export default function QuizClient({ watches }: Props) {
           </div>
         )}
 
+        {topMatches.length >= 2 && (
+          <div className="text-center mb-6">
+            <Link
+              href={`/compare/${topMatches[0].watch.slug}-vs-${topMatches[1].watch.slug}`}
+              className="btn-gold text-sm px-6 py-2.5 inline-block"
+            >
+              Compare {topMatches[0].watch.name} vs {topMatches[1].watch.name}
+            </Link>
+          </div>
+        )}
+
         <div className="text-center space-y-3">
           <button
             onClick={() => { setStep(0); setAnswers({}); setShowResults(false) }}
@@ -297,6 +308,11 @@ export default function QuizClient({ watches }: Props) {
           <div>
             <Link href="/watches" className="text-textSecond hover:text-accent text-sm transition-colors">
               Browse all watches &rarr;
+            </Link>
+          </div>
+          <div>
+            <Link href="/guides" className="text-textSecond hover:text-accent text-sm transition-colors">
+              Read our buying guides &rarr;
             </Link>
           </div>
         </div>

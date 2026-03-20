@@ -394,6 +394,19 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         )}
       </div>
 
+      {/* Discovery strip */}
+      <div className="flex flex-wrap gap-3 mb-4">
+        <Link href="/quiz" className="text-xs text-textSecond hover:text-accent transition-colors flex items-center gap-1">
+          <span>🎯</span> Not sure? Take the quiz
+        </Link>
+        <Link href="/guides" className="text-xs text-textSecond hover:text-accent transition-colors flex items-center gap-1">
+          <span>📖</span> Buying guides
+        </Link>
+        <Link href="/compare" className="text-xs text-textSecond hover:text-accent transition-colors flex items-center gap-1">
+          <span>⚖️</span> Compare two watches
+        </Link>
+      </div>
+
       {/* Table */}
       {filtered.length > 0 ? (
         <div className="bg-surface border border-border rounded-sm overflow-hidden">

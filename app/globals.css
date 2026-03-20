@@ -94,6 +94,23 @@ body {
   }
 }
 
+/* Legal page prose styling */
+.prose-custom h2 {
+  @apply text-xl font-bold text-textPrimary mb-3;
+}
+.prose-custom h3 {
+  @apply text-base font-semibold text-textPrimary mb-2 mt-4;
+}
+.prose-custom p {
+  @apply text-textSecond leading-relaxed mb-3;
+}
+.prose-custom ul {
+  @apply list-disc pl-5 space-y-1 text-textSecond mb-3;
+}
+.prose-custom li {
+  @apply leading-relaxed;
+}
+
 /* Hide scrollbar for mobile horizontal scroll nav */
 .scrollbar-hide {
   -ms-overflow-style: none;
