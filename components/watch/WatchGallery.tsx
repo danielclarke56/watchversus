@@ -19,8 +19,9 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
   const [showUpload, setShowUpload] = useState(false)
   const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
-  const [preview, setPreview] = useState<string | null>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previews, setPreviews] = useState<string[]>([])
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [uploadedCount, setUploadedCount] = useState(0)
 
   useEffect(() => {
     fetch(`/api/photos/${watchId}`)
@@ -28,6 +29,15 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
       .then((data: ApprovedPhoto[]) => setPhotos(data))
       .catch(() => {})
   }, [watchId])
+
+  // Listen for hero button trigger
+  useEffect(() => {
+    function handleOpen() {
+      setShowUpload(true)
+    }
+    window.addEventListener('open-photo-upload', handleOpen)
+    return () => window.removeEventListener('open-photo-upload', handleOpen)
+  }, [])
 
   // Close lightbox on Escape
   useEffect(() => {
@@ -60,65 +70,84 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
   }, [lightbox, navigateLightbox])
 
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files ?? [])
+    if (files.length === 0) return
 
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setErrorMsg('Only JPEG, PNG, and WebP images are accepted.')
-      return
+    const valid: File[] = []
+    for (const file of files) {
+      if (!ACCEPTED_TYPES.includes(file.type)) {
+        setErrorMsg('Only JPEG, PNG, and WebP images are accepted.')
+        return
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setErrorMsg('Each photo must be under 5 MB.')
+        return
+      }
+      valid.push(file)
     }
-    if (file.size > MAX_FILE_SIZE) {
-      setErrorMsg('Photo must be under 5 MB.')
+
+    if (selectedFiles.length + valid.length > 10) {
+      setErrorMsg('Maximum 10 photos per submission.')
       return
     }
 
     setErrorMsg('')
-    setSelectedFile(file)
-    setPreview(URL.createObjectURL(file))
+    setSelectedFiles((prev) => [...prev, ...valid])
+    setPreviews((prev) => [...prev, ...valid.map((f) => URL.createObjectURL(f))])
+    // Reset the input so the same file can be re-selected
+    e.target.value = ''
+  }
+
+  function removeFile(index: number) {
+    URL.revokeObjectURL(previews[index])
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
+    setPreviews((prev) => prev.filter((_, i) => i !== index))
   }
 
   function clearUpload() {
-    setSelectedFile(null)
-    if (preview) URL.revokeObjectURL(preview)
-    setPreview(null)
+    previews.forEach((p) => URL.revokeObjectURL(p))
+    setSelectedFiles([])
+    setPreviews([])
     setErrorMsg('')
     setUploadState('idle')
+    setUploadedCount(0)
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!selectedFile) return
+    if (selectedFiles.length === 0) return
 
     setUploadState('uploading')
     setErrorMsg('')
+    setUploadedCount(0)
 
-    const form = e.currentTarget
-    const formData = new FormData()
-    formData.append('photo', selectedFile)
+    let failed = 0
+    for (const file of selectedFiles) {
+      const formData = new FormData()
+      formData.append('photo', file)
 
-    const caption = (form.elements.namedItem('caption') as HTMLInputElement)?.value?.trim()
-    const wristSize = (form.elements.namedItem('wristSize') as HTMLInputElement)?.value?.trim()
-    const strapBracelet = (form.elements.namedItem('strapBracelet') as HTMLInputElement)?.value?.trim()
-
-    if (caption) formData.append('caption', caption)
-    if (wristSize) formData.append('wristSize', wristSize)
-    if (strapBracelet) formData.append('strapBracelet', strapBracelet)
-
-    try {
-      const res = await fetch(`/api/photos/${watchId}`, {
-        method: 'POST',
-        body: formData,
-      })
-      const data = (await res.json()) as { error?: string }
-      if (!res.ok) {
-        setErrorMsg(data.error ?? 'Upload failed.')
-        setUploadState('error')
-      } else {
-        setUploadState('success')
+      try {
+        const res = await fetch(`/api/photos/${watchId}`, {
+          method: 'POST',
+          body: formData,
+        })
+        if (!res.ok) {
+          const data = (await res.json()) as { error?: string }
+          setErrorMsg(data.error ?? 'Upload failed.')
+          failed++
+        } else {
+          setUploadedCount((prev) => prev + 1)
+        }
+      } catch {
+        failed++
       }
-    } catch {
-      setErrorMsg('Network error — please try again.')
+    }
+
+    if (failed === selectedFiles.length) {
+      setErrorMsg('Upload failed — please try again.')
       setUploadState('error')
+    } else {
+      setUploadState('success')
     }
   }
 
@@ -166,9 +195,11 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
           ) : uploadState === 'success' ? (
             <div className="text-center py-6">
               <div className="text-accent text-3xl mb-3">&#10003;</div>
-              <h3 className="text-textPrimary font-semibold mb-1">Photo submitted!</h3>
+              <h3 className="text-textPrimary font-semibold mb-1">
+                {uploadedCount} photo{uploadedCount !== 1 ? 's' : ''} submitted!
+              </h3>
               <p className="text-textSecond text-sm mb-4">
-                Your photo is pending approval and will appear shortly.
+                Your photos are pending review and will appear once approved.
               </p>
               <button
                 onClick={() => {
@@ -186,88 +217,56 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
                 Share Your {watchName}
               </h3>
 
-              {/* Drop zone / file picker */}
-              {!preview ? (
-                <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-border rounded-sm cursor-pointer hover:border-accent transition-colors bg-surfaceAlt">
-                  <svg className="w-10 h-10 text-textMuted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Photo previews */}
+              {previews.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                  {previews.map((src, i) => (
+                    <div key={i} className="relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={src} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeFile(i)}
+                        className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/80 transition-colors"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* File picker */}
+              {selectedFiles.length < 10 && (
+                <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-sm cursor-pointer hover:border-accent transition-colors bg-surfaceAlt">
+                  <svg className="w-8 h-8 text-textMuted mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-textSecond text-sm font-medium">Click to select a photo</p>
-                  <p className="text-textMuted text-xs mt-1">JPEG, PNG, or WebP — max 5 MB</p>
+                  <p className="text-textSecond text-sm font-medium">
+                    {selectedFiles.length === 0 ? 'Click to select photos' : 'Add more photos'}
+                  </p>
+                  <p className="text-textMuted text-xs mt-1">JPEG, PNG, or WebP — max 5 MB each — up to 10 photos</p>
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
+                    multiple
                     onChange={handleFileSelect}
                     className="hidden"
                   />
                 </label>
-              ) : (
-                <div className="relative">
-                  <div className="relative h-64 bg-surfaceAlt rounded-sm overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={clearUpload}
-                    className="absolute top-2 right-2 w-8 h-8 bg-surface/90 rounded-full flex items-center justify-center text-textSecond hover:text-textPrimary transition-colors"
-                  >
-                    &times;
-                  </button>
-                </div>
               )}
-
-              {/* Metadata fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-textSecond text-sm mb-1">
-                    Wrist size <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <input
-                    name="wristSize"
-                    type="text"
-                    placeholder="e.g. 7 inches"
-                    className="w-full bg-surfaceAlt border border-border rounded-sm px-3 py-2 text-textPrimary placeholder-textMuted text-sm focus:outline-none focus:border-accent transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-textSecond text-sm mb-1">
-                    Strap / bracelet <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <input
-                    name="strapBracelet"
-                    type="text"
-                    placeholder="e.g. OEM bracelet, leather NATO"
-                    className="w-full bg-surfaceAlt border border-border rounded-sm px-3 py-2 text-textPrimary placeholder-textMuted text-sm focus:outline-none focus:border-accent transition-colors"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-textSecond text-sm mb-1">
-                  Caption <span className="text-textMuted">(optional)</span>
-                </label>
-                <input
-                  name="caption"
-                  type="text"
-                  maxLength={120}
-                  placeholder="A note about this photo..."
-                  className="w-full bg-surfaceAlt border border-border rounded-sm px-3 py-2 text-textPrimary placeholder-textMuted text-sm focus:outline-none focus:border-accent transition-colors"
-                />
-              </div>
 
               {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
 
               <div className="flex items-center gap-3">
                 <button
                   type="submit"
-                  disabled={!selectedFile || uploadState === 'uploading'}
+                  disabled={selectedFiles.length === 0 || uploadState === 'uploading'}
                   className="btn-gold px-6 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {uploadState === 'uploading' ? 'Uploading...' : 'Submit Photo'}
+                  {uploadState === 'uploading'
+                    ? `Uploading ${uploadedCount}/${selectedFiles.length}...`
+                    : `Submit ${selectedFiles.length} photo${selectedFiles.length !== 1 ? 's' : ''}`}
                 </button>
                 <button
                   type="button"
@@ -280,6 +279,10 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
                   Cancel
                 </button>
               </div>
+
+              <p className="text-textMuted text-xs">
+                Photos are reviewed before appearing on the site.
+              </p>
             </form>
           )}
         </div>

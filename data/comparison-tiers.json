@@ -579,33 +579,6 @@
       "reason": "Promoted: Both dive watches"
     },
     {
-      "slug1": "baltic-aquascaphe",
-      "slug2": "halios-seaforth",
-      "tier": 1,
-      "priority": 70,
-      "tags": [
-        "price-adjacent",
-        "dive",
-        "sport",
-        "vintage",
-        "cross-brand"
-      ],
-      "reason": "Promoted: Both dive watches"
-    },
-    {
-      "slug1": "halios-tropik",
-      "slug2": "christopher-ward-c65-trident",
-      "tier": 1,
-      "priority": 70,
-      "tags": [
-        "price-match",
-        "dive",
-        "sport",
-        "cross-brand"
-      ],
-      "reason": "Promoted: Similar price range; Both dive watches"
-    },
-    {
       "slug1": "rolex-gmt-master-ii-pepsi",
       "slug2": "omega-seamaster-300m",
       "tier": 1,
@@ -759,19 +732,6 @@
       "reason": "Both top-10 brands; Similar price range; Both dress watches"
     },
     {
-      "slug1": "grand-seiko-sbga211-snowflake",
-      "slug2": "iwc-portofino-40",
-      "tier": 2,
-      "priority": 85,
-      "tags": [
-        "price-match",
-        "dress",
-        "luxury",
-        "cross-brand"
-      ],
-      "reason": "Both top-10 brands; Similar price range; Both dress watches"
-    },
-    {
       "slug1": "iwc-portugieser-40",
       "slug2": "omega-constellation-39",
       "tier": 2,
@@ -798,34 +758,8 @@
       "reason": "Both top-10 brands; Similar price range; Both dress watches"
     },
     {
-      "slug1": "cartier-santos",
-      "slug2": "iwc-portofino-40",
-      "tier": 2,
-      "priority": 85,
-      "tags": [
-        "price-match",
-        "dress",
-        "luxury",
-        "cross-brand"
-      ],
-      "reason": "Both top-10 brands; Similar price range; Both dress watches"
-    },
-    {
       "slug1": "omega-constellation-39",
       "slug2": "iwc-portugieser-automatic",
-      "tier": 2,
-      "priority": 85,
-      "tags": [
-        "price-match",
-        "dress",
-        "luxury",
-        "cross-brand"
-      ],
-      "reason": "Both top-10 brands; Similar price range; Both dress watches"
-    },
-    {
-      "slug1": "omega-constellation-39",
-      "slug2": "iwc-portofino-40",
       "tier": 2,
       "priority": 85,
       "tags": [
@@ -1195,20 +1129,6 @@
       "reason": "Both top-10 brands; Both dress watches"
     },
     {
-      "slug1": "grand-seiko-sbgw231",
-      "slug2": "iwc-portofino-40",
-      "tier": 2,
-      "priority": 80,
-      "tags": [
-        "price-adjacent",
-        "dress",
-        "luxury",
-        "cross-brand",
-        "movement-contrast"
-      ],
-      "reason": "Both top-10 brands; Both dress watches"
-    },
-    {
       "slug1": "iwc-portugieser-40",
       "slug2": "jaeger-lecoultre-reverso-classic",
       "tier": 2,
@@ -1231,33 +1151,6 @@
         "price-match",
         "dress",
         "luxury",
-        "same-brand"
-      ],
-      "reason": "Both top-10 brands; Similar price range; Both dress watches"
-    },
-    {
-      "slug1": "cartier-tank-must",
-      "slug2": "nomos-club-campus",
-      "tier": 2,
-      "priority": 80,
-      "tags": [
-        "price-match",
-        "dress",
-        "casual",
-        "cross-brand",
-        "movement-contrast"
-      ],
-      "reason": "Similar price range; Mutual alternatives"
-    },
-    {
-      "slug1": "longines-master-collection-40",
-      "slug2": "longines-master-collection",
-      "tier": 2,
-      "priority": 80,
-      "tags": [
-        "price-match",
-        "dress",
-        "casual",
         "same-brand"
       ],
       "reason": "Both top-10 brands; Similar price range; Both dress watches"
@@ -1288,33 +1181,6 @@
         "movement-contrast"
       ],
       "reason": "Similar price range; Both dress watches"
-    },
-    {
-      "slug1": "jaeger-lecoultre-reverso-classic",
-      "slug2": "iwc-portofino-40",
-      "tier": 2,
-      "priority": 80,
-      "tags": [
-        "price-match",
-        "dress",
-        "luxury",
-        "cross-brand",
-        "movement-contrast"
-      ],
-      "reason": "Similar price range; Both dress watches"
-    },
-    {
-      "slug1": "iwc-portugieser-automatic",
-      "slug2": "iwc-portofino-40",
-      "tier": 2,
-      "priority": 80,
-      "tags": [
-        "price-match",
-        "dress",
-        "luxury",
-        "same-brand"
-      ],
-      "reason": "Both top-10 brands; Similar price range; Both dress watches"
     },
     {
       "slug1": "rolex-submariner-41",
@@ -1447,18 +1313,6 @@
         "movement-contrast"
       ],
       "reason": "Both top-10 brands; Both dress watches"
-    },
-    {
-      "slug1": "omega-aqua-terra-38",
-      "slug2": "iwc-portofino-40",
-      "tier": 2,
-      "priority": 75,
-      "tags": [
-        "price-match",
-        "dress",
-        "cross-brand"
-      ],
-      "reason": "Both top-10 brands; Similar price range; Both dress watches"
     },
     {
       "slug1": "seiko-prospex-spb143",
@@ -1607,19 +1461,6 @@
       "reason": "Similar price range; Both sport watches"
     },
     {
-      "slug1": "nomos-club-campus",
-      "slug2": "longines-master-collection-40",
-      "tier": 2,
-      "priority": 70,
-      "tags": [
-        "price-match",
-        "casual",
-        "dress",
-        "cross-brand"
-      ],
-      "reason": "Similar price range; Mutual alternatives"
-    },
-    {
       "slug1": "rolex-gmt-master-ii-pepsi",
       "slug2": "cartier-santos",
       "tier": 2,
@@ -1732,47 +1573,6 @@
         "cross-brand"
       ],
       "reason": "Both dive watches"
-    },
-    {
-      "slug1": "baltic-aquascaphe",
-      "slug2": "christopher-ward-c65-trident",
-      "tier": 2,
-      "priority": 65,
-      "tags": [
-        "price-match",
-        "dive",
-        "sport",
-        "vintage",
-        "cross-brand"
-      ],
-      "reason": "Similar price range; Both dive watches"
-    },
-    {
-      "slug1": "halios-seaforth",
-      "slug2": "christopher-ward-c65-trident",
-      "tier": 2,
-      "priority": 65,
-      "tags": [
-        "price-match",
-        "dive",
-        "sport",
-        "vintage",
-        "cross-brand"
-      ],
-      "reason": "Similar price range; Both dive watches"
-    },
-    {
-      "slug1": "halios-tropik",
-      "slug2": "baltic-aquascaphe",
-      "tier": 2,
-      "priority": 65,
-      "tags": [
-        "price-match",
-        "dive",
-        "sport",
-        "cross-brand"
-      ],
-      "reason": "Similar price range; Both dive watches"
     },
     {
       "slug1": "halios-tropik",
@@ -1902,30 +1702,6 @@
       "reason": "Mainstream vs microbrand diver, hand-curated"
     },
     {
-      "slug1": "rolex-day-date-40",
-      "slug2": "rolex-submariner-41",
-      "tier": 3,
-      "priority": 53,
-      "tags": [
-        "luxury",
-        "same-brand",
-        "cross-tier"
-      ],
-      "reason": "Both top-5 brands; Same brand (Rolex); Cross-tier price comparison"
-    },
-    {
-      "slug1": "rolex-day-date-40",
-      "slug2": "rolex-yacht-master-40",
-      "tier": 3,
-      "priority": 53,
-      "tags": [
-        "luxury",
-        "same-brand",
-        "cross-tier"
-      ],
-      "reason": "Both top-5 brands; Same brand (Rolex); Cross-tier price comparison"
-    },
-    {
       "slug1": "tissot-prx-40",
       "slug2": "hamilton-khaki-field-auto-38",
       "tier": 3,
@@ -1960,6 +1736,45 @@
         "cross-brand"
       ],
       "reason": "Budget dress watch rivals, hand-curated"
+    },
+    {
+      "slug1": "rolex-explorer-36",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-match",
+        "sport",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-5 brands; Similar price range; Classic everyday sport watch rivalry"
+    },
+    {
+      "slug1": "rolex-datejust-36",
+      "slug2": "rolex-explorer-36",
+      "tier": 1,
+      "priority": 95,
+      "tags": [
+        "price-match",
+        "dress",
+        "sport",
+        "same-brand"
+      ],
+      "reason": "Both top-5 brands; Same brand (Rolex); Most common Rolex buyer dilemma"
+    },
+    {
+      "slug1": "cartier-santos",
+      "slug2": "omega-aqua-terra-38",
+      "tier": 1,
+      "priority": 90,
+      "tags": [
+        "price-match",
+        "dress",
+        "casual",
+        "cross-brand"
+      ],
+      "reason": "Both top-10 brands; Similar price range; Luxury everyday watch comparison"
     }
   ]
 }

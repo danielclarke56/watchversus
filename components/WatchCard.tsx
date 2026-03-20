@@ -18,7 +18,7 @@ export default function WatchCard({ watch, showCompareButton = true }: Props) {
   return (
     <Card hover className="group flex flex-col">
       {/* Watch image */}
-      <div className="relative bg-surfaceAlt h-56 flex items-center justify-center overflow-hidden">
+      <div className="relative bg-surfaceAlt h-44 sm:h-56 flex items-center justify-center overflow-hidden">
         {watch.image ? (
           <Image
             src={watch.image}

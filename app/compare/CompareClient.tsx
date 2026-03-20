@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react'
 import type { Watch } from '@/lib/types'
 import { formatPrice, popularComparisons, getWatchBySlug } from '@/lib/watches'
 import Link from 'next/link'
+import Image from 'next/image'
+import { Card } from '@/components/ui/Card'
 
 interface Props {
   watches: Watch[]
@@ -63,11 +65,13 @@ function WatchSelector({
   value,
   onChange,
   label,
+  allowedSlugs,
 }: {
   watches: Watch[]
   value: string
   onChange: (v: string) => void
   label: string
+  allowedSlugs?: Set<string>
 }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -77,9 +81,12 @@ function WatchSelector({
   // Group watches by brand, sorted alphabetically
   const grouped = useMemo(() => {
     const q = query.toLowerCase()
-    const filtered = query
-      ? watches.filter((w) => w.name.toLowerCase().includes(q) || w.brand.toLowerCase().includes(q))
+    let filtered = allowedSlugs
+      ? watches.filter((w) => allowedSlugs.has(w.slug))
       : watches
+    if (query) {
+      filtered = filtered.filter((w) => w.name.toLowerCase().includes(q) || w.brand.toLowerCase().includes(q))
+    }
 
     const groups: Record<string, Watch[]> = {}
     filtered.forEach((w) => {
@@ -94,7 +101,7 @@ function WatchSelector({
         brand,
         models: models.sort((a, b) => a.name.localeCompare(b.name)),
       }))
-  }, [watches, query])
+  }, [watches, query, allowedSlugs])
 
   return (
     <div className="relative">
@@ -136,7 +143,7 @@ function WatchSelector({
               className="w-full bg-[var(--bg-subtle)] rounded-sm px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
             />
           </div>
-          <div className="max-h-64 overflow-y-auto">
+          <div className="max-h-[50vh] sm:max-h-64 overflow-y-auto">
             {grouped.map((group) => (
               <div key={group.brand}>
                 <div className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] sticky top-0">
@@ -151,7 +158,7 @@ function WatchSelector({
                       setOpen(false)
                       setQuery('')
                     }}
-                    className={`w-full px-4 py-2.5 text-left hover:bg-[var(--bg-subtle)] transition-colors flex items-center justify-between ${
+                    className={`w-full px-4 py-3 text-left hover:bg-[var(--bg-subtle)] transition-colors flex items-center justify-between ${
                       value === w.slug ? 'bg-accentLight' : ''
                     }`}
                   >
@@ -178,6 +185,43 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
 
   const watchA = watches.find((w) => w.slug === slugA)
   const watchB = watches.find((w) => w.slug === slugB)
+
+  // Build a map: slug -> set of valid comparison partners
+  const partnerMap = useMemo(() => {
+    const map = new Map<string, Set<string>>()
+    for (const c of popularComparisons) {
+      if (!map.has(c.slug1)) map.set(c.slug1, new Set())
+      if (!map.has(c.slug2)) map.set(c.slug2, new Set())
+      map.get(c.slug1)!.add(c.slug2)
+      map.get(c.slug2)!.add(c.slug1)
+    }
+    return map
+  }, [])
+
+  // Watches that appear in at least one comparison
+  const watchesWithComparisons = useMemo(() => {
+    return new Set(partnerMap.keys())
+  }, [partnerMap])
+
+  // Valid partners for the currently selected watches
+  const partnersForA = slugA ? partnerMap.get(slugA) : undefined
+  const partnersForB = slugB ? partnerMap.get(slugB) : undefined
+
+  // When Watch A changes, clear Watch B if it's not a valid partner
+  const handleSetSlugA = (slug: string) => {
+    setSlugA(slug)
+    const partners = partnerMap.get(slug)
+    if (slugB && partners && !partners.has(slugB)) {
+      setSlugB('')
+    }
+  }
+  const handleSetSlugB = (slug: string) => {
+    setSlugB(slug)
+    const partners = partnerMap.get(slug)
+    if (slugA && partners && !partners.has(slugA)) {
+      setSlugA('')
+    }
+  }
 
   // Build comparison cards with categories
   const allComparisons = useMemo(() => {
@@ -219,14 +263,14 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
           Compare Any Two Watches
         </h1>
         <p className="text-[var(--text-secondary)] text-lg max-w-2xl mx-auto">
-          160+ side-by-side matchups with specs, community ratings, and honest differences.
+          130+ side-by-side matchups with specs, community ratings, and honest differences.
         </p>
       </div>
 
       {/* Selectors */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <WatchSelector watches={watches} value={slugA} onChange={setSlugA} label="Watch A" />
-        <WatchSelector watches={watches} value={slugB} onChange={setSlugB} label="Watch B" />
+        <WatchSelector watches={watches} value={slugA} onChange={handleSetSlugA} label="Watch A" allowedSlugs={partnersForB || watchesWithComparisons} />
+        <WatchSelector watches={watches} value={slugB} onChange={handleSetSlugB} label="Watch B" allowedSlugs={partnersForA || watchesWithComparisons} />
       </div>
 
       {/* CTA when both selected */}
@@ -243,7 +287,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
 
       {/* Trust line */}
       <p className="text-center text-sm text-[var(--text-muted)] mb-12">
-        56 watches · 160+ comparisons · Specs, ratings &amp; community votes · No sponsored content
+        56 watches · 130+ comparisons · Specs, ratings &amp; community votes · No sponsored content
       </p>
 
       {/* Browse Comparisons */}
@@ -251,7 +295,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
         <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-5">Browse Comparisons</h2>
 
         {/* Category pills */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -260,7 +304,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
                 setActiveCategory(cat)
                 setShowCount(12)
               }}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+              className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
                 activeCategory === cat
                   ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
                   : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border-[var(--border-strong)] hover:border-borderStrong'
@@ -272,50 +316,73 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
         </div>
 
         {/* Comparison grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {visibleComparisons.map((c) => (
-            <Link
+            <Card
               key={`${c.slug1}-${c.slug2}`}
-              href={`/compare/${c.slug1}-vs-${c.slug2}`}
-              className="block border border-[var(--border-strong)] rounded-sm p-5 hover:border-borderStrong transition-colors group bg-surface"
+              hover
+              className="p-5 group"
+              as="article"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  {/* Watch A */}
-                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                    {c.watchA.brand}
-                  </p>
-                  <p className="text-[var(--text-primary)] font-semibold truncate group-hover:text-[var(--accent)] transition-colors">
-                    {c.watchA.name}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                    {formatPrice(c.watchA.price_new_usd)}
+              <Link
+                href={`/compare/${c.slug1}-vs-${c.slug2}`}
+                className="block h-full"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex-1 min-w-0 flex items-center gap-3">
+                    {c.watchA.image && (
+                      <div className="relative shrink-0 group/thumbA">
+                        <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden flex items-center justify-center">
+                          <Image src={c.watchA.image} alt={c.watchA.imageAlt ?? `${c.watchA.brand} ${c.watchA.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                        </div>
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 h-40 rounded-lg bg-white border border-border shadow-xl p-3 hidden md:group-hover/thumbA:flex items-center justify-center z-50 pointer-events-none">
+                          <Image src={c.watchA.image} alt={c.watchA.imageAlt ?? `${c.watchA.brand} ${c.watchA.name}`} width={160} height={160} className="w-full h-full object-contain" />
+                        </div>
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-xs text-textMuted">{c.watchA.brand}</p>
+                      <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors truncate">
+                        {c.watchA.name}
+                      </p>
+                      <p className="text-xs text-textMuted mt-0.5">
+                        {formatPrice(c.watchA.price_new_usd)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-accent font-bold text-sm shrink-0">VS</div>
+                  <div className="flex-1 min-w-0 flex items-center justify-end gap-3">
+                    <div className="min-w-0 text-right">
+                      <p className="text-xs text-textMuted">{c.watchB.brand}</p>
+                      <p className="text-textPrimary font-semibold group-hover:text-accent transition-colors truncate">
+                        {c.watchB.name}
+                      </p>
+                      <p className="text-xs text-textMuted mt-0.5">
+                        {formatPrice(c.watchB.price_new_usd)}
+                      </p>
+                    </div>
+                    {c.watchB.image && (
+                      <div className="relative shrink-0 group/thumbB">
+                        <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden flex items-center justify-center">
+                          <Image src={c.watchB.image} alt={c.watchB.imageAlt ?? `${c.watchB.brand} ${c.watchB.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                        </div>
+                        <div className="absolute bottom-full right-0 mb-2 w-40 h-40 rounded-lg bg-white border border-border shadow-xl p-3 hidden md:group-hover/thumbB:flex items-center justify-center z-50 pointer-events-none">
+                          <Image src={c.watchB.image} alt={c.watchB.imageAlt ?? `${c.watchB.brand} ${c.watchB.name}`} width={160} height={160} className="w-full h-full object-contain" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-surfaceAlt text-textMuted border border-border">
+                    {c.category === 'All' ? 'General' : c.category}
+                  </span>
+                  <p className="text-sm text-accent font-medium">
+                    View comparison →
                   </p>
                 </div>
-
-                <span className="text-[var(--accent)] font-bold text-xs shrink-0 mt-2">VS</span>
-
-                <div className="flex-1 min-w-0 text-right">
-                  {/* Watch B */}
-                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                    {c.watchB.brand}
-                  </p>
-                  <p className="text-[var(--text-primary)] font-semibold truncate group-hover:text-[var(--accent)] transition-colors">
-                    {c.watchB.name}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                    {formatPrice(c.watchB.price_new_usd)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Category badge */}
-              <div className="mt-3">
-                <span className="inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-strong)]">
-                  {c.category === 'All' ? 'General' : c.category}
-                </span>
-              </div>
-            </Link>
+              </Link>
+            </Card>
           ))}
         </div>
 
@@ -325,7 +392,7 @@ export default function CompareClient({ watches, initialA, initialB }: Props) {
             <button
               type="button"
               onClick={() => setShowCount((prev) => prev + 12)}
-              className="px-6 py-2.5 rounded-sm border border-[var(--border-strong)] text-[var(--text-secondary)] font-medium hover:border-borderStrong hover:text-[var(--accent)] transition-colors"
+              className="px-6 py-3 rounded-sm border border-[var(--border-strong)] text-[var(--text-secondary)] font-medium hover:border-borderStrong hover:text-[var(--accent)] transition-colors"
             >
               Show More ({filteredComparisons.length - showCount} remaining)
             </button>

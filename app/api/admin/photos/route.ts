@@ -1,40 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { del } from '@vercel/blob'
+import fs from 'fs'
+import path from 'path'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import { isValidSlug } from '@/lib/validation'
 import { getRedis } from '@/lib/redis'
 import { checkAdmin } from '@/lib/admin'
 
+const PENDING_FILE = path.join(process.cwd(), 'data', 'pending-photos.json')
+const APPROVED_FILE = path.join(process.cwd(), 'data', 'approved-photos.json')
+
+function readLocalPending(): PendingPhoto[] {
+  if (!fs.existsSync(PENDING_FILE)) return []
+  return JSON.parse(fs.readFileSync(PENDING_FILE, 'utf8'))
+}
+
+function writeLocalPending(photos: PendingPhoto[]) {
+  fs.writeFileSync(PENDING_FILE, JSON.stringify(photos, null, 2))
+}
+
+function readLocalApproved(): ApprovedPhoto[] {
+  if (!fs.existsSync(APPROVED_FILE)) return []
+  return JSON.parse(fs.readFileSync(APPROVED_FILE, 'utf8'))
+}
+
+function writeLocalApproved(photos: ApprovedPhoto[]) {
+  fs.writeFileSync(APPROVED_FILE, JSON.stringify(photos, null, 2))
+}
+
 /** GET /api/admin/photos — list all pending photos */
 export async function GET() {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  if (!checkAdmin(userId)) {
+    return NextResponse.json({ error: 'Forbidden', yourUserId: userId }, { status: 403 })
+  }
 
   const redis = getRedis()
-  if (!redis) return NextResponse.json([])
-
-  const allPhotos: PendingPhoto[] = []
-  let cursor = 0
-
-  do {
-    const [nextCursor, keys] = (await redis.scan(cursor, {
-      match: 'photos:pending:*',
-      count: 100,
-    })) as unknown as [number, string[]]
-    cursor = nextCursor
-    for (const key of keys) {
-      const photos = (await redis.get(key)) as PendingPhoto[] | null
-      if (photos && photos.length > 0) {
-        const watchId = key.replace('photos:pending:', '')
-        allPhotos.push(...photos.map((p) => ({ ...p, watchId })))
+  if (redis) {
+    const allPhotos: PendingPhoto[] = []
+    let cursor = 0
+    do {
+      const [nextCursor, keys] = (await redis.scan(cursor, {
+        match: 'photos:pending:*',
+        count: 100,
+      })) as unknown as [number, string[]]
+      cursor = nextCursor
+      for (const key of keys) {
+        const photos = (await redis.get(key)) as PendingPhoto[] | null
+        if (photos && photos.length > 0) {
+          const watchId = key.replace('photos:pending:', '')
+          allPhotos.push(...photos.map((p) => ({ ...p, watchId })))
+        }
       }
-    }
-  } while (cursor !== 0)
+    } while (cursor !== 0)
+    return NextResponse.json(
+      allPhotos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    )
+  }
 
+  // Local fallback
+  const pending = readLocalPending()
   return NextResponse.json(
-    allPhotos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    pending.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   )
 }
 
@@ -58,24 +87,38 @@ export async function POST(req: NextRequest) {
   }
 
   const redis = getRedis()
-  if (!redis) return NextResponse.json({ error: 'Storage unavailable' }, { status: 503 })
+  if (redis) {
+    const pending = (await redis.get(`photos:pending:${watchId}`)) as PendingPhoto[] | null
+    const photo = pending?.find((p) => p.id === photoId)
+    if (!photo) return NextResponse.json({ error: 'Photo not found' }, { status: 404 })
 
-  const pending = (await redis.get(`photos:pending:${watchId}`)) as PendingPhoto[] | null
-  const photo = pending?.find((p) => p.id === photoId)
-  if (!photo) return NextResponse.json({ error: 'Photo not found' }, { status: 404 })
+    const newPending = (pending ?? []).filter((p) => p.id !== photoId)
+    await redis.set(`photos:pending:${watchId}`, newPending)
 
-  const newPending = (pending ?? []).filter((p) => p.id !== photoId)
-  await redis.set(`photos:pending:${watchId}`, newPending)
+    if (action === 'approve') {
+      const approved = (await redis.get(`photos:${watchId}`)) as ApprovedPhoto[] | null
+      await redis.set(`photos:${watchId}`, [...(approved ?? []), { ...photo, approved: true }])
+    } else {
+      try { await del(photo.url, { token: process.env.BLOB_READ_WRITE_TOKEN }) } catch { /* ok */ }
+    }
+  } else {
+    // Local fallback
+    const pending = readLocalPending()
+    const photo = pending.find((p) => p.id === photoId)
+    if (!photo) return NextResponse.json({ error: 'Photo not found' }, { status: 404 })
 
-  if (action === 'approve') {
-    const approved = (await redis.get(`photos:${watchId}`)) as ApprovedPhoto[] | null
-    await redis.set(`photos:${watchId}`, [...(approved ?? []), { ...photo, approved: true }])
-  } else if (action === 'delete') {
-    // Delete the blob file
-    try {
-      await del(photo.url, { token: process.env.BLOB_READ_WRITE_TOKEN })
-    } catch {
-      // Blob may already be deleted
+    writeLocalPending(pending.filter((p) => p.id !== photoId))
+
+    if (action === 'approve') {
+      const approved = readLocalApproved()
+      approved.push({ ...photo, approved: true })
+      writeLocalApproved(approved)
+    } else {
+      // Delete local file
+      if (photo.url.startsWith('/images/')) {
+        const filePath = path.join(process.cwd(), 'public', photo.url)
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+      }
     }
   }
 

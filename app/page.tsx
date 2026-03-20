@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getWatchBySlug } from '@/lib/watches'
+import { watches, popularComparisons, getWatchBySlug } from '@/lib/watches'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import { Button } from '@/components/ui/Button'
@@ -11,7 +11,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'WatchVsWatch — Discover, Compare & Choose the Right Watch',
   description:
-    'Compare 160+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.',
+    'Compare 130+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.',
   alternates: {
     canonical: 'https://watchvswatch.com',
   },
@@ -85,23 +85,23 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white to-surfaceAlt border-b border-border">
-        <div className="absolute inset-0 pointer-events-none">
+      <section className="relative bg-gradient-to-br from-white to-surfaceAlt border-b border-border">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-accent opacity-5 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-accent opacity-5 blur-3xl" />
         </div>
-        <Container className="py-16 md:py-24">
+        <Container className="py-10 sm:py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-textPrimary mb-6 leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-textPrimary mb-6 leading-tight tracking-tight">
               Discover, compare, and choose the right watch.
             </h1>
-            <p className="text-xl md:text-2xl text-textSecond mb-8 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl text-textSecond mb-8 leading-relaxed max-w-2xl mx-auto">
               Side-by-side matchups, community insights, and buying guides —
               everything you need to decide with confidence.
             </p>
 
             {/* Search Input — primary CTA */}
-            <SearchForm placeholder="Search watches or comparisons..." />
+            <SearchForm placeholder="Search watches or comparisons..." watches={watches} comparisons={popularComparisons} />
 
             {/* Quick Links — pill buttons */}
             <div className="flex flex-wrap gap-3 justify-center">
@@ -131,10 +131,10 @@ export default function HomePage() {
       {/* POPULAR COMPARISONS */}
       <Section py="md">
         <Container>
-          <h2 className="text-3xl font-bold text-textPrimary mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-8 sm:mb-12">
             Popular Comparisons
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {featuredComparisons.map((c) => {
               const wa = getWatchBySlug(c.slug1)
               const wb = getWatchBySlug(c.slug2)
@@ -153,8 +153,13 @@ export default function HomePage() {
                     <div className="flex items-center gap-3 mb-2">
                       <div className="flex-1 min-w-0 flex items-center gap-3">
                         {wa.image && (
-                          <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden shrink-0 flex items-center justify-center transition-transform duration-200 hover:scale-150 hover:z-10 hover:shadow-lg">
-                            <Image src={wa.image} alt={wa.imageAlt ?? `${wa.brand} ${wa.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                          <div className="relative shrink-0 group/thumb">
+                            <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden flex items-center justify-center">
+                              <Image src={wa.image} alt={wa.imageAlt ?? `${wa.brand} ${wa.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                            </div>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 h-40 rounded-lg bg-white border border-border shadow-xl p-3 hidden md:group-hover/thumb:flex items-center justify-center z-50 pointer-events-none">
+                              <Image src={wa.image} alt={wa.imageAlt ?? `${wa.brand} ${wa.name}`} width={160} height={160} className="w-full h-full object-contain" />
+                            </div>
                           </div>
                         )}
                         <div className="min-w-0">
@@ -175,8 +180,13 @@ export default function HomePage() {
                           </p>
                         </div>
                         {wb.image && (
-                          <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden shrink-0 flex items-center justify-center transition-transform duration-200 hover:scale-150 hover:z-10 hover:shadow-lg">
-                            <Image src={wb.image} alt={wb.imageAlt ?? `${wb.brand} ${wb.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                          <div className="relative shrink-0 group/thumb">
+                            <div className="w-12 h-12 rounded bg-surfaceAlt border border-border overflow-hidden flex items-center justify-center">
+                              <Image src={wb.image} alt={wb.imageAlt ?? `${wb.brand} ${wb.name}`} width={48} height={48} className="w-full h-full object-contain p-1" />
+                            </div>
+                            <div className="absolute bottom-full right-0 mb-2 w-40 h-40 rounded-lg bg-white border border-border shadow-xl p-3 hidden md:group-hover/thumb:flex items-center justify-center z-50 pointer-events-none">
+                              <Image src={wb.image} alt={wb.imageAlt ?? `${wb.brand} ${wb.name}`} width={160} height={160} className="w-full h-full object-contain" />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -197,7 +207,7 @@ export default function HomePage() {
               href="/compare"
               className="text-accent hover:text-accentHover font-medium transition-colors"
             >
-              See all 160+ comparisons →
+              See all 130+ comparisons →
             </Link>
           </div>
         </Container>
@@ -206,10 +216,10 @@ export default function HomePage() {
       {/* YOUR WATCH RESEARCH STARTS HERE */}
       <Section py="md" bg="surface">
         <Container>
-          <h2 className="text-3xl font-bold text-textPrimary text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary text-center mb-8 sm:mb-12">
             Your watch research starts here
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {researchCards.map((card) => (
               <Card key={card.href} hover className="p-5">
                 <Link href={card.href} className="block h-full">
@@ -229,7 +239,7 @@ export default function HomePage() {
       <div className="border-y border-border py-8">
         <Container>
           <p className="text-textSecond text-sm text-center">
-            56 watches · 160+ comparisons · Curated guides · Community-driven ·
+            56 watches · 130+ comparisons · Curated guides · Community-driven ·
             No sponsored content
           </p>
         </Container>

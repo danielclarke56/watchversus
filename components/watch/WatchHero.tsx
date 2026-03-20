@@ -1,11 +1,27 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Watch } from '@/lib/types'
+import PhotoUploadCTA from './PhotoUploadCTA'
 
 interface WatchHeroProps {
   watch: Watch
   reviewCount: number
 }
+
+const AI_GENERATED_IMAGES = new Set([
+  'omega-seamaster-300m',
+  'omega-speedmaster-moonwatch',
+  'omega-aqua-terra-38',
+  'omega-constellation-39',
+  'seiko-prospex-sbdc101',
+  'seiko-5-sports-srpe55',
+  'seiko-presage-spb165',
+  'seiko-presage-spb167',
+  'hamilton-khaki-field-auto-38',
+  'hamilton-jazzmaster-40',
+  'rolex-submariner-date',
+  'cartier-ronde-solo',
+])
 
 function fmt(usd: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(usd)
@@ -36,6 +52,12 @@ export default function WatchHero({ watch, reviewCount }: WatchHeroProps) {
                   className="object-contain p-6"
                   priority
                 />
+                {AI_GENERATED_IMAGES.has(watch.slug) && (
+                  <div className="absolute bottom-0 inset-x-0 bg-white/80 backdrop-blur-sm px-3 py-2 flex items-center justify-between">
+                    <span className="text-[11px] text-textMuted">AI illustration</span>
+                    <PhotoUploadCTA />
+                  </div>
+                )}
               </div>
             ) : (
               <div className="w-full h-80 md:h-96 bg-surfaceAlt rounded-sm border border-border flex items-center justify-center">

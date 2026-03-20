@@ -21,7 +21,7 @@ export function Card({
   return React.createElement(
     Component,
     {
-      className: `bg-surface ${borderClass} rounded-sm overflow-hidden ${hoverClass} ${className}`,
+      className: `bg-surface ${borderClass} rounded-sm ${hoverClass} ${className}`,
     },
     children
   );

@@ -96,20 +96,27 @@ function WatchRow({ watch }: { watch: Watch }) {
       href={`/watches/${watch.slug}`}
       className="group grid grid-cols-[40px_1fr_60px_72px_70px_56px_80px] md:grid-cols-[48px_1fr_64px_80px_76px_60px_88px] items-center gap-x-2 md:gap-x-3 px-3 md:px-4 py-2.5 border-b border-border last:border-0 hover:bg-surfaceAlt/50 transition-colors"
     >
-      <div className="w-10 h-10 md:w-12 md:h-12 rounded bg-surfaceAlt overflow-hidden shrink-0 flex items-center justify-center">
-        {watch.image ? (
-          <Image
-            src={watch.image}
-            alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
-            width={48}
-            height={48}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <svg className="w-5 h-5 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
-          </svg>
+      <div className="relative shrink-0 group/thumb">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded bg-surfaceAlt overflow-hidden flex items-center justify-center">
+          {watch.image ? (
+            <Image
+              src={watch.image}
+              alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+              width={48}
+              height={48}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <svg className="w-5 h-5 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
+            </svg>
+          )}
+        </div>
+        {watch.image && (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 h-40 rounded-lg bg-white border border-border shadow-xl p-3 hidden md:group-hover/thumb:flex items-center justify-center z-50 pointer-events-none">
+            <Image src={watch.image} alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`} width={160} height={160} className="w-full h-full object-contain" />
+          </div>
         )}
       </div>
 
@@ -143,20 +150,27 @@ function WatchRowMobile({ watch }: { watch: Watch }) {
       href={`/watches/${watch.slug}`}
       className="group flex items-center gap-3 px-3 py-3 border-b border-border last:border-0 hover:bg-surfaceAlt/50 transition-colors"
     >
-      <div className="w-11 h-11 rounded bg-surfaceAlt overflow-hidden shrink-0 flex items-center justify-center">
-        {watch.image ? (
-          <Image
-            src={watch.image}
-            alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
-            width={44}
-            height={44}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <svg className="w-5 h-5 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
-          </svg>
+      <div className="relative shrink-0 group/thumb">
+        <div className="w-11 h-11 rounded bg-surfaceAlt overflow-hidden flex items-center justify-center">
+          {watch.image ? (
+            <Image
+              src={watch.image}
+              alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+              width={44}
+              height={44}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <svg className="w-5 h-5 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
+            </svg>
+          )}
+        </div>
+        {watch.image && (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 h-40 rounded-lg bg-white border border-border shadow-xl p-3 hidden md:group-hover/thumb:flex items-center justify-center z-50 pointer-events-none">
+            <Image src={watch.image} alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`} width={160} height={160} className="w-full h-full object-contain" />
+          </div>
         )}
       </div>
 
@@ -200,7 +214,7 @@ function Pagination({ current, total, onPage }: { current: number; total: number
       <button
         onClick={() => onPage(current - 1)}
         disabled={current === 1}
-        className="px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-textSecond hover:text-textPrimary hover:bg-surfaceAlt"
+        className="px-3 py-2 sm:px-2.5 sm:py-1.5 text-sm sm:text-xs font-medium rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-textSecond hover:text-textPrimary hover:bg-surfaceAlt"
       >
         Prev
       </button>
@@ -212,7 +226,7 @@ function Pagination({ current, total, onPage }: { current: number; total: number
           <button
             key={p}
             onClick={() => onPage(p)}
-            className={`min-w-[32px] py-1.5 text-xs font-medium rounded-md transition-colors ${
+            className={`min-w-[40px] sm:min-w-[32px] py-2 sm:py-1.5 text-sm sm:text-xs font-medium rounded-md transition-colors ${
               p === current
                 ? 'bg-accent text-white'
                 : 'text-textSecond hover:text-textPrimary hover:bg-surfaceAlt'
@@ -226,7 +240,7 @@ function Pagination({ current, total, onPage }: { current: number; total: number
       <button
         onClick={() => onPage(current + 1)}
         disabled={current === total}
-        className="px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-textSecond hover:text-textPrimary hover:bg-surfaceAlt"
+        className="px-3 py-2 sm:px-2.5 sm:py-1.5 text-sm sm:text-xs font-medium rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-textSecond hover:text-textPrimary hover:bg-surfaceAlt"
       >
         Next
       </button>
@@ -263,7 +277,8 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
         if (
           !w.name.toLowerCase().includes(q) &&
           !w.brand.toLowerCase().includes(q) &&
-          !w.reference.toLowerCase().includes(q)
+          !w.reference.toLowerCase().includes(q) &&
+          !`${w.brand} ${w.name}`.toLowerCase().includes(q)
         ) return false
       }
       if (brand && brand !== 'All Brands' && w.brand !== brand) return false
@@ -409,7 +424,7 @@ export default function WatchesClient({ watches, initialSearch, initialBrand, in
 
       {/* Table */}
       {filtered.length > 0 ? (
-        <div className="bg-surface border border-border rounded-sm overflow-hidden">
+        <div className="bg-surface border border-border rounded-sm">
           {/* Column headers — desktop */}
           <div className="hidden md:grid grid-cols-[48px_1fr_64px_80px_76px_60px_88px] items-center gap-x-3 px-4 py-2 bg-surfaceAlt border-b border-border">
             <span />

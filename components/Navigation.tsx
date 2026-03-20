@@ -88,7 +88,7 @@ export default function Navigation() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-textSecond hover:text-textPrimary p-2 ml-auto"
+          className="md:hidden text-textSecond hover:text-textPrimary p-3 -mr-2 ml-auto"
           aria-label="Toggle menu"
         >
           <div className="w-5 space-y-1.5">
@@ -107,7 +107,7 @@ export default function Navigation() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="block py-3 border-b border-border last:border-0 text-sm font-medium text-textPrimary hover:text-accent transition-colors"
+              className="block py-4 border-b border-border last:border-0 text-base font-medium text-textPrimary hover:text-accent transition-colors"
             >
               {link.label}
             </Link>

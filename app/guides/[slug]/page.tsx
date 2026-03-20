@@ -107,14 +107,25 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
     ...(guide.paa ?? []).map((q) => ({ ...q, source: 'paa' as const })),
   ]
 
+  // Generate IDs for buying guide subsections
+  const buyingGuideSectionIds = guide.buyingGuide.map((section) => ({
+    id: `guide-${section.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`,
+    heading: section.heading,
+  }))
+
   // TOC sections
   const tocSections = [
+    { id: 'quick-specs', label: 'Quick Specs' },
     { id: 'our-picks', label: 'Our Picks' },
     ...(curatedComparisons.length > 0 ? [{ id: 'compare-head-to-head', label: 'Compare Head-to-Head' }] : []),
     { id: 'buying-guide', label: 'Buying Guide' },
     { id: 'faq', label: 'Common Questions' },
+    { id: 'verdict', label: 'Our Verdict' },
     ...(relatedGuides.length > 0 ? [{ id: 'more-guides', label: 'More Guides' }] : []),
   ]
+
+  // Find the first watch image for schema
+  const schemaImage = recommendedWatches.find(({ watch }) => watch.image && !watch.image.endsWith('.svg'))?.watch.image
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -132,11 +143,23 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         headline: guide.h1,
         description: guide.description,
         url: `https://watchvswatch.com/guides/${guide.slug}`,
-        publisher: {
+        datePublished: '2026-01-15',
+        dateModified: '2026-03-20',
+        author: {
           '@type': 'Organization',
           name: 'WatchVsWatch',
           url: 'https://watchvswatch.com',
         },
+        publisher: {
+          '@type': 'Organization',
+          name: 'WatchVsWatch',
+          url: 'https://watchvswatch.com',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://watchvswatch.com/logo.png',
+          },
+        },
+        ...(schemaImage ? { image: `https://watchvswatch.com${schemaImage}` } : {}),
       },
       {
         '@type': 'FAQPage',
@@ -147,6 +170,15 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
             '@type': 'Answer',
             text: item.answer,
           },
+        })),
+      },
+      {
+        '@type': 'ItemList',
+        itemListElement: recommendedWatches.map(({ watch }, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: `${watch.brand} ${watch.name}`,
+          url: `https://watchvswatch.com/watches/${watch.slug}`,
         })),
       },
     ],
@@ -249,6 +281,44 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           )
         })()}
 
+        {/* Quick Specs Table */}
+        {recommendedWatches.length > 1 && (
+          <section id="quick-specs" className="mb-12 scroll-mt-24">
+            <h2 className="text-2xl font-heading font-bold text-textPrimary mb-4">At a Glance</h2>
+            <p className="text-sm text-textSecond mb-4">Compare key specs across all picks in this guide</p>
+            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+              <table className="w-full text-sm border border-border rounded-sm overflow-hidden">
+                <thead>
+                  <tr className="bg-neutral text-textPrimary text-left">
+                    <th className="px-3 py-2.5 font-semibold text-xs uppercase tracking-wider border-b border-border">Watch</th>
+                    <th className="px-3 py-2.5 font-semibold text-xs uppercase tracking-wider border-b border-border">Price</th>
+                    <th className="px-3 py-2.5 font-semibold text-xs uppercase tracking-wider border-b border-border">Size</th>
+                    <th className="px-3 py-2.5 font-semibold text-xs uppercase tracking-wider border-b border-border">Movement</th>
+                    <th className="px-3 py-2.5 font-semibold text-xs uppercase tracking-wider border-b border-border">WR</th>
+                    <th className="px-3 py-2.5 font-semibold text-xs uppercase tracking-wider border-b border-border">Crystal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recommendedWatches.map(({ watch }, i) => (
+                    <tr key={watch.slug} className={`border-b border-border ${i % 2 === 0 ? 'bg-surface' : 'bg-surfaceAlt'}`}>
+                      <td className="px-3 py-2.5">
+                        <Link href={`/watches/${watch.slug}`} className="text-accent hover:underline font-medium whitespace-nowrap">
+                          {watch.brand} {watch.name}
+                        </Link>
+                      </td>
+                      <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{formatPrice(watch.price_new_usd)}</td>
+                      <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{watch.case_diameter_mm}mm</td>
+                      <td className="px-3 py-2.5 text-textSecond capitalize whitespace-nowrap">{watch.movement_type}</td>
+                      <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{watch.water_resistance_m}m</td>
+                      <td className="px-3 py-2.5 text-textSecond capitalize whitespace-nowrap">{watch.crystal}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
         {/* Recommendations */}
         <section id="our-picks" className="mb-12 scroll-mt-24">
           <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Our Picks</h2>
@@ -276,12 +346,18 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                       {watch.water_resistance_m >= 50 && <span>{watch.water_resistance_m}m WR</span>}
                     </div>
                     <p className="text-textSecond text-sm leading-relaxed mb-4">{rec.highlight}</p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3">
                       <Link
                         href={`/watches/${watch.slug}`}
                         className="text-xs text-accent hover:underline font-medium"
                       >
                         Full specs →
+                      </Link>
+                      <Link
+                        href={`/compare?a=${watch.slug}`}
+                        className="text-xs text-textMuted hover:text-accent hover:underline font-medium transition-colors"
+                      >
+                        Compare →
                       </Link>
                     </div>
                   </div>
@@ -330,10 +406,14 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         <section id="buying-guide" className="mb-12 scroll-mt-24">
           <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Buying Guide</h2>
           <div className="space-y-6">
-            {guide.buyingGuide.map((section) => (
-              <div key={section.heading} className="card p-6">
+            {guide.buyingGuide.map((section, idx) => (
+              <div key={section.heading} id={buyingGuideSectionIds[idx].id} className="card p-6 scroll-mt-24">
                 <h3 className="text-textPrimary font-heading font-semibold text-lg mb-3">{section.heading}</h3>
-                <p className="text-textSecond text-sm leading-relaxed">{section.content}</p>
+                <div className="text-textSecond text-sm leading-relaxed space-y-3">
+                  {section.content.split('\n\n').map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -350,16 +430,25 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                     <span>{item.question}</span>
                     <span className="text-accent group-open:rotate-180 transition-transform ml-4 shrink-0">▼</span>
                   </summary>
-                  <p className="text-textSecond text-sm mt-4 leading-relaxed">{item.answer}</p>
+                  <div className="text-textSecond text-sm mt-4 leading-relaxed space-y-3">
+                    {item.answer.split('\n\n').map((para, pi) => (
+                      <p key={pi}>{para}</p>
+                    ))}
+                  </div>
                 </details>
               ))}
             </div>
           </section>
         )}
 
-        {/* Conclusion */}
-        <section className="mb-12 bg-neutral border border-border rounded-sm p-6">
-          <p className="text-textSecond text-sm leading-relaxed">{guide.conclusion}</p>
+        {/* Conclusion / Verdict */}
+        <section id="verdict" className="mb-12 bg-neutral border border-border rounded-sm p-6 scroll-mt-24">
+          <h2 className="text-lg font-heading font-bold text-textPrimary mb-3">Our Verdict</h2>
+          <div className="text-textSecond text-sm leading-relaxed space-y-3">
+            {guide.conclusion.split('\n\n').map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
         </section>
 
         {/* Browse All Strip — moved below content */}

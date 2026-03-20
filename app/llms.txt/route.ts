@@ -1,12 +1,12 @@
 export async function GET() {
   const content = `# WatchVsWatch
 
-> The most detailed watch comparison tool on the web. Side-by-side specs, movement details, water resistance, price, and expert verdicts for 121 watch pairs across 50 watches from 20+ brands.
+> The most detailed watch comparison tool on the web. Side-by-side specs, movement details, water resistance, price, and expert verdicts for 130+ watch pairs across 50 watches from 20+ brands.
 
 ## Site structure
 
 - **Home**: https://watchvswatch.com
-- **Comparisons**: https://watchvswatch.com/compare — 121 head-to-head watch comparisons
+- **Comparisons**: https://watchvswatch.com/compare — 130+ head-to-head watch comparisons
 - **Watch Database**: https://watchvswatch.com/watches — 50 watch profiles with full specs, reviews, and photos
 - **Quiz**: https://watchvswatch.com/quiz — interactive watch finder quiz
 
