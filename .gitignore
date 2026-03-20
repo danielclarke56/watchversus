@@ -37,3 +37,8 @@ next-env.d.ts
 
 # monitoring logs (rolling metrics, not tracked)
 /logs/
+
+# user-submitted photo data (runtime, not source)
+data/pending-photos.json
+data/approved-photos.json
+public/images/user-uploads/
