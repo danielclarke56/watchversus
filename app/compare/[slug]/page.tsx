@@ -166,7 +166,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
   const relatedGuides = guides
     .filter((g) => {
       const lowerGuideSlug = g.slug.toLowerCase()
-      const guideRecs = g.recommendations.map((r) => r.slug.toLowerCase())
+      const guideRecs = g.recommendations.map((r) => (r.slug ?? '').toLowerCase())
       const isWatchIncluded = guideRecs.includes(slug1.toLowerCase()) || guideRecs.includes(slug2.toLowerCase())
       const w1InRange = w1.price_new_usd.max <= 500 && lowerGuideSlug.includes('under-500')
       const w1InRange1k = w1.price_new_usd.max <= 1000 && lowerGuideSlug.includes('under-1000')

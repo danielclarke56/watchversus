@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const watch = getWatchBySlug(params.slug)
   if (!watch) return {}
   return {
-    title: `${watch.brand} ${watch.name} Review | WatchVsWatch`,
+    title: `${watch.brand} ${watch.name} Review`,
     description: `Read community reviews, full specs, and pricing for the ${watch.brand} ${watch.name} (${watch.reference}). ${watch.description.slice(0, 120)}...`,
     alternates: {
       canonical: `https://watchvswatch.com/watches/${watch.slug}`,
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title: `${watch.brand} ${watch.name} Review & Specs | WatchVsWatch`,
       description: watch.description,
       url: `https://watchvswatch.com/watches/${watch.slug}`,
-      type: 'website',
+      type: 'article',
       images: [{ url: `https://watchvswatch.com/api/og?type=watch&title=${encodeURIComponent(watch.brand + ' ' + watch.name)}&subtitle=${encodeURIComponent(watch.reference + ' — Full Specs, Reviews & Pricing')}`, width: 1200, height: 630 }],
     },
     twitter: {

@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About WatchVsWatch',
+  title: 'About',
   description: 'Learn about WatchVsWatch — our mission, how community reviews work, and our watch database.',
   alternates: {
     canonical: 'https://watchvswatch.com/about',
   },
   openGraph: {
-    title: 'About WatchVsWatch',
+    title: 'About | WatchVsWatch',
     description: 'Our mission, how reviews work, and the watch database behind WatchVsWatch.',
     url: 'https://watchvswatch.com/about',
     type: 'website',

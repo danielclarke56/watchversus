@@ -3,7 +3,7 @@ import { watches } from '@/lib/watches'
 import WatchesClient from './WatchesClient'
 
 export const metadata: Metadata = {
-  title: 'Find Your Watch — Search & Filter All Watches | WatchVsWatch',
+  title: 'Find Your Watch — Search & Filter All Watches',
   description: `Search and filter ${watches.length} watches from Rolex, Omega, Tudor, Seiko, Grand Seiko, and more. Compare prices, styles, and specs to find your next watch.`,
   alternates: {
     canonical: 'https://watchvswatch.com/watches',

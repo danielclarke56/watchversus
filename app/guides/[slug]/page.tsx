@@ -40,19 +40,20 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
   const guide = guides.find((g) => g.slug === params.slug)
   if (!guide) notFound()
 
+  // Map recommendations — some may not exist in our watch database
   const recommendedWatches = guide.recommendations.map((rec) => {
-    const watch = watches.find((w) => w.slug === rec.slug)
-    return { rec, watch }
-  }).filter((item): item is { rec: typeof guide.recommendations[0]; watch: NonNullable<typeof watches[0]> } => item.watch !== undefined)
+    const watch = rec.slug ? watches.find((w) => w.slug === rec.slug) : undefined
+    return { rec, watch: watch ?? null }
+  })
 
-  // Find comparisons that involve any recommended watch slug
-  const relatedSlugs = new Set(guide.recommendations.map((r) => r.slug))
+  // Find comparisons that involve any recommended watch slug (only for DB watches)
+  const relatedSlugs = new Set(guide.recommendations.map((r) => r.slug).filter(Boolean) as string[])
   const relatedComparisons = popularComparisons
     .filter((c) => relatedSlugs.has(c.slug1) || relatedSlugs.has(c.slug2))
     .slice(0, 6)
 
   // Compute all pairs between recommended watches that exist in popularComparisons
-  const recSlugList = guide.recommendations.map((r) => r.slug)
+  const recSlugList = guide.recommendations.map((r) => r.slug).filter(Boolean) as string[]
   const internalComparisons: typeof popularComparisons = []
   for (let i = 0; i < recSlugList.length; i++) {
     for (let j = i + 1; j < recSlugList.length; j++) {
@@ -125,7 +126,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
   ]
 
   // Find the first watch image for schema
-  const schemaImage = recommendedWatches.find(({ watch }) => watch.image && !watch.image.endsWith('.svg'))?.watch.image
+  const schemaImage = recommendedWatches.find(({ watch }) => watch?.image && !watch.image.endsWith('.svg'))?.watch?.image
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -174,11 +175,11 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       },
       {
         '@type': 'ItemList',
-        itemListElement: recommendedWatches.map(({ watch }, i) => ({
+        itemListElement: recommendedWatches.map(({ rec, watch }, i) => ({
           '@type': 'ListItem',
           position: i + 1,
-          name: `${watch.brand} ${watch.name}`,
-          url: `https://watchvswatch.com/watches/${watch.slug}`,
+          name: watch ? `${watch.brand} ${watch.name}` : `${rec.brand ?? ''} ${rec.name ?? ''}`.trim(),
+          ...(watch ? { url: `https://watchvswatch.com/watches/${watch.slug}` } : {}),
         })),
       },
     ],
@@ -299,20 +300,34 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {recommendedWatches.map(({ watch }, i) => (
-                    <tr key={watch.slug} className={`border-b border-border ${i % 2 === 0 ? 'bg-surface' : 'bg-surfaceAlt'}`}>
-                      <td className="px-3 py-2.5">
-                        <Link href={`/watches/${watch.slug}`} className="text-accent hover:underline font-medium whitespace-nowrap">
-                          {watch.brand} {watch.name}
-                        </Link>
-                      </td>
-                      <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{formatPrice(watch.price_new_usd)}</td>
-                      <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{watch.case_diameter_mm}mm</td>
-                      <td className="px-3 py-2.5 text-textSecond capitalize whitespace-nowrap">{watch.movement_type}</td>
-                      <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{watch.water_resistance_m}m</td>
-                      <td className="px-3 py-2.5 text-textSecond capitalize whitespace-nowrap">{watch.crystal}</td>
-                    </tr>
-                  ))}
+                  {recommendedWatches.map(({ rec, watch }, i) => {
+                    const brand = watch?.brand ?? rec.brand ?? ''
+                    const name = watch?.name ?? rec.name ?? ''
+                    const price = watch ? formatPrice(watch.price_new_usd) : rec.priceRange ?? '—'
+                    const size = watch?.case_diameter_mm ?? rec.caseSizeMm
+                    const movement = watch?.movement_type ?? rec.movementType ?? '—'
+                    const wr = watch?.water_resistance_m ?? rec.waterResistanceM
+                    const crystal = watch?.crystal ?? rec.crystal ?? '—'
+                    const key = watch?.slug ?? `ext-${i}`
+                    return (
+                      <tr key={key} className={`border-b border-border ${i % 2 === 0 ? 'bg-surface' : 'bg-surfaceAlt'}`}>
+                        <td className="px-3 py-2.5">
+                          {watch ? (
+                            <Link href={`/watches/${watch.slug}`} className="text-accent hover:underline font-medium whitespace-nowrap">
+                              {brand} {name}
+                            </Link>
+                          ) : (
+                            <span className="font-medium whitespace-nowrap text-textPrimary">{brand} {name}</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{price}</td>
+                        <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{size ? `${size}mm` : '—'}</td>
+                        <td className="px-3 py-2.5 text-textSecond capitalize whitespace-nowrap">{movement}</td>
+                        <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{wr ? `${wr}m` : '—'}</td>
+                        <td className="px-3 py-2.5 text-textSecond capitalize whitespace-nowrap">{crystal}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -323,47 +338,60 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         <section id="our-picks" className="mb-12 scroll-mt-24">
           <h2 className="text-2xl font-heading font-bold text-textPrimary mb-6">Our Picks</h2>
           <div className="space-y-6">
-            {recommendedWatches.map(({ rec, watch }, index) => (
-              <div key={watch.slug} className="card p-6">
-                <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 bg-accentLight border border-borderStrong rounded-full flex items-center justify-center">
-                    <span className="text-accent font-bold text-sm">{index + 1}</span>
-                  </div>
-                  {watch.image && !watch.image.endsWith('.svg') && (
-                    <div className="shrink-0 w-20 h-20 rounded-sm bg-neutral border border-border overflow-hidden">
-                      <Image src={watch.image} alt={watch.name} width={80} height={80} className="w-20 h-20 object-contain" />
+            {recommendedWatches.map(({ rec, watch }, index) => {
+              const brand = watch?.brand ?? rec.brand ?? ''
+              const name = watch?.name ?? rec.name ?? ''
+              const size = watch?.case_diameter_mm ?? rec.caseSizeMm
+              const movement = watch?.movement_type ?? rec.movementType
+              const price = watch ? formatPrice(watch.price_new_usd) : rec.priceRange
+              const wr = watch?.water_resistance_m ?? rec.waterResistanceM
+              const hasImage = watch?.image && !watch.image.endsWith('.svg')
+              const key = watch?.slug ?? `ext-${index}`
+              return (
+                <div key={key} className="card p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="shrink-0 w-10 h-10 bg-accentLight border border-borderStrong rounded-full flex items-center justify-center">
+                      <span className="text-accent font-bold text-sm">{index + 1}</span>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="text-xs text-accent font-bold uppercase tracking-wider">{watch.brand}</span>
-                      <span className="text-textPrimary font-bold text-lg">{watch.name}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-textMuted mb-3">
-                      <span>{watch.case_diameter_mm}mm case</span>
-                      <span>{watch.movement_type}</span>
-                      <span>{formatPrice(watch.price_new_usd)} new</span>
-                      {watch.water_resistance_m >= 50 && <span>{watch.water_resistance_m}m WR</span>}
-                    </div>
-                    <p className="text-textSecond text-sm leading-relaxed mb-4">{rec.highlight}</p>
-                    <div className="flex flex-wrap gap-3">
-                      <Link
-                        href={`/watches/${watch.slug}`}
-                        className="text-xs text-accent hover:underline font-medium"
-                      >
-                        Full specs →
-                      </Link>
-                      <Link
-                        href={`/compare?a=${watch.slug}`}
-                        className="text-xs text-textMuted hover:text-accent hover:underline font-medium transition-colors"
-                      >
-                        Compare →
-                      </Link>
+                    {hasImage && (
+                      <div className="shrink-0 w-20 h-20 rounded-sm bg-neutral border border-border overflow-hidden">
+                        <Image src={watch!.image!} alt={name} width={80} height={80} className="w-20 h-20 object-contain" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span className="text-xs text-accent font-bold uppercase tracking-wider">{brand}</span>
+                        <span className="text-textPrimary font-bold text-lg">{name}</span>
+                        {rec.reference && <span className="text-xs text-textMuted">({rec.reference})</span>}
+                      </div>
+                      <div className="flex flex-wrap gap-3 text-xs text-textMuted mb-3">
+                        {size && <span>{size}mm case</span>}
+                        {movement && <span>{movement}</span>}
+                        {price && <span>{price}{watch ? ' new' : ''}</span>}
+                        {wr && wr >= 50 && <span>{wr}m WR</span>}
+                      </div>
+                      <p className="text-textSecond text-sm leading-relaxed mb-4">{rec.highlight}</p>
+                      {watch && (
+                        <div className="flex flex-wrap gap-3">
+                          <Link
+                            href={`/watches/${watch.slug}`}
+                            className="text-xs text-accent hover:underline font-medium"
+                          >
+                            Full specs →
+                          </Link>
+                          <Link
+                            href={`/compare?a=${watch.slug}`}
+                            className="text-xs text-textMuted hover:text-accent hover:underline font-medium transition-colors"
+                          >
+                            Compare →
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </section>
 
@@ -468,7 +496,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                 const gFull = guides.find((gd) => gd.slug === g.slug)
                 const previewWatches = gFull
                   ? gFull.recommendations
-                      .map((rec) => watches.find((w) => w.slug === rec.slug))
+                      .map((rec) => rec.slug ? watches.find((w) => w.slug === rec.slug) : undefined)
                       .filter((w): w is NonNullable<typeof w> & { image: string } => !!w && typeof w.image === 'string' && !w.image.endsWith('.svg'))
                       .slice(0, 3)
                   : []

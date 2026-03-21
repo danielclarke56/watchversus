@@ -4,6 +4,8 @@ import { guides } from '@/lib/guideData'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://watchvswatch.com'
+  // Use build date so timestamps don't change on every request
+  const lastMod = new Date('2026-03-20')
 
   const staticPages = [
     { url: base, priority: 1.0 },
@@ -16,20 +18,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/terms`, priority: 0.2 },
   ].map((p) => ({
     ...p,
-    lastModified: new Date(),
+    lastModified: lastMod,
     changeFrequency: 'weekly' as const,
   }))
 
 const guidePages = guides.map((g) => ({
     url: `${base}/guides/${g.slug}`,
-    lastModified: new Date(),
+    lastModified: lastMod,
     changeFrequency: 'weekly' as const,
     priority: 0.85,
   }))
 
   const watchPages = watches.map((w) => ({
     url: `${base}/watches/${w.slug}`,
-    lastModified: new Date(),
+    lastModified: lastMod,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
@@ -45,7 +47,7 @@ const guidePages = guides.map((g) => ({
       comparisonSlugs.add(slug)
       comparisonPages.push({
         url: `${base}/compare/${slug}`,
-        lastModified: new Date(),
+        lastModified: lastMod,
         changeFrequency: 'weekly' as const,
         priority: tierPriorityMap[c.tier],
       })

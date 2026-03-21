@@ -5,7 +5,7 @@ import { watches } from '@/lib/watches'
 import GuidesClient from './GuidesClient'
 
 export const metadata: Metadata = {
-  title: 'Watch Buying Guides — WatchVsWatch',
+  title: 'Watch Buying Guides',
   description: 'Expert watch buying guides by category and budget. Best dive watches, dress watches, GMT watches, field watches, and top picks under $500 and $1,000.',
   alternates: {
     canonical: 'https://watchvswatch.com/guides',
