@@ -12,6 +12,30 @@ const hasClerk =
 const clerkHandler = clerkMiddleware()
 
 /**
+ * Redirect legacy root-level comparison URLs to /compare/ equivalents.
+ * e.g. /rolex-air-king-vs-explorer/ → 301 → /compare/rolex-air-king-vs-explorer
+ * This recovers SEO value from old indexed pages before the migration to /compare/ routes.
+ */
+function legacyRootLevelRedirect(req: NextRequest): NextResponse | null {
+  const { pathname } = req.nextUrl
+  
+  // Match pattern: /{slug1}-vs-{slug2}/ at root level
+  // Exclude /compare/, /guides/, /watches/, /about/, /quiz/, /api/, /admin/, /sign-in/, /sign-up/
+  const reservedPaths = ['/compare', '/guides', '/watches', '/about', '/quiz', '/api', '/admin', '/sign-in', '/sign-up', '/_next']
+  if (reservedPaths.some(p => pathname.startsWith(p))) return null
+  
+  const match = pathname.match(/^\/([a-z0-9\-]+)-vs-([a-z0-9\-]+)\/?$/)
+  if (!match) return null
+  
+  const slug1 = match[1]
+  const slug2 = match[2]
+  
+  const url = req.nextUrl.clone()
+  url.pathname = `/compare/${slug1}-vs-${slug2}`
+  return NextResponse.redirect(url, { status: 301 })
+}
+
+/**
  * Canonicalize /compare/ URLs so both slug orderings resolve to a single URL.
  * e.g. /compare/rolex-sub-vs-omega-sm → 301 → /compare/omega-sm-vs-rolex-sub
  * This prevents duplicate-content indexing issues in Google Search Console.
@@ -40,11 +64,15 @@ function compareCanonicalRedirect(req: NextRequest): NextResponse | null {
 }
 
 export default function middleware(req: NextRequest) {
-  // 1. Comparison slug canonicalization (runs before Clerk so bots get clean 301s)
+  // 1. Legacy root-level comparison URL redirect (redirect old indexed URLs)
+  const legacyRedirect = legacyRootLevelRedirect(req)
+  if (legacyRedirect) return legacyRedirect
+
+  // 2. Comparison slug canonicalization (runs before Clerk so bots get clean 301s)
   const canonicalRedirect = compareCanonicalRedirect(req)
   if (canonicalRedirect) return canonicalRedirect
 
-  // 2. Clerk auth
+  // 3. Clerk auth
   if (!hasClerk) return NextResponse.next()
   // @ts-expect-error – clerkMiddleware returns a compatible handler
   return clerkHandler(req)
