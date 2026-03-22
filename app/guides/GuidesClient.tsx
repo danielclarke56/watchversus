@@ -66,7 +66,7 @@ function getGuideTags(slug: string): Tag[] {
 
 function GuideCard({ guide, badge, watches }: { guide: Guide; badge?: string; watches: Watch[] }) {
   const previewWatches = guide.recommendations
-    .map((rec) => watches.find((w) => w.slug === rec.slug))
+    .map((rec) => rec.slug ? watches.find((w) => w.slug === rec.slug) : undefined)
     .filter((w): w is NonNullable<typeof w> & { image: string } => !!w && typeof w.image === 'string' && !w.image.endsWith('.svg'))
     .slice(0, 3)
   const hasImages = previewWatches.length > 0
@@ -130,7 +130,7 @@ export default function GuidesClient({ guides, watches }: { guides: Guide[]; wat
 
   const featuredPreviewWatches = featured
     ? featured.recommendations
-        .map((rec) => watches.find((w) => w.slug === rec.slug))
+        .map((rec) => rec.slug ? watches.find((w) => w.slug === rec.slug) : undefined)
         .filter((w): w is NonNullable<typeof w> & { image: string } => !!w && typeof w.image === 'string' && !w.image.endsWith('.svg'))
         .slice(0, 3)
     : []
