@@ -4,9 +4,19 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
-import comparisonOverrides from '@/data/comparison-overrides.json'
+import comparisonOverridesRaw from '@/data/comparison-overrides.json'
 import RatingBar from '@/components/RatingBar'
 import type { Watch } from '@/lib/types'
+
+interface ComparisonOverride {
+  slug: string
+  meta_description: string
+  hook_line: string
+  promoted: boolean
+  verdict?: string
+}
+
+const comparisonOverrides = comparisonOverridesRaw as ComparisonOverride[]
 import VoteSection from './VoteSection'
 import ComparisonStickyNav from './ComparisonStickyNav'
 import { Card } from '@/components/ui/Card'
@@ -528,7 +538,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 </div>
               </div>
 
-              <p className="text-textSecond text-sm leading-relaxed mb-5">{generateVerdict(w1, w2)}</p>
+              <p className="text-textSecond text-sm leading-relaxed mb-5">{override?.verdict || generateVerdict(w1, w2)}</p>
 
               <div className="mb-5">
                 <div className="flex justify-between text-xs mb-2">

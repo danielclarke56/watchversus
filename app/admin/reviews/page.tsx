@@ -1,4 +1,3 @@
-import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { watches } from '@/lib/watches'
 import AdminReviewList, { type PendingReviewRow } from './AdminReviewList'
@@ -52,8 +51,17 @@ async function getPendingPhotos(): Promise<PendingPhoto[]> {
 }
 
 export default async function AdminReviewsPage() {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  let userId: string | null = null
+
+  try {
+    const { auth } = await import('@clerk/nextjs/server')
+    const session = await auth()
+    userId = session.userId
+  } catch {
+    // Clerk not configured — block access
+  }
+
+  if (!userId) redirect('/')
 
   if (!checkAdmin(userId)) {
     return (
