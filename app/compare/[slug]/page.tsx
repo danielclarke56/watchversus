@@ -540,21 +540,25 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
 
               <p className="text-textSecond text-sm leading-relaxed mb-5">{override?.verdict || generateVerdict(w1, w2)}</p>
 
-              <div className="mb-5">
-                <div className="flex justify-between text-xs mb-2">
-                  <span className="font-semibold text-textPrimary">{w1.name}</span>
-                  <span className="text-textSecond">Community Rating</span>
-                  <span className="font-semibold text-textPrimary">{w2.name}</span>
+              {overall1 && overall2 ? (
+                <div className="mb-5">
+                  <div className="flex justify-between text-xs mb-2">
+                    <span className="font-semibold text-textPrimary">{w1.name}</span>
+                    <span className="text-textSecond">Community Rating</span>
+                    <span className="font-semibold text-textPrimary">{w2.name}</span>
+                  </div>
+                  <div className="flex h-2.5 rounded-full overflow-hidden bg-border">
+                    <div className="bg-accent transition-all" style={{ width: `${pref1}%` }} />
+                    <div className="bg-borderStrong transition-all" style={{ width: `${pref2}%` }} />
+                  </div>
+                  <div className="flex justify-between text-xs mt-1.5">
+                    <span className="text-accent font-bold">{pref1}%</span>
+                    <span className="text-textMuted font-bold">{pref2}%</span>
+                  </div>
                 </div>
-                <div className="flex h-2.5 rounded-full overflow-hidden bg-border">
-                  <div className="bg-accent transition-all" style={{ width: `${pref1}%` }} />
-                  <div className="bg-borderStrong transition-all" style={{ width: `${pref2}%` }} />
-                </div>
-                <div className="flex justify-between text-xs mt-1.5">
-                  <span className="text-accent font-bold">{pref1}%</span>
-                  <span className="text-textMuted font-bold">{pref2}%</span>
-                </div>
-              </div>
+              ) : (
+                <p className="text-xs text-textMuted mb-5">No community ratings yet — cast your vote below.</p>
+              )}
 
               <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} />
             </section>
