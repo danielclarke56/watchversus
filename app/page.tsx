@@ -44,26 +44,14 @@ const faqJsonLd = {
   })),
 }
 
-export const metadata: Metadata = {
-  title: 'Compare Watches Side by Side | WatchVsWatch',
-  description:
-    `Compare ${comparisonTiers.length}+ watch matchups side by side — from Seiko and Hamilton to Rolex and Omega. Specs, real differences, community votes, and buying guides to help you choose the right watch at any budget.`,
-  alternates: {
-    canonical: 'https://watchvswatch.com',
-  },
-  openGraph: {
-    type: 'website',
-    siteName: 'WatchVsWatch',
-    title: 'Compare Watches Side by Side | WatchVsWatch',
-    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups. Every budget, every style.`,
-    url: 'https://watchvswatch.com',
-    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Compare+Watches+Side+by+Side', width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Compare Watches Side by Side | WatchVsWatch',
-    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups.`,
-  },
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'WatchVsWatch',
+  url: 'https://watchvswatch.com',
+  logo: 'https://watchvswatch.com/icon.png',
+  description: 'Independent watch comparison platform — compare specs, community ratings, and expert verdicts side by side.',
+  sameAs: [],
 }
 
 const featuredComparisons: {
@@ -103,6 +91,26 @@ const featuredComparisons: {
   },
 ]
 
+// ItemList JSON-LD for featured comparisons (rich results)
+const itemListJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Popular Watch Comparisons',
+  itemListElement: featuredComparisons.map((c, i) => {
+    const wa = getWatchBySlug(c.slug1)
+    const wb = getWatchBySlug(c.slug2)
+    return {
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${wa?.brand ?? ''} ${wa?.name ?? c.slug1} vs ${wb?.brand ?? ''} ${wb?.name ?? c.slug2}`,
+      url: `https://watchvswatch.com/compare/${c.slug1}-vs-${c.slug2}`,
+    }
+  }),
+}
+
+// Recently added comparisons (last 6 from the comparison tiers data)
+const recentComparisons = comparisonTiers.slice(-6).reverse()
+
 const researchCards = [
   {
     icon: '⚔️',
@@ -130,13 +138,66 @@ const researchCards = [
   },
 ]
 
+// Quick-link pills for the hero
+const quickLinks = [
+  { label: 'Rolex vs Omega', href: '/compare/rolex-submariner-41-vs-omega-seamaster-300m' },
+  { label: 'Rolex vs Tudor', href: '/compare/rolex-submariner-41-vs-tudor-black-bay-58' },
+  { label: 'Seiko vs Orient', href: '/watches?brand=Seiko' },
+  { label: 'Speedmaster vs Navitimer', href: '/compare/omega-speedmaster-moonwatch-vs-breitling-navitimer-b01-42' },
+  { label: 'Cartier vs Omega', href: '/compare/cartier-santos-vs-omega-aqua-terra-38' },
+  { label: 'Best Dive Watches', href: '/guides/best-dive-watches-under-5000' },
+  { label: 'Best Under $1,000', href: '/guides/best-watches-under-1000' },
+  { label: 'Watch Finder Quiz', href: '/quiz' },
+  { label: 'Grand Seiko vs Omega', href: '/compare/grand-seiko-sbga211-snowflake-vs-omega-aqua-terra-38' },
+]
+
+// Top brands from the database for Browse by Brand
+const topBrands = ['Rolex', 'Omega', 'Tudor', 'Seiko', 'TAG Heuer', 'Grand Seiko']
+
+// How it works steps
+const howItWorksSteps = [
+  { icon: '🔍', title: 'Pick Two Watches', desc: 'Search or browse our database of 57+ watches from top brands.' },
+  { icon: '📊', title: 'Compare Specs & Votes', desc: 'See side-by-side specs, community ratings, and real-world differences.' },
+  { icon: '✅', title: 'Read the Verdict', desc: 'Get an expert summary of who each watch is best for — and decide.' },
+]
+
+export const metadata: Metadata = {
+  title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
+  description:
+    `Compare ${comparisonTiers.length}+ watch matchups side by side — from Seiko and Hamilton to Rolex and Omega. Specs, real differences, community votes, and buying guides to help you choose the right watch at any budget.`,
+  alternates: {
+    canonical: 'https://watchvswatch.com',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'WatchVsWatch',
+    title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
+    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups. Every budget, every style.`,
+    url: 'https://watchvswatch.com',
+    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Compare+Watches+Side+by+Side', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
+    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups.`,
+  },
+}
+
 export default function HomePage() {
   return (
     <>
-      {/* FAQ JSON-LD */}
+      {/* JSON-LD Schemas */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
 
       {/* HERO */}
@@ -159,46 +220,46 @@ export default function HomePage() {
 
             {/* Quick Links — pill buttons */}
             <div className="flex flex-wrap gap-3 justify-center">
-              <Link
-                href="/compare/rolex-submariner-41-vs-omega-seamaster-300m"
-                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
-              >
-                Rolex vs Omega
-              </Link>
-              <Link
-                href="/compare/rolex-submariner-41-vs-tudor-black-bay-58"
-                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
-              >
-                Rolex vs Tudor
-              </Link>
-              <Link
-                href="/guides/best-dive-watches-under-5000"
-                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
-              >
-                Best Dive Watches
-              </Link>
-              <Link
-                href="/guides/best-watches-under-1000"
-                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
-              >
-                Best Under $1,000
-              </Link>
-              <Link
-                href="/quiz"
-                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
-              >
-                Watch Finder Quiz
-              </Link>
+              {quickLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
         </Container>
       </section>
 
-      {/* POPULAR COMPARISONS */}
+      {/* HOW IT WORKS */}
+      <Section py="md" bg="surface">
+        <Container>
+          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary text-center mb-8 sm:mb-12">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {howItWorksSteps.map((step, i) => (
+              <div key={i} className="text-center">
+                <div className="text-4xl mb-3">{step.icon}</div>
+                <h3 className="text-lg font-semibold text-textPrimary mb-2">
+                  <span className="text-accent mr-1">{i + 1}.</span>
+                  {step.title}
+                </h3>
+                <p className="text-sm text-textSecond">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* POPULAR WATCH COMPARISONS */}
       <Section py="md">
         <Container>
           <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-8 sm:mb-12">
-            Popular Comparisons
+            Popular Watch Comparisons
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {featuredComparisons.map((c) => {
@@ -279,11 +340,128 @@ export default function HomePage() {
         </Container>
       </Section>
 
-      {/* YOUR WATCH RESEARCH STARTS HERE */}
+      {/* RECENTLY ADDED COMPARISONS */}
+      <Section py="md" bg="surface">
+        <Container>
+          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-8 sm:mb-12">
+            Recently Added Comparisons
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recentComparisons.map((c) => {
+              const wa = getWatchBySlug(c.slug1)
+              const wb = getWatchBySlug(c.slug2)
+              if (!wa || !wb) return null
+              return (
+                <Card key={`${c.slug1}-${c.slug2}`} hover className="p-4">
+                  <Link href={`/compare/${c.slug1}-vs-${c.slug2}`} className="block h-full">
+                    <div className="flex items-center gap-2 mb-2">
+                      {wa.image && (
+                        <div className="w-10 h-10 rounded bg-surfaceAlt border border-border overflow-hidden flex items-center justify-center shrink-0">
+                          <Image src={wa.image} alt={wa.imageAlt ?? `${wa.brand} ${wa.name}`} width={40} height={40} className="w-full h-full object-contain p-0.5" />
+                        </div>
+                      )}
+                      <span className="text-accent font-bold text-xs">VS</span>
+                      {wb.image && (
+                        <div className="w-10 h-10 rounded bg-surfaceAlt border border-border overflow-hidden flex items-center justify-center shrink-0">
+                          <Image src={wb.image} alt={wb.imageAlt ?? `${wb.brand} ${wb.name}`} width={40} height={40} className="w-full h-full object-contain p-0.5" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-sm font-semibold text-textPrimary mb-1">
+                      {wa.brand} {wa.name} vs {wb.brand} {wb.name}
+                    </p>
+                    <p className="text-sm text-accent font-medium">
+                      View comparison →
+                    </p>
+                  </Link>
+                </Card>
+              )
+            })}
+          </div>
+        </Container>
+      </Section>
+
+      {/* BROWSE BY CATEGORY */}
+      <Section py="md">
+        <Container>
+          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-8 sm:mb-12">
+            Browse Watches by Category
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* By Price Range */}
+            <div>
+              <h3 className="text-lg font-semibold text-textPrimary mb-4">By Price Range</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/watches?price=under-500" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    Under $500 →
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/watches?price=500-2000" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    $500 – $2,000 →
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/watches?price=2000-5000" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    $2,000 – $5,000 →
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/watches?price=5000-plus" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    $5,000+ →
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            {/* By Style */}
+            <div>
+              <h3 className="text-lg font-semibold text-textPrimary mb-4">By Style</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/watches?style=dress" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    Dress Watches →
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/watches?style=dive" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    Dive Watches →
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/watches?style=chronograph" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    Chronographs →
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/watches?style=field" className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                    Field Watches →
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            {/* By Brand */}
+            <div>
+              <h3 className="text-lg font-semibold text-textPrimary mb-4">By Brand</h3>
+              <ul className="space-y-2">
+                {topBrands.map((brand) => (
+                  <li key={brand}>
+                    <Link href={`/watches?brand=${encodeURIComponent(brand)}`} className="text-accent hover:text-accentHover transition-colors text-sm font-medium">
+                      {brand} Watches →
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* WATCH BUYING TOOLS & GUIDES */}
       <Section py="md" bg="surface">
         <Container>
           <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary text-center mb-8 sm:mb-12">
-            Watch Buying Tools and Guides
+            Watch Buying Tools &amp; Guides
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {researchCards.map((card) => (
