@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { watches, popularComparisons, getWatchBySlug } from '@/lib/watches'
+import { watches, popularComparisons, comparisonTiers, getWatchBySlug } from '@/lib/watches'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import { Button } from '@/components/ui/Button'
@@ -11,7 +11,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'WatchVsWatch — Discover, Compare & Choose the Right Watch',
   description:
-    'Compare 130+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.',
+    `Compare ${comparisonTiers.length}+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.`,
   alternates: {
     canonical: 'https://watchvswatch.com',
   },
@@ -70,7 +70,7 @@ const researchCards = [
   {
     icon: '⌚',
     title: 'Browse All Watches',
-    desc: '56 watches with full specs, pros & cons, and ratings.',
+    desc: `${watches.length} watches with full specs, pros & cons, and ratings.`,
     href: '/watches',
   },
   {
@@ -207,7 +207,7 @@ export default function HomePage() {
               href="/compare"
               className="text-accent hover:text-accentHover font-medium transition-colors"
             >
-              See all 130+ comparisons →
+              See all {comparisonTiers.length}+ comparisons →
             </Link>
           </div>
         </Container>
@@ -239,7 +239,7 @@ export default function HomePage() {
       <div className="border-y border-border py-8">
         <Container>
           <p className="text-textSecond text-sm text-center">
-            56 watches · 130+ comparisons · Curated guides · Community-driven ·
+            {watches.length} watches · {comparisonTiers.length}+ comparisons · Curated guides · Community-driven ·
             No sponsored content
           </p>
         </Container>

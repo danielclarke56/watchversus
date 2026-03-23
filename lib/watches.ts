@@ -45,10 +45,18 @@ export function calcOverallRating(ratings: ReviewRatings): number {
 }
 
 export function formatPrice(price: { min: number; max: number }): string {
-  const fmt = (n: number) =>
-    n >= 1000 ? `$${(n / 1000).toFixed(0)}k` : `$${n}`
+  const fmt = (n: number) => {
+    if (n >= 1000) {
+      const k = n / 1000
+      return k % 1 === 0 ? `$${k.toFixed(0)}k` : `$${k.toFixed(1)}k`
+    }
+    return `$${n}`
+  }
   if (price.min === price.max) return fmt(price.min)
-  return `${fmt(price.min)}–${fmt(price.max)}`
+  const fMin = fmt(price.min)
+  const fMax = fmt(price.max)
+  if (fMin === fMax) return fMin
+  return `${fMin}–${fMax}`
 }
 
 // Comparison tiers: single source of truth for all comparison pairs

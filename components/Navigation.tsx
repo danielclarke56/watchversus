@@ -5,29 +5,33 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
-/* Lazy-load Clerk components — NEXT_PUBLIC_ vars are inlined at build time */
-const ClerkAuth = dynamic(() =>
-  import('@clerk/nextjs').then((mod) => {
-    const { SignedIn, SignedOut, SignInButton, UserButton } = mod
-    return {
-      default: ({ avatarSize }: { avatarSize?: string }) => (
-        <>
-          <SignedOut>
-            <SignInButton mode="modal">
-              <button className="text-sm text-textSecond hover:text-accent transition-colors font-medium">
-                Sign In
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton appearance={avatarSize ? { elements: { avatarBox: avatarSize } } : undefined} />
-          </SignedIn>
-        </>
-      ),
-    }
-  }),
-  { ssr: false }
-)
+/* Clerk is only rendered when the publishable key is configured in Vercel env vars */
+const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+const ClerkAuth = clerkEnabled
+  ? dynamic(() =>
+      import('@clerk/nextjs').then((mod) => {
+        const { SignedIn, SignedOut, SignInButton, UserButton } = mod
+        return {
+          default: ({ avatarSize }: { avatarSize?: string }) => (
+            <>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="text-sm text-textSecond hover:text-accent transition-colors font-medium">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton appearance={avatarSize ? { elements: { avatarBox: avatarSize } } : undefined} />
+              </SignedIn>
+            </>
+          ),
+        }
+      }),
+      { ssr: false }
+    )
+  : () => null
 
 const navLinks = [
   { href: '/watches', label: 'Watches' },

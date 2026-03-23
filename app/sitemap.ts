@@ -4,8 +4,8 @@ import { guides } from '@/lib/guideData'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://watchvswatch.com'
-  // Use build date so timestamps don't change on every request
-  const lastMod = new Date('2026-03-20')
+  // Use build date so timestamps are fresh on each deploy
+  const lastMod = new Date()
 
   const staticPages = [
     { url: base, priority: 1.0 },
