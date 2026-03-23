@@ -8,12 +8,61 @@ import { Card } from '@/components/ui/Card'
 import { SearchForm } from '@/components/SearchForm'
 import type { Metadata } from 'next'
 
+const faqItems = [
+  {
+    q: 'How do I compare two watches on WatchVsWatch?',
+    a: `Use the search bar on the homepage or visit the Compare page to pick any two watches. You'll see side-by-side specs, key differences, community votes, and an expert verdict — all on one page.`,
+  },
+  {
+    q: 'What brands does WatchVsWatch cover?',
+    a: 'We cover watches at every price point — from affordable favourites like Seiko, Casio, Orient, and Tissot to mid-range brands like Hamilton, Longines, and Oris, all the way up to Rolex, Omega, Tudor, Breitling, IWC, Cartier, Grand Seiko, and beyond. New watches and brands are added regularly.',
+  },
+  {
+    q: 'Is WatchVsWatch free to use?',
+    a: 'Yes, WatchVsWatch is completely free. We have no affiliate links and no sponsored content — every comparison and recommendation is independent.',
+  },
+  {
+    q: 'How are watches rated and compared?',
+    a: 'Each comparison includes verified specifications, an analysis of real-world differences (movement, water resistance, case size, price), community votes from watch enthusiasts, and an editorial verdict summarising who each watch is best for.',
+  },
+  {
+    q: 'Can WatchVsWatch help me choose my first watch?',
+    a: 'Absolutely. Take our Watch Finder Quiz to get a personalised recommendation in under a minute, or browse our buying guides organised by budget, style, and occasion — whether your budget is $100 or $10,000.',
+  },
+]
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+}
+
 export const metadata: Metadata = {
-  title: 'WatchVsWatch — Discover, Compare & Choose the Right Watch',
+  title: 'Compare Watches Side by Side | WatchVsWatch',
   description:
-    `Compare ${comparisonTiers.length}+ luxury watch matchups side by side. Specs, real differences, community votes, and buying guides. Find the right watch faster.`,
+    `Compare ${comparisonTiers.length}+ watch matchups side by side — from Seiko and Hamilton to Rolex and Omega. Specs, real differences, community votes, and buying guides to help you choose the right watch at any budget.`,
   alternates: {
     canonical: 'https://watchvswatch.com',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'WatchVsWatch',
+    title: 'Compare Watches Side by Side | WatchVsWatch',
+    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups. Every budget, every style.`,
+    url: 'https://watchvswatch.com',
+    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Compare+Watches+Side+by+Side', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Compare Watches Side by Side | WatchVsWatch',
+    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups.`,
   },
 }
 
@@ -84,6 +133,12 @@ const researchCards = [
 export default function HomePage() {
   return (
     <>
+      {/* FAQ JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       {/* HERO */}
       <section className="relative bg-gradient-to-br from-white to-surfaceAlt border-b border-border">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -93,11 +148,10 @@ export default function HomePage() {
         <Container className="py-10 sm:py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-textPrimary mb-6 leading-tight tracking-tight">
-              Discover, compare, and choose the right watch.
+              Compare Watches Side by Side
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-textSecond mb-8 leading-relaxed max-w-2xl mx-auto">
-              Side-by-side matchups, community insights, and buying guides —
-              everything you need to decide with confidence.
+              {comparisonTiers.length}+ head-to-head matchups with specs, community votes, and expert verdicts — from Seiko and Tissot to Rolex and Patek Philippe, at every price point.
             </p>
 
             {/* Search Input — primary CTA */}
@@ -109,7 +163,13 @@ export default function HomePage() {
                 href="/compare/rolex-submariner-41-vs-omega-seamaster-300m"
                 className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
               >
-                Submariner vs Seamaster
+                Rolex vs Omega
+              </Link>
+              <Link
+                href="/compare/rolex-submariner-41-vs-tudor-black-bay-58"
+                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
+              >
+                Rolex vs Tudor
               </Link>
               <Link
                 href="/guides/best-dive-watches-under-5000"
@@ -118,10 +178,16 @@ export default function HomePage() {
                 Best Dive Watches
               </Link>
               <Link
+                href="/guides/best-watches-under-1000"
+                className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
+              >
+                Best Under $1,000
+              </Link>
+              <Link
                 href="/quiz"
                 className="rounded-full bg-surfaceAlt border border-border px-4 py-2 text-sm text-textPrimary hover:bg-accent hover:text-white transition"
               >
-                Take the Quiz
+                Watch Finder Quiz
               </Link>
             </div>
           </div>
@@ -217,7 +283,7 @@ export default function HomePage() {
       <Section py="md" bg="surface">
         <Container>
           <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary text-center mb-8 sm:mb-12">
-            Your watch research starts here
+            Watch Buying Tools and Guides
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {researchCards.map((card) => (
@@ -244,6 +310,63 @@ export default function HomePage() {
           </p>
         </Container>
       </div>
+
+      {/* SEO CONTENT — WHY WATCHVSWATCH */}
+      <Section py="md">
+        <Container>
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-6">
+              The Independent Watch Comparison Platform
+            </h2>
+            <div className="prose prose-lg text-textSecond space-y-4">
+              <p>
+                Whether you're choosing between a Seiko Presage and a Hamilton Khaki Field,
+                weighing up the Rolex Submariner against the Omega Seamaster, or deciding if a
+                Grand Seiko is worth the step up from a Tissot PRX — WatchVsWatch puts the
+                details that matter into clear, head-to-head comparisons. Movement type, water
+                resistance, case dimensions, price, and real-world wearability, all in one place.
+              </p>
+              <p>
+                Every matchup includes verified specifications sourced from manufacturer data, an
+                editorial breakdown of what sets each watch apart, and community votes from watch
+                enthusiasts who own or have tried the watches in question. We cover brands at
+                every price point — Seiko, Casio, Orient, Tissot, Hamilton, Longines, Oris,
+                Tudor, Omega, Rolex, Breitling, TAG Heuer, IWC, Cartier, Panerai, Grand Seiko,
+                and more — with new watches added regularly.
+              </p>
+              <p>
+                Unlike review sites that rely on affiliate commissions, WatchVsWatch has no
+                affiliate links and no sponsored placements. Our recommendations are based solely
+                on specs, value, and community feedback — so whether you're spending $200 or
+                $20,000, you can trust what you read.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* FAQ SECTION */}
+      <Section py="md" bg="surface">
+        <Container>
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-8">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-6">
+              {faqItems.map((item, i) => (
+                <div key={i} className="border-b border-border pb-6 last:border-0">
+                  <h3 className="text-lg font-semibold text-textPrimary mb-2">
+                    {item.q}
+                  </h3>
+                  <p className="text-textSecond leading-relaxed">
+                    {item.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </Section>
 
       {/* FINAL CTA */}
       <section className="bg-textPrimary">

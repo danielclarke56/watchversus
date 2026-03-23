@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   description:
     'Community-driven watch comparisons, honest reviews, and personalized recommendations. Compare any two watches side-by-side with real community ratings.',
-  keywords: ['watch comparison', 'watch reviews', 'best watches', 'rolex vs omega', 'watch recommendations'],
+  keywords: ['watch comparison', 'compare watches', 'rolex vs omega', 'seiko vs hamilton', 'rolex vs tudor', 'best watches 2026', 'watch reviews', 'watch buying guide', 'watch recommendations', 'best watches under 500', 'head to head watch comparison'],
   alternates: {
     canonical: 'https://watchvswatch.com',
   },
