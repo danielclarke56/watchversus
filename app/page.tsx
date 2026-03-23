@@ -320,7 +320,7 @@ export default function HomePage() {
             </h2>
             <div className="prose prose-lg text-textSecond space-y-4">
               <p>
-                Whether you're choosing between a Seiko Presage and a Hamilton Khaki Field,
+                Whether you&apos;re choosing between a Seiko Presage and a Hamilton Khaki Field,
                 weighing up the Rolex Submariner against the Omega Seamaster, or deciding if a
                 Grand Seiko is worth the step up from a Tissot PRX — WatchVsWatch puts the
                 details that matter into clear, head-to-head comparisons. Movement type, water
@@ -337,7 +337,7 @@ export default function HomePage() {
               <p>
                 Unlike review sites that rely on affiliate commissions, WatchVsWatch has no
                 affiliate links and no sponsored placements. Our recommendations are based solely
-                on specs, value, and community feedback — so whether you're spending $200 or
+                on specs, value, and community feedback — so whether you&apos;re spending $200 or
                 $20,000, you can trust what you read.
               </p>
             </div>
