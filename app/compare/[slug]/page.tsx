@@ -22,6 +22,7 @@ import ComparisonStickyNav from './ComparisonStickyNav'
 import { Card } from '@/components/ui/Card'
 import { SpecRow } from '@/components/ui/SpecRow'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
+import BestForBox from '@/components/BestForBox'
 
 export const dynamicParams = true
 export const revalidate = 86400
@@ -101,13 +102,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: description,
       url: canonicalUrl,
       type: 'website',
-      images: [{ url: `https://watchvswatch.com/api/og?type=compare&w1=${encodeURIComponent(w1.brand + ' ' + w1.name)}&w2=${encodeURIComponent(w2.brand + ' ' + w2.name)}`, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${w1.brand} ${w1.name} vs ${w2.brand} ${w2.name}: Which is Better?`,
       description: description,
-      images: [`https://watchvswatch.com/api/og?type=compare&w1=${encodeURIComponent(w1.brand + ' ' + w1.name)}&w2=${encodeURIComponent(w2.brand + ' ' + w2.name)}`],
     },
   }
 }
@@ -324,6 +323,11 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
             </span>
           )}
         </p>
+
+        {/* Best For summary — top comparisons only */}
+        {tierEntry && tierEntry.priority >= 90 && (
+          <BestForBox w1={w1} w2={w2} />
+        )}
 
         {/* Main content with sidebar TOC */}
         <div className="flex gap-8">
