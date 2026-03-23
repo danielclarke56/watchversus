@@ -49,8 +49,9 @@
     },
     {
         "slug":  "omega-seamaster-300m-vs-tudor-pelagos-39",
-        "meta_description":  "Omega Seamaster 300M vs Tudor Pelagos 39: Analyze 300M thickness, helmet diving capability \u0026 movement reliability benchmarks.",
-        "hook_line":  "Deep-dive capability versus everyday versatility",
+        "meta_description":  "Omega Seamaster 300M vs Tudor Pelagos 39: Steel icon vs titanium tool. Compare 42mm Bond heritage with 39mm featherlight diver, WR, and value.",
+        "hook_line":  "Bond's steel icon meets titanium tool watch",
+        "verdict": "The Seamaster 300M is the showier watch — its ceramic wave dial and Bond pedigree command attention, but at 42mm and 13.6mm thick it wears big. The Pelagos 39 is the better pure tool watch: titanium construction makes it noticeably lighter, 500m WR doubles the Seamaster's rating, and the spring-loaded micro-adjust clasp is genuinely superior. The Pelagos also saves you roughly $1,300 at retail. Buy the Seamaster if you want a conversation-starting luxury diver with brand cachet; buy the Pelagos if you want the more capable, comfortable watch that disappears on your wrist.",
         "promoted":  true
     },
     {
@@ -177,6 +178,69 @@
         "slug":  "breitling-navitimer-b01-42-vs-omega-speedmaster-moonwatch",
         "meta_description":  "Omega Speedmaster Moonwatch vs Breitling Navitimer B01 42: Space icon vs aviation legend. Compare manual-wind Cal. 3861 vs in-house Caliber 01, moon history vs pilot heritage, Master Chronometer certification \u0026 value. The definitive chronograph comparison for serious collectors.",
         "hook_line":  "Moonwatch icon versus aviation legend",
+        "promoted":  true
+    },
+    {
+        "slug":  "omega-speedmaster-moonwatch-vs-tag-heuer-carrera-42",
+        "meta_description":  "Omega Speedmaster vs TAG Heuer Carrera 42: Manual-wind moon icon vs racing chronograph. Compare Cal. 3861 vs Heuer 02, heritage, and value.",
+        "hook_line":  "Moon history versus motorsport soul",
+        "verdict": "The Speedmaster is a manual-wind icon with unmatched heritage — it literally went to the moon. The Carrera counters with the Heuer 02 automatic, 80 hours of power reserve versus the Speedmaster's 50, and a column-wheel chronograph at a lower price. Where the Speedmaster demands the daily ritual of hand-winding, the Carrera is grab-and-go. The TAG also holds value worse on the secondary market, which matters if you're investment-minded. Buy the Speedmaster if heritage and collector credibility matter most; buy the Carrera if you want a more practical chronograph that saves you $1,500 and never needs winding.",
+        "promoted":  true
+    },
+    {
+        "slug":  "grand-seiko-sbga211-snowflake-vs-omega-aqua-terra-38",
+        "meta_description":  "Grand Seiko Snowflake vs Omega Aqua Terra 38: Spring Drive titanium vs Master Chronometer steel. Dial artistry, accuracy, and value compared.",
+        "hook_line":  "Spring Drive artistry meets Swiss versatility",
+        "verdict": "This is dial craftsmanship versus everyday polish. The Snowflake's textured white lacquer dial is genuinely breathtaking — no photo does it justice — and its Spring Drive movement achieves +/- 1 sec/day accuracy that embarrasses most Swiss movements. But at 41mm with long lugs, it's a bigger wear than the compact 38mm Aqua Terra, which slips under any cuff. The Aqua Terra's teak-pattern dial and 150m WR make it the more versatile daily watch, while the Snowflake is the connoisseur's choice. Buy the Snowflake if you prioritize finishing and movement innovation; buy the Aqua Terra if you need one watch that handles boardroom to beach without thinking.",
+        "promoted":  true
+    },
+    {
+        "slug":  "omega-aqua-terra-38-vs-rolex-datejust-36",
+        "meta_description":  "Omega Aqua Terra 38 vs Rolex Datejust 36: Swiss daily drivers compared. Teak dial vs fluted bezel, Cal. 8900 vs Cal. 3235, and resale value.",
+        "hook_line":  "The ultimate one-watch showdown",
+        "verdict": "Two of the best do-everything watches alive, separated by philosophy. The Datejust is the conservative icon — 36mm, cyclops lens, Jubilee bracelet, and Rolex resale that actually appreciates. The Aqua Terra is the modern alternative: 38mm with a teak-pattern dial, Master Chronometer certification, and 150m WR that beats the Datejust's 100m. The Omega saves you at least $1,300 at retail and depreciates less steeply than you'd think. Buy the Datejust if brand recognition and investment value are non-negotiable; buy the Aqua Terra if you want more watch for the money and don't need the crown on your wrist.",
+        "promoted":  true
+    },
+    {
+        "slug":  "omega-constellation-39-vs-rolex-datejust-36",
+        "meta_description":  "Omega Constellation 39 vs Rolex Datejust 36: Iconic dress watches compared. Claw design vs Cyclops, Cal. 8800 vs Cal. 3235, pricing and value.",
+        "hook_line":  "Two dress icons, wildly different value",
+        "verdict": "The Constellation is Omega's most underrated watch — those signature claws at 3 and 9 o'clock and the pie-pan dial give it a distinctive identity the Datejust's more conventional design can't match. Both pack Master Chronometer or Superlative Chronometer movements, but the Constellation starts around $5,000 versus the Datejust's $6,700 minimum. The Rolex wins decisively on resale and recognition. At 39mm versus 36mm, the Constellation suits larger wrists better while the Datejust remains the classic choice for compact elegance. Buy the Constellation if you want a dressier Omega that stands apart from the crowd; buy the Datejust if resale and universal recognition justify the premium.",
+        "promoted":  true
+    },
+    {
+        "slug":  "tudor-black-bay-58-vs-tudor-pelagos-39",
+        "meta_description":  "Tudor Black Bay 58 vs Pelagos 39: Steel vintage charm vs titanium dive tool. Compare weight, WR, bracelet design, and which Tudor diver fits you.",
+        "hook_line":  "Tudor's best divers go head to head",
+        "verdict": "Same brand, same 39mm diameter, completely different watches. The Black Bay 58 is the vintage-inspired charmer with gilt accents, a riveted bracelet, and 200m WR — it's the dressier diver. The Pelagos 39 is pure tool watch: titanium sheds significant weight, 500m WR is serious dive spec, and the self-adjusting clasp is class-leading. The BB58 saves you roughly $700 at retail, which sweetens its value proposition. Buy the Black Bay 58 if you want a versatile vintage-styled diver that pairs with a sport coat; buy the Pelagos if lightweight comfort and genuine dive capability are the priority.",
+        "promoted":  true
+    },
+    {
+        "slug":  "omega-aqua-terra-38-vs-omega-constellation-39",
+        "meta_description":  "Omega Aqua Terra 38 vs Constellation 39: Omega's dress watches compared. Teak vs pie-pan dial, sizing, sportiness, and which suits your style.",
+        "hook_line":  "Omega's dress siblings battle it out",
+        "verdict": "A family rivalry where the differences are real. The Aqua Terra 38 is the sportier sibling — its teak-pattern dial and 150m WR give it genuine versatility from office to weekend. The Constellation 39 is the dressier choice with its signature claw design and pie-pan dial, though at only 100m WR it's more conservative. The Aqua Terra runs the superior Cal. 8900 versus the Constellation's 8800, and its 38mm case is actually more wrist-friendly despite the Constellation's 39mm. Buy the Aqua Terra if you want one watch that handles everything; buy the Constellation if you want a distinctive dress piece with more wrist presence.",
+        "promoted":  true
+    },
+    {
+        "slug":  "seiko-prospex-sbdc101-vs-seiko-prospex-spb143",
+        "meta_description":  "Seiko SBDC101 vs SPB143: Two Prospex divers with the same 6R35 movement. Compare Willard cushion case vs 62MAS heritage, dial design, and fit.",
+        "hook_line":  "Seiko's best divers under a grand",
+        "verdict": "Same 6R35 movement, same 40.5mm diameter, same 200m WR — the difference is pure design DNA. The SPB143 channels the elegant 62MAS with a slim bezel and vintage proportions that photograph beautifully. The SBDC101 Willard has an aggressive cushion case with crown-guard shoulders that reads bolder on wrist. The SPB143 comes on silicone and costs about $100 more; the SBDC101's steel bracelet is a better out-of-box package. Both share Seiko's chapter ring alignment lottery. Buy the SPB143 if you want the refined, vintage-inspired diver; buy the SBDC101 if you prefer a chunkier tool-watch presence and want to save a few dollars.",
+        "promoted":  true
+    },
+    {
+        "slug":  "longines-master-collection-40-vs-seiko-presage-spb167",
+        "meta_description":  "Longines Master Collection 40 vs Seiko Presage SPB167: Swiss vs Japanese dress watches under $2K. Compare movements, dials, complications, and value.",
+        "hook_line":  "Best dressed watches under two grand",
+        "verdict": "The Longines delivers Swiss heritage at a price that punches above its weight — its L899 movement with 64-hour power reserve and moonphase complication outspecs the Presage's 6R55 with just 45 hours. At only 10mm thick versus the Seiko's 12.7mm, the Master Collection actually wears like a proper dress watch. But the Presage's cocktail-inspired dial is arguably more eye-catching, and at $500-600 less, it's the better entry point. The Longines' 30m WR is a genuine weakness — the Presage's 100m means less worry. Buy the Longines if you want Swiss pedigree and a slimmer profile; buy the Presage if dial drama and water resistance matter more than brand.",
+        "promoted":  true
+    },
+    {
+        "slug":  "grand-seiko-sbgw231-vs-rolex-datejust-36",
+        "meta_description":  "Grand Seiko SBGW231 vs Rolex Datejust 36: Manual-wind purist vs automatic icon. Compare Zaratsu finishing, sizing, resale, and craftsmanship.",
+        "hook_line":  "The connoisseur's choice versus the icon",
+        "verdict": "This is the watch enthusiast's litmus test. The SBGW231 is a 37mm manual-wind dress watch with Zaratsu polishing that rivals watches at three times its $4,500 price — it's the insider's pick. The Datejust is the universal icon: automatic, cyclops date, Jubilee bracelet, and resale value that no Grand Seiko can touch. The GS is thinner at 10.8mm and cheaper by over $2,000, but its 50m WR and leather strap limit its versatility. Buy the SBGW231 if you value finishing and the ritual of hand-winding over brand recognition; buy the Datejust if you want the watch that everyone recognizes and that holds its value like a vault.",
         "promoted":  true
     }
 ]
