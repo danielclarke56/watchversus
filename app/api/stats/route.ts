@@ -15,9 +15,9 @@ interface VoteStat {
 
 export async function GET() {
   const redis = getRedis()
-  const stats: VoteStat[] = []
-
-  for (const tier of comparisonTiers) {
+  
+  // Fetch all vote data in parallel
+  const statsPromises = comparisonTiers.map(async (tier) => {
     const slug = `${tier.slug1}-vs-${tier.slug2}`
     let watch1 = 0
     let watch2 = 0
@@ -34,15 +34,17 @@ export async function GET() {
       }
     }
 
-    stats.push({
+    return {
       slug,
       slug1: tier.slug1,
       slug2: tier.slug2,
       watch1,
       watch2,
       total: watch1 + watch2,
-    })
-  }
+    }
+  })
+
+  const stats = await Promise.all(statsPromises)
 
   return NextResponse.json({ stats })
 }

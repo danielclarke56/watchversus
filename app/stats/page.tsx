@@ -8,12 +8,12 @@ export const revalidate = 300
 export const metadata: Metadata = {
   title: 'Watch Comparison Stats & Trends | WatchVsWatch',
   description:
-    'Live community voting data across 121 watch comparisons. See the most voted matchups, biggest community consensus picks, and trending comparisons on WatchVsWatch.',
+    `Live community voting data across ${comparisonTiers.length} watch comparisons. See the most voted matchups, biggest community consensus picks, and trending comparisons on WatchVsWatch.`,
   alternates: { canonical: 'https://watchvswatch.com/stats' },
   openGraph: {
     title: 'Watch Comparison Stats & Trends | WatchVsWatch',
     description:
-      'Live community voting data across 121 watch comparisons. Most voted, most lopsided, and trending matchups.',
+      `Live community voting data across ${comparisonTiers.length} watch comparisons. Most voted, most lopsided, and trending matchups.`,
     url: 'https://watchvswatch.com/stats',
     type: 'website',
   },

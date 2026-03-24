@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
@@ -147,6 +147,12 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
   const w2 = getWatchBySlug(slug2)
 
   if (!w1 || !w2) notFound()
+
+  // Check if URL is in canonical order; redirect if not
+  const tier = getComparisonTier(slug1, slug2)
+  if (tier && params.slug !== `${tier.slug1}-vs-${tier.slug2}`) {
+    redirect(`/compare/${tier.slug1}-vs-${tier.slug2}`)
+  }
 
   // Tier data for this comparison
   const tierEntry = getComparisonTier(slug1, slug2)
