@@ -1,0 +1,5 @@
+export { default as WatchRecommendation } from './WatchRecommendation'
+export { default as ComparisonTable } from './ComparisonTable'
+export { default as Callout } from './Callout'
+export { default as PullQuote } from './PullQuote'
+export { default as ProsCons } from './ProsCons'

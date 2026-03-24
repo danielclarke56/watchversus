@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { guides } from '@/lib/guideData'
+import { guides, type Guide } from '@/lib/guideData'
 import { watches } from '@/lib/watches'
+import { getAllMdxGuideListings } from '@/lib/mdxGuides'
 import GuidesClient from './GuidesClient'
 
 export const metadata: Metadata = {
@@ -26,6 +27,26 @@ export const metadata: Metadata = {
 }
 
 export default function GuidesPage() {
+  // Merge MDX guides with legacy guides (MDX overrides legacy for same slug)
+  const legacySlugs = new Set(guides.map((g) => g.slug))
+  const mdxListings = getAllMdxGuideListings()
+  const mdxOnlyGuides: Guide[] = mdxListings
+    .filter((m) => !legacySlugs.has(m.slug))
+    .map((m) => ({
+      slug: m.slug,
+      title: m.title,
+      description: m.description,
+      h1: m.h1,
+      intro: m.description,
+      emoji: m.emoji,
+      tagline: m.tagline,
+      recommendations: m.recommendations ?? [],
+      buyingGuide: [],
+      faq: [],
+      conclusion: '',
+    }))
+  const mergedGuides = [...guides, ...mdxOnlyGuides]
+
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -55,7 +76,7 @@ export default function GuidesPage() {
         Each guide includes expert picks, head-to-head comparisons, and a buying checklist.
       </p>
 
-      <GuidesClient guides={guides} watches={watches} />
+      <GuidesClient guides={mergedGuides} watches={watches} />
     </div>
   )
 }

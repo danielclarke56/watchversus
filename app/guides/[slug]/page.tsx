@@ -6,8 +6,7 @@ import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getRelatedGuidesByBrand } from '@/lib/relatedContent'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
-import { getMdxGuideSlugs } from '@/lib/mdxGuides'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getMdxGuideSlugs, hasMdxGuide, getMdxGuide } from '@/lib/mdxGuides'
 import MdxGuidePage from './MdxGuidePage'
 
 export async function generateStaticParams() {
@@ -20,30 +19,41 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const guide = guides.find((g) => g.slug === params.slug)
-  if (!guide) return {}
+
+  // Fallback to MDX frontmatter if no legacy guide
+  const title = guide?.title ?? getMdxGuide(params.slug)?.frontmatter.title
+  const description = guide?.description ?? getMdxGuide(params.slug)?.frontmatter.description
+  if (!title) return {}
+
   return {
-    title: guide.title,
-    description: guide.description,
+    title,
+    description,
     alternates: {
-      canonical: `https://watchvswatch.com/guides/${guide.slug}`,
+      canonical: `https://watchvswatch.com/guides/${params.slug}`,
     },
     openGraph: {
-      title: `${guide.title} | WatchVsWatch`,
-      description: guide.description,
-      url: `https://watchvswatch.com/guides/${guide.slug}`,
+      title: `${title} | WatchVsWatch`,
+      description: description ?? '',
+      url: `https://watchvswatch.com/guides/${params.slug}`,
       type: 'article',
-      images: [{ url: `https://watchvswatch.com/api/og?type=guide&title=${encodeURIComponent(guide.title)}`, width: 1200, height: 630 }],
+      images: [{ url: `https://watchvswatch.com/api/og?type=guide&title=${encodeURIComponent(title)}`, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: guide.title,
-      description: guide.description.slice(0, 200),
-      images: [`https://watchvswatch.com/api/og?type=guide&title=${encodeURIComponent(guide.title)}`],
+      title,
+      description: (description ?? '').slice(0, 200),
+      images: [`https://watchvswatch.com/api/og?type=guide&title=${encodeURIComponent(title)}`],
     },
   }
 }
 
 export default function GuidePage({ params }: { params: { slug: string } }) {
+  // MDX guides take priority
+  if (hasMdxGuide(params.slug)) {
+    const mdxGuide = getMdxGuide(params.slug)
+    if (mdxGuide) return <MdxGuidePage mdxGuide={mdxGuide} />
+  }
+
   const guide = guides.find((g) => g.slug === params.slug)
   if (!guide) notFound()
 
