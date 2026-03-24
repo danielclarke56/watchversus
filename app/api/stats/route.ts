@@ -4,15 +4,6 @@ import { comparisonTiers } from '@/lib/watches'
 
 export const revalidate = 300 // cache for 5 minutes
 
-interface VoteStat {
-  slug: string
-  slug1: string
-  slug2: string
-  watch1: number
-  watch2: number
-  total: number
-}
-
 export async function GET() {
   const redis = getRedis()
   

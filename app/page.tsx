@@ -29,6 +29,10 @@ const faqItems = [
     q: 'Can WatchVsWatch help me choose my first watch?',
     a: 'Absolutely. Take our Watch Finder Quiz to get a personalised recommendation in under a minute, or browse our buying guides organised by budget, style, and occasion — whether your budget is $100 or $10,000.',
   },
+  {
+    q: 'Does WatchVsWatch have watch buying guides?',
+    a: 'Yes. WatchVsWatch publishes independent buying guides organised by budget (best watches under $500, under $1,000, under $5,000), by style (dive watches, dress watches, chronographs, field watches), and by occasion. Each guide includes curated picks with specs and a clear recommendation — no affiliate links and no sponsored placements.',
+  },
 ]
 
 const faqJsonLd = {
@@ -50,8 +54,29 @@ const organizationJsonLd = {
   name: 'WatchVsWatch',
   url: 'https://watchvswatch.com',
   logo: 'https://watchvswatch.com/icon.png',
-  description: 'Independent watch comparison platform — compare specs, community ratings, and expert verdicts side by side.',
+  description: 'WatchVsWatch is an independent watch research resource covering side-by-side watch comparisons, buying guides by budget and style, detailed watch profiles, community ratings, and a Watch Finder Quiz. It covers watches at every price point from Seiko and Casio to Rolex and Patek Philippe, with no affiliate links or sponsored content.',
+  knowsAbout: [
+    'Watch comparisons', 'Watch buying guides', 'Watch specifications', 'Luxury watches',
+    'Dive watches', 'Dress watches', 'Chronograph watches', 'Watch reviews',
+    'Watch recommendations', 'Rolex', 'Omega', 'Tudor', 'Seiko', 'TAG Heuer', 'Grand Seiko',
+  ],
   sameAs: [],
+}
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'WatchVsWatch',
+  url: 'https://watchvswatch.com',
+  description: 'Independent watch research resource: comparisons, buying guides, watch profiles, and the Watch Finder Quiz.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://watchvswatch.com/watches?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
 }
 
 const featuredComparisons: {
@@ -156,30 +181,30 @@ const topBrands = ['Rolex', 'Omega', 'Tudor', 'Seiko', 'TAG Heuer', 'Grand Seiko
 
 // How it works steps
 const howItWorksSteps = [
-  { icon: '🔍', title: 'Pick Two Watches', desc: 'Search or browse our database of 57+ watches from top brands.' },
-  { icon: '📊', title: 'Compare Specs & Votes', desc: 'See side-by-side specs, community ratings, and real-world differences.' },
-  { icon: '✅', title: 'Read the Verdict', desc: 'Get an expert summary of who each watch is best for — and decide.' },
+  { icon: '🔍', title: 'Research Any Watch', desc: 'Browse 50+ watch profiles with full specs, pros & cons, and community ratings.' },
+  { icon: '⚔️', title: 'Compare Side by Side', desc: 'Run any head-to-head matchup: specs, real-world differences, community votes, and an expert verdict.' },
+  { icon: '✅', title: 'Buy With Confidence', desc: 'Use buying guides by budget and style, or take the Watch Finder Quiz for a personalised pick in under a minute.' },
 ]
 
 export const metadata: Metadata = {
-  title: 'Watch Comparisons: Rolex vs Omega, Tudor vs Seiko & More | WatchVsWatch',
+  title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
   description:
-    `Compare ${comparisonTiers.length}+ watches — Rolex vs Omega, Tudor vs Seiko, Breitling & more. Specs, verdicts, community ratings. No affiliate links. Find your perfect watch.`,
+    'The independent watch research resource. Compare watches side by side, explore buying guides, use the Watch Finder Quiz, and browse full specs for 50+ watches. No affiliate links. No sponsored content.',
   alternates: {
     canonical: 'https://watchvswatch.com',
   },
   openGraph: {
     type: 'website',
     siteName: 'WatchVsWatch',
-    title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
-    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups. Every budget, every style.`,
+    title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
+    description: 'Independent watch research: side-by-side comparisons, buying guides by budget and style, Watch Finder Quiz, and detailed watch profiles. Every price point, no affiliate links.',
     url: 'https://watchvswatch.com',
     images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Compare+Watches+Side+by+Side', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
-    description: `Side-by-side specs, community votes, and expert verdicts for ${comparisonTiers.length}+ watch matchups.`,
+    title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
+    description: 'Independent watch research: side-by-side comparisons, buying guides by budget and style, Watch Finder Quiz, and detailed watch profiles. Every price point, no affiliate links.',
   },
 }
 
@@ -197,6 +222,10 @@ export default function HomePage() {
       />
       <script
         type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
 
@@ -209,10 +238,10 @@ export default function HomePage() {
         <Container className="py-10 sm:py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-textPrimary mb-6 leading-tight tracking-tight">
-              Compare Watches Side by Side
+              Find, Compare &amp; Choose Your Next Watch
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-textSecond mb-8 leading-relaxed max-w-2xl mx-auto">
-              {comparisonTiers.length}+ head-to-head matchups with specs, community votes, and expert verdicts — from Seiko and Tissot to Rolex and Patek Philippe, at every price point.
+              Side-by-side comparisons, buying guides for every budget, detailed watch profiles, and a personalised Watch Finder Quiz — all independent, no affiliate links.
             </p>
 
             {/* Search Input — primary CTA */}
@@ -493,44 +522,20 @@ export default function HomePage() {
         <Container>
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-6">
-              The Independent Watch Comparison Platform
+              Your Independent Watch Research Resource
             </h2>
             <div className="prose prose-lg text-textSecond space-y-4">
               <p>
-                Choosing a watch is one of the most personal buying decisions you can make — and often one of
-                the most confusing. WatchVsWatch is an independent watch comparison site built to cut through
-                the noise. Whether you&apos;re weighing up Rolex vs Omega, comparing Seiko vs Orient, deciding
-                between a Hamilton Khaki and a Tissot PRX, or using a watch buying guide to narrow down your
-                budget, every comparison on this site gives you the data and context you need to choose with
-                confidence.
+                WatchVsWatch is an independent watch research resource covering every stage of the watch-buying journey — from initial research through to a confident purchase decision. Whether you are comparing Rolex vs Omega, looking for the best dive watches under $5,000, using the Watch Finder Quiz to narrow down a budget, or reading a full brand breakdown, everything on this site is editorially independent with no affiliate links and no sponsored placements.
               </p>
               <p>
-                What makes WatchVsWatch different is straightforward: no affiliate links, no sponsored
-                placements, and no brand partnerships that influence what we write. When you compare watch
-                specs here, you&apos;re looking at verified data — movement type, case dimensions, water
-                resistance rating, power reserve, and retail price — not marketing copy dressed up as editorial.
-                Community ratings are real votes from watch enthusiasts on the platform, not seeded scores.
-                Editorial verdicts are written independently, with no commercial interest in which watch you
-                choose.
+                The site covers four core content areas: <strong>watch comparisons</strong> (side-by-side specs, community votes, and expert verdicts), <strong>buying guides</strong> (curated recommendations by budget, style, and occasion), <strong>watch profiles</strong> (individual watch pages with verified specs, ratings, and pros &amp; cons), and the <strong>Watch Finder Quiz</strong> (five questions to a personalised recommendation).
               </p>
               <p>
-                <strong>How our comparison methodology works:</strong> Specifications are sourced directly from
-                manufacturer documentation and official product pages, then cross-referenced for accuracy. Each
-                comparison page presents those specs side by side so you can compare watch specs at a glance,
-                without hunting across multiple brand sites. Community preference data is aggregated from votes
-                cast by registered users. Verdict copy is written editorially — summarising which watch suits
-                which buyer based on use case, build quality, and value, not commission potential.
+                <strong>What makes WatchVsWatch different:</strong> specifications are sourced directly from manufacturer documentation and cross-referenced for accuracy. Community ratings are real votes from watch enthusiasts — not seeded scores. Editorial verdicts are written independently with no commercial interest in which watch you choose. Buying guide recommendations are based on build quality, value, and use-case fit — not commission rates.
               </p>
               <p>
-                Watch buying guides on WatchVsWatch are organised by budget, style, and occasion — from under
-                $500 all the way into luxury territory. If you&apos;re not sure where to start, the Watch
-                Finder Quiz asks five quick questions and returns a personalised recommendation in under a
-                minute.
-              </p>
-              <p>
-                We cover watches at every price point: Seiko, Casio, Orient, Citizen, Tissot, Hamilton,
-                Longines, TAG Heuer, Oris, Tudor, Omega, Rolex, Breitling, IWC, Cartier, Panerai, Grand
-                Seiko, and more — with new comparisons added regularly as the database grows.
+                Watch brands covered include Seiko, Casio, Orient, Citizen, Tissot, Hamilton, Longines, TAG Heuer, Oris, Tudor, Omega, Rolex, Breitling, IWC, Cartier, Panerai, Grand Seiko, and more — at every price point from under $100 to six-figure luxury, with new watches and comparisons added regularly.
               </p>
             </div>
           </div>
@@ -564,7 +569,7 @@ export default function HomePage() {
       <section className="bg-textPrimary">
         <Container className="py-16 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Still deciding? Start exploring.
+            Ready to find your next watch?
           </h2>
           <div className="flex flex-wrap gap-4 justify-center">
             <Button
