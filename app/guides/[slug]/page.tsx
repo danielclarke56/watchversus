@@ -6,9 +6,16 @@ import { watches, popularComparisons, formatPrice } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getRelatedGuidesByBrand } from '@/lib/relatedContent'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
+import { getMdxGuideSlugs } from '@/lib/mdxGuides'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import MdxGuidePage from './MdxGuidePage'
 
 export async function generateStaticParams() {
-  return guides.map((g) => ({ slug: g.slug }))
+  const legacySlugs = guides.map((guide) => ({ slug: guide.slug }))
+  const mdxSlugs = getMdxGuideSlugs()
+    .filter((s) => !guides.some((g) => g.slug === s))
+    .map((s) => ({ slug: s }))
+  return [...legacySlugs, ...mdxSlugs]
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

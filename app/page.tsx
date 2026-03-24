@@ -164,7 +164,7 @@ const howItWorksSteps = [
 export const metadata: Metadata = {
   title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
   description:
-    `Compare ${comparisonTiers.length}+ watch matchups side by side — from Seiko and Hamilton to Rolex and Omega. Specs, real differences, community votes, and buying guides to help you choose the right watch at any budget.`,
+    `Compare ${comparisonTiers.length}+ watches head-to-head — Rolex vs Omega, Seiko vs Orient & more. Real specs, community ratings, no sponsored content. Find your watch.`,
   alternates: {
     canonical: 'https://watchvswatch.com',
   },
@@ -483,8 +483,7 @@ export default function HomePage() {
       <div className="border-y border-border py-8">
         <Container>
           <p className="text-textSecond text-sm text-center">
-            {watches.length} watches · {comparisonTiers.length}+ comparisons · Curated guides · Community-driven ·
-            No sponsored content
+            {watches.length} watches &middot; {comparisonTiers.length}+ head-to-head comparisons &middot; Independent &amp; unbiased &middot; Community-powered ratings &middot; Real specs from manufacturers
           </p>
         </Container>
       </div>
@@ -498,25 +497,40 @@ export default function HomePage() {
             </h2>
             <div className="prose prose-lg text-textSecond space-y-4">
               <p>
-                Whether you&apos;re choosing between a Seiko Presage and a Hamilton Khaki Field,
-                weighing up the Rolex Submariner against the Omega Seamaster, or deciding if a
-                Grand Seiko is worth the step up from a Tissot PRX — WatchVsWatch puts the
-                details that matter into clear, head-to-head comparisons. Movement type, water
-                resistance, case dimensions, price, and real-world wearability, all in one place.
+                Choosing a watch is one of the most personal buying decisions you can make — and often one of
+                the most confusing. WatchVsWatch is an independent watch comparison site built to cut through
+                the noise. Whether you&apos;re weighing up Rolex vs Omega, comparing Seiko vs Orient, deciding
+                between a Hamilton Khaki and a Tissot PRX, or using a watch buying guide to narrow down your
+                budget, every comparison on this site gives you the data and context you need to choose with
+                confidence.
               </p>
               <p>
-                Every matchup includes verified specifications sourced from manufacturer data, an
-                editorial breakdown of what sets each watch apart, and community votes from watch
-                enthusiasts who own or have tried the watches in question. We cover brands at
-                every price point — Seiko, Casio, Orient, Tissot, Hamilton, Longines, Oris,
-                Tudor, Omega, Rolex, Breitling, TAG Heuer, IWC, Cartier, Panerai, Grand Seiko,
-                and more — with new watches added regularly.
+                What makes WatchVsWatch different is straightforward: no affiliate links, no sponsored
+                placements, and no brand partnerships that influence what we write. When you compare watch
+                specs here, you&apos;re looking at verified data — movement type, case dimensions, water
+                resistance rating, power reserve, and retail price — not marketing copy dressed up as editorial.
+                Community ratings are real votes from watch enthusiasts on the platform, not seeded scores.
+                Editorial verdicts are written independently, with no commercial interest in which watch you
+                choose.
               </p>
               <p>
-                Unlike review sites that rely on affiliate commissions, WatchVsWatch has no
-                affiliate links and no sponsored placements. Our recommendations are based solely
-                on specs, value, and community feedback — so whether you&apos;re spending $200 or
-                $20,000, you can trust what you read.
+                <strong>How our comparison methodology works:</strong> Specifications are sourced directly from
+                manufacturer documentation and official product pages, then cross-referenced for accuracy. Each
+                comparison page presents those specs side by side so you can compare watch specs at a glance,
+                without hunting across multiple brand sites. Community preference data is aggregated from votes
+                cast by registered users. Verdict copy is written editorially — summarising which watch suits
+                which buyer based on use case, build quality, and value, not commission potential.
+              </p>
+              <p>
+                Watch buying guides on WatchVsWatch are organised by budget, style, and occasion — from under
+                $500 all the way into luxury territory. If you&apos;re not sure where to start, the Watch
+                Finder Quiz asks five quick questions and returns a personalised recommendation in under a
+                minute.
+              </p>
+              <p>
+                We cover watches at every price point: Seiko, Casio, Orient, Citizen, Tissot, Hamilton,
+                Longines, TAG Heuer, Oris, Tudor, Omega, Rolex, Breitling, IWC, Cartier, Panerai, Grand
+                Seiko, and more — with new comparisons added regularly as the database grows.
               </p>
             </div>
           </div>
