@@ -7,6 +7,8 @@ interface VoteSectionProps {
   slug: string
   watch1Name: string
   watch2Name: string
+  watch1Brand: string
+  watch2Brand: string
 }
 
 interface VoteData {
@@ -15,7 +17,7 @@ interface VoteData {
   total: number
 }
 
-export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectionProps) {
+export default function VoteSection({ slug, watch1Name, watch2Name, watch1Brand, watch2Brand }: VoteSectionProps) {
   const [votes, setVotes] = useState<VoteData>({ watch1: 0, watch2: 0, total: 0 })
   const [voted, setVoted] = useState<'watch1' | 'watch2' | null>(null)
   const [loading, setLoading] = useState(true)
@@ -59,6 +61,9 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
   const pct2 = 100 - pct1
   const votedName = voted === 'watch1' ? watch1Name : voted === 'watch2' ? watch2Name : null
 
+  const leadingName = pct1 >= pct2 ? `${watch1Brand} ${watch1Name}` : `${watch2Brand} ${watch2Name}`
+  const leadingPct = Math.max(pct1, pct2)
+
   return (
     <div className="rounded-sm border border-borderStrong bg-neutral p-5 mt-2">
       <div className="flex items-center gap-2 mb-1">
@@ -69,8 +74,21 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
         )}
       </div>
 
+      {/* Citation-ready headline when votes exist */}
+      {votes.total >= 3 && !loading && (
+        <p className="text-sm text-textPrimary font-semibold mt-2 mb-3 leading-snug">
+          In {votes.total.toLocaleString()} head-to-head votes on WatchVsWatch, {leadingName} leads with {leadingPct}%.
+        </p>
+      )}
+
+      {votes.total > 0 && votes.total < 3 && !loading && (
+        <p className="text-xs text-textSecond mt-1 mb-3">
+          Early results from {votes.total} vote{votes.total !== 1 ? 's' : ''} — cast yours to help the community decide.
+        </p>
+      )}
+
       {voted && votedName && (
-        <p className="text-xs text-accent font-semibold mb-3 mt-1">
+        <p className="text-xs text-accent font-semibold mb-3">
           You voted for {votedName}
         </p>
       )}
@@ -113,18 +131,22 @@ export default function VoteSection({ slug, watch1Name, watch2Name }: VoteSectio
             <div className="bg-borderStrong transition-all duration-500" style={{ width: `${pct2}%` }} />
           </div>
           <div className="flex justify-between text-xs mt-1.5">
-            <span className="text-accent font-bold">{pct1}%</span>
-            <span className="text-textMuted font-bold">{pct2}%</span>
+            <span className="text-accent font-bold">{watch1Name} {pct1}%</span>
+            <span className="text-textMuted font-bold">{pct2}% {watch2Name}</span>
           </div>
 
           {votes.total >= 5 && (pct1 >= 55 || pct2 >= 55) && (
             <div className="mt-4 p-3 rounded-sm bg-winnerBg border border-winner/30">
               <p className="text-sm font-bold text-winner text-center">
-                {pct1 >= 55 ? watch1Name : watch2Name} is leading ({pct1 >= 55 ? pct1 : pct2}% of {votes.total} vote{votes.total !== 1 ? 's' : ''})
+                {pct1 >= 55 ? pct1 : pct2}% of the WatchVsWatch community prefers the {pct1 >= 55 ? `${watch1Brand} ${watch1Name}` : `${watch2Brand} ${watch2Name}`} — based on {votes.total.toLocaleString()} votes
               </p>
             </div>
           )}
         </>
+      )}
+
+      {votes.total === 0 && !loading && (
+        <p className="text-xs text-textMuted mt-2">Be the first to vote in this comparison.</p>
       )}
     </div>
   )

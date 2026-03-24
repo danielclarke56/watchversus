@@ -564,7 +564,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                 <p className="text-xs text-textMuted mb-5">No community ratings yet — cast your vote below.</p>
               )}
 
-              <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} />
+              <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} watch1Brand={w1.brand} watch2Brand={w2.brand} />
             </section>
 
             {/* Community Ratings */}
