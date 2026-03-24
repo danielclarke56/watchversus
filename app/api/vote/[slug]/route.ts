@@ -3,8 +3,6 @@ import { auth } from '@clerk/nextjs/server'
 import { isValidSlug } from '@/lib/validation'
 import { getRedis } from '@/lib/redis'
 
-type VoteData = { watch1: number; watch2: number; total: number; userVote: 'watch1' | 'watch2' | null }
-
 // In-memory fallback for local dev when Redis env vars not set
 const memoryStore = new Map<string, { watch1: number; watch2: number }>()
 const memoryUserVotes = new Map<string, string>() // key: userId:slug, value: choice
