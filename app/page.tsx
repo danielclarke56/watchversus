@@ -162,9 +162,9 @@ const howItWorksSteps = [
 ]
 
 export const metadata: Metadata = {
-  title: 'Compare Watches Side by Side — Specs, Reviews & Verdicts | WatchVsWatch',
+  title: 'Watch Comparisons: Rolex vs Omega, Tudor vs Seiko & More | WatchVsWatch',
   description:
-    `Compare ${comparisonTiers.length}+ watches head-to-head — Rolex vs Omega, Seiko vs Orient & more. Real specs, community ratings, no sponsored content. Find your watch.`,
+    `Compare ${comparisonTiers.length}+ watches — Rolex vs Omega, Tudor vs Seiko, Breitling & more. Specs, verdicts, community ratings. No affiliate links. Find your perfect watch.`,
   alternates: {
     canonical: 'https://watchvswatch.com',
   },

@@ -24,6 +24,18 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // www→non-www canonical redirect (GSC SEO fix)
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www\\.watchvswatch\\.com',
+          },
+        ],
+        destination: 'https://watchvswatch.com/:path*',
+        permanent: true,
+      },
       // Blog retired — redirect all /blog/* to /guides
       {
         source: '/blog',
