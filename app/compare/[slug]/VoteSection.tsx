@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useUser, useClerk } from '@clerk/nextjs'
 import { VoteButton } from '@/components/ui/VoteButton'
 
 interface VoteSectionProps {
@@ -15,34 +16,61 @@ interface VoteData {
   watch1: number
   watch2: number
   total: number
+  userVote: 'watch1' | 'watch2' | null
 }
 
 export default function VoteSection({ slug, watch1Name, watch2Name, watch1Brand, watch2Brand }: VoteSectionProps) {
-  const [votes, setVotes] = useState<VoteData>({ watch1: 0, watch2: 0, total: 0 })
+  const { user, isLoaded } = useUser()
+  const { openSignIn } = useClerk()
+  const [votes, setVotes] = useState<VoteData>({ watch1: 0, watch2: 0, total: 0, userVote: null })
   const [voted, setVoted] = useState<'watch1' | 'watch2' | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem(`vote-${slug}`) as 'watch1' | 'watch2' | null
-    setVoted(stored)
+    if (!isLoaded) return
 
     fetch(`/api/vote/${slug}`)
       .then((r) => r.json())
-      .then((data: VoteData) => setVotes(data))
+      .then((data: VoteData) => {
+        setVotes(data)
+        setVoted(data.userVote)
+      })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [slug])
+  }, [slug, isLoaded])
 
   async function handleVote(choice: 'watch1' | 'watch2') {
-    if (voted) return
+    if (!user) {
+      openSignIn()
+      return
+    }
 
-    setVotes((prev) => ({
-      watch1: prev.watch1 + (choice === 'watch1' ? 1 : 0),
-      watch2: prev.watch2 + (choice === 'watch2' ? 1 : 0),
-      total: prev.total + 1,
-    }))
+    // Optimistic update
+    const oldVoted = voted
     setVoted(choice)
-    localStorage.setItem(`vote-${slug}`, choice)
+    
+    if (oldVoted === choice) {
+      // No-op, already voted for this
+      return
+    }
+
+    if (oldVoted && oldVoted !== choice) {
+      // Changing vote: decrement old, increment new
+      setVotes((prev) => ({
+        watch1: prev.watch1 + (choice === 'watch1' ? 1 : 0) + (oldVoted === 'watch1' ? -1 : 0),
+        watch2: prev.watch2 + (choice === 'watch2' ? 1 : 0) + (oldVoted === 'watch2' ? -1 : 0),
+        total: prev.total,
+        userVote: choice,
+      }))
+    } else {
+      // New vote
+      setVotes((prev) => ({
+        watch1: prev.watch1 + (choice === 'watch1' ? 1 : 0),
+        watch2: prev.watch2 + (choice === 'watch2' ? 1 : 0),
+        total: prev.total + 1,
+        userVote: choice,
+      }))
+    }
 
     try {
       const res = await fetch(`/api/vote/${slug}`, {
@@ -50,10 +78,17 @@ export default function VoteSection({ slug, watch1Name, watch2Name, watch1Brand,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ choice }),
       })
+      if (!res.ok) {
+        // Revert optimistic update on error
+        setVoted(oldVoted)
+        const data: VoteData = await res.json()
+        setVotes(data)
+        return
+      }
       const data: VoteData = await res.json()
       setVotes(data)
     } catch {
-      // keep optimistic state on error
+      // Keep optimistic state on error
     }
   }
 
@@ -93,8 +128,17 @@ export default function VoteSection({ slug, watch1Name, watch2Name, watch1Brand,
         </p>
       )}
 
-      {loading ? (
+      {loading || !isLoaded ? (
         <div className="text-xs text-textMuted py-2">Loading...</div>
+      ) : !user ? (
+        <div className="my-3">
+          <button
+            onClick={() => openSignIn()}
+            className="w-full py-2 px-3 rounded-sm bg-accent text-white font-semibold text-sm hover:bg-accent/90 transition"
+          >
+            Sign in to vote
+          </button>
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 my-3">
           <VoteButton
@@ -103,11 +147,10 @@ export default function VoteSection({ slug, watch1Name, watch2Name, watch1Brand,
             votes={votes.watch1}
             userVote={voted === 'watch1' ? 'left' : voted === 'watch2' ? 'right' : null}
             onVote={(side) => {
-              if (voted) return
               const choice = side === 'left' ? 'watch1' : 'watch2'
               handleVote(choice)
             }}
-            disabled={voted !== null && voted !== 'watch1'}
+            disabled={false}
           />
           <VoteButton
             side="right"
@@ -115,11 +158,10 @@ export default function VoteSection({ slug, watch1Name, watch2Name, watch1Brand,
             votes={votes.watch2}
             userVote={voted === 'watch1' ? 'left' : voted === 'watch2' ? 'right' : null}
             onVote={(side) => {
-              if (voted) return
               const choice = side === 'left' ? 'watch1' : 'watch2'
               handleVote(choice)
             }}
-            disabled={voted !== null && voted !== 'watch2'}
+            disabled={false}
           />
         </div>
       )}
