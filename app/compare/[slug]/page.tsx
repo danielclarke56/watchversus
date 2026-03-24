@@ -307,6 +307,9 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
             <span>{w1.brand} {w1.name}</span>
             <span className="text-accent text-lg sm:text-2xl md:text-3xl mx-2">vs</span>
             <span>{w2.brand} {w2.name}</span>
+            <span className="block text-lg sm:text-2xl md:text-3xl text-textSecond font-semibold mt-1">
+              Which Is Better in {new Date().getFullYear()}?
+            </span>
           </h1>
           <p className="text-textSecond text-base md:text-lg">{hookLine || 'Complete head-to-head comparison'}</p>
           {tierEntry && tierEntry.tier === 1 && (
