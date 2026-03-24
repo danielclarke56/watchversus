@@ -2,10 +2,39 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { isValidSlug } from '@/lib/validation'
 import { getRedis } from '@/lib/redis'
+import { comparisonTiers } from '@/lib/watches'
 
 // In-memory fallback for local dev when Redis env vars not set
 const memoryStore = new Map<string, { watch1: number; watch2: number }>()
 const memoryUserVotes = new Map<string, string>() // key: userId:slug, value: choice
+
+/**
+ * Normalize a URL slug (which may be alphabetically sorted) to the tier's natural order.
+ * The canonical redirect sorts slugs alphabetically for URL canonicalization,
+ * but Redis keys are built from comparisonTiers using their natural slug order.
+ * This function maps the URL slug back to the tier's order to ensure Redis key consistency.
+ * 
+ * e.g. if tier is { slug1: "rolex-submariner-41", slug2: "omega-seamaster-300m" }
+ * but the URL is /compare/omega-seamaster-300m-vs-rolex-submariner-41 (alphabetically sorted),
+ * this function returns "rolex-submariner-41-vs-omega-seamaster-300m" (tier order)
+ */
+function normalizeSlug(urlSlug: string): string {
+  const vsIdx = urlSlug.indexOf('-vs-')
+  if (vsIdx === -1) return urlSlug
+
+  const s1 = urlSlug.slice(0, vsIdx)
+  const s2 = urlSlug.slice(vsIdx + 4)
+
+  // Find the matching tier (regardless of order in the URL)
+  const tier = comparisonTiers.find(t =>
+    (t.slug1 === s1 && t.slug2 === s2) || (t.slug1 === s2 && t.slug2 === s1)
+  )
+
+  if (!tier) return urlSlug
+
+  // Return the tier's natural order
+  return `${tier.slug1}-vs-${tier.slug2}`
+}
 
 async function getVotes(slug: string): Promise<{ watch1: number; watch2: number }> {
   try {
@@ -87,12 +116,15 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
   }
   
+  // Normalize slug from URL (alphabetically sorted) to tier's natural order
+  const slug = normalizeSlug(params.slug)
+  
   const { userId } = await auth()
-  const votes = await getVotes(params.slug)
+  const votes = await getVotes(slug)
   
   let userVote: 'watch1' | 'watch2' | null = null
   if (userId) {
-    userVote = await getUserVote(userId, params.slug)
+    userVote = await getUserVote(userId, slug)
   }
   
   return NextResponse.json({
@@ -110,6 +142,9 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
   }
 
+  // Normalize slug from URL (alphabetically sorted) to tier's natural order
+  const slug = normalizeSlug(params.slug)
+
   const { userId } = await auth()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -121,8 +156,8 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid choice' }, { status: 400 })
   }
 
-  const votes = await incrementVote(params.slug, choice, userId)
-  const userVote = await getUserVote(userId, params.slug)
+  const votes = await incrementVote(slug, choice, userId)
+  const userVote = await getUserVote(userId, slug)
   
   return NextResponse.json({
     ...votes,

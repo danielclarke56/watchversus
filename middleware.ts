@@ -2,15 +2,6 @@ import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Only activate Clerk middleware when the keys are present (e.g. in production).
-// Without this guard, every request fails with MIDDLEWARE_INVOCATION_FAILED when
-// the Clerk env vars are not set.
-const hasClerk =
-  !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-  !!process.env.CLERK_SECRET_KEY
-
-const clerkHandler = clerkMiddleware()
-
 /**
  * Redirect legacy root-level comparison URLs to /compare/ equivalents.
  * e.g. /rolex-air-king-vs-explorer/ → 301 → /compare/rolex-air-king-vs-explorer
@@ -63,7 +54,14 @@ function compareCanonicalRedirect(req: NextRequest): NextResponse | null {
   return NextResponse.redirect(url, { status: 301 })
 }
 
-export default function middleware(req: NextRequest) {
+export default clerkMiddleware((_auth, req) => {
+  // Only activate Clerk middleware when the keys are present (e.g. in production).
+  // Without this guard, every request fails with MIDDLEWARE_INVOCATION_FAILED when
+  // the Clerk env vars are not set.
+  const hasClerk =
+    !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    !!process.env.CLERK_SECRET_KEY
+
   // 1. Legacy root-level comparison URL redirect (redirect old indexed URLs)
   const legacyRedirect = legacyRootLevelRedirect(req)
   if (legacyRedirect) return legacyRedirect
@@ -72,11 +70,10 @@ export default function middleware(req: NextRequest) {
   const canonicalRedirect = compareCanonicalRedirect(req)
   if (canonicalRedirect) return canonicalRedirect
 
-  // 3. Clerk auth
+  // 3. Proceed to next middleware/route
   if (!hasClerk) return NextResponse.next()
-  // @ts-expect-error – clerkMiddleware returns a compatible handler
-  return clerkHandler(req)
-}
+  return NextResponse.next()
+})
 
 export const config = {
   matcher: [
