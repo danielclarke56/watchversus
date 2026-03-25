@@ -52,7 +52,7 @@ export default function AdminReviewsPage() {
     try {
       setProcessing(review.id)
       const response = await fetch(`/api/admin/reviews/${review.id}`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           watchSlug: review.watchSlug,
@@ -76,7 +76,7 @@ export default function AdminReviewsPage() {
     try {
       setProcessing(review.id)
       const response = await fetch(`/api/admin/reviews/${review.id}`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           watchSlug: review.watchSlug,

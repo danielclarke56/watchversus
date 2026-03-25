@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { approveReview, rejectReview, getReview } from '@/lib/reviews'
+import { approveReview, rejectReview } from '@/lib/reviews'
 
-interface ApprovalRequest {
-  watchSlug: string
+interface ApproveRejectBody {
   action: 'approve' | 'reject'
+  watchSlug: string
 }
 
 /**
- * POST /api/admin/reviews/[id]
- * Approve or reject a review (admin only)
+ * PATCH /api/admin/reviews/[id]
+ * Approve or reject a pending review (admin only)
  */
-export async function POST(
+export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -26,43 +26,54 @@ export async function POST(
       )
     }
 
-    const { id } = await params
-    const body: ApprovalRequest = await request.json()
+    const body: ApproveRejectBody = await request.json()
 
-    if (!body.watchSlug || !body.action) {
+    // Validation
+    if (!body.action || !['approve', 'reject'].includes(body.action)) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Action must be "approve" or "reject"' },
         { status: 400 }
       )
     }
 
-    if (body.action !== 'approve' && body.action !== 'reject') {
+    if (!body.watchSlug) {
       return NextResponse.json(
-        { error: 'Invalid action' },
+        { error: 'watchSlug is required' },
         { status: 400 }
       )
     }
 
-    // Verify review exists
-    const review = await getReview(body.watchSlug, id)
-    if (!review) {
+    const reviewId = params.id
+
+    if (!reviewId) {
       return NextResponse.json(
-        { error: 'Review not found' },
-        { status: 404 }
+        { error: 'Review ID is required' },
+        { status: 400 }
       )
     }
 
-    if (body.action === 'approve') {
-      await approveReview(body.watchSlug, id)
-    } else {
-      await rejectReview(body.watchSlug, id)
-    }
+    try {
+      if (body.action === 'approve') {
+        await approveReview(body.watchSlug, reviewId)
+      } else {
+        await rejectReview(body.watchSlug, reviewId)
+      }
 
-    return NextResponse.json({
-      message: `Review ${body.action}d successfully`,
-    })
+      return NextResponse.json(
+        { message: `Review ${body.action}d successfully` },
+        { status: 200 }
+      )
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Review not found') {
+        return NextResponse.json(
+          { error: 'Review not found' },
+          { status: 404 }
+        )
+      }
+      throw error
+    }
   } catch (error) {
-    console.error('Error processing review:', error)
+    console.error('Error approving/rejecting review:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
