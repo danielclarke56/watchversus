@@ -45,11 +45,21 @@ export function getBrandsInGuide(guide: Guide): BrandData[] {
 
 /**
  * Find other guides that share brands with the given guide
+ * Prefers explicit relatedGuideIds if available, falls back to brand-based search
  */
 export function getRelatedGuidesByBrand(guideSlug: string, excludeSlug?: string): Guide[] {
   const guide = guides.find((g) => g.slug === guideSlug)
   if (!guide) return []
 
+  // If the guide has explicit relatedGuideIds, use those
+  if (guide.relatedGuideIds && guide.relatedGuideIds.length > 0) {
+    return guide.relatedGuideIds
+      .map(id => guides.find(g => g.slug === id))
+      .filter((g): g is Guide => g !== undefined && g.slug !== excludeSlug)
+      .slice(0, 10) // Limit to max 10 related guides
+  }
+
+  // Fallback: find guides by shared brand
   const brandsInGuide = getBrandsInGuide(guide)
   const brandNames = brandsInGuide.map((b) => b.name)
 

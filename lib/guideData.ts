@@ -35,6 +35,7 @@ export interface Guide {
   faq: GuideFAQ[]
   paa?: GuideFAQ[]
   conclusion: string
+  relatedGuideIds?: string[]
 }
 
 export const guides: Guide[] = [
@@ -164,6 +165,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The under-$500 watch market is proof that great watchmaking is accessible to everyone. Whether you start with a Seiko 5 Sports as your gateway into mechanical watches or stretch to a preowned Tissot PRX for its integrated bracelet charm, you will find that watches in this range can genuinely satisfy - not as compromises, but as excellent products on their own terms. Compare your favourites side-by-side on our comparison tool to see how the specs stack up before you buy.",
+    relatedGuideIds: ["best-watches-under-1000", "best-dress-watches-under-500", "best-dive-watches-under-1000", "best-watches-for-beginners"],
   },
 
   {
@@ -304,6 +306,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The under-$1,000 watch market rewards the informed buyer. From Swiss manufacturing icons like Hamilton and Tissot to Japanese precision from Seiko Prospex and French microbrand artistry from Baltic, this price range covers more ground than any other tier in modern watchmaking. Use our comparison tool to put your shortlist head-to-head - see exactly how the specs, pricing, and community ratings compare before you decide.",
+    relatedGuideIds: ["best-watches-under-500", "best-dive-watches", "best-dress-watches", "best-field-watches", "best-sports-watches"],
   },
 
   {
@@ -460,6 +463,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "From the sub-$400 Seiko 5 Sports to the aspirational Rolex Submariner, the dive watch category offers the most complete spectrum of options in modern watchmaking. Whether you need a genuine tool watch for the ocean or the most versatile everyday watch in your collection, the right dive watch is here at every budget. Use our comparison pages to put your shortlist head-to-head with full specs and community ratings.",
+    relatedGuideIds: ["best-dive-watches-under-1000", "best-sports-watches", "best-watches-under-1000", "best-watches-under-3000"],
   },
 
   {
@@ -604,6 +608,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The dress watch category rewards patience and consideration more than any other. A great dress watch is a lifetime companion - the watch you pass on rather than trade. From the accessible Hamilton Jazzmaster at under $1,000 to the ethereal Grand Seiko Snowflake, each recommendation here stands on its own merits at its price point. Compare your shortlist on our side-by-side tool and discover exactly what separates them.",
+    relatedGuideIds: ["best-dress-watches-under-500", "best-field-watches", "best-pilot-watches"],
   },
 
   {
@@ -752,6 +757,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The field watch is the watch that works harder than any other. From the $250 Seiko 5 Sports that starts thousands of collecting journeys to the Rolex Explorer that ends them, the field watch category rewards those who prioritize function over decoration. Compare any watches in this guide head-to-head using our comparison tool - see exactly how specifications, community ratings, and pricing differ before you make your choice.",
+    relatedGuideIds: ["best-dress-watches", "best-pilot-watches", "best-sports-watches"],
   },
 
   {
@@ -888,6 +894,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The GMT complication transforms a watch from a simple timekeeping tool into a genuine instrument of global navigation - and the watches that do it best are among the most desirable in all of horology. Whether you choose the iconic Rolex GMT-Master II Pepsi, the exceptional-value Tudor Black Bay GMT, or the accessible Seiko Presage SPB167, compare them side-by-side on our tool to see exactly how specs, pricing, and community ratings differ.",
+    relatedGuideIds: ["best-watches-under-1000", "best-watches-under-3000", "best-field-watches", "best-dress-watches"],
   },
   {
     slug: "best-watches-under-3000",
@@ -998,6 +1005,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "Under $3,000, you enter territory where a single watch represents genuine engineering achievement rather than brand premium. Whether you choose the philosophical Swatch Sistem51, the legendary Seiko Prospex, the luxury entry point of Tag Heuer, or the Swiss horological tradition of Longines, every recommendation here will serve reliably and beautifully for decades. Compare your shortlist directly and discover which speaks to your style and values.",
+    relatedGuideIds: ["best-watches-under-1000", "best-watches-under-5000", "best-luxury-watches-under-10000", "best-pilot-watches", "best-chronograph-watches-under-5000"],
   },
   {
     slug: "best-watches-under-5000",
@@ -1108,6 +1116,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The $3,000-$5,000 range represents the entry point to true luxury watchmaking - where engineering investment, heritage, and complications converge. Whether you choose Tudor's tool-watch excellence, Longines' Swiss tradition, Nomos' German minimalism, or IWC's aviation heritage, you're acquiring watches with substance and longevity. Use our comparison tool to evaluate movement specifications, case details, and community ratings side-by-side.",
+    relatedGuideIds: ["best-watches-under-3000", "best-luxury-watches-under-10000", "best-chronograph-watches-under-5000", "best-sports-watches"],
   },
 
   {
@@ -1203,6 +1212,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The dive watch under $1,000 is where serious watchmaking meets accessibility. Whether you choose the Seiko Prospex's legendary reliability, the Christopher Ward's in-house movement refinement, the Baltic Aquascaphe's microbrand finishing, or the Tissot Seastar's Swiss professional capability, you will own a watch genuinely capable of both daily wear and actual diving. Use our comparison tool to see exactly how these watches compare on specs, movement, water resistance, and community ratings before you decide.",
+    relatedGuideIds: ["best-dive-watches", "best-watches-under-1000", "best-watches-under-3000"],
   },
 
   {
@@ -1306,6 +1316,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The dress watch under $500 proves that elegance is accessible to everyone. Whether you choose the Seiko Presage's exceptional engineering, Hamilton's Swiss heritage, or Frederique Constant's refined approach to affordable Swiss watchmaking, you will discover that genuine dress watches at this price serve as daily reminders that thoughtful design transcends price. Use our comparison tool to put your shortlist side-by-side and see exactly how specs, pricing, and collector ratings align before you decide.",
+    relatedGuideIds: ["best-dress-watches", "best-watches-under-500", "best-watches-under-1000"],
   },
   {
     slug: "best-pilot-watches",
@@ -1455,6 +1466,7 @@ export const guides: Guide[] = [
     ],
 
     conclusion: "The best pilot watch is the one that meets your budget and fits your wrist. From the Seiko Prospex SPB143's remarkable value at $700-900 to the IWC Pilot Mark XVIII's refined elegance at $4,400-4,900 to the Breitling Navitimer's functional aviation heritage at $9,300-10,000, each represents authentic pilot watch design executed at its price point. What unites them is dial legibility, reliable movement, and the clean aesthetic that makes a pilot watch equally at home in the flight deck or under your business shirt cuff. Use our comparison tool to see exactly how these watches stack up on specs, movement, and community ratings.",
+    relatedGuideIds: ["best-field-watches", "best-dress-watches", "best-chronograph-watches-under-5000"],
   },
 
   {
@@ -1583,6 +1595,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "Chronographs under $5000 are rare because mechanical stopwatch precision is genuinely complex-and that rarity is what makes the Baltic Bicompax 001 remarkable. At $3,500-4,200, you're purchasing an in-house column-wheel movement with pusher feel typically reserved for watches costing three times the price. The Bicompax proves that chronograph excellence is achievable without Swiss certification or century-old heritage. Whether you're timing workouts, lap racing, or simply appreciating mechanical sophistication, the sub-$5000 chronograph market rewards patience and precision. Use our comparison tool to see exactly how the Baltic Bicompax stacks up against competitor chronographs and discover why mechanical stopwatches continue to captivate collectors worldwide.",
+    relatedGuideIds: ["best-watches-under-5000", "best-sports-watches", "best-pilot-watches"],
   },
 
   {
@@ -1849,6 +1862,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "A sports watch is a tool first, a luxury second. Whether you choose the technical excellence of the Omega Seamaster 300m, the iconic heritage of the Rolex Submariner, the value proposition of the TAG Heuer Aquaracer, the elegant pragmatism of the Hamilton Khaki Field, or the Japanese reliability of the Seiko Prospex, you are investing in a watch that will prove itself through use. These watches are built for repetitive motion, shock, water, and sweat-the real conditions of active life. Use our comparison tool to put your shortlist side-by-side and see exactly how these watches differ in specs, pricing, and community ratings. The best sports watch is the one you will wear every day.",
+    relatedGuideIds: ["best-dive-watches", "best-field-watches", "best-chronograph-watches-under-5000", "best-pilot-watches"],
   },
   {
     slug: "best-watches-for-beginners",
@@ -2004,6 +2018,7 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "Your first watch purchase doesn't need to be perfect - it needs to be worn. The watches in this guide share one quality: they reward daily wear without demanding excessive care or worry. Whether you start with a Seiko 5 Sports as your gateway automatic or stretch to a Hamilton Khaki Field or Longines Hydroconquest as a long-term companion, you're making a purchase that will likely introduce you to one of the most engaging, tactile hobbies available. Use our comparison tool to put any two watches in this guide head-to-head - see how their specs, community scores, and prices stack up before you decide. The best first watch is the one on your wrist.",
+    relatedGuideIds: ["best-watches-under-500", "best-watches-under-1000", "best-field-watches", "best-dress-watches", "best-dive-watches", "best-sports-watches", "best-pilot-watches", "best-chronograph-watches-under-5000", "best-gmt-watches", "best-luxury-watches-under-10000"],
   },
   {
     slug: "rolex-new-vs-pre-owned-buying-guide",
@@ -2118,5 +2133,6 @@ export const guides: Guide[] = [
       },
     ],
     conclusion: "The new vs pre-owned Rolex decision is deeply personal. New Rolex offers warranty security and the latest refinements; pre-owned offers substantial value and access to discontinued references. Both paths lead to owning an exceptional tool watch with a track record spanning decades. Use this guide to weigh the financial, practical, and emotional factors, then make the choice that aligns with how you want to own and wear your Rolex.",
+    relatedGuideIds: ["best-watches-under-3000", "best-watches-under-5000", "best-sports-watches", "best-dive-watches", "best-dress-watches", "best-luxury-watches-under-10000", "best-gmt-watches", "best-field-watches"],
   },
 ]
