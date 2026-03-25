@@ -23,6 +23,7 @@ import { Card } from '@/components/ui/Card'
 import { SpecRow } from '@/components/ui/SpecRow'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import BestForBox from '@/components/BestForBox'
+import QuizCTA from '@/components/QuizCTA'
 
 export const dynamicParams = true
 export const revalidate = 86400
@@ -661,7 +662,10 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
               </section>
             )}
 
-{/* Alternatives */}
+            {/* Quiz CTA */}
+            <QuizCTA />
+
+            {/* Alternatives */}
             {(() => {
               const altSet = new Set([...(w1.alternatives || []), ...(w2.alternatives || [])])
               const altSlugs = Array.from(altSet)

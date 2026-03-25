@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Watch } from '@/lib/types'
@@ -116,9 +117,36 @@ function scoreWatch(watch: Watch, answers: Record<string, string>): number {
 }
 
 export default function QuizClient({ watches }: Props) {
+  const searchParams = useSearchParams()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showResults, setShowResults] = useState(false)
+  const [showEmailCapture, setShowEmailCapture] = useState(false)
+  const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [emailSubmitting, setEmailSubmitting] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // Load answers from URL params on mount
+  useEffect(() => {
+    const style = searchParams.get('style')
+    const usecase = searchParams.get('usecase')
+    const movement = searchParams.get('movement')
+    const prestige = searchParams.get('prestige')
+    const budget = searchParams.get('budget')
+
+    if (style || usecase || movement || prestige || budget) {
+      const loadedAnswers: Record<string, string> = {}
+      if (style) loadedAnswers.style = style
+      if (usecase) loadedAnswers.usecase = usecase
+      if (movement) loadedAnswers.movement = movement
+      if (prestige) loadedAnswers.prestige = prestige
+      if (budget) loadedAnswers.budget = budget
+
+      setAnswers(loadedAnswers)
+      setShowResults(true)
+    }
+  }, [searchParams])
 
   const currentQ = QUESTIONS[step]
   const progress = ((step) / QUESTIONS.length) * 100
@@ -136,7 +164,8 @@ export default function QuizClient({ watches }: Props) {
     if (step < QUESTIONS.length - 1) {
       setStep(step + 1)
     } else {
-      setShowResults(true)
+      // Show email capture before results
+      setShowEmailCapture(true)
     }
   }
 
@@ -144,7 +173,71 @@ export default function QuizClient({ watches }: Props) {
     if (step < QUESTIONS.length - 1) {
       setStep(step + 1)
     } else {
-      setShowResults(true)
+      setShowEmailCapture(true)
+    }
+  }
+
+  const handleEmailSubmit = async () => {
+    if (!email.trim()) {
+      setEmailError('Please enter your email')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email')
+      return
+    }
+
+    setEmailSubmitting(true)
+    setEmailError('')
+
+    try {
+      const response = await fetch('/api/quiz/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      if (response.ok) {
+        setTimeout(() => {
+          setShowEmailCapture(false)
+          setShowResults(true)
+        }, 500)
+      } else {
+        setEmailError('Failed to save email. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error submitting email:', error)
+      setEmailError('An error occurred. Please try again.')
+    } finally {
+      setEmailSubmitting(false)
+    }
+  }
+
+  const handleEmailSkip = () => {
+    setShowEmailCapture(false)
+    setShowResults(true)
+  }
+
+  const buildResultsUrl = () => {
+    const params = new URLSearchParams()
+    if (answers.style) params.set('style', answers.style)
+    if (answers.usecase) params.set('usecase', answers.usecase)
+    if (answers.movement) params.set('movement', answers.movement)
+    if (answers.prestige) params.set('prestige', answers.prestige)
+    if (answers.budget) params.set('budget', answers.budget)
+    return `/quiz?${params.toString()}`
+  }
+
+  const copyResultsLink = async () => {
+    try {
+      const url = typeof window !== 'undefined' ? `${window.location.origin}${buildResultsUrl()}` : buildResultsUrl()
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy link:', error)
     }
   }
 
@@ -177,6 +270,59 @@ export default function QuizClient({ watches }: Props) {
 
     return { topMatches: top, closeMatches: close }
   }, [showResults, watches, answers])
+
+  // --- Email capture screen ---
+  if (showEmailCapture && !showResults) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="card p-8">
+          <div className="text-center mb-8">
+            <div className="text-5xl mb-4">🎉</div>
+            <h2 className="text-3xl font-bold text-textPrimary mb-2">Your results are ready</h2>
+            <p className="text-textSecond">Enter your email to see your top 3 watch matches</p>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            <input
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setEmailError('')
+              }}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && email && !emailSubmitting) {
+                  handleEmailSubmit()
+                }
+              }}
+              disabled={emailSubmitting}
+              className="w-full px-4 py-3 border border-border rounded-lg bg-surface text-textPrimary placeholder-textSecond focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50"
+            />
+            {emailError && (
+              <p className="text-red-500 text-sm">{emailError}</p>
+            )}
+          </div>
+
+          <button
+            onClick={handleEmailSubmit}
+            disabled={emailSubmitting}
+            className="w-full bg-accent hover:bg-accentHover text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 mb-4"
+          >
+            {emailSubmitting ? 'Saving...' : 'Show My Results'}
+          </button>
+
+          <button
+            onClick={handleEmailSkip}
+            disabled={emailSubmitting}
+            className="w-full text-accent hover:text-accentHover text-sm font-medium transition-colors"
+          >
+            Skip for now
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // --- Results screen ---
   if (showResults) {
@@ -299,12 +445,21 @@ export default function QuizClient({ watches }: Props) {
         )}
 
         <div className="text-center space-y-3">
-          <button
-            onClick={() => { setStep(0); setAnswers({}); setShowResults(false) }}
-            className="text-textSecond hover:text-textPrimary text-sm transition-colors"
-          >
-            &larr; Retake Quiz
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={() => { setStep(0); setAnswers({}); setShowResults(false); setShowEmailCapture(false); setEmail(''); setEmailError('') }}
+              className="text-textSecond hover:text-textPrimary text-sm transition-colors"
+            >
+              &larr; Retake Quiz
+            </button>
+            <button
+              onClick={copyResultsLink}
+              className="text-textSecond hover:text-accent text-sm transition-colors flex items-center gap-1"
+              title="Copy results link"
+            >
+              📋 {copied ? 'Copied!' : 'Share results'}
+            </button>
+          </div>
           <div>
             <Link href="/watches" className="text-textSecond hover:text-accent text-sm transition-colors">
               Browse all watches &rarr;

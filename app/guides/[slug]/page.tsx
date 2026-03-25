@@ -10,6 +10,7 @@ import { getMdxGuideSlugs, hasMdxGuide, getMdxGuide } from '@/lib/mdxGuides'
 import MdxGuidePage from './MdxGuidePage'
 import RelatedGuides from '@/components/guides/RelatedGuides'
 import FeaturedComparisons from '@/components/guides/FeaturedComparisons'
+import QuizCTA from '@/components/QuizCTA'
 
 export async function generateStaticParams() {
   const legacySlugs = guides.map((guide) => ({ slug: guide.slug }))
@@ -465,6 +466,9 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
             ))}
           </div>
         </section>
+
+        {/* Quiz CTA */}
+        <QuizCTA />
 
         {/* Browse All Strip — moved below content */}
         <div className="mb-12 flex items-center justify-between bg-neutral border border-border rounded-sm px-5 py-3">

@@ -13,6 +13,7 @@ import WatchCompareSection from '@/components/watch/WatchCompareSection'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
 import MoreBrandWatches from '@/components/watch/MoreBrandWatches'
 import WatchBrowseSimilar from '@/components/watch/WatchBrowseSimilar'
+import QuizCTA from '@/components/QuizCTA'
 
 export async function generateStaticParams() {
   return watches.map((w) => ({ slug: w.slug }))
@@ -158,6 +159,8 @@ export default async function WatchPage({ params }: { params: { slug: string } }
           />
 
           <UserReviewsSection watchSlug={watch.slug} initialReviews={userReviews} />
+
+          <QuizCTA />
 
           <WatchCompareSection watch={watch} />
           <MoreBrandWatches watch={watch} />
