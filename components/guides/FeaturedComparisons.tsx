@@ -58,29 +58,33 @@ export default function FeaturedComparisons({ guide }: FeaturedComparisonsProps)
   }
 
   return (
-    <section id="featured-comparisons" className="mb-12 scroll-mt-24">
-      <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">Featured Comparisons</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <section id="compare-head-to-head" className="mb-12 scroll-mt-24">
+      <h2 className="text-xl font-heading font-bold text-textPrimary mb-2">Featured Comparisons</h2>
+      <p className="text-sm text-textSecond mb-5">Side-by-side specs, community votes, and expert scores</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {curatedComparisons.map((c) => {
-          const watch1 = watches.find((w) => w.slug === c.slug1)
-          const watch2 = watches.find((w) => w.slug === c.slug2)
-          if (!watch1 || !watch2) return null
+          const wa = watches.find((w) => w.slug === c.slug1)
+          const wb = watches.find((w) => w.slug === c.slug2)
+          if (!wa || !wb) return null
 
-          const compSlug = [c.slug1, c.slug2].sort().join('-vs-')
           return (
             <Link
               key={`${c.slug1}-${c.slug2}`}
-              href={`/compare/${compSlug}`}
-              className="card p-5 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
+              href={`/compare/${c.slug1}-vs-${c.slug2}`}
+              className="card p-4 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
             >
-              <p className="text-xs uppercase text-textMuted font-semibold mb-2">Comparison</p>
-              <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors">
-                {watch1.name} vs {watch2.name}
-              </h3>
-              <p className="text-xs text-textSecond mt-3">
-                Compare {watch1.brand} and {watch2.brand} directly.
-              </p>
-              <p className="text-xs text-accent font-medium mt-4 inline-block">Compare →</p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
+                  <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
+                </div>
+                <div className="text-accent font-bold text-xs shrink-0">VS</div>
+                <div className="flex-1 min-w-0 text-right">
+                  <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
+                  <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-accent font-medium mt-2">Compare →</p>
             </Link>
           )
         })}

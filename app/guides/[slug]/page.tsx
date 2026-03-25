@@ -137,7 +137,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
   const tocSections = [
     { id: 'quick-specs', label: 'Quick Specs' },
     { id: 'our-picks', label: 'Our Picks' },
-    ...(curatedComparisons.length > 0 ? [{ id: 'compare-head-to-head', label: 'Compare Head-to-Head' }] : []),
+    ...(curatedComparisons.length > 0 ? [{ id: 'compare-head-to-head', label: 'Featured Comparisons' }] : []),
     { id: 'buying-guide', label: 'Buying Guide' },
     { id: 'faq', label: 'Common Questions' },
     { id: 'verdict', label: 'Our Verdict' },
@@ -414,40 +414,8 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           </div>
         </section>
 
-        {/* Compare These Watches — cross-brand prioritized, capped at 4 */}
-        {curatedComparisons.length > 0 && (
-          <section id="compare-head-to-head" className="mb-12 scroll-mt-24">
-            <h2 className="text-xl font-heading font-bold text-textPrimary mb-2">Compare These Watches Head-to-Head</h2>
-            <p className="text-sm text-textSecond mb-5">Side-by-side specs, community votes, and expert scores</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {curatedComparisons.map((c) => {
-                const wa = watches.find((w) => w.slug === c.slug1)
-                const wb = watches.find((w) => w.slug === c.slug2)
-                if (!wa || !wb) return null
-                return (
-                  <Link
-                    key={`${c.slug1}-${c.slug2}`}
-                    href={`/compare/${c.slug1}-vs-${c.slug2}`}
-                    className="card p-4 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-textMuted uppercase">{wa.brand}</p>
-                        <p className="text-textPrimary text-xs font-semibold truncate">{wa.name}</p>
-                      </div>
-                      <div className="text-accent font-bold text-xs shrink-0">VS</div>
-                      <div className="flex-1 min-w-0 text-right">
-                        <p className="text-[10px] text-textMuted uppercase">{wb.brand}</p>
-                        <p className="text-textPrimary text-xs font-semibold truncate">{wb.name}</p>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-accent font-medium mt-2">Compare →</p>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
-        )}
+        {/* Featured Comparisons */}
+        <FeaturedComparisons guide={guide} />
 
         {/* Buying Guide */}
         <section id="buying-guide" className="mb-12 scroll-mt-24">
@@ -507,45 +475,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         </div>
 
         {/* Related Guides Footer */}
-        {relatedGuides.length > 0 && (
-          <section id="more-guides" className="mb-12 scroll-mt-24">
-            <h2 className="text-xl font-heading font-bold text-textPrimary mb-5">More Buying Guides</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {relatedGuides.map((g) => {
-                const gFull = guides.find((gd) => gd.slug === g.slug)
-                const previewWatches = gFull
-                  ? gFull.recommendations
-                      .map((rec) => rec.slug ? watches.find((w) => w.slug === rec.slug) : undefined)
-                      .filter((w): w is NonNullable<typeof w> & { image: string } => !!w && typeof w.image === 'string' && !w.image.endsWith('.svg'))
-                      .slice(0, 3)
-                  : []
-                return (
-                  <Link
-                    key={g.slug}
-                    href={`/guides/${g.slug}`}
-                    className="card p-5 hover:border-borderStrong hover:-translate-y-0.5 hover:shadow-md transition-all group"
-                  >
-                    {previewWatches.length > 0 && (
-                      <div className="flex gap-1 mb-3">
-                        {previewWatches.map((w) => (
-                          <div key={w.slug} className="h-10 w-10 rounded-md bg-surface border border-border overflow-hidden shrink-0">
-                            <Image src={w.image!} alt={w.name} width={40} height={40} className="h-10 w-10 object-contain" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <p className="text-xs uppercase text-textMuted font-semibold mb-2">Buying Guide</p>
-                    <h3 className="text-sm font-bold text-textPrimary group-hover:text-accent transition-colors line-clamp-2">
-                      {g.title}
-                    </h3>
-                    <p className="text-xs text-textSecond mt-3 line-clamp-1">{g.description}</p>
-                    <p className="text-xs text-accent font-medium mt-4 inline-block">Read Guide →</p>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
-        )}
+        <RelatedGuides currentSlug={guide.slug} />
 
 {/* CTA */}
         <div className="text-center bg-neutral border border-border rounded-sm p-8">
