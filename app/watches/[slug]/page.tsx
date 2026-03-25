@@ -1,14 +1,17 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating } from '@/lib/watches'
+import { getApprovedReviewsForWatch } from '@/lib/reviews'
 import WatchHero from '@/components/watch/WatchHero'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import WatchVerdict from '@/components/watch/WatchVerdict'
 import WatchSpecs from '@/components/watch/WatchSpecs'
 import WatchGallery from '@/components/watch/WatchGallery'
 import WatchReviewsSection from '@/components/watch/WatchReviewsSection'
+import UserReviewsSection from '@/components/UserReviewsSection'
 import WatchCompareSection from '@/components/watch/WatchCompareSection'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
+import MoreBrandWatches from '@/components/watch/MoreBrandWatches'
 
 export async function generateStaticParams() {
   return watches.map((w) => ({ slug: w.slug }))
@@ -39,13 +42,21 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default function WatchPage({ params }: { params: { slug: string } }) {
+export default async function WatchPage({ params }: { params: { slug: string } }) {
   const watch = getWatchBySlug(params.slug)
   if (!watch) notFound()
 
   const reviews = getReviewsForWatch(watch.id)
   const avgRatings = calcAverageRatings(reviews)
   const overallRating = avgRatings ? calcOverallRating(avgRatings) : null
+  
+  // Fetch user reviews from Redis
+  let userReviews = []
+  try {
+    userReviews = await getApprovedReviewsForWatch(watch.slug)
+  } catch (error) {
+    console.error('Error fetching user reviews:', error)
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -127,6 +138,7 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
             { id: 'gallery', label: 'Photos' },
             { id: 'reviews', label: 'Reviews' },
             { id: 'compare', label: 'Compare & Alternatives' },
+            { id: 'more-brand', label: `More ${watch.brand}` },
             { id: 'guides', label: 'Buying Guides' },
           ]}
         />
@@ -143,7 +155,10 @@ export default function WatchPage({ params }: { params: { slug: string } }) {
             reviews={reviews}
           />
 
+          <UserReviewsSection watchSlug={watch.slug} initialReviews={userReviews} />
+
           <WatchCompareSection watch={watch} />
+          <MoreBrandWatches watch={watch} />
           <WatchRelatedGuides watch={watch} />
         </div>
       </div>

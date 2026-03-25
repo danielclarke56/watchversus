@@ -1,67 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { isValidSlug } from '@/lib/validation'
-import { getRedis } from '@/lib/redis'
-import { checkAdmin } from '@/lib/admin'
+import { getPendingReviews } from '@/lib/reviews'
 
-export async function GET() {
-  const { userId } = await auth()
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+/**
+ * GET /api/admin/reviews
+ * Get all pending reviews (admin only)
+ */
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  try {
+    const { userId } = await auth()
+    const adminUserId = process.env.ADMIN_USER_ID
 
-  const redis = getRedis()
-  if (!redis) return NextResponse.json([])
-
-  const allReviews: unknown[] = []
-  let cursor = 0
-
-  do {
-    const [nextCursor, keys] = await redis.scan(cursor, { match: 'reviews:pending:*', count: 100 }) as unknown as [number, string[]]
-    cursor = nextCursor
-    for (const key of keys) {
-      const reviews = await redis.get(key) as unknown[] | null
-      if (reviews && reviews.length > 0) {
-        const watchId = key.replace('reviews:pending:', '')
-        allReviews.push(...reviews.map((r) => ({ ...(r as object), watchId })))
-      }
+    if (!userId || userId !== adminUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 403 }
+      )
     }
-  } while (cursor !== 0)
 
-  return NextResponse.json(allReviews)
-}
+    const reviews = await getPendingReviews()
 
-export async function POST(req: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-
-  const body = await req.json() as { action: 'approve' | 'delete'; watchId: string; reviewId: string }
-  const { action, watchId, reviewId } = body
-
-  if (!action || !watchId || !reviewId) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    return NextResponse.json({ reviews })
+  } catch (error) {
+    console.error('Error fetching pending reviews:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
-  if (action !== 'approve' && action !== 'delete') {
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
-  }
-  if (!isValidSlug(watchId)) {
-    return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
-  }
-
-  const redis = getRedis()
-  if (!redis) return NextResponse.json({ error: 'Storage unavailable' }, { status: 503 })
-
-  const pending = await redis.get(`reviews:pending:${watchId}`) as { id: string }[] | null
-  const review = pending?.find((r) => r.id === reviewId)
-  if (!review) return NextResponse.json({ error: 'Review not found' }, { status: 404 })
-
-  const newPending = (pending ?? []).filter((r) => r.id !== reviewId)
-  await redis.set(`reviews:pending:${watchId}`, newPending)
-
-  if (action === 'approve') {
-    const approved = await redis.get(`reviews:${watchId}`) as unknown[] | null
-    await redis.set(`reviews:${watchId}`, [...(approved ?? []), { ...review, approved: true }])
-  }
-
-  return NextResponse.json({ success: true })
 }

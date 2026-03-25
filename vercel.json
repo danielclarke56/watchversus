@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/core-web-vitals",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/gsc-metrics",
+      "schedule": "0 3 * * 1"
+    }
+  ]
+}

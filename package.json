@@ -11,9 +11,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "monitor:cwv": "node scripts/monitor-core-web-vitals.mjs",
-    "monitor:gsc": "node scripts/fetch-gsc-metrics.mjs",
-    "setup:cwv-cron": "powershell -ExecutionPolicy Bypass -File scripts/setup-cwv-cron.ps1"
+    "monitor:cwv": "curl https://watchvswatch.com/api/cron/core-web-vitals",
+    "monitor:gsc": "curl https://watchvswatch.com/api/cron/gsc-metrics",
+    "test:cwv-local": "node -e \"import('./app/api/cron/core-web-vitals/route.ts')\""
   },
   "dependencies": {
     "@clerk/nextjs": "^6.39.0",
