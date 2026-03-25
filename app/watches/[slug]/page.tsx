@@ -12,6 +12,7 @@ import UserReviewsSection from '@/components/UserReviewsSection'
 import WatchCompareSection from '@/components/watch/WatchCompareSection'
 import WatchRelatedGuides from '@/components/watch/WatchRelatedGuides'
 import MoreBrandWatches from '@/components/watch/MoreBrandWatches'
+import WatchBrowseSimilar from '@/components/watch/WatchBrowseSimilar'
 
 export async function generateStaticParams() {
   return watches.map((w) => ({ slug: w.slug }))
@@ -139,6 +140,7 @@ export default async function WatchPage({ params }: { params: { slug: string } }
             { id: 'reviews', label: 'Reviews' },
             { id: 'compare', label: 'Compare & Alternatives' },
             { id: 'more-brand', label: `More ${watch.brand}` },
+            { id: 'similar-watches', label: 'Similar Watches' },
             { id: 'guides', label: 'Buying Guides' },
           ]}
         />
@@ -159,6 +161,7 @@ export default async function WatchPage({ params }: { params: { slug: string } }
 
           <WatchCompareSection watch={watch} />
           <MoreBrandWatches watch={watch} />
+          <WatchBrowseSimilar watch={watch} limit={6} />
           <WatchRelatedGuides watch={watch} />
         </div>
       </div>
