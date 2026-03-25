@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getPendingReviews } from '@/lib/reviews'
 
@@ -6,7 +6,7 @@ import { getPendingReviews } from '@/lib/reviews'
  * GET /api/admin/reviews
  * Get all pending reviews (admin only)
  */
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     const { userId } = await auth()
     const adminUserId = process.env.ADMIN_USER_ID

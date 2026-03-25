@@ -16,7 +16,7 @@ export default function UserReviewsSection({ watchSlug, initialReviews }: UserRe
   const { userId, isLoaded } = useAuth()
   const [reviews] = useState<Review[]>(initialReviews)
 
-  const handleReviewSuccess = (newReview: Review): void => {
+  const handleReviewSuccess = (): void => {
     // Note: New reviews start as 'pending', so they won't appear in the list until approved
     // Just show the success message for now
   }

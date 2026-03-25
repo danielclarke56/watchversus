@@ -18,7 +18,7 @@ interface ReviewsListProps {
   watchSlug: string
 }
 
-export default function ReviewsList({ reviews, watchSlug }: ReviewsListProps) {
+export default function ReviewsList({ reviews }: ReviewsListProps) {
   if (reviews.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">

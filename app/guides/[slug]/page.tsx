@@ -8,6 +8,8 @@ import { getRelatedGuidesByBrand } from '@/lib/relatedContent'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import { getMdxGuideSlugs, hasMdxGuide, getMdxGuide } from '@/lib/mdxGuides'
 import MdxGuidePage from './MdxGuidePage'
+import RelatedGuides from '@/components/guides/RelatedGuides'
+import FeaturedComparisons from '@/components/guides/FeaturedComparisons'
 
 export async function generateStaticParams() {
   const legacySlugs = guides.map((guide) => ({ slug: guide.slug }))

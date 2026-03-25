@@ -1,5 +1,4 @@
 import { getRedis } from '@/lib/redis'
-import { Redis } from '@upstash/redis'
 
 export interface Review {
   id: string
