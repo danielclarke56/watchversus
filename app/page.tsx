@@ -79,42 +79,15 @@ const websiteJsonLd = {
   },
 }
 
-const featuredComparisons: {
-  slug1: string
-  slug2: string
-  tagline: string
-}[] = [
-  {
-    slug1: 'rolex-submariner-41',
-    slug2: 'omega-seamaster-300m',
-    tagline: 'The ultimate luxury diver showdown',
-  },
-  {
-    slug1: 'rolex-submariner-41',
-    slug2: 'tudor-black-bay-58',
-    tagline: 'Heritage meets value — same DNA, different price',
-  },
-  {
-    slug1: 'omega-speedmaster-moonwatch',
-    slug2: 'breitling-navitimer-b01-42',
-    tagline: 'Two iconic chronographs, very different philosophies',
-  },
-  {
-    slug1: 'rolex-datejust-36',
-    slug2: 'omega-aqua-terra-38',
-    tagline: 'Dress-sport classics compared',
-  },
-  {
-    slug1: 'omega-seamaster-300m',
-    slug2: 'tudor-black-bay-58',
-    tagline: 'Mid-range vs entry luxury dive',
-  },
-  {
-    slug1: 'rolex-submariner-41',
-    slug2: 'tudor-pelagos-39',
-    tagline: "Rolex royalty vs Tudor's titanium challenger",
-  },
-]
+// Load top 6 Tier 1 comparisons from comparison-tiers.json
+const featuredComparisons = comparisonTiers
+  .filter((c) => c.tier === 1)
+  .slice(0, 6)
+  .map((c) => ({
+    slug1: c.slug1,
+    slug2: c.slug2,
+    tagline: `${getWatchBySlug(c.slug1)?.brand ?? ''} ${getWatchBySlug(c.slug1)?.name ?? ''} vs ${getWatchBySlug(c.slug2)?.brand ?? ''} ${getWatchBySlug(c.slug2)?.name ?? ''}`,
+  }))
 
 // ItemList JSON-LD for featured comparisons (rich results)
 const itemListJsonLd = {

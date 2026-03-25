@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { watches, getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating } from '@/lib/watches'
-import { getApprovedReviewsForWatch } from '@/lib/reviews'
+import { getApprovedReviewsForWatch, type Review } from '@/lib/reviews'
 import WatchHero from '@/components/watch/WatchHero'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import WatchVerdict from '@/components/watch/WatchVerdict'
@@ -51,7 +51,7 @@ export default async function WatchPage({ params }: { params: { slug: string } }
   const overallRating = avgRatings ? calcOverallRating(avgRatings) : null
   
   // Fetch user reviews from Redis
-  let userReviews = []
+  let userReviews: Review[] = []
   try {
     userReviews = await getApprovedReviewsForWatch(watch.slug)
   } catch (error) {
