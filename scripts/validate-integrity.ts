@@ -9,7 +9,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 const ROOT = path.resolve(__dirname, '..')
-let errors: string[] = []
+const errors: string[] = []
 
 // ── Load data ──────────────────────────────────────────────────────
 

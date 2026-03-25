@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { guides, Guide } from '@/lib/guideData'
+import { Guide } from '@/lib/guideData'
 import { watches, popularComparisons } from '@/lib/watches'
 
 interface FeaturedComparisonsProps {

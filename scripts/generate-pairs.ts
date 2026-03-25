@@ -265,7 +265,6 @@ function main() {
 
   // 2. Score all remaining possible pairs (new discoveries)
   const slugs = watches.map((w) => w.slug)
-  let newCandidates = 0
 
   for (let i = 0; i < slugs.length; i++) {
     for (let j = i + 1; j < slugs.length; j++) {
@@ -299,7 +298,6 @@ function main() {
         reason,
         isExisting: false,
       })
-      newCandidates++
     }
   }
 
@@ -382,6 +380,7 @@ function main() {
     output.push(
       ...allPairs
         .filter((p) => p.isExisting)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(({ isExisting, ...rest }) => rest)
     )
 
