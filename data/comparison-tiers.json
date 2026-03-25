@@ -1892,6 +1892,138 @@
         "cross-brand"
       ],
       "tier": 1
+    },
+    {
+      "slug1": "nomos-club-campus",
+      "slug2": "nomos-tangente-38",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "same-brand",
+        "dress",
+        "minimalist"
+      ],
+      "reason": "Same brand; Both minimalist dress watches; Club Campus is newer iteration"
+    },
+    {
+      "slug1": "nomos-club-campus",
+      "slug2": "hamilton-jazzmaster-40",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range (~$1,900); Both dress watches; Nomos minimalist vs Hamilton vintage aesthetic"
+    },
+    {
+      "slug1": "nomos-club-campus",
+      "slug2": "longines-master-collection-40",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range (~$1,900); Both classic dress watches; Heritage brand comparison"
+    },
+    {
+      "slug1": "baltic-bicompax-001",
+      "slug2": "hamilton-jazzmaster-40",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range (~$850); Baltic vintage-inspired vs Hamilton heritage; Both versatile"
+    },
+    {
+      "slug1": "baltic-bicompax-001",
+      "slug2": "seiko-presage-spb165",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar price range (~$850); Both dress-sport hybrids; Baltic chronograph vs Seiko elegance"
+    },
+    {
+      "slug1": "baltic-bicompax-001",
+      "slug2": "longines-hydroconquest-41",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Similar price range (~$850); Baltic vintage chronograph vs Longines sport watch; Independent vs heritage"
+    },
+    {
+      "slug1": "swatch-sistem51",
+      "slug2": "hamilton-khaki-field-auto-38",
+      "tier": 3,
+      "priority": 50,
+      "tags": [
+        "price-contrast",
+        "sport",
+        "cross-brand"
+      ],
+      "reason": "Entry-level automatic (Swatch $100) vs mid-range field watch (Hamilton ~$300); Value proposition comparison"
+    },
+    {
+      "slug1": "swatch-sistem51",
+      "slug2": "seiko-prospex-spb143",
+      "tier": 3,
+      "priority": 50,
+      "tags": [
+        "price-contrast",
+        "dive",
+        "cross-brand"
+      ],
+      "reason": "Budget-friendly automatic (Swatch $100) vs premium dive watch (Seiko ~$500); Accessible vs professional"
+    },
+    {
+      "slug1": "iwc-portofino-40",
+      "slug2": "jaeger-lecoultre-reverso-classic",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar luxury price range (~$6,500); Both iconic dress watches; IWC sport-elegant vs JLC artistic"
+    },
+    {
+      "slug1": "iwc-portofino-40",
+      "slug2": "grand-seiko-sbgw231",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Similar luxury price range (~$6,500); Both refined dress watches; Swiss vs Japanese craftsmanship"
+    },
+    {
+      "slug1": "iwc-portofino-40",
+      "slug2": "rolex-datejust-36",
+      "tier": 2,
+      "priority": 60,
+      "tags": [
+        "price-match",
+        "dress",
+        "cross-brand"
+      ],
+      "reason": "Both icon dress watches at premium price points (~$6,500); IWC modern elegance vs Rolex timeless classic"
     }
   ]
 }
