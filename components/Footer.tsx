@@ -27,8 +27,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           <div className="col-span-2">
-            <div className="flex items-center gap-1 mb-3">
-              <span className="text-accent text-lg font-bold">Watch</span><span className="text-textPrimary text-lg font-bold">Vs</span><span className="text-accent text-lg font-bold">Watch</span>
+            <div className="flex items-center mb-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.svg" alt="WatchVsWatch" className="h-7 w-auto" />
             </div>
             <p className="text-textSecond text-sm leading-relaxed max-w-sm">
               Community-driven watch comparisons, reviews, and recommendations.

@@ -52,9 +52,8 @@ export default function Navigation() {
 
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center">
-          <span className="text-accent text-xl font-bold tracking-tight">Watch</span>
-          <span className="text-textPrimary text-xl font-bold tracking-tight">Vs</span>
-          <span className="text-accent text-xl font-bold tracking-tight">Watch</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="WatchVsWatch" className="h-8 w-auto" />
         </Link>
 
         {/* Desktop nav */}
