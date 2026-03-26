@@ -14,8 +14,8 @@ export default function HeroSearch() {
         <p className="text-base sm:text-lg text-gray-500 text-center mb-6">
           Browse real photos from watch owners around the world
         </p>
-        <div className="flex items-center gap-2">
-          <div className="flex-1">
+        <div className="flex items-start gap-2">
+          <div className="flex-1 [&>div]:mb-0">
             <SearchForm
               placeholder="Search watches (Rolex, Omega, Tudor...)"
               watches={watches}
