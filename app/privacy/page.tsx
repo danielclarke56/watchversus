@@ -13,15 +13,14 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <h1 className="text-4xl font-bold text-textPrimary mb-2">Privacy Policy</h1>
-      <p className="text-textMuted text-sm mb-10">Last updated: March 19, 2026</p>
+      <p className="text-textMuted text-sm mb-10">Last updated: March 26, 2026</p>
 
       <div className="prose-custom space-y-8">
         <section>
           <h2>1. Who we are</h2>
           <p>
             WatchVsWatch (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) operates the website at{' '}
-            <strong>watchvswatch.com</strong>. We are an independently run watch comparison
-            platform. For questions about this policy, email{' '}
+            <strong>watchvswatch.com</strong>. We are an independently run watch photo gallery. For questions about this policy, email{' '}
             <span className="text-accent">hello@watchvswatch.com</span>.
           </p>
         </section>
@@ -39,16 +38,9 @@ export default function PrivacyPage() {
 
           <h3>User-generated content</h3>
           <p>
-            Reviews, ratings, and photos you submit are stored in our database along with
-            your display name and the date of submission. Photos are stored on Vercel Blob
-            storage. Review and photo metadata is stored on Upstash Redis.
-          </p>
-
-          <h3>Voting data</h3>
-          <p>
-            When you vote on a watch comparison, we record your vote and a hashed version
-            of your IP address to prevent duplicate voting. IP hashes are automatically
-            deleted after 24 hours.
+            Photos you upload and captions and descriptions you provide are stored in our
+            database along with your display name and the date of submission. Photos are
+            stored on Vercel Blob storage. Photo metadata is stored on Upstash Redis.
           </p>
 
           <h3>Analytics and performance data</h3>
@@ -70,9 +62,9 @@ export default function PrivacyPage() {
         <section>
           <h2>3. How we use your data</h2>
           <ul>
-            <li>To display your reviews, ratings, and photos on watch pages</li>
+            <li>To display your photos and captions in the gallery</li>
             <li>To authenticate your identity when you sign in</li>
-            <li>To prevent abuse (spam, duplicate voting, malicious uploads)</li>
+            <li>To prevent abuse (spam and malicious uploads)</li>
             <li>To understand site usage and improve the platform</li>
             <li>To respond to support inquiries</li>
           </ul>
@@ -88,7 +80,7 @@ export default function PrivacyPage() {
           <ul>
             <li><strong>Clerk</strong> — authentication and account management</li>
             <li><strong>Vercel</strong> — hosting, image storage (Blob), and analytics</li>
-            <li><strong>Upstash</strong> — database for reviews, photos, and vote data</li>
+            <li><strong>Upstash</strong> — database for photos and gallery data</li>
             <li><strong>Google Analytics 4</strong> — website analytics</li>
           </ul>
           <p>
@@ -131,12 +123,8 @@ export default function PrivacyPage() {
               Delete your account through Clerk to remove it.
             </li>
             <li>
-              <strong>Reviews and photos</strong> are retained as long as they are
+              <strong>Photos and captions</strong> are retained as long as they are
               published. You can request removal by emailing us.
-            </li>
-            <li>
-              <strong>Vote rate-limit data</strong> (IP hashes) is automatically deleted
-              after 24 hours.
             </li>
             <li>
               <strong>Analytics data</strong> is retained according to Google Analytics

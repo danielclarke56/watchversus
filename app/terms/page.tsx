@@ -13,7 +13,7 @@ export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <h1 className="text-4xl font-bold text-textPrimary mb-2">Terms of Use</h1>
-      <p className="text-textMuted text-sm mb-10">Last updated: March 19, 2026</p>
+      <p className="text-textMuted text-sm mb-10">Last updated: March 26, 2026</p>
 
       <div className="prose-custom space-y-8">
         <section>
@@ -28,10 +28,9 @@ export default function TermsPage() {
         <section>
           <h2>2. What we provide</h2>
           <p>
-            WatchVsWatch is a community-driven watch comparison platform. We provide watch
-            specifications, comparison tools, buying guides, a recommendation quiz, and
-            space for community reviews and photos. All content is for informational
-            purposes only and does not constitute professional advice.
+            WatchVsWatch is a community watch photo gallery where enthusiasts upload and
+            browse real photos of watches. All content is for informational purposes only
+            and does not constitute professional advice.
           </p>
           <p>
             Watch specifications are sourced from official manufacturer documentation and

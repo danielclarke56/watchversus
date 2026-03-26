@@ -3,13 +3,13 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Learn about WatchVsWatch — our mission, how community reviews work, and our watch database.',
+  description: 'WatchVsWatch is a community photo gallery for watch enthusiasts. Browse and upload real watch photos — no affiliate links, no sponsored content.',
   alternates: {
     canonical: 'https://watchvswatch.com/about',
   },
   openGraph: {
     title: 'About | WatchVsWatch',
-    description: 'Our mission, how reviews work, and the watch database behind WatchVsWatch.',
+    description: 'A community photo gallery for watch enthusiasts. Real watches, real owners, no affiliate links.',
     url: 'https://watchvswatch.com/about',
     type: 'website',
   },
@@ -20,84 +20,50 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <div className="mb-10">
         <h1 className="text-4xl font-bold text-textPrimary mb-3">About WatchVsWatch</h1>
-        <p className="text-textSecond text-lg">Community-driven watch intelligence for enthusiasts at every level</p>
+        <p className="text-textSecond text-lg">A community photo gallery for watch enthusiasts</p>
       </div>
 
       <div className="space-y-10">
-        {/* Mission */}
+        {/* What We Are */}
         <section className="card p-7">
           <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
             <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">01</span>
-            Our Mission
+            What We Are
           </h2>
           <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
-              WatchVsWatch was built to be the comparison resource we always wished existed — honest, detailed, and
-              driven by the people who actually own and wear these watches. The name says it all: this is a head-to-head
-              platform where any two watches can be compared across the specifications that actually matter.
-            </p>
-            <p>
-              Too much of the watch internet is powered by marketing budgets rather than genuine insight. Brands sponsor
-              reviews. Affiliates inflate praise. Watch forums are helpful but scattered and hard to search. WatchVsWatch
-              centralizes the comparison experience and puts community-generated ratings at its core.
-            </p>
-            <p>
-              We&apos;re independent, bootstrapped, and driven by passion for horology. We cover watches at every price point,
-              from the Seiko 5 to the Patek Nautilus, without hierarchy or snobbery.
+              WatchVsWatch is a community photo gallery for watch enthusiasts. Browse real photos of
+              watches worn in real life — from affordable Seikos to luxury Rolexes. No affiliate links,
+              no sponsored content, just real watches from real owners.
             </p>
           </div>
         </section>
 
-        {/* How reviews work */}
-        <section id="reviews" className="card p-7">
+        {/* Sharing Your Watch */}
+        <section className="card p-7">
           <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
             <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">02</span>
-            How Reviews Work
+            Sharing Your Watch
           </h2>
           <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
-              Reviews on WatchVsWatch are submitted by authenticated community members who own or have owned the watches
-              they review. We don&apos;t compensate reviewers, and all reviews are stored securely in our backend database
-              and instantly available to the community.
-            </p>
-            <p>
-              Each review includes:
-            </p>
-            <ul className="list-none space-y-2 ml-2">
-              {[
-                ['Star Rating', '1–5 stars representing your overall assessment'],
-                ['Title', 'A short summary of your experience'],
-                ['Detailed Review', 'Your thoughts on value, build quality, reliability, wearability, and resale value'],
-                ['Ownership Duration', 'How long you&apos;ve owned the watch (optional)'],
-              ].map(([name, desc]) => (
-                <li key={name} className="flex gap-3">
-                  <span className="text-accent shrink-0 mt-0.5">→</span>
-                  <span><strong className="text-textPrimary">{name}</strong> — {desc}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="text-textMuted text-sm mt-4">
-              To submit a review, simply sign in with your account. Your review is published after a quick moderation
-              check to prevent spam.
+              Anyone can upload photos of their watch collection. Sign in with Google or email,
+              upload a photo, add a caption, and it appears in the gallery for other enthusiasts
+              to discover. We moderate submissions to keep quality high.
             </p>
           </div>
         </section>
 
-        {/* Data */}
+        {/* No Affiliate Links */}
         <section className="card p-7">
           <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
             <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">03</span>
-            Our Watch Database
+            No Affiliate Links
           </h2>
           <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
-              Our database currently covers 50 watches spanning every price point, style, and brand tier — from the
-              Swatch Sistem51 to the Patek Philippe Nautilus. Every specification is researched from official brand
-              documentation and trusted secondary sources.
-            </p>
-            <p>
-              We expand the database based on community demand. If you want to see a specific reference added,
-              reach out via the contact form below.
+              We have no affiliate links and no sponsored content. We are fully independent.
+              The gallery exists purely to celebrate watch culture.
             </p>
           </div>
         </section>
@@ -110,14 +76,14 @@ export default function AboutPage() {
           </h2>
           <div className="text-textSecond space-y-3">
             <p>
-              For watch additions, corrections, or general feedback:
+              For questions, feedback, or to report issues:
             </p>
             <p>
               <strong className="text-textPrimary">Email:</strong>{' '}
-              <span className="text-accent">hello@WatchVsWatch.com</span>
+              <span className="text-accent">hello@watchvswatch.com</span>
             </p>
             <p className="text-textMuted text-sm">
-              We read every email and respond to content inquiries within 48 hours.
+              We read every email and respond within 48 hours.
             </p>
           </div>
         </section>
@@ -125,11 +91,11 @@ export default function AboutPage() {
 
       {/* CTA */}
       <div className="mt-12 text-center bg-accentLight border border-borderStrong rounded-sm p-8">
-        <h3 className="text-textPrimary font-bold text-xl mb-2">Ready to find your perfect watch?</h3>
-        <p className="text-textSecond mb-5">Take our 2-minute quiz or start comparing watches side-by-side</p>
+        <h3 className="text-textPrimary font-bold text-xl mb-2">Share your collection with the community</h3>
+        <p className="text-textSecond mb-5">Upload a photo of your watch or browse what others are wearing</p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Link href="/quiz" className="btn-gold">Take the Quiz</Link>
-          <Link href="/compare" className="btn-outline">Compare Watches</Link>
+          <Link href="/upload" className="btn-gold">Upload a Photo</Link>
+          <Link href="/" className="btn-outline">Browse Gallery</Link>
         </div>
       </div>
     </div>
