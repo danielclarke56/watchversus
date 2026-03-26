@@ -176,3 +176,30 @@ export async function getReview(watchSlug: string, reviewId: string): Promise<Re
 
   return JSON.parse(reviewData as string) as Review
 }
+
+export async function getRecentApprovedReviews(limit = 4): Promise<Review[]> {
+  try {
+    const redis = getRedis()
+    if (!redis) return []
+    const keys = await redis.keys('reviews:approved:*')
+    if (!keys || keys.length === 0) return []
+    
+    const allReviews: Review[] = []
+    for (const key of keys) {
+      const reviews = await redis.lrange(key, 0, -1)
+      for (const r of reviews) {
+        try {
+          const review = typeof r === 'string' ? JSON.parse(r) : r
+          allReviews.push(review as Review)
+        } catch {
+          continue
+        }
+      }
+    }
+    
+    allReviews.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+    return allReviews.slice(0, limit)
+  } catch {
+    return []
+  }
+}

@@ -135,10 +135,11 @@ export default async function WatchPage({ params }: { params: { slug: string } }
         {/* Sticky sidebar TOC — hidden below lg breakpoint */}
         <GuideTableOfContents
           sections={[
-            { id: 'verdict', label: 'The Verdict' },
-            { id: 'specs', label: 'Full Specs' },
             { id: 'gallery', label: 'Photos' },
             { id: 'reviews', label: 'Reviews' },
+            { id: 'verdict', label: 'The Verdict' },
+            { id: 'specs', label: 'Full Specs' },
+            { id: 'editorial-reviews', label: 'Expert Reviews' },
             { id: 'compare', label: 'Compare & Alternatives' },
             { id: 'more-brand', label: `More ${watch.brand}` },
             { id: 'similar-watches', label: 'Similar Watches' },
@@ -148,24 +149,47 @@ export default async function WatchPage({ params }: { params: { slug: string } }
 
         {/* Main content column */}
         <div className="flex-1 min-w-0 space-y-10">
-          <WatchVerdict watch={watch} />
-          <WatchSpecs watch={watch} />
-          <WatchGallery watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
+          <div id="gallery">
+            <WatchGallery watchId={watch.id} watchName={`${watch.brand} ${watch.name}`} />
+          </div>
 
-          <WatchReviewsSection
-            watchName={`${watch.brand} ${watch.name}`}
-            watchId={watch.id}
-            reviews={reviews}
-          />
+          <div id="reviews">
+            <UserReviewsSection watchSlug={watch.slug} initialReviews={userReviews} />
+          </div>
 
-          <UserReviewsSection watchSlug={watch.slug} initialReviews={userReviews} />
+          <div id="verdict">
+            <WatchVerdict watch={watch} />
+          </div>
+
+          <div id="specs">
+            <WatchSpecs watch={watch} />
+          </div>
+
+          <div id="editorial-reviews">
+            <WatchReviewsSection
+              watchName={`${watch.brand} ${watch.name}`}
+              watchId={watch.id}
+              reviews={reviews}
+            />
+          </div>
 
           <QuizCTA />
 
-          <WatchCompareSection watch={watch} />
-          <MoreBrandWatches watch={watch} />
-          <WatchBrowseSimilar watch={watch} limit={6} />
-          <WatchRelatedGuides watch={watch} />
+          <div id="compare">
+            <WatchCompareSection watch={watch} />
+          </div>
+
+          <div id="more-brand">
+            <MoreBrandWatches watch={watch} />
+          </div>
+
+          <div id="similar-watches">
+            <WatchBrowseSimilar watch={watch} limit={6} />
+          </div>
+
+          <div id="guides">
+            <WatchRelatedGuides watch={watch} />
+          </div>
         </div>
       </div>
     </>
