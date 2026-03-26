@@ -36,6 +36,7 @@ const ClerkAuth = clerkEnabled
 const navLinks = [
   { href: '/watches', label: 'Watches' },
   { href: '/compare', label: 'Compare' },
+  { href: '/explore', label: 'Explore' },
   { href: '/guides', label: 'Guides' },
   { href: '/quiz', label: 'Quiz' },
 ]

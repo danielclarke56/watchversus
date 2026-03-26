@@ -22,6 +22,7 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
   const [previews, setPreviews] = useState<string[]>([])
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploadedCount, setUploadedCount] = useState(0)
+  const [captions, setCaptions] = useState<string[]>([])
 
   useEffect(() => {
     fetch(`/api/photos/${watchId}`)
@@ -94,6 +95,7 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
     setErrorMsg('')
     setSelectedFiles((prev) => [...prev, ...valid])
     setPreviews((prev) => [...prev, ...valid.map((f) => URL.createObjectURL(f))])
+    setCaptions((prev) => [...prev, ...valid.map(() => '')])
     // Reset the input so the same file can be re-selected
     e.target.value = ''
   }
@@ -102,12 +104,14 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
     URL.revokeObjectURL(previews[index])
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
     setPreviews((prev) => prev.filter((_, i) => i !== index))
+    setCaptions((prev) => prev.filter((_, i) => i !== index))
   }
 
   function clearUpload() {
     previews.forEach((p) => URL.revokeObjectURL(p))
     setSelectedFiles([])
     setPreviews([])
+    setCaptions([])
     setErrorMsg('')
     setUploadState('idle')
     setUploadedCount(0)
@@ -122,9 +126,14 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
     setUploadedCount(0)
 
     let failed = 0
-    for (const file of selectedFiles) {
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i]
+      const caption = captions[i] ?? ''
       const formData = new FormData()
       formData.append('photo', file)
+      if (caption.trim()) {
+        formData.append('caption', caption)
+      }
 
       try {
         const res = await fetch(`/api/photos/${watchId}`, {
@@ -219,21 +228,50 @@ export default function WatchGallery({ watchId, watchName }: WatchGalleryProps) 
 
               {/* Photo previews */}
               {previews.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                  {previews.map((src, i) => (
-                    <div key={i} className="relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeFile(i)}
-                        className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/80 transition-colors"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                    {previews.map((src, i) => (
+                      <div key={i} className="relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={src} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/80 transition-colors"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Captions */}
+                  <div className="space-y-3 border-t border-border pt-4">
+                    <p className="text-sm font-medium text-textPrimary">Add captions (optional)</p>
+                    {captions.map((caption, i) => (
+                      <div key={i}>
+                        <label className="block text-xs text-textSecond mb-1">
+                          Photo {i + 1}
+                        </label>
+                        <textarea
+                          value={caption}
+                          onChange={(e) => {
+                            const newCaptions = [...captions]
+                            newCaptions[i] = e.target.value.slice(0, 280)
+                            setCaptions(newCaptions)
+                          }}
+                          placeholder="e.g. Just picked this up last week — the blue dial is stunning in person"
+                          className="w-full text-sm px-3 py-2 border border-border rounded-sm bg-surface text-textPrimary placeholder-textMuted focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                          rows={2}
+                          maxLength={280}
+                        />
+                        <p className="text-xs text-textMuted mt-1">
+                          {caption.length}/280
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
 
               {/* File picker */}

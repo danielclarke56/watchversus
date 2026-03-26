@@ -108,12 +108,17 @@ export async function POST(
     photoUrl = `/images/user-uploads/${params.watchId}/${localFilename}`
   }
 
+  // Read caption from formData
+  const captionRaw = formData.get('caption') as string | null
+  const caption = sanitizeText(captionRaw ?? '', 280)
+
   const photo: PendingPhoto = {
     id: photoId,
     watchId: params.watchId,
     userId,
     userName: sanitizeText(userName, 50),
     url: photoUrl,
+    caption: caption ? caption : undefined,
     createdAt: new Date().toISOString(),
     approved: false,
   }

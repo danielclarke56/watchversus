@@ -6,6 +6,7 @@ import { Section } from '@/components/ui/Section'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { SearchForm } from '@/components/SearchForm'
+import { RecentPhotos } from '@/components/home/RecentPhotos'
 import type { Metadata } from 'next'
 
 const faqItems = [
@@ -364,6 +365,9 @@ export default function HomePage() {
           </div>
         </Container>
       </Section>
+
+      {/* RECENTLY ADDED PHOTOS */}
+      <RecentPhotos />
 
       {/* RECENTLY ADDED COMPARISONS */}
       <Section py="md" bg="surface">
