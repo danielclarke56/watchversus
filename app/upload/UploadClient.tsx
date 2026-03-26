@@ -80,29 +80,29 @@ export default function UploadClient() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="animate-pulse text-zinc-400">Loading...</div>
+      <div className="min-h-screen bg-surfaceAlt flex items-center justify-center">
+        <div className="animate-pulse text-textMuted">Loading...</div>
       </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white">
+    <main className="min-h-screen bg-surfaceAlt text-textPrimary">
       <div className="max-w-xl mx-auto px-4 py-16">
-        <Link href="/" className="text-sm text-zinc-400 hover:text-white mb-8 inline-block">
+        <Link href="/" className="text-sm text-textMuted hover:text-textPrimary mb-8 inline-block">
           ← Back to home
         </Link>
 
         <h1 className="text-3xl font-bold mb-2">Upload Your Watch Photo</h1>
-        <p className="text-zinc-400 mb-8">
+        <p className="text-textMuted mb-8">
           Share a real wrist shot. Help others see how this watch looks in real life.
         </p>
 
         {!isSignedIn ? (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center">
-            <p className="text-zinc-300 mb-4">Sign in to upload your watch photos</p>
+          <div className="bg-surface border border-border rounded-xl p-8 text-center shadow-sm">
+            <p className="text-textSecond mb-4">Sign in to upload your watch photos</p>
             <SignInButton mode="modal">
-              <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+              <button className="px-6 py-3 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors">
                 Sign in to upload
               </button>
             </SignInButton>
@@ -111,12 +111,12 @@ export default function UploadClient() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Watch Selector */}
             <div className="relative">
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-textSecond mb-2">
                 Select your watch
               </label>
               {selectedWatch ? (
-                <div className="flex items-center justify-between bg-zinc-900 border border-zinc-700 rounded-lg p-3">
-                  <span className="text-white">
+                <div className="flex items-center justify-between bg-surface border border-borderStrong rounded-lg p-3 shadow-sm">
+                  <span className="text-textPrimary">
                     {selectedWatch.brand} {selectedWatch.name}
                   </span>
                   <button
@@ -125,7 +125,7 @@ export default function UploadClient() {
                       setSelectedWatch(null)
                       setSearch('')
                     }}
-                    className="text-zinc-400 hover:text-white text-sm"
+                    className="text-textMuted hover:text-textPrimary text-sm"
                   >
                     Change
                   </button>
@@ -141,10 +141,10 @@ export default function UploadClient() {
                     }}
                     onFocus={() => setShowDropdown(true)}
                     placeholder="Search by brand or model..."
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                   />
                   {showDropdown && filtered.length > 0 && (
-                    <ul className="absolute z-10 w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg max-h-60 overflow-y-auto">
+                    <ul className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg max-h-60 overflow-y-auto shadow-md">
                       {filtered.map((w) => (
                         <li key={w.slug}>
                           <button
@@ -154,10 +154,10 @@ export default function UploadClient() {
                               setShowDropdown(false)
                               setSearch('')
                             }}
-                            className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
+                            className="w-full text-left px-4 py-2 hover:bg-neutral text-textSecond hover:text-textPrimary transition-colors"
                           >
                             <span className="font-medium">{w.brand}</span>{' '}
-                            <span className="text-zinc-400">{w.name}</span>
+                            <span className="text-textMuted">{w.name}</span>
                           </button>
                         </li>
                       ))}
@@ -171,12 +171,12 @@ export default function UploadClient() {
             {selectedWatch && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  <label className="block text-sm font-medium text-textSecond mb-2">
                     Photo
                   </label>
                   <div
                     onClick={() => fileRef.current?.click()}
-                    className="border-2 border-dashed border-zinc-700 rounded-lg p-8 text-center cursor-pointer hover:border-zinc-500 transition-colors"
+                    className="border-2 border-dashed border-borderStrong rounded-lg p-8 text-center cursor-pointer hover:border-accent transition-colors"
                   >
                     {preview ? (
                       <img
@@ -186,8 +186,8 @@ export default function UploadClient() {
                       />
                     ) : (
                       <div>
-                        <p className="text-zinc-400 mb-1">Click to select a photo</p>
-                        <p className="text-zinc-500 text-sm">JPEG, PNG, or WebP · Max 5MB</p>
+                        <p className="text-textMuted mb-1">Click to select a photo</p>
+                        <p className="text-textMuted text-sm">JPEG, PNG, or WebP · Max 5MB</p>
                       </div>
                     )}
                   </div>
@@ -201,8 +201,8 @@ export default function UploadClient() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
-                    Caption <span className="text-zinc-500">(optional)</span>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Caption <span className="text-textMuted">(optional)</span>
                   </label>
                   <input
                     type="text"
@@ -210,18 +210,18 @@ export default function UploadClient() {
                     onChange={(e) => setCaption(e.target.value)}
                     placeholder="e.g. 7.25 inch wrist, daily wear for 2 years"
                     maxLength={200}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                   />
                 </div>
 
                 {error && (
-                  <p className="text-red-400 text-sm">{error}</p>
+                  <p className="text-red-500 text-sm">{error}</p>
                 )}
 
                 <button
                   type="submit"
                   disabled={!file || uploading}
-                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-700 disabled:text-zinc-500 text-white rounded-lg font-medium transition-colors"
+                  className="w-full py-3 bg-accent hover:bg-accentHover disabled:bg-neutral disabled:text-textMuted text-white rounded-lg font-medium transition-colors"
                 >
                   {uploading ? 'Uploading...' : 'Upload Photo'}
                 </button>
