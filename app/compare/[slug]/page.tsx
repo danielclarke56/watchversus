@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, calcOverallRating, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
+import { getWatchBySlug, getReviewsForWatch, calcAverageRatings, formatPrice, comparisonTiers, getComparisonTier } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import comparisonOverridesRaw from '@/data/comparison-overrides.json'
 import RatingBar from '@/components/RatingBar'
@@ -17,7 +17,6 @@ interface ComparisonOverride {
 }
 
 const comparisonOverrides = comparisonOverridesRaw as ComparisonOverride[]
-import VoteSection from './VoteSection'
 import ComparisonStickyNav from './ComparisonStickyNav'
 import { Card } from '@/components/ui/Card'
 import { SpecRow } from '@/components/ui/SpecRow'
@@ -27,47 +26,6 @@ import QuizCTA from '@/components/QuizCTA'
 
 export const dynamicParams = true
 export const revalidate = 86400
-
-function generateVerdict(w1: Watch, w2: Watch): string {
-  const sentences: string[] = []
-  const p1 = w1.price_new_usd.min
-  const p2 = w2.price_new_usd.min
-  const priceDiff = Math.abs(p1 - p2) / Math.min(p1, p2)
-
-  if (priceDiff > 0.5) {
-    const cheaper = p1 < p2 ? w1 : w2
-    const dearer = p1 < p2 ? w2 : w1
-    sentences.push(`${cheaper.brand} ${cheaper.name} is the value winner at ${formatPrice(cheaper.price_new_usd)} — over 50% cheaper than the ${dearer.brand} ${dearer.name} (${formatPrice(dearer.price_new_usd)}).`)
-  } else {
-    sentences.push(`Both sit in a similar price range: ${w1.brand} ${w1.name} at ${formatPrice(w1.price_new_usd)} vs ${w2.brand} ${w2.name} at ${formatPrice(w2.price_new_usd)} — choose based on use case and style preference.`)
-  }
-
-  if (w1.movement_type !== w2.movement_type) {
-    const mech = w1.movement_type !== 'quartz' ? w1 : w2
-    const qtz = w1.movement_type !== 'quartz' ? w2 : w1
-    sentences.push(`${mech.brand} ${mech.name} offers ${mech.movement_type} craftsmanship; ${qtz.brand} ${qtz.name} runs quartz for higher accuracy and lower maintenance.`)
-  }
-
-  const wrDiff = Math.abs(w1.water_resistance_m - w2.water_resistance_m)
-  if (wrDiff >= 50) {
-    const better = w1.water_resistance_m > w2.water_resistance_m ? w1 : w2
-    const other = w1.water_resistance_m > w2.water_resistance_m ? w2 : w1
-    if (better.water_resistance_m >= 200) {
-      sentences.push(`Choose ${better.brand} ${better.name} (${better.water_resistance_m}m WR) for diving; ${other.brand} ${other.name} (${other.water_resistance_m}m) suits everyday wear.`)
-    } else {
-      sentences.push(`${better.brand} ${better.name} edges ahead on water resistance: ${better.water_resistance_m}m vs ${other.water_resistance_m}m.`)
-    }
-  }
-
-  const caseDiff = Math.abs(w1.case_diameter_mm - w2.case_diameter_mm)
-  if (caseDiff >= 2 && sentences.length < 3) {
-    const larger = w1.case_diameter_mm > w2.case_diameter_mm ? w1 : w2
-    const smaller = w1.case_diameter_mm > w2.case_diameter_mm ? w2 : w1
-    sentences.push(`Case size: ${larger.brand} ${larger.name} at ${larger.case_diameter_mm}mm suits larger wrists; ${smaller.brand} ${smaller.name} at ${smaller.case_diameter_mm}mm is the more compact option.`)
-  }
-
-  return sentences.slice(0, 3).join(' ')
-}
 
 export async function generateStaticParams() {
   // Pre-generate Tier 1 & 2 at build time; Tier 3 uses on-demand ISR
@@ -164,15 +122,6 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
   const reviews2 = getReviewsForWatch(w2.id)
   const avg1 = calcAverageRatings(reviews1)
   const avg2 = calcAverageRatings(reviews2)
-  const overall1 = avg1 ? calcOverallRating(avg1) : null
-  const overall2 = avg2 ? calcOverallRating(avg2) : null
-
-  // Community preference from ratings
-  const pref1 = (overall1 && overall2)
-    ? Math.round((overall1 / (overall1 + overall2)) * 100)
-    : 50
-  const pref2 = 100 - pref1
-  const preferredWatch = pref1 > pref2 ? w1 : pref2 > pref1 ? w2 : null
 
   const relatedComparisons = comparisonTiers
     .filter((c) => `${c.slug1}-vs-${c.slug2}` !== params.slug && (c.slug1 === slug1 || c.slug2 === slug2 || c.slug1 === slug2 || c.slug2 === slug1))
@@ -294,7 +243,7 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
         slug2={w2.slug}
         watch1Name={w1.name}
         watch2Name={w2.name}
-        verdict={preferredWatch ? `${preferredWatch.brand} ${preferredWatch.name}` : 'Too Close to Call'}
+        verdict="View Verdict"
         sections={tocSections}
       />
 
@@ -534,47 +483,6 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
                   </div>
                 ))}
               </div>
-            </section>
-
-            {/* Unified Community Verdict */}
-            <section id="comparison-verdict" className="bg-accentLight border border-borderStrong rounded-sm p-6 md:p-8 mb-10 scroll-mt-24">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-2xl" aria-hidden="true">
-                  {preferredWatch ? '🏆' : '⚖️'}
-                </span>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-textMuted">
-                    Community Verdict
-                  </p>
-                  <p className={`text-lg md:text-xl font-bold ${preferredWatch ? 'text-winner' : 'text-accent'}`}>
-                    {preferredWatch ? `${preferredWatch.brand} ${preferredWatch.name}` : 'Too Close to Call'}
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-textSecond text-sm leading-relaxed mb-5">{override?.verdict || generateVerdict(w1, w2)}</p>
-
-              {overall1 && overall2 ? (
-                <div className="mb-5">
-                  <div className="flex justify-between text-xs mb-2">
-                    <span className="font-semibold text-textPrimary">{w1.name}</span>
-                    <span className="text-textSecond">Community Rating</span>
-                    <span className="font-semibold text-textPrimary">{w2.name}</span>
-                  </div>
-                  <div className="flex h-2.5 rounded-full overflow-hidden bg-border">
-                    <div className="bg-accent transition-all" style={{ width: `${pref1}%` }} />
-                    <div className="bg-borderStrong transition-all" style={{ width: `${pref2}%` }} />
-                  </div>
-                  <div className="flex justify-between text-xs mt-1.5">
-                    <span className="text-accent font-bold">{pref1}%</span>
-                    <span className="text-textMuted font-bold">{pref2}%</span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-xs text-textMuted mb-5">No community ratings yet — cast your vote below.</p>
-              )}
-
-              <VoteSection slug={params.slug} watch1Name={w1.name} watch2Name={w2.name} watch1Brand={w1.brand} watch2Brand={w2.brand} />
             </section>
 
             {/* Community Ratings */}

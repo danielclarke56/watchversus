@@ -11,7 +11,7 @@ import type { Metadata } from 'next'
 const faqItems = [
   {
     q: 'How do I compare two watches on WatchVsWatch?',
-    a: `Use the search bar on the homepage or visit the Compare page to pick any two watches. You'll see side-by-side specs, key differences, community votes, and an expert verdict — all on one page.`,
+    a: `Use the search bar on the homepage or visit the Compare page to pick any two watches. You'll see side-by-side specs, key differences, and an expert verdict — all on one page.`,
   },
   {
     q: 'What brands does WatchVsWatch cover?',
@@ -23,7 +23,7 @@ const faqItems = [
   },
   {
     q: 'How are watches rated and compared?',
-    a: 'Each comparison includes verified specifications, an analysis of real-world differences (movement, water resistance, case size, price), community votes from watch enthusiasts, and an editorial verdict summarising who each watch is best for.',
+    a: 'Each comparison includes verified specifications, an analysis of real-world differences (movement, water resistance, case size, price), and an editorial verdict summarising who each watch is best for.',
   },
   {
     q: 'Can WatchVsWatch help me choose my first watch?',
@@ -113,7 +113,7 @@ const researchCards = [
   {
     icon: '⚔️',
     title: 'Compare Watches',
-    desc: 'Side-by-side specs, real differences, and community votes.',
+    desc: 'Side-by-side specs and real differences.',
     href: '/compare',
   },
   {
@@ -152,12 +152,7 @@ const quickLinks = [
 // Top brands from the database for Browse by Brand
 const topBrands = ['Rolex', 'Omega', 'Tudor', 'Seiko', 'TAG Heuer', 'Grand Seiko']
 
-// How it works steps
-const howItWorksSteps = [
-  { icon: '🔍', title: 'Research Any Watch', desc: 'Browse 50+ watch profiles with full specs, pros & cons, and community ratings.' },
-  { icon: '⚔️', title: 'Compare Side by Side', desc: 'Run any head-to-head matchup: specs, real-world differences, community votes, and an expert verdict.' },
-  { icon: '✅', title: 'Buy With Confidence', desc: 'Use buying guides by budget and style, or take the Watch Finder Quiz for a personalised pick in under a minute.' },
-]
+
 
 export const metadata: Metadata = {
   title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
@@ -236,22 +231,50 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* WATCH GALLERY */}
       <Section py="md" bg="surface">
         <Container>
-          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary text-center mb-8 sm:mb-12">
-            How It Works
+          <h2 className="text-2xl sm:text-3xl font-bold text-textPrimary mb-8 sm:mb-12">
+            Browse Watches
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            {howItWorksSteps.map((step, i) => (
-              <div key={i} className="text-center">
-                <div className="text-4xl mb-3">{step.icon}</div>
-                <h3 className="text-lg font-semibold text-textPrimary mb-2">
-                  <span className="text-accent mr-1">{i + 1}.</span>
-                  {step.title}
-                </h3>
-                <p className="text-sm text-textSecond">{step.desc}</p>
-              </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {watches.slice(0, 100).map((watch) => (
+              <Link
+                key={watch.id}
+                href={`/watches/${watch.slug}`}
+                className="group"
+              >
+                <div className="bg-surface border border-border rounded-sm overflow-hidden hover:shadow-sm transition-all duration-200">
+                  {/* Watch image */}
+                  <div className="relative bg-surfaceAlt aspect-square flex items-center justify-center overflow-hidden">
+                    {watch.image ? (
+                      <Image
+                        src={watch.image}
+                        alt={watch.imageAlt ?? `${watch.brand} ${watch.name}`}
+                        fill
+                        className="object-contain p-2"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full border-2 border-border flex items-center justify-center text-border">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 7v5l3 3" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Watch info */}
+                  <div className="p-3">
+                    <p className="text-xs text-textMuted uppercase tracking-wider font-semibold mb-0.5">
+                      {watch.brand}
+                    </p>
+                    <h3 className="text-sm font-semibold text-textPrimary group-hover:text-accent transition-colors">
+                      {watch.name}
+                    </h3>
+                  </div>
+                </div>
+              </Link>
             ))}
           </div>
         </Container>
@@ -485,7 +508,7 @@ export default function HomePage() {
       <div className="border-y border-border py-8">
         <Container>
           <p className="text-textSecond text-sm text-center">
-            {watches.length} watches &middot; {comparisonTiers.length}+ head-to-head comparisons &middot; Independent &amp; unbiased &middot; Community-powered ratings &middot; Real specs from manufacturers
+            {watches.length} watches &middot; {comparisonTiers.length}+ head-to-head comparisons &middot; Independent &amp; unbiased &middot; Real specs from manufacturers
           </p>
         </Container>
       </div>
@@ -502,10 +525,10 @@ export default function HomePage() {
                 WatchVsWatch is an independent watch research resource covering every stage of the watch-buying journey — from initial research through to a confident purchase decision. Whether you are comparing Rolex vs Omega, looking for the best dive watches under $5,000, using the Watch Finder Quiz to narrow down a budget, or reading a full brand breakdown, everything on this site is editorially independent with no affiliate links and no sponsored placements.
               </p>
               <p>
-                The site covers four core content areas: <strong>watch comparisons</strong> (side-by-side specs, community votes, and expert verdicts), <strong>buying guides</strong> (curated recommendations by budget, style, and occasion), <strong>watch profiles</strong> (individual watch pages with verified specs, ratings, and pros &amp; cons), and the <strong>Watch Finder Quiz</strong> (five questions to a personalised recommendation).
+                The site covers four core content areas: <strong>watch comparisons</strong> (side-by-side specs and expert verdicts), <strong>buying guides</strong> (curated recommendations by budget, style, and occasion), <strong>watch profiles</strong> (individual watch pages with verified specs, ratings, and pros &amp; cons), and the <strong>Watch Finder Quiz</strong> (five questions to a personalised recommendation).
               </p>
               <p>
-                <strong>What makes WatchVsWatch different:</strong> specifications are sourced directly from manufacturer documentation and cross-referenced for accuracy. Community ratings are real votes from watch enthusiasts — not seeded scores. Editorial verdicts are written independently with no commercial interest in which watch you choose. Buying guide recommendations are based on build quality, value, and use-case fit — not commission rates.
+                <strong>What makes WatchVsWatch different:</strong> specifications are sourced directly from manufacturer documentation and cross-referenced for accuracy. Editorial verdicts are written independently with no commercial interest in which watch you choose. Buying guide recommendations are based on build quality, value, and use-case fit — not commission rates.
               </p>
               <p>
                 Watch brands covered include Seiko, Casio, Orient, Citizen, Tissot, Hamilton, Longines, TAG Heuer, Oris, Tudor, Omega, Rolex, Breitling, IWC, Cartier, Panerai, Grand Seiko, and more — at every price point from under $100 to six-figure luxury, with new watches and comparisons added regularly.
