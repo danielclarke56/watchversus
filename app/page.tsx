@@ -1,17 +1,6 @@
-import { comparisonTiers, getWatchBySlug } from '@/lib/watches'
-import { getRecentApprovedReviews } from '@/lib/reviews'
-import { getRedis } from '@/lib/redis'
-import type { ApprovedPhoto } from '@/lib/photos'
 import HeroSearch from '@/components/home/HeroSearch'
-import TrendingPhotos from '@/components/home/TrendingPhotos'
-import PopularWatches from '@/components/home/PopularWatches'
-import OwnerReviews from '@/components/home/OwnerReviews'
-import CompareStrip from '@/components/home/CompareStrip'
-import UploadCTA from '@/components/home/UploadCTA'
-import QuizBanner from '@/components/home/QuizBanner'
+import PhotoGallery from '@/components/home/PhotoGallery'
 import type { Metadata } from 'next'
-import fs from 'fs'
-import path from 'path'
 
 const faqItems = [
   {
@@ -84,31 +73,6 @@ const websiteJsonLd = {
   },
 }
 
-const featuredComparisons = comparisonTiers
-  .filter((c) => c.tier === 1)
-  .slice(0, 6)
-  .map((c) => ({
-    slug1: c.slug1,
-    slug2: c.slug2,
-    tagline: `${getWatchBySlug(c.slug1)?.brand ?? ''} ${getWatchBySlug(c.slug1)?.name ?? ''} vs ${getWatchBySlug(c.slug2)?.brand ?? ''} ${getWatchBySlug(c.slug2)?.name ?? ''}`,
-  }))
-
-const itemListJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  name: 'Popular Watch Comparisons',
-  itemListElement: featuredComparisons.map((c, i) => {
-    const wa = getWatchBySlug(c.slug1)
-    const wb = getWatchBySlug(c.slug2)
-    return {
-      '@type': 'ListItem',
-      position: i + 1,
-      name: `${wa?.brand ?? ''} ${wa?.name ?? c.slug1} vs ${wb?.brand ?? ''} ${wb?.name ?? c.slug2}`,
-      url: `https://watchvswatch.com/compare/${c.slug1}-vs-${c.slug2}`,
-    }
-  }),
-}
-
 export const metadata: Metadata = {
   title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
   description:
@@ -131,40 +95,7 @@ export const metadata: Metadata = {
   },
 }
 
-async function fetchPhotos(limit: number): Promise<ApprovedPhoto[]> {
-  try {
-    const redis = getRedis()
-    let allPhotos: ApprovedPhoto[] = []
-
-    if (redis) {
-      const keys = await redis.keys('photos:*')
-      const watchKeys = keys.filter((k) => !k.startsWith('photos:pending:'))
-      for (const key of watchKeys) {
-        const photos = (await redis.get(key)) as ApprovedPhoto[] | null
-        if (photos && Array.isArray(photos)) {
-          allPhotos.push(...photos)
-        }
-      }
-    } else {
-      const approvedFile = path.join(process.cwd(), 'data', 'approved-photos.json')
-      if (fs.existsSync(approvedFile)) {
-        allPhotos = JSON.parse(fs.readFileSync(approvedFile, 'utf8')) as ApprovedPhoto[]
-      }
-    }
-
-    allPhotos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    return allPhotos.slice(0, limit)
-  } catch {
-    return []
-  }
-}
-
-export default async function HomePage() {
-  const [photos, reviews] = await Promise.all([
-    fetchPhotos(12),
-    getRecentApprovedReviews(4),
-  ])
-
+export default function HomePage() {
   return (
     <>
       {/* JSON-LD Schemas */}
@@ -180,19 +111,10 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
-      />
 
-      <main>
+      <main className="min-h-screen">
         <HeroSearch />
-        <TrendingPhotos photos={photos} />
-        <PopularWatches />
-        <OwnerReviews reviews={reviews} />
-        <CompareStrip />
-        <UploadCTA photos={photos.slice(0, 3)} />
-        <QuizBanner />
+        <PhotoGallery />
       </main>
     </>
   )
