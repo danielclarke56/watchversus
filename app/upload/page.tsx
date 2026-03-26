@@ -4,6 +4,13 @@ import UploadClient from './UploadClient'
 export const metadata: Metadata = {
   title: 'Upload Your Watch Photo | WatchVsWatch',
   description: 'Share a photo of your watch. Real wrist shots from real owners.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://watchvswatch.com/upload',
+  },
 }
 
 export default function UploadPage() {
