@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { watches, popularComparisons } from '@/lib/watches'
 import { SearchForm } from '@/components/SearchForm'
 
@@ -13,11 +14,21 @@ export default function HeroSearch() {
         <p className="text-base sm:text-lg text-gray-500 text-center mb-6">
           Browse real photos from watch owners around the world
         </p>
-        <SearchForm
-          placeholder="Search watches (Rolex, Omega, Tudor...)"
-          watches={watches}
-          comparisons={popularComparisons}
-        />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SearchForm
+              placeholder="Search watches (Rolex, Omega, Tudor...)"
+              watches={watches}
+              comparisons={popularComparisons}
+            />
+          </div>
+          <Link
+            href="/upload"
+            className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors whitespace-nowrap"
+          >
+            Upload a photo
+          </Link>
+        </div>
       </div>
     </section>
   )

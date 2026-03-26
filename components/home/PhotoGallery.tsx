@@ -21,8 +21,6 @@ interface PhotosResponse {
   nextCursor: string | null
 }
 
-const BRANDS = ['All', 'Trending', 'Rolex', 'Omega', 'Tudor', 'Seiko'] as const
-
 const PAGE_SIZE = 50
 
 export default function PhotoGallery() {
@@ -30,28 +28,25 @@ export default function PhotoGallery() {
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [activeBrand, setActiveBrand] = useState<string>('All')
   const sentinelRef = useRef<HTMLDivElement>(null)
 
-  const fetchPhotos = useCallback(async (brand: string, cursor?: string) => {
+  const fetchPhotos = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
     if (cursor) params.set('cursor', cursor)
-    const brandParam = brand === 'All' || brand === 'Trending' ? '' : brand.toLowerCase()
-    if (brandParam) params.set('brand', brandParam)
 
     const res = await fetch(`/api/photos/all?${params.toString()}`)
     const data: PhotosResponse = await res.json()
     return data
   }, [])
 
-  // Initial load + brand change
+  // Initial load
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setPhotos([])
     setNextCursor(null)
 
-    fetchPhotos(activeBrand).then((data) => {
+    fetchPhotos().then((data) => {
       if (!cancelled) {
         setPhotos(data.photos)
         setNextCursor(data.nextCursor)
@@ -62,7 +57,7 @@ export default function PhotoGallery() {
     })
 
     return () => { cancelled = true }
-  }, [activeBrand, fetchPhotos])
+  }, [fetchPhotos])
 
   // Infinite scroll
   useEffect(() => {
@@ -71,7 +66,7 @@ export default function PhotoGallery() {
       (entries) => {
         if (entries[0]?.isIntersecting && nextCursor && !loadingMore) {
           setLoadingMore(true)
-          fetchPhotos(activeBrand, nextCursor).then((data) => {
+          fetchPhotos(nextCursor).then((data) => {
             setPhotos((prev) => [...prev, ...data.photos])
             setNextCursor(data.nextCursor)
             setLoadingMore(false)
@@ -82,27 +77,10 @@ export default function PhotoGallery() {
     )
     observer.observe(sentinelRef.current)
     return () => observer.disconnect()
-  }, [nextCursor, loadingMore, activeBrand, fetchPhotos])
+  }, [nextCursor, loadingMore, fetchPhotos])
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-      {/* Brand filter pills */}
-      <div className="flex gap-2 justify-center flex-wrap mb-6">
-        {BRANDS.map((brand) => (
-          <button
-            key={brand}
-            onClick={() => setActiveBrand(brand)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              activeBrand === brand
-                ? 'bg-textPrimary text-white'
-                : 'bg-transparent border border-border text-textSecond hover:border-textPrimary hover:text-textPrimary'
-            }`}
-          >
-            {brand}
-          </button>
-        ))}
-      </div>
-
       {/* Gallery grid */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
