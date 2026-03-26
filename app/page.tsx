@@ -4,28 +4,20 @@ import type { Metadata } from 'next'
 
 const faqItems = [
   {
-    q: 'How do I compare two watches on WatchVsWatch?',
-    a: `Use the search bar on the homepage or visit the Compare page to pick any two watches. You'll see side-by-side specs, key differences, and an expert verdict — all on one page.`,
+    q: 'What is WatchVsWatch?',
+    a: 'WatchVsWatch is a watch photo gallery and resource. Browse community-submitted photos of watches at every price point — from affordable favourites like Seiko and Casio to luxury brands like Rolex, Omega, and Patek Philippe.',
   },
   {
-    q: 'What brands does WatchVsWatch cover?',
-    a: 'We cover watches at every price point — from affordable favourites like Seiko, Casio, Orient, and Tissot to mid-range brands like Hamilton, Longines, and Oris, all the way up to Rolex, Omega, Tudor, Breitling, IWC, Cartier, Grand Seiko, and beyond. New watches and brands are added regularly.',
+    q: 'Can I upload my own watch photos?',
+    a: 'Yes! Click the "Upload a Photo" button to share your watch collection with the community. Sign in with your email or Google account to get started.',
   },
   {
     q: 'Is WatchVsWatch free to use?',
-    a: 'Yes, WatchVsWatch is completely free. We have no affiliate links and no sponsored content — every comparison and recommendation is independent.',
+    a: 'Yes, WatchVsWatch is completely free. We have no affiliate links and no sponsored content. It\'s a pure photo gallery for watch enthusiasts.',
   },
   {
-    q: 'How are watches rated and compared?',
-    a: 'Each comparison includes verified specifications, an analysis of real-world differences (movement, water resistance, case size, price), and an editorial verdict summarising who each watch is best for.',
-  },
-  {
-    q: 'Can WatchVsWatch help me choose my first watch?',
-    a: 'Absolutely. Take our Watch Finder Quiz to get a personalised recommendation in under a minute, or browse our buying guides organised by budget, style, and occasion — whether your budget is $100 or $10,000.',
-  },
-  {
-    q: 'Does WatchVsWatch have watch buying guides?',
-    a: 'Yes. WatchVsWatch publishes independent buying guides organised by budget (best watches under $500, under $1,000, under $5,000), by style (dive watches, dress watches, chronographs, field watches), and by occasion. Each guide includes curated picks with specs and a clear recommendation — no affiliate links and no sponsored placements.',
+    q: 'What watches are featured?',
+    a: 'We feature watches at every price point — from affordable favourites like Seiko, Casio, Orient, and Tissot to mid-range brands like Hamilton, Longines, and Oris, all the way up to Rolex, Omega, Tudor, Breitling, IWC, Cartier, Grand Seiko, and beyond.',
   },
 ]
 
@@ -48,11 +40,11 @@ const organizationJsonLd = {
   name: 'WatchVsWatch',
   url: 'https://watchvswatch.com',
   logo: 'https://watchvswatch.com/icon.png',
-  description: 'WatchVsWatch is an independent watch research resource covering side-by-side watch comparisons, buying guides by budget and style, detailed watch profiles, community ratings, and a Watch Finder Quiz. It covers watches at every price point from Seiko and Casio to Rolex and Patek Philippe, with no affiliate links or sponsored content.',
+  description: 'WatchVsWatch is a community watch photo gallery featuring photographs and uploads from watch enthusiasts. Browse watches at every price point from Seiko and Casio to Rolex and Patek Philippe, with no affiliate links or sponsored content.',
   knowsAbout: [
-    'Watch comparisons', 'Watch buying guides', 'Watch specifications', 'Luxury watches',
-    'Dive watches', 'Dress watches', 'Chronograph watches', 'Watch reviews',
-    'Watch recommendations', 'Rolex', 'Omega', 'Tudor', 'Seiko', 'TAG Heuer', 'Grand Seiko',
+    'Watch photography', 'Watch gallery', 'Watch community', 'Luxury watches',
+    'Dive watches', 'Dress watches', 'Chronograph watches', 'Watch photos',
+    'Watch collection', 'Rolex', 'Omega', 'Tudor', 'Seiko', 'TAG Heuer', 'Grand Seiko',
   ],
   sameAs: [],
 }
@@ -62,36 +54,36 @@ const websiteJsonLd = {
   '@type': 'WebSite',
   name: 'WatchVsWatch',
   url: 'https://watchvswatch.com',
-  description: 'Independent watch research resource: comparisons, buying guides, watch profiles, and the Watch Finder Quiz.',
+  description: 'Community watch photo gallery featuring photos of watches at every price point.',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://watchvswatch.com/watches?q={search_term_string}',
+      urlTemplate: 'https://watchvswatch.com?q={search_term_string}',
     },
     'query-input': 'required name=search_term_string',
   },
 }
 
 export const metadata: Metadata = {
-  title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
+  title: 'Watch Photo Gallery | WatchVsWatch',
   description:
-    'The independent watch research resource. Compare watches side by side, explore buying guides, use the Watch Finder Quiz, and browse full specs for 50+ watches. No affiliate links. No sponsored content.',
+    'Browse a community-curated gallery of watches at every price point. Upload your own watch photos and explore photos from other enthusiasts. From Seiko to Rolex, no affiliate links, just watch photos.',
   alternates: {
     canonical: 'https://watchvswatch.com',
   },
   openGraph: {
     type: 'website',
     siteName: 'WatchVsWatch',
-    title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
-    description: 'Independent watch research: side-by-side comparisons, buying guides by budget and style, Watch Finder Quiz, and detailed watch profiles. Every price point, no affiliate links.',
+    title: 'Watch Photo Gallery | WatchVsWatch',
+    description: 'Community watch photo gallery. Browse and upload watch photos at every price point. From affordable to luxury watches.',
     url: 'https://watchvswatch.com',
-    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Compare+Watches+Side+by+Side', width: 1200, height: 630 }],
+    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Watch+Photo+Gallery', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Watch Reviews, Comparisons & Buying Guides | WatchVsWatch',
-    description: 'Independent watch research: side-by-side comparisons, buying guides by budget and style, Watch Finder Quiz, and detailed watch profiles. Every price point, no affiliate links.',
+    title: 'Watch Photo Gallery | WatchVsWatch',
+    description: 'Community watch photo gallery. Browse and upload watch photos at every price point.',
   },
 }
 
