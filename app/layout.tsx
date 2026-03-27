@@ -49,15 +49,7 @@ const websiteJsonLd = {
   '@type': 'WebSite',
   name: 'WatchVsWatch',
   url: 'https://watchvswatch.com',
-  description: 'Compare watches side-by-side with full specs, expert verdicts, and detailed analysis.',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: 'https://watchvswatch.com/compare?q={search_term_string}',
-    },
-    'query-input': 'required name=search_term_string',
-  },
+  description: 'Community watch photo gallery featuring photos of watches at every price point.',
 }
 
 function Shell({ children }: { children: React.ReactNode }) {

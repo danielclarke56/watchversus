@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import type { ApprovedPhoto } from '@/lib/photos'
@@ -86,9 +85,8 @@ export function ExploreClient() {
               {photos.map((photo) => {
                 const watchName = getWatchName(photo.watchId)
                 return (
-                  <Link
+                  <div
                     key={photo.id}
-                    href={`/watches/${photo.watchId}`}
                     className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors"
                   >
                     <Image
@@ -112,7 +110,7 @@ export function ExploreClient() {
                         </p>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 )
               })}
             </div>

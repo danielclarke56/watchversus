@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 interface WatchRecommendationProps {
   brand: string
   name: string
@@ -19,7 +17,6 @@ export default function WatchRecommendation({
   name,
   highlight,
   specs,
-  slug,
   reference,
   price,
   priceRange,
@@ -50,22 +47,6 @@ export default function WatchRecommendation({
             </div>
           )}
           <p className="text-textSecond text-sm leading-relaxed mb-4">{highlight}</p>
-          {slug && (
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/watches/${slug}`}
-                className="text-xs text-accent hover:underline font-medium"
-              >
-                Full specs →
-              </Link>
-              <Link
-                href={`/compare?a=${slug}`}
-                className="text-xs text-textMuted hover:text-accent hover:underline font-medium transition-colors"
-              >
-                Compare →
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </div>

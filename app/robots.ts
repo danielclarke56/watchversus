@@ -7,8 +7,6 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: [
           '/',
-          '/compare',
-'/watches',
           '/guides',
           '/quiz',
           '/about',

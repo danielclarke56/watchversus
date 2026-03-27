@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
 import type { Metadata } from 'next'
@@ -105,8 +106,10 @@ export default function HomePage() {
       />
 
       <main className="min-h-screen">
-        <HeroSearch />
-        <PhotoGallery />
+        <Suspense>
+          <HeroSearch />
+          <PhotoGallery />
+        </Suspense>
       </main>
     </>
   )

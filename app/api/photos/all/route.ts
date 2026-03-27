@@ -39,9 +39,8 @@ export async function GET(req: NextRequest) {
     photoRecords.reverse()
 
     // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
-    function unslugify(slug: string): string {
-      return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-    }
+    const unslugify = (slug: string): string =>
+      slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 
     // Enrich photos with watch data
     const enriched = photoRecords.map((p) => {

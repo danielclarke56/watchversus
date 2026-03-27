@@ -23,12 +23,8 @@ export async function GET() {
       .groupBy(photos.watchId)
 
     // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
-    function unslugify(slug: string): string {
-      return slug
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ')
-    }
+    const unslugify = (slug: string): string =>
+      slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 
     // Enrich with watch data from static library
     const enrichedWatches = photosByWatch

@@ -71,9 +71,8 @@ export function ProfileClient({ userId }: ProfileClientProps) {
               {photos.map((photo) => {
                 const watchName = getWatchName(photo.watchId)
                 return (
-                  <Link
+                  <div
                     key={photo.id}
-                    href={`/watches/${photo.watchId}`}
                     className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors"
                   >
                     <Image
@@ -87,7 +86,7 @@ export function ProfileClient({ userId }: ProfileClientProps) {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                       <p className="text-white text-xs font-semibold truncate">{watchName}</p>
                     </div>
-                  </Link>
+                  </div>
                 )
               })}
             </div>

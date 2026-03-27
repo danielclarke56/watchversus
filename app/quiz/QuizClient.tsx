@@ -390,11 +390,6 @@ export default function QuizClient({ watches }: Props) {
                 </ul>
               </div>
 
-              <div className="flex gap-3">
-                <Link href={`/watches/${watch.slug}`} className="btn-gold text-sm flex-1 text-center">
-                  View Full Specs
-                </Link>
-              </div>
             </div>
           ))}
         </div>
@@ -405,10 +400,9 @@ export default function QuizClient({ watches }: Props) {
             <h2 className="text-lg font-semibold text-textPrimary mb-4">Also Worth a Look</h2>
             <div className="space-y-3">
               {closeMatches.map(({ watch }) => (
-                <Link
+                <div
                   key={watch.id}
-                  href={`/watches/${watch.slug}`}
-                  className="card p-4 border-border hover:border-borderStrong transition-colors flex items-center gap-4"
+                  className="card p-4 border-border flex items-center gap-4"
                 >
                   {watch.image && (
                     <div className="bg-surfaceAlt rounded-sm border border-border w-16 h-16 flex items-center justify-center overflow-hidden shrink-0">
@@ -426,21 +420,9 @@ export default function QuizClient({ watches }: Props) {
                     <p className="text-sm font-bold text-textPrimary truncate">{watch.name}</p>
                     <p className="text-xs text-textSecond">{formatPrice(watch.price_new_usd)}</p>
                   </div>
-                  <span className="text-textMuted text-sm shrink-0">&rarr;</span>
-                </Link>
+                </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {topMatches.length >= 2 && (
-          <div className="text-center mb-6">
-            <Link
-              href={`/compare/${topMatches[0].watch.slug}-vs-${topMatches[1].watch.slug}`}
-              className="btn-gold text-sm px-6 py-2.5 inline-block"
-            >
-              Compare {topMatches[0].watch.name} vs {topMatches[1].watch.name}
-            </Link>
           </div>
         )}
 
@@ -459,11 +441,6 @@ export default function QuizClient({ watches }: Props) {
             >
               📋 {copied ? 'Copied!' : 'Share results'}
             </button>
-          </div>
-          <div>
-            <Link href="/watches" className="text-textSecond hover:text-accent text-sm transition-colors">
-              Browse all watches &rarr;
-            </Link>
           </div>
           <div>
             <Link href="/guides" className="text-textSecond hover:text-accent text-sm transition-colors">
@@ -547,8 +524,8 @@ export default function QuizClient({ watches }: Props) {
           >
             Skip
           </button>
-          <Link href="/watches" className="text-textMuted hover:text-accent text-sm transition-colors">
-            Browse all &rarr;
+          <Link href="/" className="text-textMuted hover:text-accent text-sm transition-colors">
+            Browse gallery &rarr;
           </Link>
         </div>
       </div>

@@ -9,8 +9,7 @@ export default function NotFound() {
         The watch or page you&apos;re looking for doesn&apos;t exist in our database.
       </p>
       <div className="flex flex-wrap gap-3 justify-center">
-        <Link href="/watches" className="btn-gold">Browse Watches</Link>
-        <Link href="/" className="btn-outline">Go Home</Link>
+        <Link href="/" className="btn-gold">Browse Gallery</Link>
       </div>
     </div>
   )

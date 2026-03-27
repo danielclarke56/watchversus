@@ -2,14 +2,13 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { watches, popularComparisons, formatPrice } from '@/lib/watches'
+import { watches, formatPrice } from '@/lib/watches'
 import { guides } from '@/lib/guideData'
 import { getRelatedGuidesByBrand } from '@/lib/relatedContent'
 import GuideTableOfContents from '@/app/components/GuideTableOfContents'
 import { getMdxGuideSlugs, hasMdxGuide, getMdxGuide } from '@/lib/mdxGuides'
 import MdxGuidePage from './MdxGuidePage'
 import RelatedGuides from '@/components/guides/RelatedGuides'
-import FeaturedComparisons from '@/components/guides/FeaturedComparisons'
 import QuizCTA from '@/components/QuizCTA'
 
 export async function generateStaticParams() {
@@ -66,49 +65,6 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
     return { rec, watch: watch ?? null }
   })
 
-  // Find comparisons that involve any recommended watch slug (only for DB watches)
-  const relatedSlugs = new Set(guide.recommendations.map((r) => r.slug).filter(Boolean) as string[])
-  const relatedComparisons = popularComparisons
-    .filter((c) => relatedSlugs.has(c.slug1) || relatedSlugs.has(c.slug2))
-    .slice(0, 6)
-
-  // Compute all pairs between recommended watches that exist in popularComparisons
-  const recSlugList = guide.recommendations.map((r) => r.slug).filter(Boolean) as string[]
-  const internalComparisons: typeof popularComparisons = []
-  for (let i = 0; i < recSlugList.length; i++) {
-    for (let j = i + 1; j < recSlugList.length; j++) {
-      const found = popularComparisons.find(
-        (c) =>
-          (c.slug1 === recSlugList[i] && c.slug2 === recSlugList[j]) ||
-          (c.slug1 === recSlugList[j] && c.slug2 === recSlugList[i])
-      )
-      if (found) internalComparisons.push(found)
-    }
-  }
-  // Merge internal pairs first, then other related — dedupe, max 6
-  const seenComps = new Set<string>()
-  const topComparisons = [...internalComparisons, ...relatedComparisons]
-    .filter((c) => {
-      const key = `${c.slug1}-${c.slug2}`
-      if (seenComps.has(key)) return false
-      seenComps.add(key)
-      return true
-    })
-    .slice(0, 6)
-
-  // Prioritize cross-brand comparisons, limit to 4
-  const crossBrandComps = topComparisons.filter((c) => {
-    const wa = watches.find((w) => w.slug === c.slug1)
-    const wb = watches.find((w) => w.slug === c.slug2)
-    return wa && wb && wa.brand !== wb.brand
-  })
-  const sameBrandComps = topComparisons.filter((c) => {
-    const wa = watches.find((w) => w.slug === c.slug1)
-    const wb = watches.find((w) => w.slug === c.slug2)
-    return wa && wb && wa.brand === wb.brand
-  })
-  const curatedComparisons = [...crossBrandComps, ...sameBrandComps].slice(0, 4)
-
   // Find related guides and brands
   const relatedGuides = getRelatedGuidesByBrand(guide.slug)
 // Compute read time and stats
@@ -138,7 +94,6 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
   const tocSections = [
     { id: 'quick-specs', label: 'Quick Specs' },
     { id: 'our-picks', label: 'Our Picks' },
-    ...(curatedComparisons.length > 0 ? [{ id: 'compare-head-to-head', label: 'Featured Comparisons' }] : []),
     { id: 'buying-guide', label: 'Buying Guide' },
     { id: 'faq', label: 'Common Questions' },
     { id: 'verdict', label: 'Our Verdict' },
@@ -199,7 +154,6 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           '@type': 'ListItem',
           position: i + 1,
           name: watch ? `${watch.brand} ${watch.name}` : `${rec.brand ?? ''} ${rec.name ?? ''}`.trim(),
-          ...(watch ? { url: `https://watchvswatch.com/watches/${watch.slug}` } : {}),
         })),
       },
     ],
@@ -242,12 +196,6 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
               <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
               {recommendedWatches.length} watches reviewed
             </span>
-            {curatedComparisons.length > 0 && (
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                {curatedComparisons.length} head-to-head comparisons
-              </span>
-            )}
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
               Updated 2026
@@ -332,13 +280,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                     return (
                       <tr key={key} className={`border-b border-border ${i % 2 === 0 ? 'bg-surface' : 'bg-surfaceAlt'}`}>
                         <td className="px-3 py-2.5">
-                          {watch ? (
-                            <Link href={`/watches/${watch.slug}`} className="text-accent hover:underline font-medium whitespace-nowrap">
-                              {brand} {name}
-                            </Link>
-                          ) : (
-                            <span className="font-medium whitespace-nowrap text-textPrimary">{brand} {name}</span>
-                          )}
+                          <span className="font-medium whitespace-nowrap text-textPrimary">{brand} {name}</span>
                         </td>
                         <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{price}</td>
                         <td className="px-3 py-2.5 text-textSecond whitespace-nowrap">{size ? `${size}mm` : '—'}</td>
@@ -391,22 +333,6 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                         {wr && wr >= 50 && <span>{wr}m WR</span>}
                       </div>
                       <p className="text-textSecond text-sm leading-relaxed mb-4">{rec.highlight}</p>
-                      {watch && (
-                        <div className="flex flex-wrap gap-3">
-                          <Link
-                            href={`/watches/${watch.slug}`}
-                            className="text-xs text-accent hover:underline font-medium"
-                          >
-                            Full specs →
-                          </Link>
-                          <Link
-                            href={`/compare?a=${watch.slug}`}
-                            className="text-xs text-textMuted hover:text-accent hover:underline font-medium transition-colors"
-                          >
-                            Compare →
-                          </Link>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -415,8 +341,6 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           </div>
         </section>
 
-        {/* Featured Comparisons */}
-        <FeaturedComparisons guide={guide} />
 
         {/* Buying Guide */}
         <section id="buying-guide" className="mb-12 scroll-mt-24">
@@ -470,25 +394,8 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         {/* Quiz CTA */}
         <QuizCTA />
 
-        {/* Browse All Strip — moved below content */}
-        <div className="mb-12 flex items-center justify-between bg-neutral border border-border rounded-sm px-5 py-3">
-          <p className="text-sm text-textSecond">Browse and filter the full watch database by score, price, and style</p>
-          <Link href="/watches?sort=score" className="text-sm font-semibold text-accent hover:underline shrink-0 ml-4">
-            Browse All Watches →
-          </Link>
-        </div>
-
         {/* Related Guides Footer */}
         <RelatedGuides currentSlug={guide.slug} />
-
-{/* CTA */}
-        <div className="text-center bg-neutral border border-border rounded-sm p-8">
-          <h3 className="text-textPrimary font-heading font-semibold text-lg mb-2">Compare Any Two Watches</h3>
-          <p className="text-textSecond text-sm mb-5">Head-to-head specs, community ratings, and pricing side by side</p>
-          <Link href="/compare" className="btn-gold">
-            Start a Comparison
-          </Link>
-        </div>
         </div>
       </div>
     </>
