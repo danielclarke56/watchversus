@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface WatchWithCount {
@@ -23,6 +23,31 @@ export default function GallerySearch() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const activeWatchId = searchParams.get('watch')
+  const activeQuery = searchParams.get('q')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Debounced URL update for free-text search
+  const updateQuery = useCallback((text: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (text.trim()) {
+        params.set('q', text.trim())
+        params.delete('watch')
+      } else {
+        params.delete('q')
+      }
+      const qs = params.toString()
+      router.replace(qs ? `/?${qs}` : '/')
+    }, 250)
+  }, [router, searchParams])
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
   // Fetch watches with photos on mount
   useEffect(() => {
@@ -42,17 +67,19 @@ export default function GallerySearch() {
     fetchWatches()
   }, [])
 
-  // When a watch is active, populate the input with its name
+  // When a watch or query is active, populate the input
   useEffect(() => {
     if (activeWatchId) {
       const active = watches.find((w) => w.watchId === activeWatchId)
       if (active) {
         setInput(`${active.watchBrand ?? ''} ${active.watchName}`.trim())
       }
+    } else if (activeQuery) {
+      setInput(activeQuery)
     } else {
       setInput('')
     }
-  }, [activeWatchId, watches])
+  }, [activeWatchId, activeQuery, watches])
 
   // Filter watches by input text
   const filtered = input
@@ -119,7 +146,8 @@ export default function GallerySearch() {
   }
 
   const clearFilter = () => {
-    router.push('/')
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    router.replace('/')
     setInput('')
   }
 
@@ -132,9 +160,11 @@ export default function GallerySearch() {
           placeholder="Search watches (Rolex, Omega, Tudor...)"
           value={input}
           onChange={(e) => {
-            setInput(e.target.value)
+            const val = e.target.value
+            setInput(val)
             setIsOpen(true)
             setSelectedIndex(-1)
+            updateQuery(val)
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
@@ -142,8 +172,8 @@ export default function GallerySearch() {
           className="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50"
         />
 
-        {/* Clear button (×) when a watch is actively selected */}
-        {activeWatchId && (
+        {/* Clear button (×) when a watch or query is active */}
+        {(activeWatchId || activeQuery) && (
           <button
             type="button"
             onClick={clearFilter}

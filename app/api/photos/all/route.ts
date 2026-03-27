@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
   const cursor = searchParams.get('cursor')
   const brand = searchParams.get('brand')?.toLowerCase() ?? ''
   const watchId = searchParams.get('watchId') ?? ''
+  const q = searchParams.get('q')?.toLowerCase() ?? ''
 
   try {
     // Build where condition
@@ -65,6 +66,15 @@ export async function GET(req: NextRequest) {
     let filtered = enriched
     if (brand && !watchId) {
       filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
+    }
+
+    // Filter by free-text query (brand/name prefix search, case-insensitive)
+    if (q && !watchId) {
+      filtered = filtered.filter((p) => {
+        const name = (p.watchName ?? '').toLowerCase()
+        const b = (p.watchBrand ?? '').toLowerCase()
+        return name.includes(q) || b.includes(q)
+      })
     }
 
     // Take limit and compute next cursor

@@ -28,6 +28,7 @@ function PhotoGalleryContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
+  const activeQuery = searchParams.get('q')
 
   const [photos, setPhotos] = useState<PhotoItem[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
@@ -40,11 +41,12 @@ function PhotoGalleryContent() {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
     if (cursor) params.set('cursor', cursor)
     if (activeWatchId) params.set('watchId', activeWatchId)
+    if (activeQuery) params.set('q', activeQuery)
 
     const res = await fetch(`/api/photos/all?${params.toString()}`)
     const data: PhotosResponse = await res.json()
     return data
-  }, [activeWatchId])
+  }, [activeWatchId, activeQuery])
 
   // Initial load and re-fetch when activeWatchId changes
   useEffect(() => {
@@ -64,7 +66,7 @@ function PhotoGalleryContent() {
     })
 
     return () => { cancelled = true }
-  }, [fetchPhotos, activeWatchId])
+  }, [fetchPhotos, activeWatchId, activeQuery])
 
   // Infinite scroll
   useEffect(() => {
@@ -133,7 +135,22 @@ function PhotoGalleryContent() {
           </span>
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => router.replace('/')}
+            className="ml-auto text-blue-600 hover:text-blue-800 font-semibold"
+            aria-label="Clear filter"
+          >
+            ✕ Clear
+          </button>
+        </div>
+      )}
+      {!activeWatchId && activeQuery && (
+        <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+          <span className="text-sm font-medium text-blue-900">
+            Showing results for: <span className="font-semibold">{activeQuery}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => router.replace('/')}
             className="ml-auto text-blue-600 hover:text-blue-800 font-semibold"
             aria-label="Clear filter"
           >
