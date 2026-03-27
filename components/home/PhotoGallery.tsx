@@ -145,21 +145,11 @@ export default function PhotoGallery() {
                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <p className="text-white text-xs font-semibold">
+                <p className="text-white text-xs font-semibold truncate">
                   {photo.watchBrand && photo.watchName
                     ? `${photo.watchBrand} ${photo.watchName}`
                     : photo.watchName ?? 'Watch'}
                 </p>
-                {photo.watchReference && (
-                  <p className="text-white/70 text-xs">
-                    Ref. {photo.watchReference}
-                  </p>
-                )}
-                {photo.userName && (
-                  <p className="text-white/50 text-xs">
-                    by {photo.userName}
-                  </p>
-                )}
               </div>
             </button>
           ))}
@@ -242,14 +232,24 @@ export default function PhotoGallery() {
 
             {/* Watch info below image */}
             <div className="mt-4 text-center">
-              <p className="text-white text-xs font-semibold">
+              <p className="text-white font-semibold">
                 {photos[lightboxIndex].watchBrand && photos[lightboxIndex].watchName
                   ? `${photos[lightboxIndex].watchBrand} ${photos[lightboxIndex].watchName}`
                   : photos[lightboxIndex].watchName ?? 'Watch'}
               </p>
               {photos[lightboxIndex].watchReference && (
-                <p className="text-white/70 text-xs">
+                <p className="text-white/70 text-sm">
                   Ref. {photos[lightboxIndex].watchReference}
+                </p>
+              )}
+              {photos[lightboxIndex].caption && (
+                <p className="text-white/80 text-sm mt-1 italic">
+                  {photos[lightboxIndex].caption}
+                </p>
+              )}
+              {photos[lightboxIndex].userName && (
+                <p className="text-white/50 text-sm mt-1">
+                  by {photos[lightboxIndex].userName}
                 </p>
               )}
             </div>
