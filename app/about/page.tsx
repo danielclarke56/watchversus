@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About',
+  title: 'About WatchVsWatch — Real Watch Photos from Real Owners',
   description: 'WatchVsWatch is a community photo gallery for watch enthusiasts. Browse and upload real watch photos — no affiliate links, no sponsored content.',
   alternates: {
     canonical: 'https://watchvswatch.com/about',

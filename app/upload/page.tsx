@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Upload Your Watch Photo | WatchVsWatch',
   description: 'Share a photo of your watch. Real wrist shots from real owners.',
   robots: {
-    index: false,
+    index: true,
     follow: true,
   },
   alternates: {

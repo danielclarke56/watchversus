@@ -7,8 +7,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: [
           '/',
-          '/guides',
-          '/quiz',
+          '/upload',
           '/about',
         ],
         disallow: [
@@ -18,6 +17,10 @@ export default function robots(): MetadataRoute.Robots {
           '/sign-up',
           '/_next',
           '/private',
+          '/compare/*',
+          '/guides/*',
+          '/watches/*',
+          '/quiz',
         ],
       },
       // AI training bots (explicit allow for key content)

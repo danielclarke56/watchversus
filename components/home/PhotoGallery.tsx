@@ -167,13 +167,11 @@ function PhotoGalleryContent() {
           ))}
         </div>
       ) : photos.length === 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-surface" />
-          ))}
-          <div className="col-span-full text-center py-12 text-textSecond">
-            No photos yet — be the first to upload
-          </div>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="text-6xl mb-6">📷</div>
+          <h2 className="text-2xl font-bold text-textPrimary mb-2">No photos yet</h2>
+          <p className="text-textSecond mb-6">Be the first to share your watch</p>
+          <a href="/upload" className="btn-gold">Upload a Photo</a>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
