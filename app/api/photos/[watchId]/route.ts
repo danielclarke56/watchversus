@@ -127,9 +127,13 @@ export async function POST(
     photoUrl = `/images/user-uploads/${params.watchId}/${localFilename}`
   }
 
-  // Read caption from formData
+  // Read caption and wrist size from formData
   const captionRaw = formData.get('caption') as string | null
-  const caption = sanitizeText(captionRaw ?? '', 280)
+  const wristSize = formData.get('wristSize') as string | null
+  const sanitizedCaption = sanitizeText(captionRaw ?? '', 280)
+  const caption = wristSize
+    ? `[Wrist: ${sanitizeText(wristSize, 20)}] ${sanitizedCaption}`.trim()
+    : sanitizedCaption
 
   // Store in Postgres with pending status
   try {
