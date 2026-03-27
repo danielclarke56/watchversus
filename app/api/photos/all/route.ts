@@ -34,6 +34,11 @@ export async function GET(req: NextRequest) {
     // Reverse to get descending order
     photoRecords.reverse()
 
+    // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
+    function unslugify(slug: string): string {
+      return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    }
+
     // Enrich photos with watch data
     const enriched = photoRecords.map((p) => {
       const watch = getWatchById(p.watchId)
@@ -46,10 +51,10 @@ export async function GET(req: NextRequest) {
         caption: p.caption ?? undefined,
         createdAt: p.createdAt.toISOString(),
         approved: true,
-        watchSlug: watch?.slug,
-        watchName: watch?.name,
-        watchBrand: watch?.brand,
-        watchReference: watch?.reference,
+        watchSlug: watch?.slug ?? p.watchId,
+        watchName: watch?.name ?? unslugify(p.watchId),
+        watchBrand: watch?.brand ?? null,
+        watchReference: watch?.reference ?? null,
       }
     })
 
