@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useMemo, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { watches } from '@/lib/watches'
@@ -19,7 +18,7 @@ function slugify(text: string): string {
 
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
-  const router = useRouter()
+  const [success, setSuccess] = useState(false)
   const [search, setSearch] = useState('')
   const [selectedWatch, setSelectedWatch] = useState<Watch | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -246,7 +245,7 @@ export default function UploadClient() {
         throw new Error(data.error || 'Upload failed')
       }
 
-      router.push('/')
+      setSuccess(true)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
     } finally {
@@ -282,6 +281,37 @@ export default function UploadClient() {
                 Sign in to upload
               </button>
             </SignInButton>
+          </div>
+        ) : success ? (
+          <div className="bg-surface border border-borderStrong rounded-xl p-8 text-center shadow-sm">
+            <h2 className="text-2xl font-bold text-textPrimary mb-4">Photo submitted!</h2>
+            <p className="text-textMuted mb-8">
+              Your image is being reviewed and will be approved soon. Thanks for contributing to the community.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/"
+                className="px-6 py-3 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors inline-block text-center"
+              >
+                ← Back to home
+              </Link>
+              <button
+                onClick={() => {
+                  setSuccess(false)
+                  setFile(null)
+                  setPreview(null)
+                  setSearch('')
+                  setSelectedWatch(null)
+                  setCaption('')
+                  setError('')
+                  setAiSuggestion(null)
+                  setPhotoQuality(null)
+                }}
+                className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
+              >
+                Upload another
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
