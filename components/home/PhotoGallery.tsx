@@ -155,6 +155,11 @@ export default function PhotoGallery() {
                     Ref. {photo.watchReference}
                   </p>
                 )}
+                {photo.userName && (
+                  <p className="text-white/50 text-xs">
+                    by {photo.userName}
+                  </p>
+                )}
               </div>
             </button>
           ))}
