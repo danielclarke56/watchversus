@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { watches, popularComparisons } from '@/lib/watches'
-import { SearchForm } from '@/components/SearchForm'
+import GallerySearch from '@/components/home/GallerySearch'
 
 export default function HeroSearch() {
   return (
@@ -15,12 +14,8 @@ export default function HeroSearch() {
           Browse real photos from watch owners around the world
         </p>
         <div className="flex items-start gap-2">
-          <div className="flex-1 [&>div]:mb-0">
-            <SearchForm
-              placeholder="Search watches (Rolex, Omega, Tudor...)"
-              watches={watches}
-              comparisons={popularComparisons}
-            />
+          <div className="flex-1">
+            <GallerySearch />
           </div>
           <Link
             href="/upload"

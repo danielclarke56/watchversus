@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 
 interface PhotoItem {
@@ -23,7 +24,11 @@ interface PhotosResponse {
 
 const PAGE_SIZE = 50
 
-export default function PhotoGallery() {
+function PhotoGalleryContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const activeWatchId = searchParams.get('watch')
+
   const [photos, setPhotos] = useState<PhotoItem[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -34,13 +39,14 @@ export default function PhotoGallery() {
   const fetchPhotos = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
     if (cursor) params.set('cursor', cursor)
+    if (activeWatchId) params.set('watchId', activeWatchId)
 
     const res = await fetch(`/api/photos/all?${params.toString()}`)
     const data: PhotosResponse = await res.json()
     return data
-  }, [])
+  }, [activeWatchId])
 
-  // Initial load
+  // Initial load and re-fetch when activeWatchId changes
   useEffect(() => {
     let cancelled = false
     setLoading(true)
@@ -58,7 +64,7 @@ export default function PhotoGallery() {
     })
 
     return () => { cancelled = true }
-  }, [fetchPhotos])
+  }, [fetchPhotos, activeWatchId])
 
   // Infinite scroll
   useEffect(() => {
@@ -110,8 +116,32 @@ export default function PhotoGallery() {
     }
   }
 
+  // Get the selected watch name from the first photo if filtering
+  const selectedWatchName = activeWatchId && photos.length > 0 
+    ? photos[0].watchBrand && photos[0].watchName 
+      ? `${photos[0].watchBrand} ${photos[0].watchName}`
+      : photos[0].watchName ?? activeWatchId
+    : null
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      {/* Filter indicator */}
+      {activeWatchId && selectedWatchName && (
+        <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+          <span className="text-sm font-medium text-blue-900">
+            Showing: <span className="font-semibold">{selectedWatchName}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => router.push('/')}
+            className="ml-auto text-blue-600 hover:text-blue-800 font-semibold"
+            aria-label="Clear filter"
+          >
+            ✕ Clear
+          </button>
+        </div>
+      )}
+
       {/* Gallery grid */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -257,5 +287,13 @@ export default function PhotoGallery() {
         </div>
       )}
     </section>
+  )
+}
+
+export default function PhotoGallery() {
+  return (
+    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16"><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">{Array.from({ length: 20 }).map((_, i) => (<div key={i} className="aspect-square rounded-lg bg-surface animate-pulse" />))}</div></div>}>
+      <PhotoGalleryContent />
+    </Suspense>
   )
 }

@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100)
   const cursor = searchParams.get('cursor')
   const brand = searchParams.get('brand')?.toLowerCase() ?? ''
+  const watchId = searchParams.get('watchId') ?? ''
 
   try {
     // Build where condition
@@ -21,6 +22,9 @@ export async function GET(req: NextRequest) {
     if (cursor) {
       const cursorTime = new Date(cursor)
       conditions.push(lt(photos.createdAt, cursorTime))
+    }
+    if (watchId) {
+      conditions.push(eq(photos.watchId, watchId))
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
@@ -58,9 +62,9 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    // Filter by brand if provided
+    // Filter by brand if provided (only applies if watchId is not set)
     let filtered = enriched
-    if (brand) {
+    if (brand && !watchId) {
       filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
     }
 
