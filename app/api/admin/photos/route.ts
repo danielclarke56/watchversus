@@ -8,24 +8,24 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 
-/** GET /api/admin/photos — list all pending photos */
-export async function GET() {
+/** GET /api/admin/photos — list pending or approved photos (?status=pending|approved) */
+export async function GET(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) {
     return NextResponse.json({ error: 'Forbidden', yourUserId: userId }, { status: 403 })
   }
 
+  const status = req.nextUrl.searchParams.get('status') === 'approved' ? 'approved' : 'pending'
+
   try {
-    // Query all pending photos from Postgres
-    const pendingPhotos = await db
+    const rows = await db
       .select()
       .from(photos)
-      .where(eq(photos.status, 'pending'))
+      .where(eq(photos.status, status))
       .orderBy((p) => p.createdAt)
 
-    // Transform to API response format
-    const result = pendingPhotos.map((p) => ({
+    const result = rows.map((p) => ({
       id: p.id,
       watchId: p.watchId,
       userId: p.userId,
@@ -33,7 +33,7 @@ export async function GET() {
       url: p.url,
       caption: p.caption,
       createdAt: p.createdAt.toISOString(),
-      approved: false,
+      approved: status === 'approved',
     }))
 
     // Sort by createdAt descending
@@ -41,8 +41,8 @@ export async function GET() {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error fetching pending photos:', error)
-    return NextResponse.json({ error: 'Failed to fetch pending photos' }, { status: 500 })
+    console.error('Error fetching photos:', error)
+    return NextResponse.json({ error: 'Failed to fetch photos' }, { status: 500 })
   }
 }
 
@@ -52,13 +52,13 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject'; watchId: string; photoId: string }
+  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject' | 'delete-approved'; watchId: string; photoId: string }
   const { action, watchId, photoId } = body
 
   if (!action || !watchId || !photoId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
-  if (action !== 'approve' && action !== 'delete' && action !== 'reject') {
+  if (action !== 'approve' && action !== 'delete' && action !== 'reject' && action !== 'delete-approved') {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
   if (!isValidSlug(watchId)) {
@@ -66,11 +66,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Find the pending photo
+    // Find the photo — for delete-approved, look for approved; otherwise pending
+    const expectedStatus = action === 'delete-approved' ? 'approved' : 'pending'
     const photo = await db
       .select()
       .from(photos)
-      .where(and(eq(photos.id, photoId), eq(photos.status, 'pending')))
+      .where(and(eq(photos.id, photoId), eq(photos.status, expectedStatus)))
       .limit(1)
 
     if (!photo || photo.length === 0) {
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
     if (action === 'approve') {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
-    } else if (action === 'delete' || action === 'reject') {
+    } else if (action === 'delete' || action === 'reject' || action === 'delete-approved') {
       // Delete photo from R2 or filesystem
       const url = photoRecord.url
       if (url.startsWith('/images/')) {
