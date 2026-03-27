@@ -189,7 +189,7 @@ export default function UploadClient() {
 
     try {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('photo', file)
       if (caption.trim()) formData.append('caption', caption.trim())
 
       const res = await fetch(`/api/photos/${watchId}`, {
