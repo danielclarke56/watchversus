@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { ApprovedPhoto } from '@/lib/photos'
-import { getRedis } from '@/lib/redis'
 import { getWatchById } from '@/lib/watches'
-import fs from 'fs'
-import path from 'path'
+import { db } from '@/lib/db'
+import { photos } from '@/lib/db/schema'
+import { eq, lt, and } from 'drizzle-orm'
 
 /**
  * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex
- * Fetch ALL approved photos across ALL watches from Redis
+ * Fetch ALL approved photos across ALL watches from Postgres
  * Supports cursor-based pagination and optional brand filtering
  */
 export async function GET(req: NextRequest) {
@@ -16,57 +15,63 @@ export async function GET(req: NextRequest) {
   const cursor = searchParams.get('cursor')
   const brand = searchParams.get('brand')?.toLowerCase() ?? ''
 
-  const redis = getRedis()
-  let allPhotos: ApprovedPhoto[] = []
+  try {
+    // Build where condition
+    const conditions = [eq(photos.status, 'approved')]
+    if (cursor) {
+      const cursorTime = new Date(cursor)
+      conditions.push(lt(photos.createdAt, cursorTime))
+    }
 
-  if (redis) {
-    const keys = await redis.keys('photos:*')
-    const watchKeys = keys.filter((k) => !k.startsWith('photos:pending:'))
+    // Fetch photos sorted by createdAt ascending, then reverse
+    const photoRecords = await db
+      .select()
+      .from(photos)
+      .where(conditions.length > 1 ? and(...conditions) : conditions[0])
+      .orderBy((p) => p.createdAt)
+      .limit(limit + 1)
 
-    for (const key of watchKeys) {
-      const photos = (await redis.get(key)) as ApprovedPhoto[] | null
-      if (photos && Array.isArray(photos)) {
-        allPhotos.push(...photos)
+    // Reverse to get descending order
+    photoRecords.reverse()
+
+    // Enrich photos with watch data
+    const enriched = photoRecords.map((p) => {
+      const watch = getWatchById(p.watchId)
+      return {
+        id: p.id,
+        watchId: p.watchId,
+        userId: p.userId,
+        userName: p.userName,
+        url: p.url,
+        caption: p.caption ?? undefined,
+        createdAt: p.createdAt.toISOString(),
+        approved: true,
+        watchSlug: watch?.slug,
+        watchName: watch?.name,
+        watchBrand: watch?.brand,
       }
+    })
+
+    // Filter by brand if provided
+    let filtered = enriched
+    if (brand) {
+      filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
     }
-  } else {
-    const approvedFile = path.join(process.cwd(), 'data', 'approved-photos.json')
-    if (fs.existsSync(approvedFile)) {
-      allPhotos = JSON.parse(fs.readFileSync(approvedFile, 'utf8')) as ApprovedPhoto[]
-    }
+
+    // Take limit and compute next cursor
+    const result = filtered.slice(0, limit)
+    const nextCursor = filtered.length > limit ? result[result.length - 1]?.createdAt ?? null : null
+
+    return NextResponse.json({
+      photos: result,
+      nextCursor,
+    })
+  } catch (error) {
+    console.error('Error fetching all photos:', error)
+    // Return empty result on error
+    return NextResponse.json({
+      photos: [],
+      nextCursor: null,
+    })
   }
-
-  // Enrich photos with watch data
-  const enriched = allPhotos.map((p) => {
-    const watch = getWatchById(p.watchId)
-    return {
-      ...p,
-      watchSlug: watch?.slug,
-      watchName: watch?.name,
-      watchBrand: watch?.brand,
-    }
-  })
-
-  // Filter by brand if provided
-  let filtered = enriched
-  if (brand) {
-    filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
-  }
-
-  // Sort by createdAt descending
-  filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-
-  // Apply cursor-based pagination
-  if (cursor) {
-    const cursorTime = new Date(cursor).getTime()
-    filtered = filtered.filter((p) => new Date(p.createdAt).getTime() < cursorTime)
-  }
-
-  const photos = filtered.slice(0, limit)
-  const nextCursor = photos.length >= limit ? photos[photos.length - 1]?.createdAt ?? null : null
-
-  return NextResponse.json({
-    photos,
-    nextCursor,
-  })
 }
