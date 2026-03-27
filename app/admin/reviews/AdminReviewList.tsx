@@ -139,7 +139,7 @@ export default function AdminReviewList({
                     <p className="text-sm text-gray-500 mt-0.5">
                       By {photo.userName} · {new Date(photo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
-                    {photo.caption && <p className="text-sm text-gray-700 mt-2 italic">"{photo.caption}"</p>}
+                    {photo.caption && <p className="text-sm text-gray-700 mt-2 italic">&ldquo;{photo.caption}&rdquo;</p>}
                     <div className="flex gap-2 mt-3">
                       <button
                         onClick={() => handlePhotoAction('approve', photo)}

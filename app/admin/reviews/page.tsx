@@ -3,7 +3,7 @@ import { checkAdmin } from '@/lib/admin'
 import { getPendingReviews } from '@/lib/reviews'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import AdminReviewList from './AdminReviewList'
 
