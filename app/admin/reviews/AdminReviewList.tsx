@@ -1,114 +1,160 @@
 'use client'
 
 import { useState } from 'react'
+import { Review } from '@/lib/reviews'
+import Link from 'next/link'
 
-export interface PendingReviewRow {
-  id: string
-  watchId: string
-  userId: string
-  rating: number
-  title: string
-  body: string
-  ownerFor?: string
-  createdAt: string
+interface AdminReviewListProps {
+  initialReviews: Review[]
 }
 
-interface Props {
-  initialReviews: PendingReviewRow[]
-  watchNames: Record<string, string>
-}
+export default function AdminReviewList({ initialReviews }: AdminReviewListProps) {
+  const [reviews, setReviews] = useState<Review[]>(initialReviews)
+  const [error, setError] = useState<string>('')
+  const [processing, setProcessing] = useState<string | null>(null)
 
-function StarRow({ rating }: { rating: number }) {
-  return (
-    <span>
-      {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} style={{ color: s <= rating ? 'var(--accent)' : 'var(--border)' }}>★</span>
-      ))}
-    </span>
-  )
-}
-
-export default function AdminReviewList({ initialReviews, watchNames }: Props) {
-  const [reviews, setReviews] = useState(initialReviews)
-  const [loading, setLoading] = useState<string | null>(null)
-  const [msg, setMsg] = useState('')
-
-  async function act(action: 'approve' | 'delete', watchId: string, reviewId: string) {
-    setLoading(reviewId)
-    setMsg('')
+  const handleApprove = async (review: Review): Promise<void> => {
     try {
-      const res = await fetch('/api/admin/reviews', {
-        method: 'POST',
+      setProcessing(review.id)
+      const response = await fetch(`/api/admin/reviews/${review.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, watchId, reviewId }),
+        body: JSON.stringify({
+          watchSlug: review.watchSlug,
+          action: 'approve',
+        }),
       })
-      const data = await res.json() as { error?: string }
-      if (!res.ok) {
-        setMsg(data.error ?? 'Error')
-      } else {
-        setReviews((prev) => prev.filter((r) => r.id !== reviewId))
-        setMsg(action === 'approve' ? 'Review approved.' : 'Review deleted.')
+
+      if (!response.ok) {
+        throw new Error('Failed to approve review')
       }
-    } catch {
-      setMsg('Network error.')
+
+      setReviews((prev) => prev.filter((r) => r.id !== review.id))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
-      setLoading(null)
+      setProcessing(null)
     }
   }
 
-  if (reviews.length === 0) {
-    return (
-      <div className="card p-8 text-center text-textSecond">
-        No pending reviews.
-      </div>
-    )
+  const handleReject = async (review: Review): Promise<void> => {
+    try {
+      setProcessing(review.id)
+      const response = await fetch(`/api/admin/reviews/${review.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          watchSlug: review.watchSlug,
+          action: 'reject',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to reject review')
+      }
+
+      setReviews((prev) => prev.filter((r) => r.id !== review.id))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setProcessing(null)
+    }
   }
 
   return (
-    <div className="space-y-4">
-      {msg && <p className="text-sm text-accent">{msg}</p>}
-      {reviews.map((r) => (
-        <div key={r.id} className="card p-5">
-          <div className="flex items-start justify-between gap-4 mb-3">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">
-                {watchNames[r.watchId] ?? r.watchId}
+              <h1 className="text-3xl font-bold">Review Moderation</h1>
+              <p className="text-gray-600 mt-1">
+                Manage pending user reviews ({reviews.length} pending)
               </p>
-              <h3 className="text-textPrimary font-semibold">{r.title}</h3>
-              <div className="flex items-center gap-3 mt-1">
-                <StarRow rating={r.rating} />
-                <span className="text-textMuted text-xs">
-                  {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </span>
-              </div>
             </div>
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => act('approve', r.watchId, r.id)}
-                disabled={loading === r.id}
-                className="px-3 py-1.5 text-xs rounded-sm bg-accent text-white font-semibold hover:bg-accentHover transition-colors disabled:opacity-50"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => act('delete', r.watchId, r.id)}
-                disabled={loading === r.id}
-                className="px-3 py-1.5 text-xs rounded-sm bg-surfaceAlt text-loser border border-border hover:bg-surfaceAlt transition-colors disabled:opacity-50"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-
-          <p className="text-textSecond text-sm leading-relaxed mb-3">{r.body}</p>
-
-          <div className="flex flex-wrap gap-4 text-xs text-textMuted border-t border-border pt-3">
-            <span>User: <span className="text-textSecond font-mono">{r.userId}</span></span>
-            {r.ownerFor && <span>Owned for: <span className="text-textSecond">{r.ownerFor}</span></span>}
-            <span>ID: <span className="text-textMuted font-mono">{r.id}</span></span>
+            <Link href="/admin" className="text-blue-600 hover:underline">
+              ← Back to Admin
+            </Link>
           </div>
         </div>
-      ))}
+
+        {/* Error */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            {error}
+          </div>
+        )}
+
+        {/* Reviews List */}
+        {reviews.length === 0 ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <p className="text-gray-600 text-lg">No pending reviews to moderate</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-white rounded-lg border border-gray-200 p-6"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">{review.title}</h3>
+                    <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
+                      <span>Watch: {review.watchSlug}</span>
+                      <span>Rating: {review.rating}/5</span>
+                      <span>User: {review.userId}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <p className="text-gray-700 mb-4">{review.body}</p>
+
+                {/* Pros and Cons */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <h4 className="text-sm font-semibold text-green-700 mb-2">Pros</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      {review.pros.map((pro, i) => (
+                        <li key={i}>• {pro}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-red-700 mb-2">Cons</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      {review.cons.map((con, i) => (
+                        <li key={i}>• {con}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleApprove(review)}
+                    disabled={processing === review.id}
+                    className="flex-1 bg-green-600 text-white py-2 rounded-md font-medium hover:bg-green-700 disabled:bg-gray-400"
+                  >
+                    {processing === review.id ? 'Processing...' : 'Approve'}
+                  </button>
+                  <button
+                    onClick={() => handleReject(review)}
+                    disabled={processing === review.id}
+                    className="flex-1 bg-red-600 text-white py-2 rounded-md font-medium hover:bg-red-700 disabled:bg-gray-400"
+                  >
+                    {processing === review.id ? 'Processing...' : 'Reject'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
