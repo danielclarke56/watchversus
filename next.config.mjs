@@ -7,6 +7,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-5454588e96dd48eea58ff55965bbe8f5.r2.dev',
+      },
     ],
   },
   async headers() {
