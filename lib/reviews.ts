@@ -56,7 +56,7 @@ export async function submitReview(review: Omit<Review, 'id' | 'submittedAt' | '
  */
 export async function getPendingReviews(): Promise<Review[]> {
   const redis = getRedis()
-  if (!redis) throw new Error('Redis not configured')
+  if (!redis) return []
 
   const pendingKeys = await redis.zrange('reviews:pending', 0, -1)
   
@@ -138,7 +138,7 @@ export async function rejectReview(watchSlug: string, reviewId: string): Promise
  */
 export async function getApprovedReviewsForWatch(watchSlug: string): Promise<Review[]> {
   const redis = getRedis()
-  if (!redis) throw new Error('Redis not configured')
+  if (!redis) return []
 
   const reviewIds = await redis.zrange(`reviews:approved:${watchSlug}`, 0, -1)
   
@@ -165,7 +165,7 @@ export async function getApprovedReviewsForWatch(watchSlug: string): Promise<Rev
  */
 export async function getReview(watchSlug: string, reviewId: string): Promise<Review | null> {
   const redis = getRedis()
-  if (!redis) throw new Error('Redis not configured')
+  if (!redis) return null
 
   const key = `review:${watchSlug}:${reviewId}`
   const reviewData = await redis.get(key)
