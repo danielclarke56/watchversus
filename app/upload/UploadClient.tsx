@@ -7,6 +7,16 @@ import Link from 'next/link'
 import { watches } from '@/lib/watches'
 import type { Watch } from '@/lib/types'
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
@@ -25,23 +35,23 @@ export default function UploadClient() {
   const dropdownRef = useRef<HTMLUListElement>(null)
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return watches.slice(0, 20)
+    if (!search.trim() || search.trim().length < 2) return []
     const q = search.toLowerCase()
-    return watches.filter(
-      (w) =>
-        w.brand.toLowerCase().includes(q) ||
-        w.name.toLowerCase().includes(q) ||
-        `${w.brand} ${w.name}`.toLowerCase().includes(q)
-    ).slice(0, 20)
+    return watches
+      .filter(
+        (w) =>
+          w.brand.toLowerCase().includes(q) ||
+          w.name.toLowerCase().includes(q) ||
+          `${w.brand} ${w.name}`.toLowerCase().includes(q)
+      )
+      .slice(0, 20)
   }, [search])
 
   // Group filtered results by brand
   const groupedResults = useMemo(() => {
     const groups: { [key: string]: Watch[] } = {}
     filtered.forEach((w) => {
-      if (!groups[w.brand]) {
-        groups[w.brand] = []
-      }
+      if (!groups[w.brand]) groups[w.brand] = []
       groups[w.brand].push(w)
     })
     return groups
@@ -51,23 +61,21 @@ export default function UploadClient() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!showDropdown) return
-
       const totalItems = filtered.length
-
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setHighlightedIndex((prev) =>
-          prev < totalItems - 1 ? prev + 1 : 0
-        )
+        setHighlightedIndex((prev) => (prev < totalItems - 1 ? prev + 1 : 0))
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
-        setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : totalItems - 1
-        )
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : totalItems - 1))
       } else if (e.key === 'Enter') {
         e.preventDefault()
         if (highlightedIndex >= 0 && highlightedIndex < totalItems) {
           selectWatch(filtered[highlightedIndex])
+        } else {
+          // User pressed Enter without selecting — close dropdown, keep typed text
+          setShowDropdown(false)
+          setHighlightedIndex(-1)
         }
       } else if (e.key === 'Escape') {
         e.preventDefault()
@@ -75,7 +83,6 @@ export default function UploadClient() {
         setHighlightedIndex(-1)
       }
     }
-
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [showDropdown, filtered, highlightedIndex])
@@ -93,20 +100,19 @@ export default function UploadClient() {
         setHighlightedIndex(-1)
       }
     }
-
     if (showDropdown) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showDropdown])
 
-  // Helper: highlight matching text in brand/name
   function highlightMatch(text: string, query: string): React.ReactNode {
     if (!query.trim()) return text
-    const q = query.toLowerCase()
-    const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'i'))
+    const parts = text.split(
+      new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'i')
+    )
     return parts.map((part, i) =>
-      part.toLowerCase() === q ? (
+      part.toLowerCase() === query.toLowerCase() ? (
         <span key={i} className="font-bold">
           {part}
         </span>
@@ -118,8 +124,17 @@ export default function UploadClient() {
 
   function selectWatch(w: Watch) {
     setSelectedWatch(w)
+    setSearch(`${w.brand} ${w.name}`)
     setShowDropdown(false)
-    setSearch('')
+    setHighlightedIndex(-1)
+  }
+
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value
+    setSearch(val)
+    // Clear the selected DB watch when user edits the field
+    setSelectedWatch(null)
+    setShowDropdown(true)
     setHighlightedIndex(-1)
   }
 
@@ -162,14 +177,13 @@ export default function UploadClient() {
     e.stopPropagation()
     setIsDragging(false)
     const f = e.dataTransfer.files?.[0]
-    if (f) {
-      processFile(f)
-    }
+    if (f) processFile(f)
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!selectedWatch || !file) return
+    const watchId = selectedWatch?.slug || slugify(search.trim())
+    if (!watchId || !file) return
     setUploading(true)
     setError('')
 
@@ -178,7 +192,7 @@ export default function UploadClient() {
       formData.append('file', file)
       if (caption.trim()) formData.append('caption', caption.trim())
 
-      const res = await fetch(`/api/photos/${selectedWatch.slug}`, {
+      const res = await fetch(`/api/photos/${watchId}`, {
         method: 'POST',
         body: formData,
       })
@@ -227,102 +241,102 @@ export default function UploadClient() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Watch Selector */}
+            {/* Watch Name — free text with DB suggestions */}
             <div className="relative">
               <label className="block text-sm font-medium text-textSecond mb-2">
-                Select your watch
+                Watch name
               </label>
-              {selectedWatch ? (
-                <div className="flex items-center justify-between bg-surface border border-borderStrong rounded-lg p-3 shadow-sm">
-                  <span className="text-textPrimary">
-                    {selectedWatch.brand} {selectedWatch.name}
-                  </span>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={handleSearchChange}
+                  onFocus={() => {
+                    if (search.trim().length >= 2) setShowDropdown(true)
+                  }}
+                  placeholder="e.g. Rolex Submariner, Casio G-Shock..."
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 pr-10 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                />
+                {/* Clear button */}
+                {search && (
                   <button
                     type="button"
                     onClick={() => {
-                      setSelectedWatch(null)
                       setSearch('')
+                      setSelectedWatch(null)
+                      setShowDropdown(false)
                       setHighlightedIndex(-1)
                     }}
-                    className="text-textMuted hover:text-textPrimary text-sm"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary"
+                    aria-label="Clear"
                   >
-                    Change
+                    ×
                   </button>
-                </div>
-              ) : (
+                )}
+              </div>
+              {/* Selected from DB indicator */}
+              {selectedWatch && (
+                <p className="mt-1 text-xs text-accent">
+                  ✓ Matched in database
+                </p>
+              )}
+              {/* Dropdown suggestions */}
+              {showDropdown && search.trim().length >= 2 && (
                 <>
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value)
-                      setShowDropdown(true)
-                      setHighlightedIndex(-1)
-                    }}
-                    onFocus={() => setShowDropdown(true)}
-                    placeholder={`Search ${watches.length} watches by brand or model...`}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                  />
-                  {showDropdown && (
-                    <>
-                      {filtered.length > 0 ? (
-                        <ul
-                          ref={dropdownRef}
-                          className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg max-h-60 overflow-y-auto shadow-md"
-                        >
-                          {Object.entries(groupedResults).map(([brand, brandWatches]) => {
-                            let itemIndex = 0
-                            // Count items before this brand
-                            for (const [b] of Object.entries(groupedResults)) {
-                              if (b === brand) break
-                              itemIndex += groupedResults[b].length
-                            }
-
-                            return (
-                              <li key={brand}>
-                                {/* Brand header */}
-                                <div className="sticky top-0 bg-neutral px-4 py-2 text-xs font-semibold text-textSecond uppercase tracking-wider">
-                                  {brand}
-                                </div>
-                                {brandWatches.map((w) => {
-                                  const currentIndex = itemIndex
-                                  itemIndex += 1
-                                  const isHighlighted = highlightedIndex === currentIndex
-
-                                  return (
-                                    <button
-                                      key={w.slug}
-                                      type="button"
-                                      onClick={() => selectWatch(w)}
-                                      className={`w-full text-left px-4 py-2 transition-colors ${
-                                        isHighlighted
-                                          ? 'bg-accent text-white'
-                                          : 'text-textSecond hover:bg-neutral hover:text-textPrimary'
-                                      }`}
-                                    >
-                                      <span className="font-medium">{highlightMatch(w.brand, search)}</span>{' '}
-                                      <span className={isHighlighted ? 'text-white' : 'text-textMuted'}>
-                                        {highlightMatch(w.name, search)}
-                                      </span>
-                                    </button>
-                                  )
-                                })}
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      ) : search.trim() ? (
-                        <div className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg p-4 text-center text-textMuted shadow-md">
-                          No watches found
-                        </div>
-                      ) : null}
-                    </>
+                  {filtered.length > 0 ? (
+                    <ul
+                      ref={dropdownRef}
+                      className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg max-h-60 overflow-y-auto shadow-md"
+                    >
+                      {Object.entries(groupedResults).map(([brand, brandWatches]) => {
+                        let itemIndex = 0
+                        for (const [b] of Object.entries(groupedResults)) {
+                          if (b === brand) break
+                          itemIndex += groupedResults[b].length
+                        }
+                        return (
+                          <li key={brand}>
+                            <div className="sticky top-0 bg-neutral px-4 py-2 text-xs font-semibold text-textSecond uppercase tracking-wider">
+                              {brand}
+                            </div>
+                            {brandWatches.map((w) => {
+                              const currentIndex = itemIndex
+                              itemIndex += 1
+                              const isHighlighted = highlightedIndex === currentIndex
+                              return (
+                                <button
+                                  key={w.slug}
+                                  type="button"
+                                  onClick={() => selectWatch(w)}
+                                  className={`w-full text-left px-4 py-2 transition-colors ${
+                                    isHighlighted
+                                      ? 'bg-accent text-white'
+                                      : 'text-textSecond hover:bg-neutral hover:text-textPrimary'
+                                  }`}
+                                >
+                                  <span className="font-medium">
+                                    {highlightMatch(w.brand, search)}
+                                  </span>{' '}
+                                  <span className={isHighlighted ? 'text-white' : 'text-textMuted'}>
+                                    {highlightMatch(w.name, search)}
+                                  </span>
+                                </button>
+                              )
+                            })}
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  ) : (
+                    <div className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg p-3 text-sm text-textMuted shadow-md">
+                      No matches in our database — that&apos;s fine, we&apos;ll add it.
+                    </div>
                   )}
                 </>
               )}
             </div>
 
-            {/* Photo Upload - always visible */}
+            {/* Photo Upload — always visible */}
             <div>
               <label className="block text-sm font-medium text-textSecond mb-2">
                 Photo
@@ -340,6 +354,7 @@ export default function UploadClient() {
                 }`}
               >
                 {preview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={preview}
                     alt="Preview"
@@ -349,7 +364,7 @@ export default function UploadClient() {
                   <div>
                     <div className="text-4xl mb-2">📷</div>
                     <p className="text-textMuted mb-1">
-                      {isDragging ? 'Drop your photo here' : 'Drag & drop a photo or click to select'}
+                      {isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
                     </p>
                     <p className="text-textMuted text-sm">JPEG, PNG, or WebP · Max 5MB</p>
                   </div>
@@ -364,7 +379,7 @@ export default function UploadClient() {
               />
             </div>
 
-            {/* Caption - always visible */}
+            {/* Caption — always visible */}
             <div>
               <label className="block text-sm font-medium text-textSecond mb-2">
                 Caption <span className="text-textMuted">(optional)</span>
@@ -379,14 +394,12 @@ export default function UploadClient() {
               />
             </div>
 
-            {error && (
-              <p className="text-red-500 text-sm">{error}</p>
-            )}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            {/* Submit button - disabled until BOTH watch and photo selected */}
+            {/* Submit — disabled until watch name AND photo are provided */}
             <button
               type="submit"
-              disabled={!selectedWatch || !file || uploading}
+              disabled={!search.trim() || !file || uploading}
               className="w-full py-3 bg-accent hover:bg-accentHover disabled:bg-neutral disabled:text-textMuted text-white rounded-lg font-medium transition-colors"
             >
               {uploading ? 'Uploading...' : 'Upload Photo'}
