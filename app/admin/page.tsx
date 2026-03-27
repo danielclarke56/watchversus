@@ -10,15 +10,8 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    const adminUserId = process.env.NEXT_PUBLIC_ADMIN_USER_ID
-
     if (!userId) {
       router.push('/sign-in')
-      return
-    }
-
-    if (userId !== adminUserId) {
-      router.push('/')
       return
     }
   }, [userId, router])
