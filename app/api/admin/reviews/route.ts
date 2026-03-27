@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getPendingReviews } from '@/lib/reviews'
+import { checkAdmin } from '@/lib/admin'
 
 /**
  * GET /api/admin/reviews
@@ -9,9 +10,8 @@ import { getPendingReviews } from '@/lib/reviews'
 export async function GET(): Promise<NextResponse> {
   try {
     const { userId } = await auth()
-    const adminUserId = process.env.ADMIN_USER_ID
 
-    if (!userId || userId !== adminUserId) {
+    if (!userId || !checkAdmin(userId)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }

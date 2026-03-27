@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { approveReview, rejectReview } from '@/lib/reviews'
+import { checkAdmin } from '@/lib/admin'
 
 interface ApproveRejectBody {
   action: 'approve' | 'reject'
@@ -17,9 +18,8 @@ export async function PATCH(
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
-    const adminUserId = process.env.ADMIN_USER_ID
 
-    if (!userId || userId !== adminUserId) {
+    if (!userId || !checkAdmin(userId)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
