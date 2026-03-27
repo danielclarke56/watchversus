@@ -6,16 +6,31 @@ import type { PendingPhoto } from '@/lib/photos'
 export default function AdminPhotosClient() {
   const [photos, setPhotos] = useState<PendingPhoto[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string>('')
   const [acting, setActing] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/admin/photos')
-      .then((r) => r.json())
-      .then((data) => {
+    const fetchPhotos = async () => {
+      try {
+        const response = await fetch('/api/admin/photos')
+        
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            throw new Error('Access denied — admin only')
+          }
+          throw new Error('Failed to fetch photos')
+        }
+
+        const data = (await response.json()) as PendingPhoto[]
         if (Array.isArray(data)) setPhotos(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
         setLoading(false)
-      })
-      .catch(() => setLoading(false))
+      }
+    }
+
+    fetchPhotos()
   }, [])
 
   async function handleAction(action: 'approve' | 'delete', photo: PendingPhoto) {
@@ -41,6 +56,12 @@ export default function AdminPhotosClient() {
       <p className="text-textSecond text-sm mb-8">
         Review and approve community-submitted photos. {photos.length} pending.
       </p>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <p className="text-textMuted text-sm">Loading...</p>

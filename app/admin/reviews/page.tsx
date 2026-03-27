@@ -15,15 +15,8 @@ export default function AdminReviewsPage() {
   const [processing, setProcessing] = useState<string | null>(null)
 
   useEffect(() => {
-    const adminUserId = process.env.NEXT_PUBLIC_ADMIN_USER_ID
-
     if (!userId) {
       router.push('/sign-in')
-      return
-    }
-
-    if (userId !== adminUserId) {
-      router.push('/')
       return
     }
 
@@ -36,6 +29,9 @@ export default function AdminReviewsPage() {
       const response = await fetch('/api/admin/reviews')
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Access denied — admin only')
+        }
         throw new Error('Failed to fetch reviews')
       }
 
