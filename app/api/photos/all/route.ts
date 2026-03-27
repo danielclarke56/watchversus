@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
         watchSlug: watch?.slug,
         watchName: watch?.name,
         watchBrand: watch?.brand,
+        watchReference: watch?.reference,
       }
     })
 
