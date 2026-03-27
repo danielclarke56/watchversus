@@ -30,6 +30,18 @@ export default function UploadClient() {
   const [preview, setPreview] = useState<string | null>(null)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [isDragging, setIsDragging] = useState(false)
+  const [identifying, setIdentifying] = useState(false)
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    brand: string | null
+    model: string | null
+    reference: string | null
+    confidence: string
+  } | null>(null)
+  const [photoQuality, setPhotoQuality] = useState<{
+    score: string
+    issues: string[]
+    recommendation: string | null
+  } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const dropzoneRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
@@ -158,6 +170,38 @@ export default function UploadClient() {
     const reader = new FileReader()
     reader.onload = () => setPreview(reader.result as string)
     reader.readAsDataURL(f)
+
+    // Trigger AI identification
+    setIdentifying(true)
+    setAiSuggestion(null)
+    setPhotoQuality(null)
+
+    const identifyForm = new FormData()
+    identifyForm.append('photo', f)
+
+    fetch('/api/photos/identify', {
+      method: 'POST',
+      body: identifyForm,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.watch && (data.watch.brand || data.watch.model)) {
+          setAiSuggestion(data.watch)
+          const suggestion = [data.watch.brand, data.watch.model]
+            .filter(Boolean)
+            .join(' ')
+          if (!search.trim()) {
+            setSearch(suggestion)
+          }
+        }
+        if (data.quality) {
+          setPhotoQuality(data.quality)
+        }
+      })
+      .catch(() => {
+        // Silent fail
+      })
+      .finally(() => setIdentifying(false))
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -378,6 +422,96 @@ export default function UploadClient() {
                 className="hidden"
               />
             </div>
+
+            {/* Identifying spinner */}
+            {identifying && (
+              <div className="flex items-center gap-2 text-sm text-textMuted">
+                <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-textMuted border-t-accent"></div>
+                🔍 Identifying watch...
+              </div>
+            )}
+
+            {/* AI suggestion banner */}
+            {aiSuggestion && (aiSuggestion.confidence === 'high' || aiSuggestion.confidence === 'medium') && (
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-textPrimary mb-1">
+                      ✨ AI identified:{' '}
+                      <span className="font-bold">
+                        {[aiSuggestion.brand, aiSuggestion.model]
+                          .filter(Boolean)
+                          .join(' ')}
+                        {aiSuggestion.reference && ` (${aiSuggestion.reference})`}
+                      </span>
+                    </p>
+                    <p className="text-xs text-textMuted">
+                      Confidence: {aiSuggestion.confidence}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const suggestion = [aiSuggestion.brand, aiSuggestion.model]
+                          .filter(Boolean)
+                          .join(' ')
+                        setSearch(suggestion)
+                        setAiSuggestion(null)
+                      }}
+                      className="px-3 py-1 text-xs bg-accent hover:bg-accentHover text-white rounded font-medium transition-colors"
+                    >
+                      Use this
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAiSuggestion(null)}
+                      className="px-3 py-1 text-xs text-textMuted hover:text-textPrimary font-medium transition-colors"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Photo quality badge */}
+            {photoQuality && (
+              <div
+                className={`rounded-lg p-3 text-sm ${
+                  photoQuality.score === 'good'
+                    ? 'bg-green-50 border border-green-200 text-green-800'
+                    : photoQuality.score === 'acceptable'
+                      ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
+                      : 'bg-red-50 border border-red-200 text-red-800'
+                }`}
+              >
+                {photoQuality.score === 'good' && (
+                  <p className="font-medium">✓ Good photo</p>
+                )}
+                {photoQuality.score === 'acceptable' && (
+                  <div>
+                    <p className="font-medium mb-1">⚠ Acceptable photo</p>
+                    {photoQuality.recommendation && (
+                      <p className="text-xs opacity-90">{photoQuality.recommendation}</p>
+                    )}
+                  </div>
+                )}
+                {photoQuality.score === 'poor' && (
+                  <div>
+                    <p className="font-medium mb-1">✗ Poor quality</p>
+                    <p className="text-xs opacity-90 mb-1">
+                      {photoQuality.issues && photoQuality.issues.length > 0
+                        ? photoQuality.issues.join(', ')
+                        : 'Issues detected'}
+                    </p>
+                    {photoQuality.recommendation && (
+                      <p className="text-xs opacity-90">{photoQuality.recommendation}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Caption — always visible */}
             <div>
