@@ -11,6 +11,7 @@ export interface Photo {
   movement?: string | null
   caseSize?: string | null
   wristSize?: string | null
+  estimatedPrice?: string | null
   createdAt: string
 }
 

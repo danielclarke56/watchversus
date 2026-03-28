@@ -16,6 +16,7 @@ export const photos = pgTable(
     movement: text('movement'),
     caseSize: text('case_size'),
     wristSize: text('wrist_size'),
+    estimatedPrice: text('estimated_price'),
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
     createdAt: timestamp('created_at')
       .default(sql`now()`)

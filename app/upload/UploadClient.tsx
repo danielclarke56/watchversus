@@ -18,6 +18,15 @@ interface PhotoQuality {
 
 const MOVEMENT_OPTIONS = ['Automatic', 'Mechanical', 'Quartz', 'Digital']
 const WRIST_SIZE_OPTIONS = ['Under 6"', '6"', '6.5"', '7"', '7.5"', '8"', 'Over 8"']
+const ESTIMATED_PRICE_OPTIONS = [
+  'Under $500',
+  '$500 – $1,000',
+  '$1,000 – $5,000',
+  '$5,000 – $15,000',
+  '$15,000 – $50,000',
+  '$50,000+',
+  'Prefer not to say',
+]
 
 const MAX_PHOTOS = 3
 
@@ -35,6 +44,7 @@ export default function UploadClient() {
   const [movement, setMovement] = useState('')
   const [caseSize, setCaseSize] = useState('')
   const [wristSize, setWristSize] = useState('')
+  const [estimatedPrice, setEstimatedPrice] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
@@ -385,6 +395,7 @@ export default function UploadClient() {
         if (movement) formData.append('movement', movement)
         if (caseSize.trim()) formData.append('caseSize', caseSize.trim())
         if (wristSize) formData.append('wristSize', wristSize)
+        if (estimatedPrice) formData.append('estimatedPrice', estimatedPrice)
 
         const res = await fetch(`/api/photos/${resolvedWatchId}`, {
           method: 'POST',
@@ -482,6 +493,7 @@ export default function UploadClient() {
                   setMovement('')
                   setCaseSize('')
                   setWristSize('')
+                  setEstimatedPrice('')
                   setError('')
                   setAiSuggestion(null)
                   setNotAWatch(false)
@@ -754,6 +766,23 @@ export default function UploadClient() {
                 >
                   <option value="">Select wrist size</option>
                   {WRIST_SIZE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Estimated price */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Estimated value <span className="text-textMuted">(optional)</span>
+                </label>
+                <select
+                  value={estimatedPrice}
+                  onChange={(e) => setEstimatedPrice(e.target.value)}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                >
+                  <option value="">Select estimated value</option>
+                  {ESTIMATED_PRICE_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>

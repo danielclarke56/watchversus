@@ -8,6 +8,13 @@
       "when": 1774720890767,
       "tag": "0000_glossy_dreadnoughts",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774721403399,
+      "tag": "0001_chunky_shinobi_shaw",
+      "breakpoints": true
     }
   ]
 }

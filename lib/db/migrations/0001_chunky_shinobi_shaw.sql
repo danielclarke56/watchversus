@@ -1,0 +1,1 @@
+ALTER TABLE "photos" ADD COLUMN "estimated_price" text;
