@@ -50,6 +50,10 @@ export default function UploadClient() {
   const [wristSize, setWristSize] = useState('')
   const [estimatedPrice, setEstimatedPrice] = useState('')
   const [productionYear, setProductionYear] = useState('')
+  const [lugToLug, setLugToLug] = useState('')
+  const [betweenLugs, setBetweenLugs] = useState('')
+  const [thickness, setThickness] = useState('')
+  const [waterResistance, setWaterResistance] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
@@ -64,6 +68,7 @@ export default function UploadClient() {
   } | null>(null)
   const [photoQualities, setPhotoQualities] = useState<(PhotoQuality | null)[]>([])
   const [notAWatch, setNotAWatch] = useState(false)
+  const [identified, setIdentified] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -222,6 +227,7 @@ export default function UploadClient() {
     if (isFirst) {
       // Run AI identification + quality on first photo
       setIdentifying(true)
+      setIdentified(false)
       setAiSuggestion(null)
       setNotAWatch(false)
 
@@ -236,13 +242,22 @@ export default function UploadClient() {
         .then((data) => {
           if (data.isWatch === false) {
             setNotAWatch(true)
+            setIdentified(false)
           } else {
             setNotAWatch(false)
+            setIdentified(true)
             if (data.watch && (data.watch.brand || data.watch.model)) {
               setAiSuggestion(data.watch)
               if (data.watch.brand) setBrandName(data.watch.brand)
               if (data.watch.model) setModelName(data.watch.model)
               if (data.watch.reference) setReferenceNumber(data.watch.reference)
+              if (data.watch.movement) setMovement(data.watch.movement)
+              if (data.watch.caseSize) setCaseSize(data.watch.caseSize)
+              if (data.watch.lugToLug) setLugToLug(data.watch.lugToLug)
+              if (data.watch.betweenLugs) setBetweenLugs(data.watch.betweenLugs)
+              if (data.watch.thickness) setThickness(data.watch.thickness)
+              if (data.watch.waterResistance) setWaterResistance(data.watch.waterResistance)
+              if (data.watch.productionYear) setProductionYear(data.watch.productionYear)
               const suggestion = [data.watch.brand, data.watch.model]
                 .filter(Boolean)
                 .join(' ')
@@ -262,7 +277,7 @@ export default function UploadClient() {
           }
         })
         .catch(() => {
-          // Silent fail
+          // Silent fail — keep identified false
         })
         .finally(() => setIdentifying(false))
     } else {
@@ -306,6 +321,7 @@ export default function UploadClient() {
     if (index === 0) {
       // Re-run AI identification + quality on first photo
       setIdentifying(true)
+      setIdentified(false)
       setAiSuggestion(null)
       setNotAWatch(false)
 
@@ -320,13 +336,22 @@ export default function UploadClient() {
         .then((data) => {
           if (data.isWatch === false) {
             setNotAWatch(true)
+            setIdentified(false)
           } else {
             setNotAWatch(false)
+            setIdentified(true)
             if (data.watch && (data.watch.brand || data.watch.model)) {
               setAiSuggestion(data.watch)
               if (data.watch.brand) setBrandName(data.watch.brand)
               if (data.watch.model) setModelName(data.watch.model)
               if (data.watch.reference) setReferenceNumber(data.watch.reference)
+              if (data.watch.movement) setMovement(data.watch.movement)
+              if (data.watch.caseSize) setCaseSize(data.watch.caseSize)
+              if (data.watch.lugToLug) setLugToLug(data.watch.lugToLug)
+              if (data.watch.betweenLugs) setBetweenLugs(data.watch.betweenLugs)
+              if (data.watch.thickness) setThickness(data.watch.thickness)
+              if (data.watch.waterResistance) setWaterResistance(data.watch.waterResistance)
+              if (data.watch.productionYear) setProductionYear(data.watch.productionYear)
               const suggestion = [data.watch.brand, data.watch.model]
                 .filter(Boolean)
                 .join(' ')
@@ -359,6 +384,7 @@ export default function UploadClient() {
     if (index === 0) {
       setAiSuggestion(null)
       setNotAWatch(false)
+      setIdentified(false)
     }
   }
 
@@ -402,6 +428,10 @@ export default function UploadClient() {
         if (wristSize) formData.append('wristSize', wristSize)
         if (estimatedPrice) formData.append('estimatedPrice', estimatedPrice)
         if (productionYear) formData.append('productionYear', productionYear)
+        if (lugToLug.trim()) formData.append('lugToLug', lugToLug.trim())
+        if (betweenLugs.trim()) formData.append('betweenLugs', betweenLugs.trim())
+        if (thickness.trim()) formData.append('thickness', thickness.trim())
+        if (waterResistance.trim()) formData.append('waterResistance', waterResistance.trim())
 
         const res = await fetch(`/api/photos/${resolvedWatchId}`, {
           method: 'POST',
@@ -501,9 +531,14 @@ export default function UploadClient() {
                   setWristSize('')
                   setEstimatedPrice('')
                   setProductionYear('')
+                  setLugToLug('')
+                  setBetweenLugs('')
+                  setThickness('')
+                  setWaterResistance('')
                   setError('')
                   setAiSuggestion(null)
                   setNotAWatch(false)
+                  setIdentified(false)
                   setPhotoQualities([])
                   setSuccessPreviews([])
                 }}
@@ -681,137 +716,199 @@ export default function UploadClient() {
             )}
 
             {/* Section 2: Watch Details */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
+            {/* Section 2: Watch Details — only shown after Gemini confirms it's a watch */}
+            {identified && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
 
-              {/* Brand name */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Brand <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={brandName}
-                  onChange={(e) => setBrandName(e.target.value)}
-                  placeholder="e.g. Rolex, Omega, Seiko"
-                  maxLength={80}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                />
-              </div>
+                {/* Brand name */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Brand <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={brandName}
+                    onChange={(e) => setBrandName(e.target.value)}
+                    placeholder="e.g. Rolex, Omega, Seiko"
+                    maxLength={80}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                  />
+                </div>
 
-              {/* Model name */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Model <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={modelName}
-                  onChange={(e) => setModelName(e.target.value)}
-                  placeholder="e.g. Submariner, Speedmaster, SKX007"
-                  maxLength={100}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                />
-              </div>
+                {/* Model name */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Model <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={modelName}
+                    onChange={(e) => setModelName(e.target.value)}
+                    placeholder="e.g. Submariner, Speedmaster, SKX007"
+                    maxLength={100}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                  />
+                </div>
 
-              {/* Reference number */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Reference number <span className="text-textMuted">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={referenceNumber}
-                  onChange={(e) => setReferenceNumber(e.target.value)}
-                  placeholder="e.g. 126610LN, 311.30.42.30.01.005"
-                  maxLength={60}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                />
-              </div>
+                {/* Reference number */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Reference number <span className="text-textMuted">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={referenceNumber}
+                    onChange={(e) => setReferenceNumber(e.target.value)}
+                    placeholder="e.g. 126610LN, 311.30.42.30.01.005"
+                    maxLength={60}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                  />
+                </div>
 
-              {/* Movement */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Movement <span className="text-textMuted">(optional)</span>
-                </label>
-                <select
-                  value={movement}
-                  onChange={(e) => setMovement(e.target.value)}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                >
-                  <option value="">Select movement</option>
-                  {MOVEMENT_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
+                {/* Movement */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Movement <span className="text-textMuted">(optional)</span>
+                  </label>
+                  <select
+                    value={movement}
+                    onChange={(e) => setMovement(e.target.value)}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                  >
+                    <option value="">Select movement</option>
+                    {MOVEMENT_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Case size */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Case size <span className="text-textMuted">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={caseSize}
-                  onChange={(e) => setCaseSize(e.target.value)}
-                  placeholder="e.g. 40mm"
-                  maxLength={20}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                />
-              </div>
+                {/* Case dimensions — 2-column grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Case size <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={caseSize}
+                      onChange={(e) => setCaseSize(e.target.value)}
+                      placeholder="e.g. 40mm"
+                      maxLength={20}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Lug-to-lug <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={lugToLug}
+                      onChange={(e) => setLugToLug(e.target.value)}
+                      placeholder="e.g. 47mm"
+                      maxLength={20}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Lug width <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={betweenLugs}
+                      onChange={(e) => setBetweenLugs(e.target.value)}
+                      placeholder="e.g. 20mm"
+                      maxLength={20}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Thickness <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={thickness}
+                      onChange={(e) => setThickness(e.target.value)}
+                      placeholder="e.g. 12.5mm"
+                      maxLength={20}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                    />
+                  </div>
+                </div>
 
-              {/* Wrist size */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Wrist size <span className="text-textMuted">(optional)</span>
-                </label>
-                <select
-                  value={wristSize}
-                  onChange={(e) => setWristSize(e.target.value)}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                >
-                  <option value="">Select wrist size</option>
-                  {WRIST_SIZE_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
+                {/* Water resistance */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Water resistance <span className="text-textMuted">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={waterResistance}
+                    onChange={(e) => setWaterResistance(e.target.value)}
+                    placeholder="e.g. 300m / 1000ft"
+                    maxLength={40}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                  />
+                </div>
 
-              {/* Estimated price */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Estimated value <span className="text-textMuted">(optional)</span>
-                </label>
-                <select
-                  value={estimatedPrice}
-                  onChange={(e) => setEstimatedPrice(e.target.value)}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                >
-                  <option value="">Select estimated value</option>
-                  {ESTIMATED_PRICE_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
+                {/* Production year */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Production year <span className="text-textMuted">(optional)</span>
+                  </label>
+                  <select
+                    value={productionYear}
+                    onChange={(e) => setProductionYear(e.target.value)}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                  >
+                    <option value="">Select year</option>
+                    {PRODUCTION_YEAR_OPTIONS.map((yr) => (
+                      <option key={yr} value={yr}>{yr}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Production year */}
-              <div>
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Production year <span className="text-textMuted">(optional)</span>
-                </label>
-                <select
-                  value={productionYear}
-                  onChange={(e) => setProductionYear(e.target.value)}
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                >
-                  <option value="">Select year</option>
-                  {PRODUCTION_YEAR_OPTIONS.map((yr) => (
-                    <option key={yr} value={yr}>{yr}</option>
-                  ))}
-                </select>
+                {/* Personal fields — user-only */}
+                <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide pt-2">Your Details</h3>
+
+                {/* Wrist size */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Wrist size <span className="text-textMuted">(optional)</span>
+                  </label>
+                  <select
+                    value={wristSize}
+                    onChange={(e) => setWristSize(e.target.value)}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                  >
+                    <option value="">Select wrist size</option>
+                    {WRIST_SIZE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Estimated price */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-2">
+                    Estimated value <span className="text-textMuted">(optional)</span>
+                  </label>
+                  <select
+                    value={estimatedPrice}
+                    onChange={(e) => setEstimatedPrice(e.target.value)}
+                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                  >
+                    <option value="">Select estimated value</option>
+                    {ESTIMATED_PRICE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Error message */}
             {error && (
@@ -827,18 +924,20 @@ export default function UploadClient() {
               </div>
             )}
 
-            {/* Submit button */}
-            <button
-              type="submit"
-              disabled={!isFormValid || uploading}
-              className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                isFormValid && !uploading
-                  ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
-                  : 'bg-neutral text-textMuted cursor-not-allowed'
-              }`}
-            >
-              {uploading ? 'Uploading...' : 'Submit photo'}
-            </button>
+            {/* Submit button — only show after successful identification */}
+            {identified && (
+              <button
+                type="submit"
+                disabled={!isFormValid || uploading}
+                className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                  isFormValid && !uploading
+                    ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
+                    : 'bg-neutral text-textMuted cursor-not-allowed'
+                }`}
+              >
+                {uploading ? 'Uploading...' : 'Submit photo'}
+              </button>
+            )}
           </form>
         )}
       </div>

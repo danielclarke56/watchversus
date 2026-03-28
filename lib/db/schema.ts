@@ -18,6 +18,10 @@ export const photos = pgTable(
     wristSize: text('wrist_size'),
     estimatedPrice: text('estimated_price'),
     productionYear: text('production_year'),
+    lugToLug: text('lug_to_lug'),
+    betweenLugs: text('between_lugs'),
+    thickness: text('thickness'),
+    waterResistance: text('water_resistance'),
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
     createdAt: timestamp('created_at')
       .default(sql`now()`)

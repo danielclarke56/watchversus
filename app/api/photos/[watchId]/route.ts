@@ -34,13 +34,11 @@ export async function GET(
   }
 
   try {
-    // Query Postgres for approved photos
     const photoRecords = await db
       .select()
       .from(photos)
       .where(and(eq(photos.watchId, params.watchId), eq(photos.status, 'approved')))
 
-    // Transform DB records to ApprovedPhoto format
     const approved: ApprovedPhoto[] = photoRecords.map((p) => ({
       id: p.id,
       watchId: p.watchId,
@@ -56,6 +54,10 @@ export async function GET(
       wristSize: p.wristSize ?? undefined,
       estimatedPrice: p.estimatedPrice ?? undefined,
       productionYear: p.productionYear ?? undefined,
+      lugToLug: p.lugToLug ?? undefined,
+      betweenLugs: p.betweenLugs ?? undefined,
+      thickness: p.thickness ?? undefined,
+      waterResistance: p.waterResistance ?? undefined,
       approved: true,
       createdAt: p.createdAt.toISOString(),
     }))
@@ -63,7 +65,6 @@ export async function GET(
     return NextResponse.json(approved)
   } catch (error) {
     console.error('Error fetching photos:', error)
-    // Fallback: return empty array if DB is unavailable
     return NextResponse.json([])
   }
 }
@@ -113,8 +114,6 @@ export async function POST(
     return NextResponse.json({ error: 'Photo must be under 5 MB' }, { status: 400 })
   }
 
-  // Re-encode through sharp: validates real image, strips all EXIF/metadata (default, not calling withMetadata()),
-  // neutralizes polyglot payloads, caps dimensions, outputs clean WebP.
   const rawBuffer = Buffer.from(await file.arrayBuffer())
 
   if (!validateMagicBytes(rawBuffer)) {
@@ -125,7 +124,7 @@ export async function POST(
   let cleanBuffer: Buffer
   try {
     cleanBuffer = await sharp(rawBuffer)
-      .rotate() // auto-rotate based on EXIF before stripping
+      .rotate()
       .resize(2400, 2400, { fit: 'inside', withoutEnlargement: true })
       .webp({ quality: 85 })
       .toBuffer()
@@ -164,8 +163,11 @@ export async function POST(
   const caseSize = formData.get('caseSize') as string | null
   const estimatedPrice = formData.get('estimatedPrice') as string | null
   const productionYear = formData.get('productionYear') as string | null
+  const lugToLug = formData.get('lugToLug') as string | null
+  const betweenLugs = formData.get('betweenLugs') as string | null
+  const thickness = formData.get('thickness') as string | null
+  const waterResistance = formData.get('waterResistance') as string | null
 
-  // Store in Postgres with pending status
   try {
     await db.insert(photos).values({
       id: photoId,
@@ -181,6 +183,10 @@ export async function POST(
       wristSize: wristSize || undefined,
       estimatedPrice: estimatedPrice || undefined,
       productionYear: productionYear || undefined,
+      lugToLug: lugToLug || undefined,
+      betweenLugs: betweenLugs || undefined,
+      thickness: thickness || undefined,
+      waterResistance: waterResistance || undefined,
       status: 'pending',
       createdAt: new Date(),
     })

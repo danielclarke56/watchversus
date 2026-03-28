@@ -13,6 +13,10 @@ export interface Photo {
   wristSize?: string | null
   estimatedPrice?: string | null
   productionYear?: string | null
+  lugToLug?: string | null
+  betweenLugs?: string | null
+  thickness?: string | null
+  waterResistance?: string | null
   createdAt: string
 }
 

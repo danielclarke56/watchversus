@@ -33,13 +33,20 @@ export async function POST(request: NextRequest) {
         },
       },
       {
-        text: `You are a watch identification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
+        text: `You are a watch identification and specification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
 {
   "isWatch": true or false,
   "watch": {
     "brand": "string or null",
     "model": "string or null",
     "reference": "string or null",
+    "movement": "Automatic|Mechanical|Quartz|Digital or null",
+    "caseSize": "e.g. '40mm' or null",
+    "lugToLug": "e.g. '47mm' or null",
+    "betweenLugs": "e.g. '20mm' or null",
+    "thickness": "e.g. '12.5mm' or null",
+    "waterResistance": "e.g. '300m / 1000ft' or null",
+    "productionYear": "e.g. '2020' or null",
     "confidence": "high|medium|low"
   },
   "quality": {
@@ -48,8 +55,8 @@ export async function POST(request: NextRequest) {
     "recommendation": "short 1-sentence tip if score is not good, else null"
   }
 }
-Set isWatch to false if the image does not contain a watch or wristwatch. If isWatch is false, set watch fields to null and quality score to "poor".
-Return null for unknown fields. No markdown, no explanation — JSON only.`,
+Set isWatch to false if the image does not contain a watch or wristwatch. If isWatch is false, set all watch fields to null and quality score to "poor".
+Use your knowledge of watch specifications to fill in as many fields as possible — especially for well-known references. Return null only for fields you genuinely cannot determine. No markdown, no explanation — JSON only.`,
       },
     ])
 
