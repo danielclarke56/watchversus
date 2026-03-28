@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and } from 'drizzle-orm'
+import { eq, lt, and, asc } from 'drizzle-orm'
 
 /**
  * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       .select()
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
-      .orderBy((p) => p.createdAt)
+      .orderBy(asc(photos.createdAt))
       .limit(limit + 1)
 
     // Reverse to get descending order
