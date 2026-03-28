@@ -86,11 +86,10 @@ export async function GET(req: NextRequest) {
       nextCursor,
     })
   } catch (error) {
-    console.error('Error fetching all photos:', error)
-    // Return empty result on error
-    return NextResponse.json({
-      photos: [],
-      nextCursor: null,
-    })
+    console.error('[/api/photos/all] Query failed:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch photos', photos: [], nextCursor: null },
+      { status: 500 }
+    )
   }
 }
