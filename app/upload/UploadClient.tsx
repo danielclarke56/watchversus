@@ -6,14 +6,8 @@ import Link from 'next/link'
 import { watches } from '@/lib/watches'
 import type { Watch } from '@/lib/types'
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
+function toSlug(str: string) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
 interface PhotoQuality {
@@ -22,19 +16,8 @@ interface PhotoQuality {
   recommendation: string | null
 }
 
-const WRIST_SIZE_OPTIONS = [
-  '',
-  'Under 6.5 in',
-  '6.5 in',
-  '7 in',
-  '7.5 in',
-  '8 in',
-  'Over 8 in',
-]
-
-const CONDITION_OPTIONS = ['', 'New / Unworn', 'Excellent', 'Good', 'Fair']
-const STRAP_OPTIONS = ['', 'Original bracelet', 'Metal aftermarket', 'Leather strap', 'NATO strap', 'Rubber strap', 'Other']
-const OWNED_DURATION_OPTIONS = ['', 'Just got it', 'Under 1 year', '1–3 years', '3+ years']
+const MOVEMENT_OPTIONS = ['Automatic', 'Mechanical', 'Quartz', 'Digital']
+const WRIST_SIZE_OPTIONS = ['Under 6"', '6"', '6.5"', '7"', '7.5"', '8"', 'Over 8"']
 
 const MAX_PHOTOS = 3
 
@@ -46,11 +29,12 @@ export default function UploadClient() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
-  const [caption, setCaption] = useState('')
+  const [brandName, setBrandName] = useState('')
+  const [modelName, setModelName] = useState('')
+  const [referenceNumber, setReferenceNumber] = useState('')
+  const [movement, setMovement] = useState('')
+  const [caseSize, setCaseSize] = useState('')
   const [wristSize, setWristSize] = useState('')
-  const [condition, setCondition] = useState('')
-  const [strapType, setStrapType] = useState('')
-  const [ownedDuration, setOwnedDuration] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
@@ -64,14 +48,11 @@ export default function UploadClient() {
     confidence: string
   } | null>(null)
   const [photoQualities, setPhotoQualities] = useState<(PhotoQuality | null)[]>([])
-  const [confirmPoorQuality, setConfirmPoorQuality] = useState(false)
   const [notAWatch, setNotAWatch] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
   const fileRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
-
-  const hasPoorPhoto = photoQualities.some((q) => q?.score === 'poor')
 
   const filtered = useMemo(() => {
     if (!search.trim() || search.trim().length < 2) return []
@@ -86,15 +67,7 @@ export default function UploadClient() {
       .slice(0, 20)
   }, [search])
 
-  // Group filtered results by brand
-  const groupedResults = useMemo(() => {
-    const groups: { [key: string]: Watch[] } = {}
-    filtered.forEach((w) => {
-      if (!groups[w.brand]) groups[w.brand] = []
-      groups[w.brand].push(w)
-    })
-    return groups
-  }, [filtered])
+
 
   // Keyboard navigation for dropdown
   useEffect(() => {
@@ -144,22 +117,6 @@ export default function UploadClient() {
     }
   }, [showDropdown])
 
-  function highlightMatch(text: string, query: string): React.ReactNode {
-    if (!query.trim()) return text
-    const parts = text.split(
-      new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'i')
-    )
-    return parts.map((part, i) =>
-      part.toLowerCase() === query.toLowerCase() ? (
-        <span key={i} className="font-bold">
-          {part}
-        </span>
-      ) : (
-        part
-      )
-    )
-  }
-
   function selectWatch(w: Watch) {
     setSelectedWatch(w)
     setSearch(`${w.brand} ${w.name}`)
@@ -185,14 +142,6 @@ export default function UploadClient() {
       }) ||
       null
     )
-  }
-
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = e.target.value
-    setSearch(val)
-    setSelectedWatch(null)
-    setShowDropdown(true)
-    setHighlightedIndex(-1)
   }
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -242,7 +191,6 @@ export default function UploadClient() {
       return
     }
     setError('')
-    setConfirmPoorQuality(false)
 
     const newIndex = files.length
     const isFirst = newIndex === 0
@@ -277,6 +225,9 @@ export default function UploadClient() {
             setNotAWatch(false)
             if (data.watch && (data.watch.brand || data.watch.model)) {
               setAiSuggestion(data.watch)
+              if (data.watch.brand) setBrandName(data.watch.brand)
+              if (data.watch.model) setModelName(data.watch.model)
+              if (data.watch.reference) setReferenceNumber(data.watch.reference)
               const suggestion = [data.watch.brand, data.watch.model]
                 .filter(Boolean)
                 .join(' ')
@@ -315,7 +266,6 @@ export default function UploadClient() {
       return
     }
     setError('')
-    setConfirmPoorQuality(false)
 
     setFiles((prev) => {
       const next = [...prev]
@@ -359,6 +309,9 @@ export default function UploadClient() {
             setNotAWatch(false)
             if (data.watch && (data.watch.brand || data.watch.model)) {
               setAiSuggestion(data.watch)
+              if (data.watch.brand) setBrandName(data.watch.brand)
+              if (data.watch.model) setModelName(data.watch.model)
+              if (data.watch.reference) setReferenceNumber(data.watch.reference)
               const suggestion = [data.watch.brand, data.watch.model]
                 .filter(Boolean)
                 .join(' ')
@@ -388,7 +341,6 @@ export default function UploadClient() {
     setFiles((prev) => prev.filter((_, i) => i !== index))
     setPreviews((prev) => prev.filter((_, i) => i !== index))
     setPhotoQualities((prev) => prev.filter((_, i) => i !== index))
-    setConfirmPoorQuality(false)
     if (index === 0) {
       setAiSuggestion(null)
       setNotAWatch(false)
@@ -417,8 +369,8 @@ export default function UploadClient() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const watchId = selectedWatch?.slug || slugify(search.trim())
-    if (!watchId || files.length === 0) return
+    const resolvedWatchId = selectedWatch?.slug || toSlug(`${brandName} ${modelName}`)
+    if (!resolvedWatchId || files.length === 0) return
     setUploading(true)
     setError('')
 
@@ -427,13 +379,14 @@ export default function UploadClient() {
         setUploadProgress(`Uploading ${i + 1} of ${files.length}...`)
         const formData = new FormData()
         formData.append('photo', files[i])
-        if (caption.trim()) formData.append('caption', caption.trim())
+        if (brandName.trim()) formData.append('brandName', brandName.trim())
+        if (modelName.trim()) formData.append('modelName', modelName.trim())
+        if (referenceNumber.trim()) formData.append('referenceNumber', referenceNumber.trim())
+        if (movement) formData.append('movement', movement)
+        if (caseSize.trim()) formData.append('caseSize', caseSize.trim())
         if (wristSize) formData.append('wristSize', wristSize)
-        if (condition) formData.append('condition', condition)
-        if (strapType) formData.append('strapType', strapType)
-        if (ownedDuration) formData.append('ownedDuration', ownedDuration)
 
-        const res = await fetch(`/api/photos/${watchId}`, {
+        const res = await fetch(`/api/photos/${resolvedWatchId}`, {
           method: 'POST',
           body: formData,
         })
@@ -453,6 +406,8 @@ export default function UploadClient() {
       setUploadProgress('')
     }
   }
+
+  const isFormValid = files.length > 0 && brandName.trim().length > 0
 
   if (!isLoaded) {
     return (
@@ -521,16 +476,16 @@ export default function UploadClient() {
                   setPreviews([])
                   setSearch('')
                   setSelectedWatch(null)
-                  setCaption('')
+                  setBrandName('')
+                  setModelName('')
+                  setReferenceNumber('')
+                  setMovement('')
+                  setCaseSize('')
                   setWristSize('')
-                  setCondition('')
-                  setStrapType('')
-                  setOwnedDuration('')
                   setError('')
                   setAiSuggestion(null)
                   setNotAWatch(false)
                   setPhotoQualities([])
-                  setConfirmPoorQuality(false)
                   setSuccessPreviews([])
                 }}
                 className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
@@ -706,226 +661,130 @@ export default function UploadClient() {
               </div>
             )}
 
-            {/* 2. Watch Name — free text with DB suggestions */}
-            <div className="relative">
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                Watch name
-              </label>
-              <div className="relative">
+            {/* Section 2: Watch Details */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
+
+              {/* Brand name */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Brand <span className="text-red-400">*</span>
+                </label>
                 <input
                   type="text"
-                  value={search}
-                  onChange={handleSearchChange}
-                  onFocus={() => {
-                    if (search.trim().length >= 2) setShowDropdown(true)
-                  }}
-                  placeholder="e.g. Rolex Submariner, Casio G-Shock..."
-                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 pr-10 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                  value={brandName}
+                  onChange={(e) => setBrandName(e.target.value)}
+                  placeholder="e.g. Rolex, Omega, Seiko"
+                  maxLength={80}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                 />
-                {/* Clear button */}
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearch('')
-                      setSelectedWatch(null)
-                      setShowDropdown(false)
-                      setHighlightedIndex(-1)
-                    }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary"
-                    aria-label="Clear"
-                  >
-                    &times;
-                  </button>
-                )}
               </div>
-              {/* Selected from DB indicator */}
-              {selectedWatch && (
-                <p className="mt-1 text-xs text-accent">
-                  {'\u2713'} Matched in database
-                </p>
-              )}
-              {/* Dropdown suggestions */}
-              {showDropdown && search.trim().length >= 2 && (
-                <>
-                  {filtered.length > 0 ? (
-                    <ul
-                      ref={dropdownRef}
-                      className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg max-h-60 overflow-y-auto shadow-md"
-                    >
-                      {Object.entries(groupedResults).map(([brand, brandWatches]) => {
-                        let itemIndex = 0
-                        for (const [b] of Object.entries(groupedResults)) {
-                          if (b === brand) break
-                          itemIndex += groupedResults[b].length
-                        }
-                        return (
-                          <li key={brand}>
-                            <div className="sticky top-0 bg-neutral px-4 py-2 text-xs font-semibold text-textSecond uppercase tracking-wider">
-                              {brand}
-                            </div>
-                            {brandWatches.map((w) => {
-                              const currentIndex = itemIndex
-                              itemIndex += 1
-                              const isHighlighted = highlightedIndex === currentIndex
-                              return (
-                                <button
-                                  key={w.slug}
-                                  type="button"
-                                  onClick={() => selectWatch(w)}
-                                  className={`w-full text-left px-4 py-2 transition-colors ${
-                                    isHighlighted
-                                      ? 'bg-accent text-white'
-                                      : 'text-textSecond hover:bg-neutral hover:text-textPrimary'
-                                  }`}
-                                >
-                                  <span className="font-medium">
-                                    {highlightMatch(w.brand, search)}
-                                  </span>{' '}
-                                  <span className={isHighlighted ? 'text-white' : 'text-textMuted'}>
-                                    {highlightMatch(w.name, search)}
-                                  </span>
-                                </button>
-                              )
-                            })}
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  ) : (
-                    <div className="absolute z-10 w-full mt-1 bg-surface border border-borderStrong rounded-lg p-3 text-sm text-textMuted shadow-md">
-                      No matches in our database &mdash; that&apos;s fine, we&apos;ll add it.
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
 
-            {/* 3. Wrist size dropdown */}
-            <div>
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                Wrist size <span className="text-textMuted">(optional)</span>
-              </label>
-              <select
-                value={wristSize}
-                onChange={(e) => setWristSize(e.target.value)}
-                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-              >
-                <option value="">Select wrist size</option>
-                {WRIST_SIZE_OPTIONS.filter(Boolean).map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Condition */}
-            <div>
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                Condition <span className="text-textMuted">(optional)</span>
-              </label>
-              <select
-                value={condition}
-                onChange={(e) => setCondition(e.target.value)}
-                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-              >
-                <option value="">Select condition</option>
-                {CONDITION_OPTIONS.filter(Boolean).map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Strap / bracelet */}
-            <div>
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                Strap / bracelet <span className="text-textMuted">(optional)</span>
-              </label>
-              <select
-                value={strapType}
-                onChange={(e) => setStrapType(e.target.value)}
-                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-              >
-                <option value="">Select strap or bracelet</option>
-                {STRAP_OPTIONS.filter(Boolean).map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* How long owned */}
-            <div>
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                How long have you owned it? <span className="text-textMuted">(optional)</span>
-              </label>
-              <select
-                value={ownedDuration}
-                onChange={(e) => setOwnedDuration(e.target.value)}
-                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-              >
-                <option value="">Select duration</option>
-                {OWNED_DURATION_OPTIONS.filter(Boolean).map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* 4. Caption */}
-            <div>
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                Caption <span className="text-textMuted">(optional)</span>
-              </label>
-              <textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value.slice(0, 200))}
-                placeholder="e.g. Daily wear for 2 years, love the lume..."
-                maxLength={200}
-                rows={3}
-                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm resize-none"
-              />
-              <p className="text-xs text-gray-400 text-right mt-1">
-                {caption.length}/200
-              </p>
-            </div>
-
-            {/* Quality gate: poor photo warning + checkbox */}
-            {hasPoorPhoto && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-sm text-red-800 font-medium mb-2">
-                  {'\u26A0'} One or more photos have poor quality and may be rejected.
-                </p>
-                <label className="flex items-start gap-2 text-sm text-red-700 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={confirmPoorQuality}
-                    onChange={(e) => setConfirmPoorQuality(e.target.checked)}
-                    className="mt-0.5"
-                  />
-                  I understand this photo may be rejected &mdash; submit anyway
+              {/* Model name */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Model <span className="text-red-400">*</span>
                 </label>
+                <input
+                  type="text"
+                  value={modelName}
+                  onChange={(e) => setModelName(e.target.value)}
+                  placeholder="e.g. Submariner, Speedmaster, SKX007"
+                  maxLength={100}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                />
+              </div>
+
+              {/* Reference number */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Reference number <span className="text-textMuted">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={referenceNumber}
+                  onChange={(e) => setReferenceNumber(e.target.value)}
+                  placeholder="e.g. 126610LN, 311.30.42.30.01.005"
+                  maxLength={60}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                />
+              </div>
+
+              {/* Movement */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Movement <span className="text-textMuted">(optional)</span>
+                </label>
+                <select
+                  value={movement}
+                  onChange={(e) => setMovement(e.target.value)}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                >
+                  <option value="">Select movement</option>
+                  {MOVEMENT_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Case size */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Case size <span className="text-textMuted">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={caseSize}
+                  onChange={(e) => setCaseSize(e.target.value)}
+                  placeholder="e.g. 40mm"
+                  maxLength={20}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                />
+              </div>
+
+              {/* Wrist size */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Wrist size <span className="text-textMuted">(optional)</span>
+                </label>
+                <select
+                  value={wristSize}
+                  onChange={(e) => setWristSize(e.target.value)}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                >
+                  <option value="">Select wrist size</option>
+                  {WRIST_SIZE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Error message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800">{error}</p>
               </div>
             )}
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {/* Upload progress */}
+            {uploadProgress && (
+              <div className="text-sm text-textMuted">
+                {uploadProgress}
+              </div>
+            )}
 
-            {/* Submit */}
+            {/* Submit button */}
             <button
               type="submit"
-              disabled={
-                !search.trim() ||
-                files.length === 0 ||
-                uploading ||
-                notAWatch ||
-                (hasPoorPhoto && !confirmPoorQuality)
-              }
-              className="w-full py-3 bg-accent hover:bg-accentHover disabled:bg-neutral disabled:text-textMuted text-white rounded-lg font-medium transition-colors"
+              disabled={!isFormValid || uploading}
+              className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                isFormValid && !uploading
+                  ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
+                  : 'bg-neutral text-textMuted cursor-not-allowed'
+              }`}
             >
-              {uploading
-                ? uploadProgress || 'Uploading...'
-                : files.length > 1
-                  ? `Upload ${files.length} Photos`
-                  : 'Upload Photo'}
+              {uploading ? 'Uploading...' : 'Submit photo'}
             </button>
           </form>
         )}

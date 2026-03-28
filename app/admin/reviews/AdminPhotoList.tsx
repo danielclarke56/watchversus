@@ -74,21 +74,6 @@ export default function AdminPhotoList({ initialPhotos, watchNames }: Props) {
                     {p.wristSize}
                   </span>
                 )}
-                {p.condition && (
-                  <span className="text-xs bg-accentLight text-textSecond px-2 py-0.5 rounded-full">
-                    {p.condition}
-                  </span>
-                )}
-                {p.strapType && (
-                  <span className="text-xs bg-accentLight text-textSecond px-2 py-0.5 rounded-full">
-                    {p.strapType}
-                  </span>
-                )}
-                {p.ownedDuration && (
-                  <span className="text-xs bg-accentLight text-textSecond px-2 py-0.5 rounded-full">
-                    {p.ownedDuration}
-                  </span>
-                )}
                 <span className="text-textMuted text-xs">
                   {new Date(p.createdAt).toLocaleDateString('en-US', {
                     month: 'short',

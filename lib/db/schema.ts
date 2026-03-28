@@ -10,10 +10,12 @@ export const photos = pgTable(
     userName: text('user_name').notNull(),
     url: text('url').notNull(),
     caption: text('caption'),
+    brandName: text('brand_name'),
+    modelName: text('model_name'),
+    referenceNumber: text('reference_number'),
+    movement: text('movement'),
+    caseSize: text('case_size'),
     wristSize: text('wrist_size'),
-    condition: text('condition'),
-    strapType: text('strap_type'),
-    ownedDuration: text('owned_duration'),
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
     createdAt: timestamp('created_at')
       .default(sql`now()`)

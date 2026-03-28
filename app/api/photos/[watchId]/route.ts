@@ -48,12 +48,14 @@ export async function GET(
       userName: p.userName,
       url: p.url,
       caption: p.caption ?? undefined,
+      brandName: p.brandName ?? undefined,
+      modelName: p.modelName ?? undefined,
+      referenceNumber: p.referenceNumber ?? undefined,
+      movement: p.movement ?? undefined,
+      caseSize: p.caseSize ?? undefined,
       wristSize: p.wristSize ?? undefined,
-      condition: p.condition ?? undefined,
-      strapType: p.strapType ?? undefined,
-      ownedDuration: p.ownedDuration ?? undefined,
-      createdAt: p.createdAt.toISOString(),
       approved: true,
+      createdAt: p.createdAt.toISOString(),
     }))
 
     return NextResponse.json(approved)
@@ -151,14 +153,13 @@ export async function POST(
     photoUrl = `/images/user-uploads/${params.watchId}/${localFilename}`
   }
 
-  // Read caption and metadata fields from formData
-  const captionRaw = formData.get('caption') as string | null
+  // Read metadata fields from formData
   const wristSize = formData.get('wristSize') as string | null
-  const condition = formData.get('condition') as string | null
-  const strapType = formData.get('strapType') as string | null
-  const ownedDuration = formData.get('ownedDuration') as string | null
-  const sanitizedCaption = sanitizeText(captionRaw ?? '', 280)
-  const caption = sanitizedCaption
+  const brandName = formData.get('brandName') as string | null
+  const modelName = formData.get('modelName') as string | null
+  const referenceNumber = formData.get('referenceNumber') as string | null
+  const movement = formData.get('movement') as string | null
+  const caseSize = formData.get('caseSize') as string | null
 
   // Store in Postgres with pending status
   try {
@@ -168,11 +169,12 @@ export async function POST(
       userId,
       userName: sanitizeText(userName, 50),
       url: photoUrl,
-      caption: caption || undefined,
+      brandName: brandName || undefined,
+      modelName: modelName || undefined,
+      referenceNumber: referenceNumber || undefined,
+      movement: movement || undefined,
+      caseSize: caseSize || undefined,
       wristSize: wristSize || undefined,
-      condition: condition || undefined,
-      strapType: strapType || undefined,
-      ownedDuration: ownedDuration || undefined,
       status: 'pending',
       createdAt: new Date(),
     })

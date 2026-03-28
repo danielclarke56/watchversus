@@ -4,11 +4,13 @@ export interface Photo {
   userId: string
   userName: string
   url: string
-  caption?: string
+  caption?: string | null
+  brandName?: string | null
+  modelName?: string | null
+  referenceNumber?: string | null
+  movement?: string | null
+  caseSize?: string | null
   wristSize?: string | null
-  condition?: string | null
-  strapType?: string | null
-  ownedDuration?: string | null
   createdAt: string
 }
 
