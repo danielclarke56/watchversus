@@ -29,8 +29,18 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
+    // TEMP: Select explicit columns only (original 8) to debug missing column issue
     const photoRecords = await db
-      .select()
+      .select({
+        id: photos.id,
+        watchId: photos.watchId,
+        userId: photos.userId,
+        userName: photos.userName,
+        url: photos.url,
+        caption: photos.caption,
+        status: photos.status,
+        createdAt: photos.createdAt,
+      })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
       .orderBy(asc(photos.createdAt))
