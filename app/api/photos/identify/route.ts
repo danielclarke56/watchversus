@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
     // Determine MIME type
     const mimeType = photo.type || 'image/jpeg'
 
-    // Call Gemini Flash to identify the watch
-    const model = client.getGenerativeModel({ model: 'gemini-2.0-flash' })
+    // Call Gemini 2.5 Flash to identify the watch
+    const model = client.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const result = await model.generateContent([
       {
