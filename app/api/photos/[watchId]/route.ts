@@ -55,6 +55,7 @@ export async function GET(
       caseSize: p.caseSize ?? undefined,
       wristSize: p.wristSize ?? undefined,
       estimatedPrice: p.estimatedPrice ?? undefined,
+      productionYear: p.productionYear ?? undefined,
       approved: true,
       createdAt: p.createdAt.toISOString(),
     }))
@@ -162,6 +163,7 @@ export async function POST(
   const movement = formData.get('movement') as string | null
   const caseSize = formData.get('caseSize') as string | null
   const estimatedPrice = formData.get('estimatedPrice') as string | null
+  const productionYear = formData.get('productionYear') as string | null
 
   // Store in Postgres with pending status
   try {
@@ -178,6 +180,7 @@ export async function POST(
       caseSize: caseSize || undefined,
       wristSize: wristSize || undefined,
       estimatedPrice: estimatedPrice || undefined,
+      productionYear: productionYear || undefined,
       status: 'pending',
       createdAt: new Date(),
     })

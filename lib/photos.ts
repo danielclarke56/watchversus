@@ -12,6 +12,7 @@ export interface Photo {
   caseSize?: string | null
   wristSize?: string | null
   estimatedPrice?: string | null
+  productionYear?: string | null
   createdAt: string
 }
 

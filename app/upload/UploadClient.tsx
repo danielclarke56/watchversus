@@ -18,6 +18,10 @@ interface PhotoQuality {
 
 const MOVEMENT_OPTIONS = ['Automatic', 'Mechanical', 'Quartz', 'Digital']
 const WRIST_SIZE_OPTIONS = ['Under 6"', '6"', '6.5"', '7"', '7.5"', '8"', 'Over 8"']
+const PRODUCTION_YEAR_OPTIONS = [
+  ...Array.from({ length: new Date().getFullYear() - 1949 }, (_, i) => String(new Date().getFullYear() - i)),
+]
+
 const ESTIMATED_PRICE_OPTIONS = [
   'Under $500',
   '$500 – $1,000',
@@ -45,6 +49,7 @@ export default function UploadClient() {
   const [caseSize, setCaseSize] = useState('')
   const [wristSize, setWristSize] = useState('')
   const [estimatedPrice, setEstimatedPrice] = useState('')
+  const [productionYear, setProductionYear] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
@@ -396,6 +401,7 @@ export default function UploadClient() {
         if (caseSize.trim()) formData.append('caseSize', caseSize.trim())
         if (wristSize) formData.append('wristSize', wristSize)
         if (estimatedPrice) formData.append('estimatedPrice', estimatedPrice)
+        if (productionYear) formData.append('productionYear', productionYear)
 
         const res = await fetch(`/api/photos/${resolvedWatchId}`, {
           method: 'POST',
@@ -494,6 +500,7 @@ export default function UploadClient() {
                   setCaseSize('')
                   setWristSize('')
                   setEstimatedPrice('')
+                  setProductionYear('')
                   setError('')
                   setAiSuggestion(null)
                   setNotAWatch(false)
@@ -784,6 +791,23 @@ export default function UploadClient() {
                   <option value="">Select estimated value</option>
                   {ESTIMATED_PRICE_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Production year */}
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Production year <span className="text-textMuted">(optional)</span>
+                </label>
+                <select
+                  value={productionYear}
+                  onChange={(e) => setProductionYear(e.target.value)}
+                  className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                >
+                  <option value="">Select year</option>
+                  {PRODUCTION_YEAR_OPTIONS.map((yr) => (
+                    <option key={yr} value={yr}>{yr}</option>
                   ))}
                 </select>
               </div>
