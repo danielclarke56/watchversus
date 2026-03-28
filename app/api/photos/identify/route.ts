@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
+import sharp from 'sharp'
 
 const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
@@ -17,7 +18,18 @@ export async function POST(request: NextRequest) {
 
     // Convert file to buffer, then to base64
     const buffer = await photo.arrayBuffer()
-    const base64 = Buffer.from(buffer).toString('base64')
+    const sharpBuffer = Buffer.from(buffer)
+    const base64 = sharpBuffer.toString('base64')
+
+    // Layer 1: EXIF check — real photos almost always have EXIF metadata
+    let hasCamera = false
+    try {
+      const metadata = await sharp(sharpBuffer).metadata()
+      hasCamera = !!(metadata.exif)
+    } catch {
+      // If sharp fails to read metadata, default to false
+      hasCamera = false
+    }
 
     // Determine MIME type
     const mimeType = photo.type || 'image/jpeg'
@@ -36,6 +48,7 @@ export async function POST(request: NextRequest) {
         text: `You are a watch identification and specification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
 {
   "isWatch": true or false,
+  "isAiGenerated": true or false,
   "watch": {
     "brand": "string or null",
     "model": "string or null",
@@ -56,6 +69,7 @@ export async function POST(request: NextRequest) {
   }
 }
 Set isWatch to false if the image does not contain a watch or wristwatch. If isWatch is false, set all watch fields to null and quality score to "poor".
+Set "isAiGenerated" to true if the image appears to be AI-generated, a CGI render, a digital illustration, or a synthetic image rather than a real photograph of a physical watch. Signs include: unnaturally perfect lighting, synthetic textures, digital artifacts, no real-world context, or the image looks like a product render. Use the EXIF hint provided: hasCamera=${hasCamera}. Real photos almost always have camera EXIF data.
 Use your knowledge of watch specifications to fill in as many fields as possible — especially for well-known references. Return null only for fields you genuinely cannot determine. No markdown, no explanation — JSON only.`,
       },
     ])

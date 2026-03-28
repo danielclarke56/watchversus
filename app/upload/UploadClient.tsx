@@ -69,6 +69,7 @@ export default function UploadClient() {
   const [photoQualities, setPhotoQualities] = useState<(PhotoQuality | null)[]>([])
   const [notAWatch, setNotAWatch] = useState(false)
   const [identified, setIdentified] = useState(false)
+  const [aiGenerated, setAiGenerated] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -230,6 +231,7 @@ export default function UploadClient() {
       setIdentified(false)
       setAiSuggestion(null)
       setNotAWatch(false)
+      setAiGenerated(false)
 
       const identifyForm = new FormData()
       identifyForm.append('photo', f)
@@ -240,10 +242,17 @@ export default function UploadClient() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.isWatch === false) {
+          // Layer 3: Handle AI-generated images
+          if (data.isAiGenerated === true) {
+            setAiGenerated(true)
+            setIdentified(false)
+            setNotAWatch(false)
+          } else if (data.isWatch === false) {
+            setAiGenerated(false)
             setNotAWatch(true)
             setIdentified(false)
           } else {
+            setAiGenerated(false)
             setNotAWatch(false)
             setIdentified(true)
             if (data.watch && (data.watch.brand || data.watch.model)) {
@@ -324,6 +333,7 @@ export default function UploadClient() {
       setIdentified(false)
       setAiSuggestion(null)
       setNotAWatch(false)
+      setAiGenerated(false)
 
       const identifyForm = new FormData()
       identifyForm.append('photo', f)
@@ -334,10 +344,17 @@ export default function UploadClient() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.isWatch === false) {
+          // Layer 3: Handle AI-generated images
+          if (data.isAiGenerated === true) {
+            setAiGenerated(true)
+            setIdentified(false)
+            setNotAWatch(false)
+          } else if (data.isWatch === false) {
+            setAiGenerated(false)
             setNotAWatch(true)
             setIdentified(false)
           } else {
+            setAiGenerated(false)
             setNotAWatch(false)
             setIdentified(true)
             if (data.watch && (data.watch.brand || data.watch.model)) {
@@ -385,6 +402,7 @@ export default function UploadClient() {
       setAiSuggestion(null)
       setNotAWatch(false)
       setIdentified(false)
+      setAiGenerated(false)
     }
   }
 
@@ -539,6 +557,7 @@ export default function UploadClient() {
                   setAiSuggestion(null)
                   setNotAWatch(false)
                   setIdentified(false)
+                  setAiGenerated(false)
                   setPhotoQualities([])
                   setSuccessPreviews([])
                 }}
@@ -685,6 +704,14 @@ export default function UploadClient() {
                 <p className="text-sm text-red-800 font-medium">
                   {'\u26A0\uFE0F'} This doesn&apos;t look like a watch photo. Please upload a photo of a wristwatch.
                 </p>
+              </div>
+            )}
+
+            {/* AI-generated image error */}
+            {aiGenerated && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700 font-medium">🤖 This appears to be an AI-generated image</p>
+                <p className="text-xs text-red-600 mt-1">We only accept real photos of physical watches. Please upload an original photograph.</p>
               </div>
             )}
 
