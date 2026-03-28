@@ -86,9 +86,10 @@ export async function GET(req: NextRequest) {
       nextCursor,
     })
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error)
     console.error('[/api/photos/all] Query failed:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch photos', photos: [], nextCursor: null },
+      { error: 'Failed to fetch photos', detail: msg, photos: [], nextCursor: null },
       { status: 500 }
     )
   }
