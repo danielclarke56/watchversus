@@ -35,9 +35,10 @@ export async function POST(request: NextRequest) {
       {
         text: `You are a watch identification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
 {
+  "isWatch": true or false,
   "watch": {
     "brand": "string or null",
-    "model": "string or null", 
+    "model": "string or null",
     "reference": "string or null",
     "confidence": "high|medium|low"
   },
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
     "recommendation": "short 1-sentence tip if score is not good, else null"
   }
 }
+Set isWatch to false if the image does not contain a watch or wristwatch. If isWatch is false, set watch fields to null and quality score to "poor".
 Return null for unknown fields. No markdown, no explanation — JSON only.`,
       },
     ])

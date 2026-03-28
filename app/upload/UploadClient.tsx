@@ -58,6 +58,7 @@ export default function UploadClient() {
   } | null>(null)
   const [photoQualities, setPhotoQualities] = useState<(PhotoQuality | null)[]>([])
   const [confirmPoorQuality, setConfirmPoorQuality] = useState(false)
+  const [notAWatch, setNotAWatch] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -252,6 +253,7 @@ export default function UploadClient() {
       // Run AI identification + quality on first photo
       setIdentifying(true)
       setAiSuggestion(null)
+      setNotAWatch(false)
 
       const identifyForm = new FormData()
       identifyForm.append('photo', f)
@@ -262,17 +264,22 @@ export default function UploadClient() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.watch && (data.watch.brand || data.watch.model)) {
-            setAiSuggestion(data.watch)
-            const suggestion = [data.watch.brand, data.watch.model]
-              .filter(Boolean)
-              .join(' ')
-            if (!search.trim()) {
-              setSearch(suggestion)
-              // Also try to match a DB watch
-              const match = findMatchingWatch(data.watch.brand, data.watch.model)
-              if (match) {
-                selectWatch(match)
+          if (data.isWatch === false) {
+            setNotAWatch(true)
+          } else {
+            setNotAWatch(false)
+            if (data.watch && (data.watch.brand || data.watch.model)) {
+              setAiSuggestion(data.watch)
+              const suggestion = [data.watch.brand, data.watch.model]
+                .filter(Boolean)
+                .join(' ')
+              if (!search.trim()) {
+                setSearch(suggestion)
+                // Also try to match a DB watch
+                const match = findMatchingWatch(data.watch.brand, data.watch.model)
+                if (match) {
+                  selectWatch(match)
+                }
               }
             }
           }
@@ -331,6 +338,7 @@ export default function UploadClient() {
       // Re-run AI identification + quality on first photo
       setIdentifying(true)
       setAiSuggestion(null)
+      setNotAWatch(false)
 
       const identifyForm = new FormData()
       identifyForm.append('photo', f)
@@ -341,8 +349,13 @@ export default function UploadClient() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.watch && (data.watch.brand || data.watch.model)) {
-            setAiSuggestion(data.watch)
+          if (data.isWatch === false) {
+            setNotAWatch(true)
+          } else {
+            setNotAWatch(false)
+            if (data.watch && (data.watch.brand || data.watch.model)) {
+              setAiSuggestion(data.watch)
+            }
           }
           if (data.quality) {
             setPhotoQualities((prev) => {
@@ -366,6 +379,7 @@ export default function UploadClient() {
     setConfirmPoorQuality(false)
     if (index === 0) {
       setAiSuggestion(null)
+      setNotAWatch(false)
     }
   }
 
@@ -496,6 +510,7 @@ export default function UploadClient() {
                   setWristSize('')
                   setError('')
                   setAiSuggestion(null)
+                  setNotAWatch(false)
                   setPhotoQualities([])
                   setConfirmPoorQuality(false)
                   setSuccessPreviews([])
@@ -637,8 +652,17 @@ export default function UploadClient() {
               </div>
             )}
 
+            {/* Not a watch error */}
+            {notAWatch && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800 font-medium">
+                  {'\u26A0\uFE0F'} This doesn&apos;t look like a watch photo. Please upload a photo of a wristwatch.
+                </p>
+              </div>
+            )}
+
             {/* AI suggestion banner */}
-            {aiSuggestion && (aiSuggestion.confidence === 'high' || aiSuggestion.confidence === 'medium') && (
+            {aiSuggestion && !notAWatch && (aiSuggestion.confidence === 'high' || aiSuggestion.confidence === 'medium') && (
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1">
@@ -845,6 +869,7 @@ export default function UploadClient() {
                 !search.trim() ||
                 files.length === 0 ||
                 uploading ||
+                notAWatch ||
                 (hasPoorPhoto && !confirmPoorQuality)
               }
               className="w-full py-3 bg-accent hover:bg-accentHover disabled:bg-neutral disabled:text-textMuted text-white rounded-lg font-medium transition-colors"
