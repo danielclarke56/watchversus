@@ -273,13 +273,10 @@ export default function UploadClient() {
               const suggestion = [data.watch.brand, data.watch.model]
                 .filter(Boolean)
                 .join(' ')
-              if (!search.trim()) {
-                setSearch(suggestion)
-                // Also try to match a DB watch
-                const match = findMatchingWatch(data.watch.brand, data.watch.model)
-                if (match) {
-                  selectWatch(match)
-                }
+              setSearch(suggestion)
+              const match = findMatchingWatch(data.watch.brand, data.watch.model)
+              if (match) {
+                selectWatch(match)
               }
             }
           }
@@ -355,6 +352,14 @@ export default function UploadClient() {
             setNotAWatch(false)
             if (data.watch && (data.watch.brand || data.watch.model)) {
               setAiSuggestion(data.watch)
+              const suggestion = [data.watch.brand, data.watch.model]
+                .filter(Boolean)
+                .join(' ')
+              setSearch(suggestion)
+              const match = findMatchingWatch(data.watch.brand, data.watch.model)
+              if (match) {
+                selectWatch(match)
+              }
             }
           }
           if (data.quality) {
@@ -661,51 +666,29 @@ export default function UploadClient() {
               </div>
             )}
 
-            {/* AI suggestion banner */}
+            {/* AI identification indicator */}
             {aiSuggestion && !notAWatch && (aiSuggestion.confidence === 'high' || aiSuggestion.confidence === 'medium') && (
-              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-textPrimary mb-1">
-                      {'\u2728'} AI identified:{' '}
-                      <span className="font-bold">
-                        {[aiSuggestion.brand, aiSuggestion.model]
-                          .filter(Boolean)
-                          .join(' ')}
-                        {aiSuggestion.reference && ` (${aiSuggestion.reference})`}
-                      </span>
-                    </p>
-                    <p className="text-xs text-textMuted">
-                      Confidence: {aiSuggestion.confidence}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const suggestion = [aiSuggestion.brand, aiSuggestion.model]
-                          .filter(Boolean)
-                          .join(' ')
-                        setSearch(suggestion)
-                        // Fix #3: Also match a DB watch
-                        const match = findMatchingWatch(aiSuggestion.brand, aiSuggestion.model)
-                        if (match) {
-                          selectWatch(match)
-                        }
-                        setAiSuggestion(null)
-                      }}
-                      className="px-3 py-1 text-xs bg-accent hover:bg-accentHover text-white rounded font-medium transition-colors"
-                    >
-                      Use this
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAiSuggestion(null)}
-                      className="px-3 py-1 text-xs text-textMuted hover:text-textPrimary font-medium transition-colors"
-                    >
-                      Dismiss
-                    </button>
-                  </div>
+                  <p className="text-sm text-textPrimary">
+                    {'\u2728'} AI identified:{' '}
+                    <span className="font-bold">
+                      {[aiSuggestion.brand, aiSuggestion.model]
+                        .filter(Boolean)
+                        .join(' ')}
+                      {aiSuggestion.reference && ` (${aiSuggestion.reference})`}
+                    </span>
+                    <span className="text-xs text-textMuted ml-2">
+                      ({aiSuggestion.confidence} confidence)
+                    </span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setAiSuggestion(null)}
+                    className="px-3 py-1 text-xs text-textMuted hover:text-textPrimary font-medium transition-colors shrink-0"
+                  >
+                    Dismiss
+                  </button>
                 </div>
               </div>
             )}
