@@ -29,18 +29,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
-    // TEMP: Select explicit columns only (original 8) to debug missing column issue
     const photoRecords = await db
-      .select({
-        id: photos.id,
-        watchId: photos.watchId,
-        userId: photos.userId,
-        userName: photos.userName,
-        url: photos.url,
-        caption: photos.caption,
-        status: photos.status,
-        createdAt: photos.createdAt,
-      })
+      .select()
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
       .orderBy(asc(photos.createdAt))
@@ -96,10 +86,9 @@ export async function GET(req: NextRequest) {
       nextCursor,
     })
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error)
     console.error('[/api/photos/all] Query failed:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch photos', detail: msg, photos: [], nextCursor: null },
+      { error: 'Failed to fetch photos', photos: [], nextCursor: null },
       { status: 500 }
     )
   }

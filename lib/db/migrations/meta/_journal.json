@@ -15,6 +15,13 @@
       "when": 1774721403399,
       "tag": "0001_chunky_shinobi_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774739226205,
+      "tag": "0002_narrow_jack_flag",
+      "breakpoints": true
     }
   ]
 }
