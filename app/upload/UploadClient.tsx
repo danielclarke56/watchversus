@@ -32,6 +32,10 @@ const WRIST_SIZE_OPTIONS = [
   'Over 8 in',
 ]
 
+const CONDITION_OPTIONS = ['', 'New / Unworn', 'Excellent', 'Good', 'Fair']
+const STRAP_OPTIONS = ['', 'Original bracelet', 'Metal aftermarket', 'Leather strap', 'NATO strap', 'Rubber strap', 'Other']
+const OWNED_DURATION_OPTIONS = ['', 'Just got it', 'Under 1 year', '1–3 years', '3+ years']
+
 const MAX_PHOTOS = 3
 
 export default function UploadClient() {
@@ -44,6 +48,9 @@ export default function UploadClient() {
   const [previews, setPreviews] = useState<string[]>([])
   const [caption, setCaption] = useState('')
   const [wristSize, setWristSize] = useState('')
+  const [condition, setCondition] = useState('')
+  const [strapType, setStrapType] = useState('')
+  const [ownedDuration, setOwnedDuration] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
@@ -422,6 +429,9 @@ export default function UploadClient() {
         formData.append('photo', files[i])
         if (caption.trim()) formData.append('caption', caption.trim())
         if (wristSize) formData.append('wristSize', wristSize)
+        if (condition) formData.append('condition', condition)
+        if (strapType) formData.append('strapType', strapType)
+        if (ownedDuration) formData.append('ownedDuration', ownedDuration)
 
         const res = await fetch(`/api/photos/${watchId}`, {
           method: 'POST',
@@ -513,6 +523,9 @@ export default function UploadClient() {
                   setSelectedWatch(null)
                   setCaption('')
                   setWristSize('')
+                  setCondition('')
+                  setStrapType('')
+                  setOwnedDuration('')
                   setError('')
                   setAiSuggestion(null)
                   setNotAWatch(false)
@@ -803,6 +816,57 @@ export default function UploadClient() {
                   <option key={size} value={size}>
                     {size}
                   </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Condition */}
+            <div>
+              <label className="block text-sm font-medium text-textSecond mb-2">
+                Condition <span className="text-textMuted">(optional)</span>
+              </label>
+              <select
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+              >
+                <option value="">Select condition</option>
+                {CONDITION_OPTIONS.filter(Boolean).map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Strap / bracelet */}
+            <div>
+              <label className="block text-sm font-medium text-textSecond mb-2">
+                Strap / bracelet <span className="text-textMuted">(optional)</span>
+              </label>
+              <select
+                value={strapType}
+                onChange={(e) => setStrapType(e.target.value)}
+                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+              >
+                <option value="">Select strap or bracelet</option>
+                {STRAP_OPTIONS.filter(Boolean).map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* How long owned */}
+            <div>
+              <label className="block text-sm font-medium text-textSecond mb-2">
+                How long have you owned it? <span className="text-textMuted">(optional)</span>
+              </label>
+              <select
+                value={ownedDuration}
+                onChange={(e) => setOwnedDuration(e.target.value)}
+                className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+              >
+                <option value="">Select duration</option>
+                {OWNED_DURATION_OPTIONS.filter(Boolean).map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
             </div>

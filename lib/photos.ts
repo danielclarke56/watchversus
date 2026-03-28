@@ -5,8 +5,10 @@ export interface Photo {
   userName: string
   url: string
   caption?: string
-  wristSize?: string
-  strapBracelet?: string
+  wristSize?: string | null
+  condition?: string | null
+  strapType?: string | null
+  ownedDuration?: string | null
   createdAt: string
 }
 
