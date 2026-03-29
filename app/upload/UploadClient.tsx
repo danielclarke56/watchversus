@@ -151,7 +151,26 @@ export default function UploadClient() {
 
     const reader = new FileReader()
     reader.onload = () => {
-      setPendingCrop({ src: reader.result as string, file: f, slotIndex })
+      const dataUrl = reader.result as string
+      if (slotIndex >= 0) {
+        // Replace existing slot
+        setFiles((prev) => {
+          const next = [...prev]
+          next[slotIndex] = f
+          return next
+        })
+        setPreviews((prev) => {
+          const next = [...prev]
+          next[slotIndex] = dataUrl
+          return next
+        })
+      } else {
+        // Add new
+        if (files.length < MAX_PHOTOS) {
+          setFiles((prev) => [...prev, f])
+          setPreviews((prev) => [...prev, dataUrl])
+        }
+      }
     }
     reader.readAsDataURL(f)
   }
@@ -220,7 +239,11 @@ export default function UploadClient() {
 
     const reader = new FileReader()
     reader.onload = () => {
-      setPendingCrop({ src: reader.result as string, file: f, slotIndex: -1 })
+      const dataUrl = reader.result as string
+      if (files.length < MAX_PHOTOS) {
+        setFiles((prev) => [...prev, f])
+        setPreviews((prev) => [...prev, dataUrl])
+      }
     }
     reader.readAsDataURL(f)
   }
@@ -387,6 +410,14 @@ export default function UploadClient() {
                       aria-label={`Remove photo ${i + 1}`}
                     >
                       &times;
+                    </button>
+                    {/* Crop button */}
+                    <button
+                      type="button"
+                      onClick={() => setPendingCrop({ src, file: files[i], slotIndex: i })}
+                      className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
+                    >
+                      ✂️ Crop
                     </button>
                     {/* Change photo button */}
                     <button
