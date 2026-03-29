@@ -29,6 +29,23 @@ const ESTIMATED_PRICE_OPTIONS = [
 
 const MAX_PHOTOS = 3
 
+interface AiCandidate {
+  brand: string
+  model: string
+  reference: string | null
+  movement: string | null
+  caseSize: string | null
+  wristSize: string | null
+  estimatedPrice: string | null
+  productionYear: string | null
+  lugToLug: string | null
+  betweenLugs: string | null
+  thickness: string | null
+  waterResistance: string | null
+  confidence: 'high' | 'medium' | 'low'
+  reasoning: string
+}
+
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
   const [success, setSuccess] = useState(false)
@@ -57,6 +74,10 @@ export default function UploadClient() {
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
   const [pendingCrop, setPendingCrop] = useState<{ src: string; file: File; slotIndex: number } | null>(null)
+  const [candidates, setCandidates] = useState<AiCandidate[]>([])
+  const [identifying, setIdentifying] = useState(false)
+  const [isWatch, setIsWatch] = useState<boolean | null>(null)
+  const [aiGenerated, setAiGenerated] = useState<boolean | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
 
@@ -164,11 +185,19 @@ export default function UploadClient() {
           next[slotIndex] = dataUrl
           return next
         })
+        // If replacing slot 0, re-identify
+        if (slotIndex === 0) {
+          identify(f)
+        }
       } else {
         // Add new
         if (files.length < MAX_PHOTOS) {
           setFiles((prev) => [...prev, f])
           setPreviews((prev) => [...prev, dataUrl])
+          // If adding to slot 0, identify
+          if (files.length === 0) {
+            identify(f)
+          }
         }
       }
     }
@@ -189,11 +218,19 @@ export default function UploadClient() {
         next[pendingCrop.slotIndex] = croppedDataUrl
         return next
       })
+      // If replacing slot 0, re-identify
+      if (pendingCrop.slotIndex === 0) {
+        identify(croppedFile)
+      }
     } else {
       // Add new
       if (files.length >= MAX_PHOTOS) return
       setFiles((prev) => [...prev, croppedFile])
       setPreviews((prev) => [...prev, croppedDataUrl])
+      // If adding to slot 0, identify
+      if (files.length === 0) {
+        identify(croppedFile)
+      }
     }
     setPendingCrop(null)
   }
@@ -205,6 +242,55 @@ export default function UploadClient() {
   function removeFile(index: number) {
     setFiles((prev) => prev.filter((_, i) => i !== index))
     setPreviews((prev) => prev.filter((_, i) => i !== index))
+    // Clear identification if slot 0 is removed
+    if (index === 0) {
+      setCandidates([])
+      setIsWatch(null)
+      setAiGenerated(null)
+    }
+  }
+
+  async function identify(file: File) {
+    setIdentifying(true)
+    setCandidates([])
+    setIsWatch(null)
+    setAiGenerated(null)
+    try {
+      const formData = new FormData()
+      formData.append('photo', file)
+      const res = await fetch('/api/photos/identify', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!res.ok) throw new Error('Identification failed')
+      const data = await res.json()
+      setIsWatch(data.isWatch)
+      setAiGenerated(data.isAiGenerated)
+      if (data.candidates && Array.isArray(data.candidates)) {
+        setCandidates(data.candidates)
+      }
+    } catch (err: unknown) {
+      console.error('Identification error:', err)
+      setIsWatch(true) // assume it's a watch if API fails
+    } finally {
+      setIdentifying(false)
+    }
+  }
+
+  function applyCandidate(candidate: AiCandidate) {
+    setBrandName(candidate.brand || '')
+    setModelName(candidate.model || '')
+    setReferenceNumber(candidate.reference || '')
+    setMovement(candidate.movement || '')
+    setCaseSize(candidate.caseSize || '')
+    setWristSize(candidate.wristSize || '')
+    setEstimatedPrice(candidate.estimatedPrice || '')
+    setProductionYear(candidate.productionYear || '')
+    setLugToLug(candidate.lugToLug || '')
+    setBetweenLugs(candidate.betweenLugs || '')
+    setThickness(candidate.thickness || '')
+    setWaterResistance(candidate.waterResistance || '')
+    setCandidates([]) // hide cards after selection
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -482,6 +568,80 @@ export default function UploadClient() {
 
             {/* RIGHT COLUMN: Form Fields + Submit */}
             <div className="space-y-6">
+              {/* AI Identification Results */}
+              {files.length > 0 && (
+                <>
+                  {/* Loading spinner */}
+                  {identifying && (
+                    <div className="flex items-center justify-center gap-2 p-4 bg-surface border border-borderStrong rounded-lg">
+                      <div className="animate-spin w-4 h-4 border-2 border-accent border-t-transparent rounded-full" />
+                      <span className="text-textMuted text-sm">🔍 Identifying watch...</span>
+                    </div>
+                  )}
+
+                  {/* Warning: Not a watch */}
+                  {isWatch === false && (
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ This doesn&apos;t look like a watch photo. Please verify the image and try again.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Warning: AI-Generated */}
+                  {aiGenerated === true && (
+                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
+                      <p className="text-sm text-orange-800 dark:text-orange-200">
+                        ⚠️ This appears to be an AI-generated image. Please upload a real photo for the community.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Candidate cards */}
+                  {candidates.length > 0 && !identifying && (
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold text-textSecond uppercase tracking-wide">AI Suggestions</p>
+                      {candidates.map((candidate, idx) => {
+                        const confidenceColor =
+                          candidate.confidence === 'high'
+                            ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700'
+                            : candidate.confidence === 'medium'
+                              ? 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700'
+                              : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                        const confidenceBadgeColor =
+                          candidate.confidence === 'high'
+                            ? 'bg-green-500 text-white'
+                            : candidate.confidence === 'medium'
+                              ? 'bg-yellow-500 text-white'
+                              : 'bg-gray-500 text-white'
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => applyCandidate(candidate)}
+                            className={`w-full p-4 border rounded-lg text-left transition-all hover:shadow-md ${confidenceColor}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-textPrimary truncate">
+                                  {candidate.brand} {candidate.model}
+                                </h4>
+                                <p className="text-xs text-textMuted mt-1 line-clamp-2">
+                                  {candidate.reasoning}
+                                </p>
+                              </div>
+                              <span className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${confidenceBadgeColor}`}>
+                                {candidate.confidence}
+                              </span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+
               {/* Section 2: Watch Details */}
               {files.length > 0 && (
                 <div className="space-y-4">

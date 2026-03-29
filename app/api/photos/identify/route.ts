@@ -45,32 +45,37 @@ export async function POST(request: NextRequest) {
         },
       },
       {
-        text: `You are a watch identification and specification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
+        text: `You are a watch identification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
 {
   "isWatch": true or false,
   "isAiGenerated": true or false,
-  "watch": {
-    "brand": "string or null",
-    "model": "string or null",
-    "reference": "string or null",
-    "movement": "Automatic|Mechanical|Quartz|Digital or null",
-    "caseSize": "e.g. '40mm' or null",
-    "lugToLug": "e.g. '47mm' or null",
-    "betweenLugs": "e.g. '20mm' or null",
-    "thickness": "e.g. '12.5mm' or null",
-    "waterResistance": "e.g. '300m / 1000ft' or null",
-    "productionYear": "e.g. '2020' or null",
-    "confidence": "high|medium|low"
-  },
-  "quality": {
-    "score": "good|acceptable|poor",
-    "issues": ["array of specific issues, e.g. 'blurry', 'poor lighting', 'watch not visible'"],
-    "recommendation": "short 1-sentence tip if score is not good, else null"
-  }
+  "candidates": [
+    {
+      "brand": "string",
+      "model": "string",
+      "reference": "string or null",
+      "movement": "Automatic|Mechanical|Quartz|Digital or null",
+      "caseSize": "e.g. '40mm' or null",
+      "wristSize": null,
+      "estimatedPrice": null,
+      "productionYear": "e.g. '2020' or null",
+      "lugToLug": "e.g. '47mm' or null",
+      "betweenLugs": "e.g. '20mm' or null",
+      "thickness": "e.g. '12.5mm' or null",
+      "waterResistance": "e.g. '300m / 1000ft' or null",
+      "confidence": "high|medium|low",
+      "reasoning": "brief explanation of why this match is plausible"
+    }
+  ]
 }
-Set isWatch to false if the image does not contain a watch or wristwatch. If isWatch is false, set all watch fields to null and quality score to "poor".
-Set "isAiGenerated" to true if the image appears to be AI-generated, a CGI render, a digital illustration, or a synthetic image rather than a real photograph of a physical watch. Signs include: unnaturally perfect lighting, synthetic textures, digital artifacts, no real-world context, or the image looks like a product render. Use the EXIF hint provided: hasCamera=${hasCamera}. Real photos almost always have camera EXIF data.
-Use your knowledge of watch specifications to fill in as many fields as possible — especially for well-known references. Return null only for fields you genuinely cannot determine. No markdown, no explanation — JSON only.`,
+
+Rules:
+1. If isWatch=false, return candidates as empty array [].
+2. If isWatch=true, return up to 3 most likely watch candidates, ranked by confidence.
+3. Confidence levels: "high" for well-known watches or clear details, "medium" for reasonable guesses, "low" for speculative matches.
+4. Set isAiGenerated=true only if the image is clearly a render, CGI, or synthetic image. Real photos with perfect lighting are still real. Use EXIF hint: hasCamera=${hasCamera}.
+5. Return null for any field you cannot reliably determine.
+6. No markdown, no explanation — JSON only.`,
       },
     ])
 
