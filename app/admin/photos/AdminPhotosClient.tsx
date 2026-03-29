@@ -9,6 +9,7 @@ export default function AdminPhotosClient() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [acting, setActing] = useState<string | null>(null)
+  const [aiFlags, setAiFlags] = useState<Record<string, boolean | 'checking'>>({})
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -27,7 +28,45 @@ export default function AdminPhotosClient() {
 
         const pendingData = (await pendingRes.json()) as PendingPhoto[]
         const approvedData = (await approvedRes.json()) as ApprovedPhoto[]
-        if (Array.isArray(pendingData)) setPhotos(pendingData)
+        if (Array.isArray(pendingData)) {
+          setPhotos(pendingData)
+          
+          // Kick off AI detection for each pending photo (fire-and-forget)
+          pendingData.forEach((photo) => {
+            ;(async () => {
+              setAiFlags((prev) => ({ ...prev, [photo.id]: 'checking' }))
+              try {
+                const photoBlob = await fetch(photo.url).then((res) => res.blob())
+                const formData = new FormData()
+                formData.append('photo', photoBlob)
+                const res = await fetch('/api/photos/identify', {
+                  method: 'POST',
+                  body: formData,
+                })
+                if (res.ok) {
+                  const data = await res.json()
+                  setAiFlags((prev) => ({
+                    ...prev,
+                    [photo.id]: data.isAiGenerated === true,
+                  }))
+                } else {
+                  setAiFlags((prev) => {
+                    const next = { ...prev }
+                    delete next[photo.id]
+                    return next
+                  })
+                }
+              } catch {
+                // Silent fail
+                setAiFlags((prev) => {
+                  const next = { ...prev }
+                  delete next[photo.id]
+                  return next
+                })
+              }
+            })()
+          })
+        }
         if (Array.isArray(approvedData)) setApprovedPhotos(approvedData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -116,6 +155,12 @@ export default function AdminPhotosClient() {
                     <p className="text-xs text-textMuted mt-0.5">
                       By {photo.userName} &middot; {new Date(photo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
+                    {aiFlags[photo.id] === 'checking' && (
+                      <p className="text-xs text-textMuted mt-1">🔍 Checking for AI...</p>
+                    )}
+                    {aiFlags[photo.id] === true && (
+                      <p className="text-xs text-red-600 font-medium mt-1">🤖 AI-generated image detected</p>
+                    )}
                     <div className="flex gap-2 mt-3">
                       <button
                         onClick={() => handleAction('approve', photo)}

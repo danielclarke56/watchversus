@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { watches } from '@/lib/watches'
@@ -8,12 +8,6 @@ import type { Watch } from '@/lib/types'
 
 function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-}
-
-interface PhotoQuality {
-  score: string
-  issues: string[]
-  recommendation: string | null
 }
 
 const MOVEMENT_OPTIONS = ['Automatic', 'Mechanical', 'Quartz', 'Digital']
@@ -59,17 +53,6 @@ export default function UploadClient() {
   const [error, setError] = useState('')
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [isDragging, setIsDragging] = useState(false)
-  const [identifying, setIdentifying] = useState(false)
-  const [aiSuggestion, setAiSuggestion] = useState<{
-    brand: string | null
-    model: string | null
-    reference: string | null
-    confidence: string
-  } | null>(null)
-  const [photoQualities, setPhotoQualities] = useState<(PhotoQuality | null)[]>([])
-  const [notAWatch, setNotAWatch] = useState(false)
-  const [identified, setIdentified] = useState(false)
-  const [aiGenerated, setAiGenerated] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -145,26 +128,6 @@ export default function UploadClient() {
     setHighlightedIndex(-1)
   }
 
-  function findMatchingWatch(brand: string | null, model: string | null): Watch | null {
-    if (!brand && !model) return null
-    const searchStr = [brand, model].filter(Boolean).join(' ').toLowerCase()
-    return (
-      watches.find((w) => {
-        const full = `${w.brand} ${w.name}`.toLowerCase()
-        return full === searchStr
-      }) ||
-      watches.find((w) => {
-        const wBrand = w.brand.toLowerCase()
-        const wName = w.name.toLowerCase()
-        return (
-          (brand && wBrand === brand.toLowerCase() && model && wName.includes(model.toLowerCase())) ||
-          (brand && wBrand === brand.toLowerCase() && model && model.toLowerCase().includes(wName))
-        )
-      }) ||
-      null
-    )
-  }
-
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
@@ -178,29 +141,6 @@ export default function UploadClient() {
     if (fileRef.current) fileRef.current.value = ''
   }
 
-  const runQualityCheck = useCallback((file: File, index: number) => {
-    const identifyForm = new FormData()
-    identifyForm.append('photo', file)
-
-    fetch('/api/photos/identify', {
-      method: 'POST',
-      body: identifyForm,
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.quality) {
-          setPhotoQualities((prev) => {
-            const next = [...prev]
-            next[index] = data.quality as PhotoQuality
-            return next
-          })
-        }
-      })
-      .catch(() => {
-        // Silent fail
-      })
-  }, [])
-
   function addFile(f: File) {
     if (files.length >= MAX_PHOTOS) return
     if (f.size > 5 * 1024 * 1024) {
@@ -213,86 +153,13 @@ export default function UploadClient() {
     }
     setError('')
 
-    const newIndex = files.length
-    const isFirst = newIndex === 0
-
     setFiles((prev) => [...prev, f])
-    setPhotoQualities((prev) => [...prev, null])
 
     const reader = new FileReader()
     reader.onload = () => {
       setPreviews((prev) => [...prev, reader.result as string])
     }
     reader.readAsDataURL(f)
-
-    if (isFirst) {
-      // Run AI identification + quality on first photo
-      setIdentifying(true)
-      setIdentified(false)
-      setAiSuggestion(null)
-      setNotAWatch(false)
-      setAiGenerated(false)
-
-      const identifyForm = new FormData()
-      identifyForm.append('photo', f)
-
-      fetch('/api/photos/identify', {
-        method: 'POST',
-        body: identifyForm,
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          // Layer 3: Handle AI-generated images
-          if (data.isAiGenerated === true) {
-            setAiGenerated(true)
-            setIdentified(false)
-            setNotAWatch(false)
-          } else if (data.isWatch === false) {
-            setAiGenerated(false)
-            setNotAWatch(true)
-            setIdentified(false)
-          } else {
-            setAiGenerated(false)
-            setNotAWatch(false)
-            setIdentified(true)
-            if (data.watch && (data.watch.brand || data.watch.model)) {
-              setAiSuggestion(data.watch)
-              if (data.watch.brand) setBrandName(data.watch.brand)
-              if (data.watch.model) setModelName(data.watch.model)
-              if (data.watch.reference) setReferenceNumber(data.watch.reference)
-              if (data.watch.movement) setMovement(data.watch.movement)
-              if (data.watch.caseSize) setCaseSize(data.watch.caseSize)
-              if (data.watch.lugToLug) setLugToLug(data.watch.lugToLug)
-              if (data.watch.betweenLugs) setBetweenLugs(data.watch.betweenLugs)
-              if (data.watch.thickness) setThickness(data.watch.thickness)
-              if (data.watch.waterResistance) setWaterResistance(data.watch.waterResistance)
-              if (data.watch.productionYear) setProductionYear(data.watch.productionYear)
-              const suggestion = [data.watch.brand, data.watch.model]
-                .filter(Boolean)
-                .join(' ')
-              setSearch(suggestion)
-              const match = findMatchingWatch(data.watch.brand, data.watch.model)
-              if (match) {
-                selectWatch(match)
-              }
-            }
-          }
-          if (data.quality) {
-            setPhotoQualities((prev) => {
-              const next = [...prev]
-              next[0] = data.quality as PhotoQuality
-              return next
-            })
-          }
-        })
-        .catch(() => {
-          // Silent fail — keep identified false
-        })
-        .finally(() => setIdentifying(false))
-    } else {
-      // Quality check only for subsequent photos
-      runQualityCheck(f, newIndex)
-    }
   }
 
   function replaceFile(index: number, f: File) {
@@ -311,11 +178,6 @@ export default function UploadClient() {
       next[index] = f
       return next
     })
-    setPhotoQualities((prev) => {
-      const next = [...prev]
-      next[index] = null
-      return next
-    })
 
     const reader = new FileReader()
     reader.onload = () => {
@@ -326,84 +188,11 @@ export default function UploadClient() {
       })
     }
     reader.readAsDataURL(f)
-
-    if (index === 0) {
-      // Re-run AI identification + quality on first photo
-      setIdentifying(true)
-      setIdentified(false)
-      setAiSuggestion(null)
-      setNotAWatch(false)
-      setAiGenerated(false)
-
-      const identifyForm = new FormData()
-      identifyForm.append('photo', f)
-
-      fetch('/api/photos/identify', {
-        method: 'POST',
-        body: identifyForm,
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          // Layer 3: Handle AI-generated images
-          if (data.isAiGenerated === true) {
-            setAiGenerated(true)
-            setIdentified(false)
-            setNotAWatch(false)
-          } else if (data.isWatch === false) {
-            setAiGenerated(false)
-            setNotAWatch(true)
-            setIdentified(false)
-          } else {
-            setAiGenerated(false)
-            setNotAWatch(false)
-            setIdentified(true)
-            if (data.watch && (data.watch.brand || data.watch.model)) {
-              setAiSuggestion(data.watch)
-              if (data.watch.brand) setBrandName(data.watch.brand)
-              if (data.watch.model) setModelName(data.watch.model)
-              if (data.watch.reference) setReferenceNumber(data.watch.reference)
-              if (data.watch.movement) setMovement(data.watch.movement)
-              if (data.watch.caseSize) setCaseSize(data.watch.caseSize)
-              if (data.watch.lugToLug) setLugToLug(data.watch.lugToLug)
-              if (data.watch.betweenLugs) setBetweenLugs(data.watch.betweenLugs)
-              if (data.watch.thickness) setThickness(data.watch.thickness)
-              if (data.watch.waterResistance) setWaterResistance(data.watch.waterResistance)
-              if (data.watch.productionYear) setProductionYear(data.watch.productionYear)
-              const suggestion = [data.watch.brand, data.watch.model]
-                .filter(Boolean)
-                .join(' ')
-              setSearch(suggestion)
-              const match = findMatchingWatch(data.watch.brand, data.watch.model)
-              if (match) {
-                selectWatch(match)
-              }
-            }
-          }
-          if (data.quality) {
-            setPhotoQualities((prev) => {
-              const next = [...prev]
-              next[0] = data.quality as PhotoQuality
-              return next
-            })
-          }
-        })
-        .catch(() => {})
-        .finally(() => setIdentifying(false))
-    } else {
-      runQualityCheck(f, index)
-    }
   }
 
   function removeFile(index: number) {
     setFiles((prev) => prev.filter((_, i) => i !== index))
     setPreviews((prev) => prev.filter((_, i) => i !== index))
-    setPhotoQualities((prev) => prev.filter((_, i) => i !== index))
-    if (index === 0) {
-      setAiSuggestion(null)
-      setNotAWatch(false)
-      setIdentified(false)
-      setAiGenerated(false)
-    }
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -554,11 +343,6 @@ export default function UploadClient() {
                   setThickness('')
                   setWaterResistance('')
                   setError('')
-                  setAiSuggestion(null)
-                  setNotAWatch(false)
-                  setIdentified(false)
-                  setAiGenerated(false)
-                  setPhotoQualities([])
                   setSuccessPreviews([])
                 }}
                 className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
@@ -606,43 +390,6 @@ export default function UploadClient() {
                       Change photo
                     </button>
                   </div>
-                  {/* Per-photo quality badge */}
-                  {photoQualities[i] && (
-                    <div
-                      className={`mt-2 rounded-lg p-3 text-sm ${
-                        photoQualities[i]?.score === 'good'
-                          ? 'bg-green-50 border border-green-200 text-green-800'
-                          : photoQualities[i]?.score === 'acceptable'
-                            ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
-                            : 'bg-red-50 border border-red-200 text-red-800'
-                      }`}
-                    >
-                      {photoQualities[i]?.score === 'good' && (
-                        <p className="font-medium">{'\u2713'} Good photo</p>
-                      )}
-                      {photoQualities[i]?.score === 'acceptable' && (
-                        <div>
-                          <p className="font-medium mb-1">{'\u26A0'} Acceptable photo</p>
-                          {photoQualities[i]?.recommendation && (
-                            <p className="text-xs opacity-90">{photoQualities[i]?.recommendation}</p>
-                          )}
-                        </div>
-                      )}
-                      {photoQualities[i]?.score === 'poor' && (
-                        <div>
-                          <p className="font-medium mb-1">{'\u2717'} Poor quality</p>
-                          <p className="text-xs opacity-90 mb-1">
-                            {photoQualities[i]?.issues && photoQualities[i]!.issues.length > 0
-                              ? photoQualities[i]!.issues.join(', ')
-                              : 'Issues detected'}
-                          </p>
-                          {photoQualities[i]?.recommendation && (
-                            <p className="text-xs opacity-90">{photoQualities[i]?.recommendation}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               ))}
 
@@ -690,61 +437,8 @@ export default function UploadClient() {
               />
             </div>
 
-            {/* Identifying spinner */}
-            {identifying && (
-              <div className="flex items-center gap-2 text-sm text-textMuted">
-                <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-textMuted border-t-accent"></div>
-                {'\uD83D\uDD0D'} Identifying watch...
-              </div>
-            )}
-
-            {/* Not a watch error */}
-            {notAWatch && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-sm text-red-800 font-medium">
-                  {'\u26A0\uFE0F'} This doesn&apos;t look like a watch photo. Please upload a photo of a wristwatch.
-                </p>
-              </div>
-            )}
-
-            {/* AI-generated image error */}
-            {aiGenerated && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-700 font-medium">🤖 This appears to be an AI-generated image</p>
-                <p className="text-xs text-red-600 mt-1">We only accept real photos of physical watches. Please upload an original photograph.</p>
-              </div>
-            )}
-
-            {/* AI identification indicator */}
-            {aiSuggestion && !notAWatch && (aiSuggestion.confidence === 'high' || aiSuggestion.confidence === 'medium') && (
-              <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-textPrimary">
-                    {'\u2728'} AI identified:{' '}
-                    <span className="font-bold">
-                      {[aiSuggestion.brand, aiSuggestion.model]
-                        .filter(Boolean)
-                        .join(' ')}
-                      {aiSuggestion.reference && ` (${aiSuggestion.reference})`}
-                    </span>
-                    <span className="text-xs text-textMuted ml-2">
-                      ({aiSuggestion.confidence} confidence)
-                    </span>
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setAiSuggestion(null)}
-                    className="px-3 py-1 text-xs text-textMuted hover:text-textPrimary font-medium transition-colors shrink-0"
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Section 2: Watch Details */}
-            {/* Section 2: Watch Details — only shown after Gemini confirms it's a watch */}
-            {identified && (
+            {files.length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
 
@@ -951,8 +645,8 @@ export default function UploadClient() {
               </div>
             )}
 
-            {/* Submit button — only show after successful identification */}
-            {identified && (
+            {/* Submit button */}
+            {files.length > 0 && (
               <button
                 type="submit"
                 disabled={!isFormValid || uploading}
