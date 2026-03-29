@@ -470,8 +470,8 @@ export default function UploadClient() {
         ) : (
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             {/* LEFT COLUMN: Photo Upload */}
-            <div className="space-y-6">
-              <div>
+            <div className="space-y-6 min-h-[480px] flex flex-col">
+              <div className="flex-1 flex flex-col">
                 <label className="block text-sm font-medium text-textSecond mb-2">
                   Photo{files.length > 0 && ` (${files.length}/${MAX_PHOTOS})`}
                 </label>
@@ -484,7 +484,7 @@ export default function UploadClient() {
                       <img
                         src={src}
                         alt={`Preview ${i + 1}`}
-                        className="max-h-64 mx-auto rounded-lg"
+                        className="max-h-80 mx-auto rounded-lg"
                       />
                       {/* Remove button */}
                       <button
@@ -528,13 +528,13 @@ export default function UploadClient() {
                       setEditingSlotIndex(-1)
                       fileRef.current?.click()
                     }}
-                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
+                    className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all flex-1 flex flex-col items-center justify-center ${
                       isDragging
                         ? 'border-accent bg-accent/5'
                         : 'border-borderStrong hover:border-accent'
                     }`}
                   >
-                    <div className="text-4xl mb-2">{'\uD83D\uDCF7'}</div>
+                    <div className="text-5xl mb-3">{'\uD83D\uDCF7'}</div>
                     <p className="text-textMuted mb-1">
                       {isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
                     </p>
@@ -565,6 +565,13 @@ export default function UploadClient() {
 
             {/* RIGHT COLUMN: Form Fields + Submit */}
             <div className="space-y-6">
+              {/* Helper text when no photo uploaded */}
+              {files.length === 0 && (
+                <div className="text-center p-6 bg-surface border border-borderStrong rounded-lg">
+                  <p className="text-textMuted text-sm">📷 Upload a photo to continue</p>
+                </div>
+              )}
+
               {/* AI Identification Results */}
               {files.length > 0 && (
                 <>
@@ -598,8 +605,8 @@ export default function UploadClient() {
                 </>
               )}
 
-              {/* Section 2: Watch Details */}
-              {files.length > 0 && (
+              {/* Section 2: Watch Details - with disabled state when no files */}
+              <div className={files.length === 0 ? 'opacity-40 pointer-events-none select-none' : ''}>
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
 
@@ -790,7 +797,7 @@ export default function UploadClient() {
                     </select>
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Error message */}
               {error && (
