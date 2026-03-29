@@ -599,8 +599,8 @@ export default function UploadClient() {
 
                   {/* Candidate cards */}
                   {candidates.length > 0 && !identifying && (
-                    <div className="space-y-3">
-                      <p className="text-xs font-semibold text-textSecond uppercase tracking-wide">AI Suggestions</p>
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-textSecond uppercase tracking-wide mb-2">AI Suggestions</p>
                       {candidates.map((candidate, idx) => {
                         const confidenceColor =
                           candidate.confidence === 'high'
@@ -619,18 +619,18 @@ export default function UploadClient() {
                             key={idx}
                             type="button"
                             onClick={() => applyCandidate(candidate)}
-                            className={`w-full p-4 border rounded-lg text-left transition-all hover:shadow-md ${confidenceColor}`}
+                            className={`w-full p-3 border rounded-lg text-left transition-all hover:shadow-md ${confidenceColor}`}
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-textPrimary truncate">
+                                <h4 className="text-sm font-semibold text-textPrimary truncate">
                                   {candidate.brand} {candidate.model}
                                 </h4>
                                 <p className="text-xs text-textMuted mt-1 line-clamp-2">
                                   {candidate.reasoning}
                                 </p>
                               </div>
-                              <span className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${confidenceBadgeColor}`}>
+                              <span className={`text-xs px-1.5 py-0.5 rounded whitespace-nowrap ${confidenceBadgeColor}`}>
                                 {candidate.confidence}
                               </span>
                             </div>
