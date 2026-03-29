@@ -385,321 +385,326 @@ export default function UploadClient() {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 1. Photo Upload — FIRST */}
-            <div>
-              <label className="block text-sm font-medium text-textSecond mb-2">
-                Photo{files.length > 0 && ` (${files.length}/${MAX_PHOTOS})`}
-              </label>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            {/* LEFT COLUMN: Photo Upload */}
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-textSecond mb-2">
+                  Photo{files.length > 0 && ` (${files.length}/${MAX_PHOTOS})`}
+                </label>
 
-              {/* Existing photo previews */}
-              {previews.map((src, i) => (
-                <div key={i} className="relative mb-3">
-                  <div className="border-2 border-borderStrong rounded-lg p-2 relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt={`Preview ${i + 1}`}
-                      className="max-h-64 mx-auto rounded-lg"
-                    />
-                    {/* Remove button */}
-                    <button
-                      type="button"
-                      onClick={() => removeFile(i)}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shadow"
-                      aria-label={`Remove photo ${i + 1}`}
-                    >
-                      &times;
-                    </button>
-                    {/* Crop button */}
-                    <button
-                      type="button"
-                      onClick={() => setPendingCrop({ src, file: files[i], slotIndex: i })}
-                      className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
-                    >
-                      ✂️ Crop
-                    </button>
-                    {/* Change photo button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingSlotIndex(i)
-                        fileRef.current?.click()
-                      }}
-                      className="absolute bottom-2 right-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
-                    >
-                      Change photo
-                    </button>
+                {/* Existing photo previews */}
+                {previews.map((src, i) => (
+                  <div key={i} className="relative mb-3">
+                    <div className="border-2 border-borderStrong rounded-lg p-2 relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={src}
+                        alt={`Preview ${i + 1}`}
+                        className="max-h-64 mx-auto rounded-lg"
+                      />
+                      {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={() => removeFile(i)}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shadow"
+                        aria-label={`Remove photo ${i + 1}`}
+                      >
+                        &times;
+                      </button>
+                      {/* Crop button */}
+                      <button
+                        type="button"
+                        onClick={() => setPendingCrop({ src, file: files[i], slotIndex: i })}
+                        className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
+                      >
+                        ✂️ Crop
+                      </button>
+                      {/* Change photo button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingSlotIndex(i)
+                          fileRef.current?.click()
+                        }}
+                        className="absolute bottom-2 right-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
+                      >
+                        Change photo
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              {/* Dropzone for adding a new photo (shown if under max) */}
-              {files.length === 0 ? (
-                <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onClick={() => {
-                    setEditingSlotIndex(-1)
-                    fileRef.current?.click()
-                  }}
-                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
-                    isDragging
-                      ? 'border-accent bg-accent/5'
-                      : 'border-borderStrong hover:border-accent'
-                  }`}
-                >
-                  <div className="text-4xl mb-2">{'\uD83D\uDCF7'}</div>
-                  <p className="text-textMuted mb-1">
-                    {isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
-                  </p>
-                  <p className="text-textMuted text-sm">JPEG, PNG, or WebP &middot; Max 5MB</p>
-                </div>
-              ) : files.length < MAX_PHOTOS ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingSlotIndex(-1)
-                    fileRef.current?.click()
-                  }}
-                  className="w-full border-2 border-dashed border-borderStrong hover:border-accent rounded-lg p-4 text-center cursor-pointer transition-all text-textMuted hover:text-textPrimary text-sm"
-                >
-                  + Add another photo
-                </button>
-              ) : null}
+                {/* Dropzone for adding a new photo (shown if under max) */}
+                {files.length === 0 ? (
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => {
+                      setEditingSlotIndex(-1)
+                      fileRef.current?.click()
+                    }}
+                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
+                      isDragging
+                        ? 'border-accent bg-accent/5'
+                        : 'border-borderStrong hover:border-accent'
+                    }`}
+                  >
+                    <div className="text-4xl mb-2">{'\uD83D\uDCF7'}</div>
+                    <p className="text-textMuted mb-1">
+                      {isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
+                    </p>
+                    <p className="text-textMuted text-sm">JPEG, PNG, or WebP &middot; Max 5MB</p>
+                  </div>
+                ) : files.length < MAX_PHOTOS ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingSlotIndex(-1)
+                      fileRef.current?.click()
+                    }}
+                    className="w-full border-2 border-dashed border-borderStrong hover:border-accent rounded-lg p-4 text-center cursor-pointer transition-all text-textMuted hover:text-textPrimary text-sm"
+                  >
+                    + Add another photo
+                  </button>
+                ) : null}
 
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleFileInput}
-                className="hidden"
-              />
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleFileInput}
+                  className="hidden"
+                />
+              </div>
             </div>
 
-            {/* Section 2: Watch Details */}
-            {files.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
+            {/* RIGHT COLUMN: Form Fields + Submit */}
+            <div className="space-y-6">
+              {/* Section 2: Watch Details */}
+              {files.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
 
-                {/* Brand name */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Brand <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={brandName}
-                    onChange={(e) => setBrandName(e.target.value)}
-                    placeholder="e.g. Rolex, Omega, Seiko"
-                    maxLength={80}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                  />
-                </div>
-
-                {/* Model name */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Model <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={modelName}
-                    onChange={(e) => setModelName(e.target.value)}
-                    placeholder="e.g. Submariner, Speedmaster, SKX007"
-                    maxLength={100}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                  />
-                </div>
-
-                {/* Reference number */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Reference number <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={referenceNumber}
-                    onChange={(e) => setReferenceNumber(e.target.value)}
-                    placeholder="e.g. 126610LN, 311.30.42.30.01.005"
-                    maxLength={60}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                  />
-                </div>
-
-                {/* Movement */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Movement <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <select
-                    value={movement}
-                    onChange={(e) => setMovement(e.target.value)}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                  >
-                    <option value="">Select movement</option>
-                    {MOVEMENT_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Case dimensions — 2-column grid */}
-                <div className="grid grid-cols-2 gap-4">
+                  {/* Brand name */}
                   <div>
                     <label className="block text-sm font-medium text-textSecond mb-2">
-                      Case size <span className="text-textMuted">(optional)</span>
+                      Brand <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"
-                      value={caseSize}
-                      onChange={(e) => setCaseSize(e.target.value)}
-                      placeholder="e.g. 40mm"
-                      maxLength={20}
+                      value={brandName}
+                      onChange={(e) => setBrandName(e.target.value)}
+                      placeholder="e.g. Rolex, Omega, Seiko"
+                      maxLength={80}
                       className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                     />
                   </div>
+
+                  {/* Model name */}
                   <div>
                     <label className="block text-sm font-medium text-textSecond mb-2">
-                      Lug-to-lug <span className="text-textMuted">(optional)</span>
+                      Model <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"
-                      value={lugToLug}
-                      onChange={(e) => setLugToLug(e.target.value)}
-                      placeholder="e.g. 47mm"
-                      maxLength={20}
+                      value={modelName}
+                      onChange={(e) => setModelName(e.target.value)}
+                      placeholder="e.g. Submariner, Speedmaster, SKX007"
+                      maxLength={100}
                       className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                     />
                   </div>
+
+                  {/* Reference number */}
                   <div>
                     <label className="block text-sm font-medium text-textSecond mb-2">
-                      Lug width <span className="text-textMuted">(optional)</span>
+                      Reference number <span className="text-textMuted">(optional)</span>
                     </label>
                     <input
                       type="text"
-                      value={betweenLugs}
-                      onChange={(e) => setBetweenLugs(e.target.value)}
-                      placeholder="e.g. 20mm"
-                      maxLength={20}
+                      value={referenceNumber}
+                      onChange={(e) => setReferenceNumber(e.target.value)}
+                      placeholder="e.g. 126610LN, 311.30.42.30.01.005"
+                      maxLength={60}
                       className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                     />
                   </div>
+
+                  {/* Movement */}
                   <div>
                     <label className="block text-sm font-medium text-textSecond mb-2">
-                      Thickness <span className="text-textMuted">(optional)</span>
+                      Movement <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <select
+                      value={movement}
+                      onChange={(e) => setMovement(e.target.value)}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                    >
+                      <option value="">Select movement</option>
+                      {MOVEMENT_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Case dimensions — 2-column grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-2">
+                        Case size <span className="text-textMuted">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={caseSize}
+                        onChange={(e) => setCaseSize(e.target.value)}
+                        placeholder="e.g. 40mm"
+                        maxLength={20}
+                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-2">
+                        Lug-to-lug <span className="text-textMuted">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={lugToLug}
+                        onChange={(e) => setLugToLug(e.target.value)}
+                        placeholder="e.g. 47mm"
+                        maxLength={20}
+                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-2">
+                        Lug width <span className="text-textMuted">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={betweenLugs}
+                        onChange={(e) => setBetweenLugs(e.target.value)}
+                        placeholder="e.g. 20mm"
+                        maxLength={20}
+                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-2">
+                        Thickness <span className="text-textMuted">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={thickness}
+                        onChange={(e) => setThickness(e.target.value)}
+                        placeholder="e.g. 12.5mm"
+                        maxLength={20}
+                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Water resistance */}
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Water resistance <span className="text-textMuted">(optional)</span>
                     </label>
                     <input
                       type="text"
-                      value={thickness}
-                      onChange={(e) => setThickness(e.target.value)}
-                      placeholder="e.g. 12.5mm"
-                      maxLength={20}
+                      value={waterResistance}
+                      onChange={(e) => setWaterResistance(e.target.value)}
+                      placeholder="e.g. 300m / 1000ft"
+                      maxLength={40}
                       className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                     />
                   </div>
+
+                  {/* Production year */}
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Production year <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <select
+                      value={productionYear}
+                      onChange={(e) => setProductionYear(e.target.value)}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                    >
+                      <option value="">Select year</option>
+                      {PRODUCTION_YEAR_OPTIONS.map((yr) => (
+                        <option key={yr} value={yr}>{yr}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Personal fields — user-only */}
+                  <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide pt-2">Your Details</h3>
+
+                  {/* Wrist size */}
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Wrist size <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <select
+                      value={wristSize}
+                      onChange={(e) => setWristSize(e.target.value)}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                    >
+                      <option value="">Select wrist size</option>
+                      {WRIST_SIZE_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Estimated price */}
+                  <div>
+                    <label className="block text-sm font-medium text-textSecond mb-2">
+                      Estimated value <span className="text-textMuted">(optional)</span>
+                    </label>
+                    <select
+                      value={estimatedPrice}
+                      onChange={(e) => setEstimatedPrice(e.target.value)}
+                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                    >
+                      <option value="">Select estimated value</option>
+                      {ESTIMATED_PRICE_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+              )}
 
-                {/* Water resistance */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Water resistance <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={waterResistance}
-                    onChange={(e) => setWaterResistance(e.target.value)}
-                    placeholder="e.g. 300m / 1000ft"
-                    maxLength={40}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                  />
+              {/* Error message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-sm text-red-800">{error}</p>
                 </div>
+              )}
 
-                {/* Production year */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Production year <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <select
-                    value={productionYear}
-                    onChange={(e) => setProductionYear(e.target.value)}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                  >
-                    <option value="">Select year</option>
-                    {PRODUCTION_YEAR_OPTIONS.map((yr) => (
-                      <option key={yr} value={yr}>{yr}</option>
-                    ))}
-                  </select>
+              {/* Upload progress */}
+              {uploadProgress && (
+                <div className="text-sm text-textMuted">
+                  {uploadProgress}
                 </div>
+              )}
 
-                {/* Personal fields — user-only */}
-                <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide pt-2">Your Details</h3>
-
-                {/* Wrist size */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Wrist size <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <select
-                    value={wristSize}
-                    onChange={(e) => setWristSize(e.target.value)}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                  >
-                    <option value="">Select wrist size</option>
-                    {WRIST_SIZE_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Estimated price */}
-                <div>
-                  <label className="block text-sm font-medium text-textSecond mb-2">
-                    Estimated value <span className="text-textMuted">(optional)</span>
-                  </label>
-                  <select
-                    value={estimatedPrice}
-                    onChange={(e) => setEstimatedPrice(e.target.value)}
-                    className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                  >
-                    <option value="">Select estimated value</option>
-                    {ESTIMATED_PRICE_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {/* Error message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
-            )}
-
-            {/* Upload progress */}
-            {uploadProgress && (
-              <div className="text-sm text-textMuted">
-                {uploadProgress}
-              </div>
-            )}
-
-            {/* Submit button */}
-            {files.length > 0 && (
-              <button
-                type="submit"
-                disabled={!isFormValid || uploading}
-                className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                  isFormValid && !uploading
-                    ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
-                    : 'bg-neutral text-textMuted cursor-not-allowed'
-                }`}
-              >
-                {uploading ? 'Uploading...' : 'Submit photo'}
-              </button>
-            )}
+              {/* Submit button */}
+              {files.length > 0 && (
+                <button
+                  type="submit"
+                  disabled={!isFormValid || uploading}
+                  className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                    isFormValid && !uploading
+                      ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
+                      : 'bg-neutral text-textMuted cursor-not-allowed'
+                  }`}
+                >
+                  {uploading ? 'Uploading...' : 'Submit photo'}
+                </button>
+              )}
+            </div>
           </form>
         )}
 
