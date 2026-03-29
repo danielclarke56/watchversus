@@ -29,8 +29,18 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
+    // Only select columns used by the gallery — avoids pulling spec fields over the wire
     const photoRecords = await db
-      .select()
+      .select({
+        id: photos.id,
+        watchId: photos.watchId,
+        userId: photos.userId,
+        userName: photos.userName,
+        url: photos.url,
+        caption: photos.caption,
+        status: photos.status,
+        createdAt: photos.createdAt,
+      })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
       .orderBy(asc(photos.createdAt))
@@ -81,10 +91,10 @@ export async function GET(req: NextRequest) {
     const result = filtered.slice(0, limit)
     const nextCursor = filtered.length > limit ? result[result.length - 1]?.createdAt ?? null : null
 
-    return NextResponse.json({
-      photos: result,
-      nextCursor,
-    })
+    return NextResponse.json(
+      { photos: result, nextCursor },
+      { headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=300' } }
+    )
   } catch (error) {
     console.error('[/api/photos/all] Query failed:', error)
     return NextResponse.json(

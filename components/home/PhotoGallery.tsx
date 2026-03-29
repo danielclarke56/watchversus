@@ -22,7 +22,7 @@ interface PhotosResponse {
   nextCursor: string | null
 }
 
-const PAGE_SIZE = 50
+const PAGE_SIZE = 20
 
 function PhotoGalleryContent() {
   const router = useRouter()
@@ -188,6 +188,7 @@ function PhotoGalleryContent() {
                 fill
                 className="object-cover transition-transform duration-200 group-hover:scale-105"
                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                priority={index < 6}
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <p className="text-white text-xs font-semibold truncate">
