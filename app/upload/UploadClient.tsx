@@ -380,7 +380,7 @@ export default function UploadClient() {
     }
   }
 
-  const isFormValid = files.length > 0 && brandName.trim().length > 0
+  const isFormValid = files.length > 0 && brandName.trim().length > 0 && isWatch !== false
 
   if (!isLoaded) {
     return (
@@ -590,9 +590,9 @@ export default function UploadClient() {
 
                   {/* Warning: AI-Generated */}
                   {aiGenerated === true && (
-                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
-                      <p className="text-sm text-orange-800 dark:text-orange-200">
-                        ⚠️ This appears to be an AI-generated image. Please upload a real photo for the community.
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
+                      <p className="text-sm text-amber-800 dark:text-amber-200">
+                        ⚠️ This photo may be AI-generated. AI-generated images won&apos;t be approved — please upload a real photo of your watch. You can still submit if you believe this is incorrect.
                       </p>
                     </div>
                   )}
