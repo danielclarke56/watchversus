@@ -392,7 +392,7 @@ export default function UploadClient() {
 
   return (
     <main className="min-h-screen bg-surfaceAlt text-textPrimary">
-      <div className="max-w-xl mx-auto px-4 py-16">
+      <div className="max-w-[80rem] mx-auto px-4 py-16">
         <Link href="/" className="text-sm text-textMuted hover:text-textPrimary mb-8 inline-block">
           &larr; Back to home
         </Link>
