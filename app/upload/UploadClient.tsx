@@ -5,6 +5,7 @@ import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { watches } from '@/lib/watches'
 import type { Watch } from '@/lib/types'
+import CropModal from './CropModal'
 
 function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -55,6 +56,7 @@ export default function UploadClient() {
   const [isDragging, setIsDragging] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
+  const [pendingCrop, setPendingCrop] = useState<{ src: string; file: File; slotIndex: number } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
 
@@ -131,18 +133,8 @@ export default function UploadClient() {
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
-    if (editingSlotIndex >= 0 && editingSlotIndex < files.length) {
-      replaceFile(editingSlotIndex, f)
-    } else {
-      addFile(f)
-    }
-    setEditingSlotIndex(-1)
-    // Reset input so the same file can be re-selected
-    if (fileRef.current) fileRef.current.value = ''
-  }
 
-  function addFile(f: File) {
-    if (files.length >= MAX_PHOTOS) return
+    // Validation
     if (f.size > 5 * 1024 * 1024) {
       setError('File must be under 5MB')
       return
@@ -153,41 +145,42 @@ export default function UploadClient() {
     }
     setError('')
 
-    setFiles((prev) => [...prev, f])
+    const slotIndex = editingSlotIndex >= 0 && editingSlotIndex < files.length ? editingSlotIndex : -1
+    setEditingSlotIndex(-1)
+    if (fileRef.current) fileRef.current.value = ''
 
     const reader = new FileReader()
     reader.onload = () => {
-      setPreviews((prev) => [...prev, reader.result as string])
+      setPendingCrop({ src: reader.result as string, file: f, slotIndex })
     }
     reader.readAsDataURL(f)
   }
 
-  function replaceFile(index: number, f: File) {
-    if (f.size > 5 * 1024 * 1024) {
-      setError('File must be under 5MB')
-      return
-    }
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
-      setError('Only JPEG, PNG, or WebP images are allowed')
-      return
-    }
-    setError('')
-
-    setFiles((prev) => {
-      const next = [...prev]
-      next[index] = f
-      return next
-    })
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      setPreviews((prev) => {
+  function handleCropConfirm(croppedFile: File, croppedDataUrl: string) {
+    if (!pendingCrop) return
+    if (pendingCrop.slotIndex >= 0) {
+      // Replace existing slot
+      setFiles((prev) => {
         const next = [...prev]
-        next[index] = reader.result as string
+        next[pendingCrop.slotIndex] = croppedFile
         return next
       })
+      setPreviews((prev) => {
+        const next = [...prev]
+        next[pendingCrop.slotIndex] = croppedDataUrl
+        return next
+      })
+    } else {
+      // Add new
+      if (files.length >= MAX_PHOTOS) return
+      setFiles((prev) => [...prev, croppedFile])
+      setPreviews((prev) => [...prev, croppedDataUrl])
     }
-    reader.readAsDataURL(f)
+    setPendingCrop(null)
+  }
+
+  function handleCropCancel() {
+    setPendingCrop(null)
   }
 
   function removeFile(index: number) {
@@ -212,7 +205,24 @@ export default function UploadClient() {
     e.stopPropagation()
     setIsDragging(false)
     const f = e.dataTransfer.files?.[0]
-    if (f) addFile(f)
+    if (!f) return
+
+    // Validation
+    if (f.size > 5 * 1024 * 1024) {
+      setError('File must be under 5MB')
+      return
+    }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
+      setError('Only JPEG, PNG, or WebP images are allowed')
+      return
+    }
+    setError('')
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      setPendingCrop({ src: reader.result as string, file: f, slotIndex: -1 })
+    }
+    reader.readAsDataURL(f)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -660,6 +670,15 @@ export default function UploadClient() {
               </button>
             )}
           </form>
+        )}
+
+        {/* Crop Modal */}
+        {pendingCrop && (
+          <CropModal
+            imageSrc={pendingCrop.src}
+            onConfirm={handleCropConfirm}
+            onCancel={handleCropCancel}
+          />
         )}
       </div>
     </main>
