@@ -122,23 +122,19 @@ function PhotoGalleryContent() {
     return () => observer.disconnect()
   }, [nextCursor, loadingMore, fetchPhotos])
 
-  // Keyboard navigation
+  // Keyboard navigation — arrows move between watches, not photos within a watch
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!lightbox) return
-      const group = groups[lightbox.groupIdx]
-      if (!group) return
-
-      const displayLen = group.photos.length
       if (e.key === 'Escape') {
         setLightbox(null)
       } else if (e.key === 'ArrowLeft') {
-        if (lightbox.photoIdx > 0) {
-          setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx - 1 })
+        if (lightbox.groupIdx > 0) {
+          setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 })
         }
       } else if (e.key === 'ArrowRight') {
-        if (lightbox.photoIdx < displayLen - 1) {
-          setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx + 1 })
+        if (lightbox.groupIdx < groups.length - 1) {
+          setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 })
         }
       }
     }
@@ -156,8 +152,9 @@ function PhotoGalleryContent() {
     : null
 
   const activeLightboxGroup = lightbox !== null ? groups[lightbox.groupIdx] : null
-  // Slideshow shows newest-first (reversed from the ascending-sorted group.photos)
-  const activeLightboxPhotos = activeLightboxGroup ? [...activeLightboxGroup.photos].reverse() : []
+  // Photos in ascending order (oldest = index 0 = primary card image)
+  // Thumbnails let user select a specific photo; arrows navigate between watches
+  const activeLightboxPhotos = activeLightboxGroup ? activeLightboxGroup.photos : []
   const activeLightboxPhoto = activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null
 
   return (
@@ -261,25 +258,25 @@ function PhotoGalleryContent() {
             ✕
           </button>
 
-          {/* Left arrow */}
-          {lightbox.photoIdx > 0 && (
+          {/* Left arrow — previous watch */}
+          {lightbox.groupIdx > 0 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx - 1 }) }}
+              onClick={(e) => { e.stopPropagation(); setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 }) }}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
-              aria-label="Previous photo"
+              aria-label="Previous watch"
             >
               ←
             </button>
           )}
 
-          {/* Right arrow */}
-          {lightbox.photoIdx < activeLightboxPhotos.length - 1 && (
+          {/* Right arrow — next watch */}
+          {lightbox.groupIdx < groups.length - 1 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx + 1 }) }}
+              onClick={(e) => { e.stopPropagation(); setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 }) }}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
-              aria-label="Next photo"
+              aria-label="Next watch"
             >
               →
             </button>
