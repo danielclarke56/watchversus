@@ -40,6 +40,9 @@ export async function GET(req: NextRequest) {
         caption: photos.caption,
         status: photos.status,
         createdAt: photos.createdAt,
+        brandName: photos.brandName,
+        modelName: photos.modelName,
+        referenceNumber: photos.referenceNumber,
       })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
@@ -69,6 +72,9 @@ export async function GET(req: NextRequest) {
         watchName: watch?.name ?? unslugify(p.watchId),
         watchBrand: watch?.brand ?? null,
         watchReference: watch?.reference ?? null,
+        brandName: p.brandName ?? null,
+        modelName: p.modelName ?? null,
+        referenceNumber: p.referenceNumber ?? null,
       }
     })
 

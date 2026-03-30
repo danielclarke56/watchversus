@@ -15,6 +15,9 @@ interface PhotoItem {
   watchName?: string
   watchBrand?: string
   watchReference?: string
+  brandName?: string | null
+  modelName?: string | null
+  referenceNumber?: string | null
 }
 
 interface PhotosResponse {
@@ -275,19 +278,25 @@ function PhotoGalleryContent() {
             />
 
             {/* Watch info below image */}
-            <div className="mt-3 flex items-center gap-3 text-sm flex-wrap justify-center">
-              {(photos[lightboxIndex].watchBrand || photos[lightboxIndex].watchName) && (
-                <span className="text-white font-semibold">
-                  {[photos[lightboxIndex].watchBrand, photos[lightboxIndex].watchName].filter(Boolean).join(' ')}
-                </span>
-              )}
-              {photos[lightboxIndex].watchReference && (
-                <span className="text-white/60">Ref. {photos[lightboxIndex].watchReference}</span>
-              )}
-              {photos[lightboxIndex].caption && (
-                <span className="text-white/70 italic">{photos[lightboxIndex].caption}</span>
-              )}
-            </div>
+            {(() => {
+              const p = photos[lightboxIndex]
+              const brand = p.brandName || p.watchBrand || null
+              const model = p.modelName || p.watchName || null
+              const ref = p.referenceNumber || p.watchReference || null
+              return (
+                <div className="mt-3 text-center space-y-1">
+                  {(brand || model) && (
+                    <p className="text-white font-semibold text-base leading-tight">
+                      {[brand, model].filter(Boolean).join(' ')}
+                    </p>
+                  )}
+                  {ref && (
+                    <p className="text-white/60 text-sm">Ref. {ref}</p>
+                  )}
+                  <p className="text-white/50 text-xs">by {p.userName}</p>
+                </div>
+              )
+            })()}
           </div>
         </div>
       )}
