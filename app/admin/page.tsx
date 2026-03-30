@@ -26,20 +26,18 @@ export default function AdminDashboard() {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         <div className="grid gap-6">
-          {/* Review Moderation Card */}
-          <Link href="/admin/reviews">
+          {/* Photo Moderation Card */}
+          <Link href="/admin/photos">
             <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer">
-              <h2 className="text-xl font-semibold mb-2">Review Moderation</h2>
+              <h2 className="text-xl font-semibold mb-2">Photo Moderation</h2>
               <p className="text-gray-600 mb-4">
-                Review and approve pending user reviews
+                Review, edit watch metadata, and approve community-submitted photos
               </p>
               <div className="text-blue-600 hover:underline font-medium">
-                Go to Moderation →
+                Go to Photo Moderation →
               </div>
             </div>
           </Link>
-
-          {/* More admin features can be added here */}
         </div>
       </div>
     </div>
