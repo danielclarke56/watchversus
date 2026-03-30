@@ -2,10 +2,12 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface Photo {
   id: string
+  watchId: string
   url: string
   brandName: string | null
   modelName: string | null
@@ -91,16 +93,27 @@ function photoToEditable(photo: Photo): Record<EditableKey, string> {
 }
 
 function PhotoCard({ photo }: { photo: Photo }) {
+  const router = useRouter()
   const alt = [photo.brandName, photo.modelName].filter(Boolean).join(' ') || 'Watch photo'
+
+  // Edit state
   const [editing, setEditing] = useState(false)
   const [fields, setFields] = useState<Record<EditableKey, string>>(() => photoToEditable(photo))
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [editError, setEditError] = useState<string | null>(null)
+
+  // Add photo inline state
+  const [addingPhoto, setAddingPhoto] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadSuccess, setUploadSuccess] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleSave() {
     setSaving(true)
-    setError(null)
+    setEditError(null)
     try {
       const res = await fetch(`/api/user/photos/${photo.id}`, {
         method: 'PATCH',
@@ -115,10 +128,52 @@ function PhotoCard({ photo }: { photo: Photo }) {
       setTimeout(() => setSaved(false), 2500)
       setEditing(false)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Save failed')
+      setEditError(e instanceof Error ? e.message : 'Save failed')
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null
+    setSelectedFile(file)
+    setUploadError(null)
+    setUploadSuccess(false)
+  }, [])
+
+  async function handleUpload() {
+    if (!selectedFile) return
+    setUploading(true)
+    setUploadError(null)
+    try {
+      const formData = new FormData()
+      formData.append('photo', selectedFile)
+      const res = await fetch(`/api/photos/${photo.watchId}`, {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Upload failed')
+      setUploadSuccess(true)
+      setSelectedFile(null)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      // Refresh the page to show new photo in Pending tab
+      setTimeout(() => {
+        router.refresh()
+      }, 1200)
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  function cancelAdd() {
+    setAddingPhoto(false)
+    setSelectedFile(null)
+    setUploadError(null)
+    setUploadSuccess(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
@@ -156,7 +211,7 @@ function PhotoCard({ photo }: { photo: Photo }) {
                 </div>
               ))}
             </div>
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {editError && <p className="text-xs text-red-500">{editError}</p>}
             <div className="flex gap-2 pt-1">
               <button
                 onClick={handleSave}
@@ -175,20 +230,56 @@ function PhotoCard({ photo }: { photo: Photo }) {
           </div>
         )}
 
+        {/* Inline add photo */}
+        {addingPhoto && (
+          <div className="mb-4 rounded-md border border-dashed border-gray-300 bg-gray-50 p-3 space-y-2">
+            <p className="text-xs text-gray-500 font-medium">Add another photo for this watch</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+            />
+            {selectedFile && !uploadSuccess && (
+              <p className="text-xs text-gray-500 truncate">Selected: {selectedFile.name}</p>
+            )}
+            {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+            {uploadSuccess && (
+              <p className="text-xs text-green-600 font-medium">✓ Uploaded — pending review</p>
+            )}
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={handleUpload}
+                disabled={!selectedFile || uploading || uploadSuccess}
+                className="flex-1 bg-blue-600 text-white text-sm font-medium py-1.5 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                {uploading ? 'Uploading…' : 'Upload'}
+              </button>
+              <button
+                onClick={cancelAdd}
+                className="flex-1 border border-gray-300 text-gray-600 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Action row */}
         <div className="flex gap-2 flex-wrap">
           <button
-            onClick={() => setEditing((v) => !v)}
+            onClick={() => { setEditing((v) => !v); setAddingPhoto(false) }}
             className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors"
           >
             {editing ? 'Close' : '✏️ Edit info'}
           </button>
-          <Link
-            href="/upload"
-            className="flex-1 text-center border border-gray-300 text-gray-700 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors"
+          <button
+            onClick={() => { setAddingPhoto((v) => !v); setEditing(false) }}
+            className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors"
           >
-            + Add photo
-          </Link>
+            {addingPhoto ? 'Cancel' : '+ Add photo'}
+          </button>
           {photo.status === 'approved' && (
             <Link
               href="/"
