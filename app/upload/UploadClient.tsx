@@ -565,10 +565,7 @@ export default function UploadClient() {
 
             {/* RIGHT COLUMN: Form Fields + Submit */}
             <div className="space-y-6">
-              {/* Helper text when no photo uploaded */}
-              {files.length === 0 && (
-                <p className="text-textMuted text-xs text-center">📷 Upload a photo to continue</p>
-              )}
+
 
               {/* AI Identification Results */}
               {files.length > 0 && (
