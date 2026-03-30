@@ -190,11 +190,9 @@ function PhotoGalleryContent() {
                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 priority={index < 6}
               />
-              {(photo.watchReference || photo.caption || photo.userName) && (
+              {photo.watchReference && (
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-white/70 text-xs truncate">
-                    {[photo.watchReference ? `Ref. ${photo.watchReference}` : null, photo.userName ? `by ${photo.userName}` : null].filter(Boolean).join(' · ')}
-                  </p>
+                  <p className="text-white/70 text-xs truncate">Ref. {photo.watchReference}</p>
                 </div>
               )}
             </button>
