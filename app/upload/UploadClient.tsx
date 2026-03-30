@@ -185,19 +185,17 @@ export default function UploadClient() {
           next[slotIndex] = dataUrl
           return next
         })
-        // If replacing slot 0, re-identify
+        // Reset AI state when photo is replaced
         if (slotIndex === 0) {
-          identify(f)
+          setIsWatch(null)
+          setAiGenerated(null)
+          setAiIdentified(false)
         }
       } else {
         // Add new
         if (files.length < MAX_PHOTOS) {
           setFiles((prev) => [...prev, f])
           setPreviews((prev) => [...prev, dataUrl])
-          // If adding to slot 0, identify
-          if (files.length === 0) {
-            identify(f)
-          }
         }
       }
     }
@@ -218,19 +216,17 @@ export default function UploadClient() {
         next[pendingCrop.slotIndex] = croppedDataUrl
         return next
       })
-      // If replacing slot 0, re-identify
+      // Reset AI state when slot 0 is cropped/replaced
       if (pendingCrop.slotIndex === 0) {
-        identify(croppedFile)
+        setIsWatch(null)
+        setAiGenerated(null)
+        setAiIdentified(false)
       }
     } else {
       // Add new
       if (files.length >= MAX_PHOTOS) return
       setFiles((prev) => [...prev, croppedFile])
       setPreviews((prev) => [...prev, croppedDataUrl])
-      // If adding to slot 0, identify
-      if (files.length === 0) {
-        identify(croppedFile)
-      }
     }
     setPendingCrop(null)
   }
@@ -570,9 +566,21 @@ export default function UploadClient() {
             <div className="space-y-6">
 
 
-              {/* AI Identification Results */}
+              {/* AI Identification */}
               {files.length > 0 && (
                 <>
+                  {/* Opt-in AI auto-fill button */}
+                  {!identifying && !aiIdentified && (
+                    <button
+                      type="button"
+                      onClick={() => identify(files[0])}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-surface border border-borderStrong hover:border-accent rounded-lg text-sm font-medium text-textSecond hover:text-textPrimary transition-colors"
+                    >
+                      <span>✨</span>
+                      <span>Auto-fill details with AI</span>
+                    </button>
+                  )}
+
                   {/* Loading spinner */}
                   {identifying && (
                     <div className="flex items-center justify-center gap-2 p-4 bg-surface border border-borderStrong rounded-lg">
@@ -599,18 +607,16 @@ export default function UploadClient() {
                     </div>
                   )}
 
-
+                  {/* AI auto-fill notice */}
+                  {aiIdentified && !identifying && (
+                    <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                      <span className="text-base leading-none mt-0.5">✨</span>
+                      <p className="text-xs text-blue-800 dark:text-blue-200">
+                        Details filled in by AI — please review and correct before submitting.
+                      </p>
+                    </div>
+                  )}
                 </>
-              )}
-
-              {/* AI auto-fill notice */}
-              {aiIdentified && !identifying && (
-                <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-                  <span className="text-base leading-none mt-0.5">✨</span>
-                  <p className="text-xs text-blue-800 dark:text-blue-200">
-                    These details were filled in by AI — please review and correct them before submitting.
-                  </p>
-                </div>
               )}
 
               {/* Section 2: Watch Details - with disabled state when no files */}
