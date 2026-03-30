@@ -190,13 +190,13 @@ function PhotoGalleryContent() {
                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 priority={index < 6}
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <p className="text-white text-xs font-semibold truncate">
-                  {photo.watchBrand && photo.watchName
-                    ? `${photo.watchBrand} ${photo.watchName}`
-                    : photo.watchName ?? 'Watch'}
-                </p>
-              </div>
+              {(photo.watchReference || photo.caption || photo.userName) && (
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <p className="text-white/70 text-xs truncate">
+                    {[photo.watchReference ? `Ref. ${photo.watchReference}` : null, photo.userName ? `by ${photo.userName}` : null].filter(Boolean).join(' · ')}
+                  </p>
+                </div>
+              )}
             </button>
           ))}
         </div>
@@ -277,28 +277,19 @@ function PhotoGalleryContent() {
             />
 
             {/* Watch info below image */}
-            <div className="mt-4 text-center">
-              <p className="text-white font-semibold">
-                {photos[lightboxIndex].watchBrand && photos[lightboxIndex].watchName
-                  ? `${photos[lightboxIndex].watchBrand} ${photos[lightboxIndex].watchName}`
-                  : photos[lightboxIndex].watchName ?? 'Watch'}
-              </p>
-              {photos[lightboxIndex].watchReference && (
-                <p className="text-white/70 text-sm">
-                  Ref. {photos[lightboxIndex].watchReference}
-                </p>
-              )}
-              {photos[lightboxIndex].caption && (
-                <p className="text-white/80 text-sm mt-1 italic">
-                  {photos[lightboxIndex].caption}
-                </p>
-              )}
-              {photos[lightboxIndex].userName && (
-                <p className="text-white/50 text-sm mt-1">
-                  by {photos[lightboxIndex].userName}
-                </p>
-              )}
-            </div>
+            {(photos[lightboxIndex].watchReference || photos[lightboxIndex].caption || photos[lightboxIndex].userName) && (
+              <div className="mt-3 flex items-center gap-3 text-sm flex-wrap justify-center">
+                {photos[lightboxIndex].watchReference && (
+                  <span className="text-white/70">Ref. {photos[lightboxIndex].watchReference}</span>
+                )}
+                {photos[lightboxIndex].caption && (
+                  <span className="text-white/80 italic">{photos[lightboxIndex].caption}</span>
+                )}
+                {photos[lightboxIndex].userName && (
+                  <span className="text-white/50">by {photos[lightboxIndex].userName}</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
