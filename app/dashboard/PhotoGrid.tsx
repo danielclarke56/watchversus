@@ -133,7 +133,7 @@ export default function PhotoGrid({ photos }: { photos: Photo[] }) {
               {/* Action for Approved Photos */}
               {photo.status === 'approved' && (
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                  <Link href="/gallery" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                  <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                     View in Gallery →
                   </Link>
                 </div>
