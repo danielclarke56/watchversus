@@ -136,6 +136,9 @@ function GroupCard({ group }: { group: WatchGroup }) {
   const [uploadError, setUploadError]   = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [deleting, setDeleting]        = useState(false)
+  const [deleteError, setDeleteError]  = useState<string | null>(null)
+
   // Save metadata to ALL photos in the group so the entire entry is consistent
   async function handleSave() {
     setSaving(true)
@@ -186,6 +189,25 @@ function GroupCard({ group }: { group: WatchGroup }) {
       setUploadError(e instanceof Error ? e.message : 'Upload failed')
     } finally {
       setUploading(false)
+    }
+  }
+
+  async function handleDeleteGroup() {
+    if (!confirm(`Delete all ${group.photos.length} photo(s) in this entry?`)) return
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      await Promise.all(
+        group.photos.map((photo) =>
+          fetch(`/api/user/photos/${photo.id}`, { method: 'DELETE' }).then((res) => {
+            if (!res.ok) throw new Error('Delete failed')
+          })
+        )
+      )
+      setTimeout(() => router.refresh(), 600)
+    } catch (e) {
+      setDeleteError(e instanceof Error ? e.message : 'Delete failed')
+      setDeleting(false)
     }
   }
 
@@ -307,6 +329,13 @@ function GroupCard({ group }: { group: WatchGroup }) {
             className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors">
             {addingPhoto ? 'Cancel' : '+ Add photo'}
           </button>
+          {group.dominantStatus === 'rejected' && (
+            <button onClick={handleDeleteGroup} disabled={deleting}
+              className="flex-1 border border-red-300 text-red-600 text-sm font-medium py-1.5 rounded hover:bg-red-50 disabled:opacity-50 transition-colors">
+              {deleting ? 'Deleting…' : '🗑️ Delete'}
+            </button>
+          )}
+          {deleteError && <p className="w-full text-xs text-red-500 text-center">{deleteError}</p>}
           {group.dominantStatus === 'approved' && (
             <Link href="/" className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium py-1.5 border-t border-gray-100 mt-1 block">
               View in Gallery →

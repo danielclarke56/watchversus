@@ -10,7 +10,7 @@ import { isValidSlug, sanitizeText } from '@/lib/validation'
 import { checkRateLimit } from '@/lib/ratelimit'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 
 function auditLog(event: string, data: Record<string, unknown>) {
   console.log(JSON.stringify({ ts: new Date().toISOString(), event, ...data }))
@@ -136,28 +136,53 @@ export async function POST(
   const photoId = crypto.randomUUID()
   let photoUrl: string
 
+  // Read metadata fields from formData early (needed for dedup)
+  const wristSize = formData.get('wristSize') as string | null
+  const brandName = formData.get('brandName') as string | null
+  const modelName = formData.get('modelName') as string | null
+
+  // Dedup: if user already has a photo with the same brand+model, reuse that watchId
+  // This prevents duplicate watch cards when the same watch is uploaded multiple times
+  let effectiveWatchId = params.watchId
+  if (brandName && brandName.trim() && modelName && modelName.trim()) {
+    try {
+      const existing = await db
+        .select({ watchId: photos.watchId })
+        .from(photos)
+        .where(
+          and(
+            eq(photos.userId, userId),
+            sql`LOWER(TRIM(${photos.brandName})) = LOWER(TRIM(${brandName}))`,
+            sql`LOWER(TRIM(${photos.modelName})) = LOWER(TRIM(${modelName}))`
+          )
+        )
+        .limit(1)
+      if (existing.length > 0) {
+        effectiveWatchId = existing[0].watchId
+      }
+    } catch {
+      // dedup query failed — fall back to URL param watchId
+    }
+  }
+
   const { isR2Configured } = await import('@/lib/r2')
   if (isR2Configured) {
     try {
       const { uploadPhotoToR2 } = await import('@/lib/r2')
-      photoUrl = await uploadPhotoToR2(params.watchId, photoId, cleanBuffer)
+      photoUrl = await uploadPhotoToR2(effectiveWatchId, photoId, cleanBuffer)
     } catch (error) {
       auditLog('upload.storage_failed', { userId, ip, photoId, error: String(error) })
       return NextResponse.json({ error: 'Storage unavailable. Please try again later.' }, { status: 503 })
     }
   } else {
     console.warn('[upload] R2 not configured — using local filesystem fallback (dev only)')
-    const dir = path.join(process.cwd(), 'public', 'images', 'user-uploads', params.watchId)
+    const dir = path.join(process.cwd(), 'public', 'images', 'user-uploads', effectiveWatchId)
     fs.mkdirSync(dir, { recursive: true })
     const localFilename = `${photoId}.webp`
     fs.writeFileSync(path.join(dir, localFilename), cleanBuffer)
-    photoUrl = `/images/user-uploads/${params.watchId}/${localFilename}`
+    photoUrl = `/images/user-uploads/${effectiveWatchId}/${localFilename}`
   }
 
-  // Read metadata fields from formData
-  const wristSize = formData.get('wristSize') as string | null
-  const brandName = formData.get('brandName') as string | null
-  const modelName = formData.get('modelName') as string | null
   const referenceNumber = formData.get('referenceNumber') as string | null
   const movement = formData.get('movement') as string | null
   const caseSize = formData.get('caseSize') as string | null
@@ -171,7 +196,7 @@ export async function POST(
   try {
     await db.insert(photos).values({
       id: photoId,
-      watchId: params.watchId,
+      watchId: effectiveWatchId,
       userId,
       userName: sanitizeText(userName, 50),
       url: photoUrl,
@@ -195,6 +220,6 @@ export async function POST(
     return NextResponse.json({ error: 'Failed to save photo' }, { status: 500 })
   }
 
-  auditLog('upload.success', { userId, ip, photoId, watchId: params.watchId, size: file.size })
+  auditLog('upload.success', { userId, ip, photoId, watchId: effectiveWatchId, size: file.size })
   return NextResponse.json({ success: true, status: 'pending_review' }, { status: 201 })
 }
