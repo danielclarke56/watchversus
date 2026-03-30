@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
-import Image from 'next/image'
+import PhotoGrid from './PhotoGrid'
 
 export const metadata: Metadata = {
   title: 'Dashboard | WatchVsWatch',
@@ -19,43 +19,6 @@ export const metadata: Metadata = {
   },
 }
 
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date)
-}
-
-function getStatusBadge(status: string) {
-  switch (status) {
-    case 'approved':
-      return {
-        icon: '✅',
-        text: 'Approved',
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-700',
-        borderColor: 'border-green-200',
-      }
-    case 'rejected':
-      return {
-        icon: '❌',
-        text: 'Rejected',
-        bgColor: 'bg-red-50',
-        textColor: 'text-red-700',
-        borderColor: 'border-red-200',
-      }
-    case 'pending':
-    default:
-      return {
-        icon: '🟡',
-        text: 'Pending Review',
-        bgColor: 'bg-yellow-50',
-        textColor: 'text-yellow-700',
-        borderColor: 'border-yellow-200',
-      }
-  }
-}
 
 export default async function DashboardPage() {
   const { userId } = await auth()
@@ -122,72 +85,8 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             ) : (
-              // Photo Grid
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {sortedPhotos.map((photo) => {
-                  const statusBadge = getStatusBadge(photo.status)
-
-                  return (
-                    <div
-                      key={photo.id}
-                      className="rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow bg-white"
-                    >
-                      {/* Thumbnail */}
-                      <div className="relative w-full h-48 bg-gray-100">
-                        {photo.url ? (
-                          <Image
-                            src={photo.url}
-                            alt={`${photo.brandName} ${photo.modelName}`}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <span className="text-gray-400">No image</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Card Content */}
-                      <div className="p-4">
-                        {/* Watch Details */}
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          {photo.brandName} {photo.modelName}
-                        </h3>
-                        {photo.referenceNumber && (
-                          <p className="text-sm text-gray-500 mb-3">
-                            Ref. {photo.referenceNumber}
-                          </p>
-                        )}
-
-                        {/* Status Badge */}
-                        <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium mb-3 border ${statusBadge.bgColor} ${statusBadge.textColor} ${statusBadge.borderColor}`}>
-                          <span>{statusBadge.icon}</span>
-                          <span>{statusBadge.text}</span>
-                        </div>
-
-                        {/* Date */}
-                        <p className="text-xs text-gray-500">
-                          {formatDate(photo.createdAt)}
-                        </p>
-
-                        {/* Action for Approved Photos */}
-                        {photo.status === 'approved' && (
-                          <div className="mt-4 pt-4 border-t border-gray-100">
-                            <Link
-                              href="/gallery"
-                              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                            >
-                              View in Gallery →
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+              // Photo Grid (client component — handles image errors gracefully)
+              <PhotoGrid photos={sortedPhotos} />
             )}
           </div>
         </div>
