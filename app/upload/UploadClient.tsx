@@ -77,6 +77,7 @@ export default function UploadClient() {
   const [identifying, setIdentifying] = useState(false)
   const [isWatch, setIsWatch] = useState<boolean | null>(null)
   const [aiGenerated, setAiGenerated] = useState<boolean | null>(null)
+  const [aiIdentified, setAiIdentified] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
 
@@ -266,6 +267,7 @@ export default function UploadClient() {
       // Auto-apply top candidate
       if (data.candidates && Array.isArray(data.candidates) && data.candidates.length > 0) {
         applyCandidate(data.candidates[0])
+        setAiIdentified(true)
       }
     } catch (err: unknown) {
       console.error('Identification error:', err)
@@ -460,6 +462,7 @@ export default function UploadClient() {
                   setWaterResistance('')
                   setError('')
                   setSuccessPreviews([])
+                  setAiIdentified(false)
                 }}
                 className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
               >
@@ -598,6 +601,16 @@ export default function UploadClient() {
 
 
                 </>
+              )}
+
+              {/* AI auto-fill notice */}
+              {aiIdentified && !identifying && (
+                <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                  <span className="text-base leading-none mt-0.5">✨</span>
+                  <p className="text-xs text-blue-800 dark:text-blue-200">
+                    These details were filled in by AI — please review and correct them before submitting.
+                  </p>
+                </div>
               )}
 
               {/* Section 2: Watch Details - with disabled state when no files */}
