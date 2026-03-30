@@ -3,6 +3,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
+import imageCompression from 'browser-image-compression'
 import { watches } from '@/lib/watches'
 import type { Watch } from '@/lib/types'
 import CropModal from './CropModal'
@@ -67,6 +68,7 @@ export default function UploadClient() {
   const [thickness, setThickness] = useState('')
   const [waterResistance, setWaterResistance] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [compressing, setCompressing] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
@@ -94,7 +96,23 @@ export default function UploadClient() {
       .slice(0, 20)
   }, [search])
 
-
+  // Compress image to target max 2400px on longest side, 85% quality, max output 3MB
+  const compressImage = async (file: File): Promise<File> => {
+    try {
+      const options = {
+        maxSizeMB: 3,
+        maxWidthOrHeight: 2400,
+        useWebWorker: true,
+        fileType: 'image/webp',
+        initialQuality: 0.85,
+      }
+      const compressedBlob = await imageCompression(file, options)
+      return new File([compressedBlob], file.name, { type: 'image/webp' })
+    } catch (err) {
+      console.error('Compression failed:', err)
+      return file
+    }
+  }
 
   // Keyboard navigation for dropdown
   useEffect(() => {
@@ -151,13 +169,13 @@ export default function UploadClient() {
     setHighlightedIndex(-1)
   }
 
-  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
 
     // Validation
-    if (f.size > 5 * 1024 * 1024) {
-      setError('File must be under 5MB')
+    if (f.size > 20 * 1024 * 1024) {
+      setError('File must be under 20MB')
       return
     }
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
@@ -170,6 +188,11 @@ export default function UploadClient() {
     setEditingSlotIndex(-1)
     if (fileRef.current) fileRef.current.value = ''
 
+    // Compress image before processing
+    setCompressing(true)
+    const compressedFile = await compressImage(f)
+    setCompressing(false)
+
     const reader = new FileReader()
     reader.onload = () => {
       const dataUrl = reader.result as string
@@ -177,7 +200,7 @@ export default function UploadClient() {
         // Replace existing slot
         setFiles((prev) => {
           const next = [...prev]
-          next[slotIndex] = f
+          next[slotIndex] = compressedFile
           return next
         })
         setPreviews((prev) => {
@@ -194,12 +217,12 @@ export default function UploadClient() {
       } else {
         // Add new
         if (files.length < MAX_PHOTOS) {
-          setFiles((prev) => [...prev, f])
+          setFiles((prev) => [...prev, compressedFile])
           setPreviews((prev) => [...prev, dataUrl])
         }
       }
     }
-    reader.readAsDataURL(f)
+    reader.readAsDataURL(compressedFile)
   }
 
   function handleCropConfirm(croppedFile: File, croppedDataUrl: string) {
@@ -300,7 +323,7 @@ export default function UploadClient() {
     setIsDragging(false)
   }
 
-  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
@@ -308,8 +331,8 @@ export default function UploadClient() {
     if (!f) return
 
     // Validation
-    if (f.size > 5 * 1024 * 1024) {
-      setError('File must be under 5MB')
+    if (f.size > 20 * 1024 * 1024) {
+      setError('File must be under 20MB')
       return
     }
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
@@ -318,15 +341,20 @@ export default function UploadClient() {
     }
     setError('')
 
+    // Compress image before processing
+    setCompressing(true)
+    const compressedFile = await compressImage(f)
+    setCompressing(false)
+
     const reader = new FileReader()
     reader.onload = () => {
       const dataUrl = reader.result as string
       if (files.length < MAX_PHOTOS) {
-        setFiles((prev) => [...prev, f])
+        setFiles((prev) => [...prev, compressedFile])
         setPreviews((prev) => [...prev, dataUrl])
       }
     }
-    reader.readAsDataURL(f)
+    reader.readAsDataURL(compressedFile)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -535,9 +563,9 @@ export default function UploadClient() {
                   >
                     <div className="text-5xl mb-3">{'\uD83D\uDCF7'}</div>
                     <p className="text-textMuted mb-1">
-                      {isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
+                      {compressing ? 'Optimising image...' : isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
                     </p>
-                    <p className="text-textMuted text-sm">JPEG, PNG, or WebP &middot; Max 5MB</p>
+                    <p className="text-textMuted text-sm">JPEG, PNG, or WebP &middot; Up to 20MB</p>
                   </div>
                 ) : files.length < MAX_PHOTOS ? (
                   <button

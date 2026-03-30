@@ -29,5 +29,5 @@ export interface ApprovedPhoto extends Photo {
 }
 
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+export const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB (pre-compression client validation)
 export const PHOTOS_PER_PAGE = 12

@@ -5,7 +5,7 @@ import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import type { ApprovedPhoto } from '@/lib/photos'
-import { ACCEPTED_TYPES, MAX_FILE_SIZE } from '@/lib/photos'
+import { ACCEPTED_TYPES } from '@/lib/photos'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
 import { checkRateLimit } from '@/lib/ratelimit'
 import { db } from '@/lib/db'
@@ -109,9 +109,10 @@ export async function POST(
     return NextResponse.json({ error: 'Only JPEG, PNG, and WebP images are accepted' }, { status: 400 })
   }
 
-  if (file.size > MAX_FILE_SIZE) {
+  // Server-side safety check (8 MB limit, after client-side compression should be much smaller)
+  if (file.size > 8 * 1024 * 1024) {
     auditLog('upload.validation_failed', { reason: 'file_too_large', userId, ip, size: file.size })
-    return NextResponse.json({ error: 'Photo must be under 5 MB' }, { status: 400 })
+    return NextResponse.json({ error: 'Photo must be under 8 MB after compression' }, { status: 400 })
   }
 
   const rawBuffer = Buffer.from(await file.arrayBuffer())
