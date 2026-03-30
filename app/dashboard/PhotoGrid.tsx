@@ -51,19 +51,15 @@ function PhotoCard({ photo }: { photo: Photo }) {
 
   return (
     <div className="rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow bg-white">
-      {/* Thumbnail */}
       <div className="relative w-full h-48 bg-gray-100">
         <PhotoThumbnail url={photo.url} alt={alt} />
       </div>
-
-      {/* Card Content */}
       <div className="p-4">
         <h3 className="text-base font-semibold text-gray-900 mb-1">{alt}</h3>
         {photo.referenceNumber && (
           <p className="text-sm text-gray-500 mb-2">Ref. {photo.referenceNumber}</p>
         )}
         <p className="text-xs text-gray-400">{formatDate(photo.createdAt)}</p>
-
         {photo.status === 'approved' && (
           <div className="mt-3 pt-3 border-t border-gray-100">
             <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
@@ -76,71 +72,69 @@ function PhotoCard({ photo }: { photo: Photo }) {
   )
 }
 
-interface SectionProps {
-  title: string
-  icon: string
-  count: number
-  color: string
-  photos: Photo[]
-  emptyText: string
-}
+type TabId = 'approved' | 'pending' | 'rejected'
 
-function PhotoSection({ title, icon, count, color, photos, emptyText }: SectionProps) {
+const TABS: { id: TabId; label: string; emptyText: string }[] = [
+  { id: 'approved', label: 'Approved', emptyText: 'No approved photos yet.' },
+  { id: 'pending', label: 'Pending Review', emptyText: 'No photos pending review.' },
+  { id: 'rejected', label: 'Rejected', emptyText: 'No rejected photos.' },
+]
+
+export default function PhotoGrid({ photos }: { photos: Photo[] }) {
+  const [activeTab, setActiveTab] = useState<TabId>('approved')
+
+  const groups: Record<TabId, Photo[]> = {
+    approved: photos.filter((p) => p.status === 'approved'),
+    pending: photos.filter((p) => p.status === 'pending'),
+    rejected: photos.filter((p) => p.status === 'rejected'),
+  }
+
+  const visiblePhotos = groups[activeTab]
+
   return (
     <div>
-      {/* Section Header */}
-      <div className={`flex items-center gap-3 mb-4 pb-3 border-b ${color}`}>
-        <span className="text-xl">{icon}</span>
-        <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-        <span className="ml-auto text-sm font-medium text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
-          {count}
-        </span>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 mb-6">
+        {TABS.map((tab) => {
+          const count = groups[tab.id].length
+          const isActive = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${
+                isActive
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                  isActive
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-500'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
-      {photos.length === 0 ? (
-        <p className="text-sm text-gray-400 italic py-4">{emptyText}</p>
+      {/* Tab Content */}
+      {visiblePhotos.length === 0 ? (
+        <p className="text-sm text-gray-400 italic py-6">
+          {TABS.find((t) => t.id === activeTab)?.emptyText}
+        </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {photos.map((photo) => (
+          {visiblePhotos.map((photo) => (
             <PhotoCard key={photo.id} photo={photo} />
           ))}
         </div>
       )}
-    </div>
-  )
-}
-
-export default function PhotoGrid({ photos }: { photos: Photo[] }) {
-  const approved = photos.filter((p) => p.status === 'approved')
-  const pending = photos.filter((p) => p.status === 'pending')
-  const rejected = photos.filter((p) => p.status === 'rejected')
-
-  return (
-    <div className="space-y-10">
-      <PhotoSection
-        title="Approved"
-        icon="✅"
-        count={approved.length}
-        color="border-green-200"
-        photos={approved}
-        emptyText="No approved photos yet."
-      />
-      <PhotoSection
-        title="Pending Review"
-        icon="🟡"
-        count={pending.length}
-        color="border-yellow-200"
-        photos={pending}
-        emptyText="No photos pending review."
-      />
-      <PhotoSection
-        title="Rejected"
-        icon="❌"
-        count={rejected.length}
-        color="border-red-200"
-        photos={rejected}
-        emptyText="No rejected photos."
-      />
     </div>
   )
 }
