@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 
 interface PhotoItem {
   id: string
   watchId: string
+  userId: string
   url: string
   caption?: string
   userName: string
@@ -310,7 +312,16 @@ function PhotoGalleryContent() {
                     </p>
                   )}
                   {ref && <p className="text-white/60 text-sm">Ref. {ref}</p>}
-                  <p className="text-white/50 text-xs">by {p.userName}</p>
+                  <p className="text-white/50 text-xs">
+                    by{' '}
+                    <Link
+                      href={`/profile/${p.userId}`}
+                      className="text-accent hover:text-accentHover transition-colors underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {p.userName}
+                    </Link>
+                  </p>
                 </div>
               )
             })()}

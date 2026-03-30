@@ -1,104 +1,165 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Container } from '@/components/ui/Container'
-import { Section } from '@/components/ui/Section'
-import type { ApprovedPhoto } from '@/lib/photos'
-import { watches } from '@/lib/watches'
+import type { Photo } from '@/lib/db/schema'
 
 interface ProfileClientProps {
+  watchId: string
+  photos: Photo[]
+  displayName: string
   userId: string
 }
 
-export function ProfileClient({ userId }: ProfileClientProps) {
-  const [photos, setPhotos] = useState<ApprovedPhoto[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export default function ProfileClient({ watchId, photos, displayName, userId }: ProfileClientProps) {
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
-  useEffect(() => {
-    loadPhotos()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId])
-
-  async function loadPhotos() {
-    setIsLoading(true)
-    try {
-      const res = await fetch(`/api/profile/${userId}/photos`)
-      const data = (await res.json()) as ApprovedPhoto[]
-      setPhotos(data)
-    } catch (error) {
-      console.error('Failed to load user photos:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  const handlePhotoClick = (index: number) => {
+    setSelectedIndex(index)
+    setLightboxOpen(true)
   }
 
-  function getWatchName(watchId: string): string {
-    const watch = watches.find((w) => w.slug === watchId)
-    return watch ? `${watch.brand} ${watch.name}` : watchId
-  }
+  // Extract watch details from the first photo (they're all the same watch)
+  const firstPhoto = photos[0]
+  const watchName = firstPhoto.brandName && firstPhoto.modelName
+    ? `${firstPhoto.brandName} ${firstPhoto.modelName}`
+    : `Watch (${watchId})`
+
+  const selectedPhoto = photos[selectedIndex]
 
   return (
-    <Section>
-      <Container>
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-textPrimary mb-2">Watch Collector</h1>
-          <p className="text-lg text-textSecond">
-            {photos.length} photo{photos.length !== 1 ? 's' : ''} uploaded
-          </p>
+    <>
+      <div
+        className="bg-surface border border-borderStrong rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+        onClick={() => handlePhotoClick(0)}
+      >
+        {/* Primary photo */}
+        <div className="relative aspect-square bg-neutral overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photos[0].url}
+            alt={watchName}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {photos.length > 1 && (
+            <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+              +{photos.length - 1} photo{photos.length > 2 ? 's' : ''}
+            </div>
+          )}
         </div>
 
-        {isLoading ? (
-          <div className="text-center py-16">
-            <div className="inline-block">
-              <div className="w-8 h-8 border-4 border-border border-t-accent rounded-full animate-spin" />
-            </div>
-            <p className="text-textSecond mt-4">Loading photos...</p>
-          </div>
-        ) : photos.length === 0 ? (
-          <div className="card p-12 text-center">
-            <div className="text-5xl mb-4">📷</div>
-            <h2 className="text-xl font-semibold text-textPrimary mb-2">No photos yet</h2>
-            <p className="text-textSecond mb-4">This user hasn&apos;t uploaded any photos yet.</p>
-            <Link href="/explore" className="btn-outline px-6 py-2">
-              Explore Other Photos
-            </Link>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {photos.map((photo) => {
-                const watchName = getWatchName(photo.watchId)
-                return (
-                  <div
-                    key={photo.id}
-                    className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors"
-                  >
-                    <Image
-                      src={photo.url}
-                      alt={photo.caption || watchName}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                    {/* Overlay with watch name */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                      <p className="text-white text-xs font-semibold truncate">{watchName}</p>
-                    </div>
-                  </div>
-                )
-              })}
+        {/* Card info */}
+        <div className="p-4">
+          <h3 className="font-semibold text-textPrimary mb-1 group-hover:text-accent transition-colors">
+            {watchName}
+          </h3>
+          <p className="text-xs text-textMuted">{photos.length} photo{photos.length !== 1 ? 's' : ''}</p>
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && selectedPhoto && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 text-white text-2xl bg-black/50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+
+          {/* Left arrow */}
+          {selectedIndex > 0 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1) }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
+              aria-label="Previous photo"
+            >
+              ←
+            </button>
+          )}
+
+          {/* Right arrow */}
+          {selectedIndex < photos.length - 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1) }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
+              aria-label="Next photo"
+            >
+              →
+            </button>
+          )}
+
+          {/* Main image + info */}
+          <div
+            className="flex flex-col items-center max-h-[90vh] max-w-[90vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={selectedPhoto.url}
+              alt={watchName}
+              style={{ maxHeight: '70vh', maxWidth: '90vw', width: 'auto', height: 'auto' }}
+            />
+
+            {/* Watch info */}
+            <div className="mt-2 text-center space-y-0.5">
+              {watchName && (
+                <p className="text-white font-semibold text-base leading-tight">
+                  {watchName}
+                </p>
+              )}
+              {selectedPhoto.referenceNumber && (
+                <p className="text-white/60 text-sm">Ref. {selectedPhoto.referenceNumber}</p>
+              )}
+              <p className="text-white/50 text-xs">
+                by{' '}
+                <Link
+                  href={`/profile/${userId}`}
+                  className="text-accent hover:text-accentHover transition-colors underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {displayName}
+                </Link>
+              </p>
             </div>
 
-            <div className="text-center mt-8">
-              <Link href="/explore" className="text-accent hover:text-accentDark transition-colors font-medium">
-                ← Back to all photos
-              </Link>
-            </div>
-          </>
-        )}
-      </Container>
-    </Section>
+            {/* Thumbnail strip */}
+            {photos.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto max-w-[90vw] pb-1">
+                {photos.map((thumb, thumbIdx) => (
+                  <button
+                    key={thumb.id}
+                    type="button"
+                    onClick={() => setSelectedIndex(thumbIdx)}
+                    className={`shrink-0 relative w-14 h-14 rounded overflow-hidden border-2 transition-colors ${
+                      thumbIdx === selectedIndex
+                        ? 'border-white'
+                        : 'border-transparent opacity-60 hover:opacity-90'
+                    }`}
+                    aria-label={`Photo ${thumbIdx + 1}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={thumb.url}
+                      alt={`Thumbnail ${thumbIdx + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }

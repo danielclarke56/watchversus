@@ -42,6 +42,14 @@ export default async function DashboardPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600 mt-2">Manage your watch photos and contributions to WatchVsWatch.</p>
+          <div className="mt-4">
+            <Link
+              href={`/profile/${userId}`}
+              className="text-blue-600 hover:text-blue-700 font-semibold underline transition-colors inline-block"
+            >
+              View your public profile →
+            </Link>
+          </div>
         </div>
 
         {/* My Uploads Section */}
