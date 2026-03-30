@@ -2,8 +2,24 @@
 
 import { useState } from 'react'
 import { Review } from '@/lib/reviews'
-import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
+import type { PendingPhoto, ApprovedPhoto, Photo } from '@/lib/photos'
 import Link from 'next/link'
+
+const EDIT_FIELDS: { key: keyof Photo; label: string }[] = [
+  { key: 'caption', label: 'Caption' },
+  { key: 'brandName', label: 'Brand' },
+  { key: 'modelName', label: 'Model' },
+  { key: 'referenceNumber', label: 'Reference #' },
+  { key: 'movement', label: 'Movement' },
+  { key: 'caseSize', label: 'Case Size' },
+  { key: 'wristSize', label: 'Wrist Size' },
+  { key: 'estimatedPrice', label: 'Est. Price' },
+  { key: 'productionYear', label: 'Year' },
+  { key: 'lugToLug', label: 'Lug-to-Lug' },
+  { key: 'betweenLugs', label: 'Between Lugs' },
+  { key: 'thickness', label: 'Thickness' },
+  { key: 'waterResistance', label: 'Water Resistance' },
+]
 
 interface AdminModerationProps {
   initialReviews: Review[]
@@ -21,6 +37,9 @@ export default function AdminReviewList({
   const [approvedPhotos, setApprovedPhotos] = useState<ApprovedPhoto[]>(initialApprovedPhotos)
   const [error, setError] = useState<string>('')
   const [processing, setProcessing] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editFields, setEditFields] = useState<Record<string, string>>({})
+  const [saving, setSaving] = useState(false)
 
   // ── Reviews ────────────────────────────────────────────────────────────────
 
@@ -95,6 +114,85 @@ export default function AdminReviewList({
     setProcessing(null)
   }
 
+  // ── Edit metadata ──────────────────────────────────────────────────────────
+
+  const openEdit = (photo: PendingPhoto | ApprovedPhoto) => {
+    const fields: Record<string, string> = {}
+    for (const { key } of EDIT_FIELDS) {
+      fields[key] = (photo[key] as string | null | undefined) ?? ''
+    }
+    setEditingId(photo.id)
+    setEditFields(fields)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditFields({})
+  }
+
+  const saveEdit = async (photoId: string) => {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/photos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoId, fields: editFields }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to save')
+      }
+      // Update local state
+      const patch = { ...editFields } as Partial<Photo>
+      setPendingPhotos((prev) =>
+        prev.map((p) => (p.id === photoId ? { ...p, ...patch } : p))
+      )
+      setApprovedPhotos((prev) =>
+        prev.map((p) => (p.id === photoId ? { ...p, ...patch } : p))
+      )
+      setEditingId(null)
+      setEditFields({})
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Save failed')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const EditPanel = ({ photoId }: { photoId: string }) => (
+    <div className="bg-gray-50 border border-gray-200 rounded p-3 mt-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {EDIT_FIELDS.map(({ key, label }) => (
+          <label key={key} className="flex flex-col text-xs text-gray-600">
+            {label}
+            <input
+              type="text"
+              value={editFields[key] ?? ''}
+              onChange={(e) => setEditFields((prev) => ({ ...prev, [key]: e.target.value }))}
+              className="mt-0.5 text-sm px-2 py-1 rounded border border-gray-300 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            />
+          </label>
+        ))}
+      </div>
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={() => saveEdit(photoId)}
+          disabled={saving}
+          className="bg-blue-600 text-white px-4 py-1 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+        <button
+          onClick={cancelEdit}
+          disabled={saving}
+          className="bg-gray-200 text-gray-700 px-4 py-1 rounded text-sm font-medium hover:bg-gray-300 disabled:opacity-50 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -129,34 +227,43 @@ export default function AdminReviewList({
           ) : (
             <div className="space-y-4">
               {pendingPhotos.map((photo) => (
-                <div key={photo.id} className="bg-white rounded-lg border border-gray-200 p-4 flex gap-4 items-start">
-                  <div className="shrink-0 w-32 h-32 bg-gray-100 rounded overflow-hidden border border-gray-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={photo.url} alt="Pending submission" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900">{photo.watchId}</p>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      By {photo.userName} · {new Date(photo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                    {photo.caption && <p className="text-sm text-gray-700 mt-2 italic">&ldquo;{photo.caption}&rdquo;</p>}
-                    <div className="flex gap-2 mt-3">
-                      <button
-                        onClick={() => handlePhotoAction('approve', photo)}
-                        disabled={processing === photo.id}
-                        className="bg-green-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
-                      >
-                        {processing === photo.id ? 'Processing…' : 'Approve'}
-                      </button>
-                      <button
-                        onClick={() => handlePhotoAction('delete', photo)}
-                        disabled={processing === photo.id}
-                        className="bg-red-500 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
-                      >
-                        {processing === photo.id ? 'Processing…' : 'Reject'}
-                      </button>
+                <div key={photo.id} className="bg-white rounded-lg border border-gray-200 p-4">
+                  <div className="flex gap-4 items-start">
+                    <div className="shrink-0 w-32 h-32 bg-gray-100 rounded overflow-hidden border border-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={photo.url} alt="Pending submission" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900">{photo.watchId}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">
+                        By {photo.userName} · {new Date(photo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      {photo.caption && <p className="text-sm text-gray-700 mt-2 italic">&ldquo;{photo.caption}&rdquo;</p>}
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => handlePhotoAction('approve', photo)}
+                          disabled={processing === photo.id}
+                          className="bg-green-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                        >
+                          {processing === photo.id ? 'Processing…' : 'Approve'}
+                        </button>
+                        <button
+                          onClick={() => handlePhotoAction('delete', photo)}
+                          disabled={processing === photo.id}
+                          className="bg-red-500 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
+                        >
+                          {processing === photo.id ? 'Processing…' : 'Reject'}
+                        </button>
+                        <button
+                          onClick={() => editingId === photo.id ? cancelEdit() : openEdit(photo)}
+                          className="bg-gray-100 text-gray-700 px-4 py-1.5 rounded text-sm font-medium hover:bg-gray-200 transition-colors border border-gray-300"
+                        >
+                          {editingId === photo.id ? 'Close' : 'Edit'}
+                        </button>
+                      </div>
                     </div>
                   </div>
+                  {editingId === photo.id && <EditPanel photoId={photo.id} />}
                 </div>
               ))}
             </div>
@@ -241,13 +348,22 @@ export default function AdminReviewList({
                   <p className="text-xs font-semibold text-gray-900 truncate">{photo.watchId}</p>
                   <p className="text-xs text-gray-500 truncate">By {photo.userName}</p>
                   <p className="text-xs text-gray-400">{new Date(photo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                  <button
-                    onClick={() => handleDeleteApproved(photo)}
-                    disabled={processing === photo.id}
-                    className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-medium hover:bg-red-600 disabled:opacity-50 transition-colors w-full"
-                  >
-                    {processing === photo.id ? 'Deleting…' : 'Delete'}
-                  </button>
+                  <div className="flex gap-1 mt-2">
+                    <button
+                      onClick={() => editingId === photo.id ? cancelEdit() : openEdit(photo)}
+                      className="flex-1 bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs font-medium hover:bg-gray-200 transition-colors border border-gray-300"
+                    >
+                      {editingId === photo.id ? 'Close' : 'Edit'}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteApproved(photo)}
+                      disabled={processing === photo.id}
+                      className="flex-1 bg-red-500 text-white px-3 py-1 rounded text-xs font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
+                    >
+                      {processing === photo.id ? 'Deleting…' : 'Delete'}
+                    </button>
+                  </div>
+                  {editingId === photo.id && <EditPanel photoId={photo.id} />}
                 </div>
               ))}
             </div>

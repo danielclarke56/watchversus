@@ -32,6 +32,18 @@ export async function GET(req: NextRequest) {
       userName: p.userName,
       url: p.url,
       caption: p.caption,
+      brandName: p.brandName,
+      modelName: p.modelName,
+      referenceNumber: p.referenceNumber,
+      movement: p.movement,
+      caseSize: p.caseSize,
+      wristSize: p.wristSize,
+      estimatedPrice: p.estimatedPrice,
+      productionYear: p.productionYear,
+      lugToLug: p.lugToLug,
+      betweenLugs: p.betweenLugs,
+      thickness: p.thickness,
+      waterResistance: p.waterResistance,
       createdAt: p.createdAt.toISOString(),
       approved: status === 'approved',
     }))
@@ -113,5 +125,66 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error processing photo action:', error)
     return NextResponse.json({ error: 'Failed to process photo' }, { status: 500 })
+  }
+}
+
+/** PATCH /api/admin/photos — update metadata fields on a photo */
+export async function PATCH(req: NextRequest) {
+  const { userId } = await auth()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  const body = (await req.json()) as {
+    photoId: string
+    fields: Record<string, string | undefined>
+  }
+  const { photoId, fields } = body
+
+  if (!photoId || !fields || typeof fields !== 'object') {
+    return NextResponse.json({ error: 'Missing photoId or fields' }, { status: 400 })
+  }
+
+  // Allowlist of editable columns
+  const allowedKeys: Record<string, keyof typeof photos> = {
+    caption: 'caption',
+    brandName: 'brandName',
+    modelName: 'modelName',
+    referenceNumber: 'referenceNumber',
+    movement: 'movement',
+    caseSize: 'caseSize',
+    wristSize: 'wristSize',
+    estimatedPrice: 'estimatedPrice',
+    productionYear: 'productionYear',
+    lugToLug: 'lugToLug',
+    betweenLugs: 'betweenLugs',
+    thickness: 'thickness',
+    waterResistance: 'waterResistance',
+  }
+
+  // Build the set object with only allowed, provided fields
+  const updates: Record<string, string> = {}
+  for (const [key, value] of Object.entries(fields)) {
+    if (allowedKeys[key] && typeof value === 'string') {
+      updates[key] = value
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
+  }
+
+  try {
+    // Verify photo exists
+    const existing = await db.select({ id: photos.id }).from(photos).where(eq(photos.id, photoId)).limit(1)
+    if (!existing || existing.length === 0) {
+      return NextResponse.json({ error: 'Photo not found' }, { status: 404 })
+    }
+
+    await db.update(photos).set(updates).where(eq(photos.id, photoId))
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error updating photo metadata:', error)
+    return NextResponse.json({ error: 'Failed to update photo' }, { status: 500 })
   }
 }
