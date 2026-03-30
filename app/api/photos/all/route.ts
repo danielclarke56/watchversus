@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { photos: result, nextCursor },
-      { headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=300' } }
+      { headers: { 'Cache-Control': 'no-store' } }
     )
   } catch (error) {
     console.error('[/api/photos/all] Query failed:', error)
