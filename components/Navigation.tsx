@@ -23,10 +23,10 @@ const ClerkAuth = clerkEnabled
               <SignedIn>
                 <div className="flex items-center gap-4">
                   <Link
-                    href="/my-uploads"
+                    href="/dashboard"
                     className="text-sm text-textSecond hover:text-accent transition-colors font-medium"
                   >
-                    My Uploads
+                    Dashboard
                   </Link>
                   <UserButton appearance={avatarSize ? { elements: { avatarBox: avatarSize } } : undefined} />
                 </div>
