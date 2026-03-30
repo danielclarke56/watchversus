@@ -623,14 +623,19 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Brand <span className="text-red-400">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={brandName}
-                      onChange={(e) => setBrandName(e.target.value)}
-                      placeholder="e.g. Rolex, Omega, Seiko"
-                      maxLength={80}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={brandName}
+                        onChange={(e) => setBrandName(e.target.value)}
+                        placeholder="e.g. Rolex, Omega, Seiko"
+                        maxLength={80}
+                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && brandName ? ' pr-8' : ''}`}
+                      />
+                      {aiIdentified && brandName && (
+                        <button type="button" onClick={() => setBrandName('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Model name */}
@@ -638,14 +643,19 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Model <span className="text-red-400">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={modelName}
-                      onChange={(e) => setModelName(e.target.value)}
-                      placeholder="e.g. Submariner, Speedmaster, SKX007"
-                      maxLength={100}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={modelName}
+                        onChange={(e) => setModelName(e.target.value)}
+                        placeholder="e.g. Submariner, Speedmaster, SKX007"
+                        maxLength={100}
+                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && modelName ? ' pr-8' : ''}`}
+                      />
+                      {aiIdentified && modelName && (
+                        <button type="button" onClick={() => setModelName('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Reference number */}
@@ -653,14 +663,19 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Reference number <span className="text-textMuted">(optional)</span>
                     </label>
-                    <input
-                      type="text"
-                      value={referenceNumber}
-                      onChange={(e) => setReferenceNumber(e.target.value)}
-                      placeholder="e.g. 126610LN, 311.30.42.30.01.005"
-                      maxLength={60}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={referenceNumber}
+                        onChange={(e) => setReferenceNumber(e.target.value)}
+                        placeholder="e.g. 126610LN, 311.30.42.30.01.005"
+                        maxLength={60}
+                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && referenceNumber ? ' pr-8' : ''}`}
+                      />
+                      {aiIdentified && referenceNumber && (
+                        <button type="button" onClick={() => setReferenceNumber('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Movement */}
@@ -668,16 +683,21 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Movement <span className="text-textMuted">(optional)</span>
                     </label>
-                    <select
-                      value={movement}
-                      onChange={(e) => setMovement(e.target.value)}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                    >
-                      <option value="">Select movement</option>
-                      {MOVEMENT_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={movement}
+                        onChange={(e) => setMovement(e.target.value)}
+                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
+                      >
+                        <option value="">Select movement</option>
+                        {MOVEMENT_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      {aiIdentified && movement && (
+                        <button type="button" onClick={() => setMovement('')} className="absolute right-8 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Case dimensions — 2-column grid */}
@@ -686,14 +706,19 @@ export default function UploadClient() {
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Case size <span className="text-textMuted">(optional)</span>
                       </label>
-                      <input
-                        type="text"
-                        value={caseSize}
-                        onChange={(e) => setCaseSize(e.target.value)}
-                        placeholder="e.g. 40mm"
-                        maxLength={20}
-                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={caseSize}
+                          onChange={(e) => setCaseSize(e.target.value)}
+                          placeholder="e.g. 40mm"
+                          maxLength={20}
+                          className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && caseSize ? ' pr-8' : ''}`}
+                        />
+                        {aiIdentified && caseSize && (
+                          <button type="button" onClick={() => setCaseSize('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-textSecond mb-2">
