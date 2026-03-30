@@ -21,7 +21,15 @@ const ClerkAuth = clerkEnabled
                 </SignInButton>
               </SignedOut>
               <SignedIn>
-                <UserButton appearance={avatarSize ? { elements: { avatarBox: avatarSize } } : undefined} />
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/my-uploads"
+                    className="text-sm text-textSecond hover:text-accent transition-colors font-medium"
+                  >
+                    My Uploads
+                  </Link>
+                  <UserButton appearance={avatarSize ? { elements: { avatarBox: avatarSize } } : undefined} />
+                </div>
               </SignedIn>
             </>
           ),
