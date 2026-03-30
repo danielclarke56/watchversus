@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import Link from 'next/link'
 import PhotoGrid from './PhotoGrid'
 
@@ -28,15 +28,12 @@ export default async function DashboardPage() {
     redirect('/sign-in')
   }
 
-  // Fetch all photos for the current user, ordered by createdAt DESC
-  const userPhotos = await db
+  // Fetch all photos for the current user, most recent first
+  const sortedPhotos = await db
     .select()
     .from(photos)
     .where(eq(photos.userId, userId))
-    .orderBy((p) => p.createdAt)
-
-  // Reverse to get descending order (most recent first)
-  const sortedPhotos = userPhotos.reverse()
+    .orderBy(desc(photos.createdAt))
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
