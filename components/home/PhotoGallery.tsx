@@ -32,14 +32,22 @@ interface WatchGroup {
 
 const PAGE_SIZE = 20
 
-// Group flat photos list into per-watchId groups, preserving insertion order
+// Group flat photos list into per-watchId groups.
+// photos[0] = first ever uploaded (oldest) → used as the primary card thumbnail.
+// Slideshow order is newest-first (reversed array).
 function groupByWatch(photos: PhotoItem[]): WatchGroup[] {
   const map = new Map<string, PhotoItem[]>()
   for (const photo of photos) {
     if (!map.has(photo.watchId)) map.set(photo.watchId, [])
     map.get(photo.watchId)!.push(photo)
   }
-  return Array.from(map.entries()).map(([watchId, photos]) => ({ watchId, photos }))
+  return Array.from(map.entries()).map(([watchId, photos]) => ({
+    watchId,
+    // Sort ascending so index 0 = first uploaded (primary card image)
+    photos: [...photos].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    ),
+  }))
 }
 
 function getWatchLabel(group: WatchGroup) {
@@ -121,6 +129,7 @@ function PhotoGalleryContent() {
       const group = groups[lightbox.groupIdx]
       if (!group) return
 
+      const displayLen = group.photos.length
       if (e.key === 'Escape') {
         setLightbox(null)
       } else if (e.key === 'ArrowLeft') {
@@ -128,7 +137,7 @@ function PhotoGalleryContent() {
           setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx - 1 })
         }
       } else if (e.key === 'ArrowRight') {
-        if (lightbox.photoIdx < group.photos.length - 1) {
+        if (lightbox.photoIdx < displayLen - 1) {
           setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx + 1 })
         }
       }
@@ -147,7 +156,9 @@ function PhotoGalleryContent() {
     : null
 
   const activeLightboxGroup = lightbox !== null ? groups[lightbox.groupIdx] : null
-  const activeLightboxPhoto = activeLightboxGroup ? activeLightboxGroup.photos[lightbox!.photoIdx] : null
+  // Slideshow shows newest-first (reversed from the ascending-sorted group.photos)
+  const activeLightboxPhotos = activeLightboxGroup ? [...activeLightboxGroup.photos].reverse() : []
+  const activeLightboxPhoto = activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -263,7 +274,7 @@ function PhotoGalleryContent() {
           )}
 
           {/* Right arrow */}
-          {lightbox.photoIdx < activeLightboxGroup.photos.length - 1 && (
+          {lightbox.photoIdx < activeLightboxPhotos.length - 1 && (
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); setLightbox({ ...lightbox, photoIdx: lightbox.photoIdx + 1 }) }}
@@ -307,10 +318,10 @@ function PhotoGalleryContent() {
               )
             })()}
 
-            {/* Thumbnail strip — only shown when multiple photos */}
-            {activeLightboxGroup.photos.length > 1 && (
+            {/* Thumbnail strip — only shown when multiple photos; newest left */}
+            {activeLightboxPhotos.length > 1 && (
               <div className="mt-3 flex gap-2 overflow-x-auto max-w-[90vw] pb-1">
-                {activeLightboxGroup.photos.map((thumb, thumbIdx) => (
+                {activeLightboxPhotos.map((thumb, thumbIdx) => (
                   <button
                     key={thumb.id}
                     type="button"
