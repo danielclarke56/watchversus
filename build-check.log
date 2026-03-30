@@ -40,8 +40,9 @@
    Linting and checking validity of types ...
    Collecting page data ...
  ΓÜá Using edge runtime on a page currently disables static generation for that page
-   Generating static pages (0/45) ...
-[2026-03-28T01:00:44.796Z] Fetching GSC metrics for watchvswatch.com...
+   Generating static pages (0/46) ...
+[2026-03-29T16:01:50.328Z] Fetching Core Web Vitals for watchvswatch.com...
+[2026-03-29T16:01:50.331Z] Fetching GSC metrics for watchvswatch.com...
 GSC metrics: GOOGLE_SERVICE_ACCOUNT_JSON not configured. Skipping GSC fetch.
 Error fetching pending reviews: n [Error]: Dynamic server usage: Route /api/admin/reviews couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at l (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\.next\server\chunks\8948.js:1:56329)
@@ -57,36 +58,24 @@ Error fetching pending reviews: n [Error]: Dynamic server usage: Route /api/admi
   description: "Route /api/admin/reviews couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
-[2026-03-28T01:00:44.797Z] Fetching Core Web Vitals for watchvswatch.com...
 Γ£à Core Web Vitals recorded:
   LCP: N/A ΓÜá∩╕Å
   FID: N/A ΓÜá∩╕Å
   CLS: N/A ΓÜá∩╕Å
   Status: HEALTHY
-Error fetching watches with photos: Error: DATABASE_URL environment variable is not set
-    at C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\.next\server\app\api\photos\[watchId]\route.js:1:6260
-    at Object.get (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\.next\server\app\api\photos\[watchId]\route.js:1:6347)
-    at l (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\.next\server\app\api\photos\watches\route.js:1:593)
-    at C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
-    at C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\next\dist\server\lib\trace\tracer.js:140:36
-    at NoopContextManager.with (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\@opentelemetry\api\build\src\context\NoopContextManager.js:25:19)
-    at ContextAPI.with (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\@opentelemetry\api\build\src\api\context.js:60:46)
-    at NoopTracer.startActiveSpan (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\@opentelemetry\api\build\src\trace\NoopTracer.js:65:31)
-    at ProxyTracer.startActiveSpan (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\@opentelemetry\api\build\src\trace\ProxyTracer.js:36:24)
-    at C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\node_modules\next\dist\server\lib\trace\tracer.js:122:103
-   Generating static pages (11/45) 
-   Generating static pages (22/45) 
-   Generating static pages (33/45) 
- Γ£ô Generating static pages (45/45)
+   Generating static pages (11/46) 
+   Generating static pages (22/46) 
+   Generating static pages (34/46) 
+ Γ£ô Generating static pages (46/46)
    Finalizing page optimization ...
    Collecting build traces ...
 
 Route (app)                              Size     First Load JS
 Γöî Γùï /                                    3.91 kB         105 kB
-Γö£ Γùï /_not-found                          141 B          87.5 kB
+Γö£ Γùï /_not-found                          141 B          87.6 kB
 Γö£ Γùï /about                               183 B          96.3 kB
 Γö£ Γùï /admin                               1.33 kB         128 kB
-Γö£ ╞Æ /admin/photos                        1.67 kB        89.1 kB
+Γö£ ╞Æ /admin/photos                        1.91 kB        89.3 kB
 Γö£ ╞Æ /admin/reviews                       2.11 kB        98.2 kB
 Γö£ ╞Æ /api/admin/photos                    0 B                0 B
 Γö£ ╞Æ /api/admin/reviews                   0 B                0 B
@@ -97,7 +86,7 @@ Route (app)                              Size     First Load JS
 Γö£ ╞Æ /api/photos/[watchId]                0 B                0 B
 Γö£ ╞Æ /api/photos/all                      0 B                0 B
 Γö£ ╞Æ /api/photos/identify                 0 B                0 B
-Γö£ ╞Æ /api/photos/watches                  0 B                0 B
+Γö£ Γùï /api/photos/watches                  0 B                0 B
 Γö£ ╞Æ /api/profile/[userId]/photos         0 B                0 B
 Γö£ ╞Æ /api/quiz/subscribe                  0 B                0 B
 Γö£ ╞Æ /api/reviews                         0 B                0 B
@@ -112,7 +101,7 @@ Route (app)                              Size     First Load JS
 Γö£   Γö£ /guides/best-watches-under-1000
 Γö£   Γö£ /guides/best-dive-watches
 Γö£   Γöö [+13 more paths]
-Γö£ ╞Æ /icon                                0 B                0 B
+Γö£ Γùï /icon.png                            0 B                0 B
 Γö£ Γùï /llms.txt                            0 B                0 B
 Γö£ Γùï /privacy                             183 B          96.3 kB
 Γö£ ╞Æ /profile/[userId]                    1.5 kB          134 kB
@@ -122,7 +111,7 @@ Route (app)                              Size     First Load JS
 Γö£ ╞Æ /sign-up/[[...sign-up]]              590 B           129 kB
 Γö£ Γùï /sitemap.xml                         0 B                0 B
 Γö£ Γùï /terms                               183 B          96.3 kB
-Γöö Γùï /upload                              5.07 kB         163 kB
+Γöö Γùï /upload                              9.43 kB         167 kB
 + First Load JS shared by all            87.4 kB
   Γö£ chunks/117-c399adbd0aeec0d1.js       31.7 kB
   Γö£ chunks/fd9d1056-e0c7adc66883ed60.js  53.6 kB

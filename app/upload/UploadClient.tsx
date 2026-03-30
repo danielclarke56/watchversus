@@ -567,9 +567,7 @@ export default function UploadClient() {
             <div className="space-y-6">
               {/* Helper text when no photo uploaded */}
               {files.length === 0 && (
-                <div className="text-center p-6 bg-surface border border-borderStrong rounded-lg">
-                  <p className="text-textMuted text-sm">📷 Upload a photo to continue</p>
-                </div>
+                <p className="text-textMuted text-xs text-center">📷 Upload a photo to continue</p>
               )}
 
               {/* AI Identification Results */}
