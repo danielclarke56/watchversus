@@ -275,19 +275,19 @@ function PhotoGalleryContent() {
             />
 
             {/* Watch info below image */}
-            {(photos[lightboxIndex].watchReference || photos[lightboxIndex].caption || photos[lightboxIndex].userName) && (
-              <div className="mt-3 flex items-center gap-3 text-sm flex-wrap justify-center">
-                {photos[lightboxIndex].watchReference && (
-                  <span className="text-white/70">Ref. {photos[lightboxIndex].watchReference}</span>
-                )}
-                {photos[lightboxIndex].caption && (
-                  <span className="text-white/80 italic">{photos[lightboxIndex].caption}</span>
-                )}
-                {photos[lightboxIndex].userName && (
-                  <span className="text-white/50">by {photos[lightboxIndex].userName}</span>
-                )}
-              </div>
-            )}
+            <div className="mt-3 flex items-center gap-3 text-sm flex-wrap justify-center">
+              {(photos[lightboxIndex].watchBrand || photos[lightboxIndex].watchName) && (
+                <span className="text-white font-semibold">
+                  {[photos[lightboxIndex].watchBrand, photos[lightboxIndex].watchName].filter(Boolean).join(' ')}
+                </span>
+              )}
+              {photos[lightboxIndex].watchReference && (
+                <span className="text-white/60">Ref. {photos[lightboxIndex].watchReference}</span>
+              )}
+              {photos[lightboxIndex].caption && (
+                <span className="text-white/70 italic">{photos[lightboxIndex].caption}</span>
+              )}
+            </div>
           </div>
         </div>
       )}
