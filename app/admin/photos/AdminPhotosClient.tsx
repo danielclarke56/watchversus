@@ -52,16 +52,16 @@ function FieldInput({
 }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <label className="text-xs text-textMuted font-medium uppercase tracking-wide">{label}</label>
+      <label className="text-[10px] text-textMuted font-medium uppercase tracking-wide">{label}</label>
       <div className="flex items-center gap-1">
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full text-sm border border-border rounded px-2 py-1 bg-surface text-textPrimary focus:outline-none focus:ring-1 focus:ring-blue-400"
+          className="w-full text-xs border border-border rounded px-1.5 py-1 bg-surface text-textPrimary focus:outline-none focus:ring-1 focus:ring-blue-400"
           placeholder="—"
         />
-        {unit && <span className="text-xs text-textMuted shrink-0">{unit}</span>}
+        {unit && <span className="text-[10px] text-textMuted shrink-0">{unit}</span>}
       </div>
     </div>
   )
@@ -94,98 +94,114 @@ function PhotoCard({
   isApproved: boolean
   onDelete?: () => void
 }) {
+  const [expanded, setExpanded] = useState(false)
+
+  const displayName = [fields.brandName, fields.modelName].filter(Boolean).join(' ') || photo.watchId
+
   return (
-    <div className="card p-5 border border-border rounded-lg">
-      <div className="flex gap-5 items-start">
-        {/* Photo */}
-        <div className="shrink-0 w-40 h-40 bg-surfaceAlt rounded overflow-hidden border border-border">
+    <div className="border border-border rounded-lg overflow-hidden bg-surface">
+      {/* Compact row */}
+      <div className="flex gap-3 items-center p-3">
+        {/* Thumb */}
+        <div className="shrink-0 w-14 h-14 bg-surfaceAlt rounded overflow-hidden border border-border">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photo.url} alt="Submission" className="w-full h-full object-cover" />
         </div>
 
-        {/* Content */}
+        {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <p className="text-sm font-semibold text-textPrimary">{photo.watchId}</p>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <p className="text-sm font-semibold text-textPrimary truncate">{displayName}</p>
+            {fields.referenceNumber && (
+              <span className="text-xs text-textMuted">· {fields.referenceNumber}</span>
+            )}
             {aiFlag === 'checking' && (
-              <span className="text-xs text-textMuted">🔍 AI check...</span>
+              <span className="text-[10px] text-textMuted bg-gray-100 px-1.5 py-0.5 rounded">AI check...</span>
             )}
             {aiFlag === true && (
-              <span className="text-xs text-red-600 font-medium">🤖 AI-generated detected</span>
+              <span className="text-[10px] text-red-600 font-semibold bg-red-50 px-1.5 py-0.5 rounded">🤖 AI detected</span>
             )}
           </div>
-          <p className="text-xs text-textMuted mb-3">
-            By {photo.userName} ·{' '}
+          <p className="text-xs text-textMuted mt-0.5">
+            {photo.userName} ·{' '}
             {new Date(photo.createdAt).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
+              month: 'short', day: 'numeric', year: 'numeric',
             })}
           </p>
+        </div>
 
-          {/* Editable Fields */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
+        {/* Action buttons */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => setExpanded((e) => !e)}
+            className="text-xs px-2.5 py-1.5 rounded border border-border text-textMuted hover:text-textPrimary hover:border-gray-400 transition-colors"
+          >
+            {expanded ? 'Close' : 'Edit'}
+          </button>
+          {!isApproved && onApprove && (
+            <button
+              onClick={onApprove}
+              disabled={acting === photo.id || saving === photo.id}
+              className="text-xs bg-green-600 text-white px-2.5 py-1.5 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              Approve
+            </button>
+          )}
+          {!isApproved && onReject && (
+            <button
+              onClick={onReject}
+              disabled={acting === photo.id || saving === photo.id}
+              className="text-xs bg-red-500 text-white px-2.5 py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+            >
+              Reject
+            </button>
+          )}
+          {isApproved && onDelete && (
+            <button
+              onClick={onDelete}
+              disabled={acting === photo.id}
+              className="text-xs bg-red-500 text-white px-2.5 py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+            >
+              {acting === photo.id ? '...' : 'Delete'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Expanded edit panel */}
+      {expanded && (
+        <div className="border-t border-border bg-surfaceAlt px-3 py-3">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             <FieldInput label="Brand" value={fields.brandName} onChange={(v) => onUpdateField('brandName', v)} />
             <FieldInput label="Model" value={fields.modelName} onChange={(v) => onUpdateField('modelName', v)} />
             <FieldInput label="Reference No." value={fields.referenceNumber} onChange={(v) => onUpdateField('referenceNumber', v)} />
             <FieldInput label="Movement" value={fields.movement} onChange={(v) => onUpdateField('movement', v)} />
             <FieldInput label="Case Size" value={fields.caseSize} onChange={(v) => onUpdateField('caseSize', v)} unit="mm" />
             <FieldInput label="Wrist Size" value={fields.wristSize} onChange={(v) => onUpdateField('wristSize', v)} unit="mm" />
-            <FieldInput label="Production Year" value={fields.productionYear} onChange={(v) => onUpdateField('productionYear', v)} />
+            <FieldInput label="Year" value={fields.productionYear} onChange={(v) => onUpdateField('productionYear', v)} />
             <FieldInput label="Est. Price" value={fields.estimatedPrice} onChange={(v) => onUpdateField('estimatedPrice', v)} unit="USD" />
             <FieldInput label="Lug-to-Lug" value={fields.lugToLug} onChange={(v) => onUpdateField('lugToLug', v)} unit="mm" />
             <FieldInput label="Between Lugs" value={fields.betweenLugs} onChange={(v) => onUpdateField('betweenLugs', v)} unit="mm" />
             <FieldInput label="Thickness" value={fields.thickness} onChange={(v) => onUpdateField('thickness', v)} unit="mm" />
-            <FieldInput label="Water Resistance" value={fields.waterResistance} onChange={(v) => onUpdateField('waterResistance', v)} unit="m" />
+            <FieldInput label="Water Resist." value={fields.waterResistance} onChange={(v) => onUpdateField('waterResistance', v)} unit="m" />
           </div>
-          <div className="mb-4">
+          <div className="mb-2">
             <FieldInput label="Caption" value={fields.caption} onChange={(v) => onUpdateField('caption', v)} />
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 mt-2">
             <button
               onClick={onSave}
               disabled={saving === photo.id || acting === photo.id}
-              className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              {saving === photo.id ? 'Saving...' : 'Save Edits'}
+              {saving === photo.id ? 'Saving...' : 'Save'}
             </button>
             {savedOk === photo.id && (
               <span className="text-xs text-green-600 font-medium">✓ Saved</span>
             )}
-            {!isApproved && onApprove && (
-              <button
-                onClick={onApprove}
-                disabled={acting === photo.id || saving === photo.id}
-                className="bg-green-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
-              >
-                Approve
-              </button>
-            )}
-            {!isApproved && onReject && (
-              <button
-                onClick={onReject}
-                disabled={acting === photo.id || saving === photo.id}
-                className="bg-red-500 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-              >
-                Reject
-              </button>
-            )}
-            {isApproved && onDelete && (
-              <button
-                onClick={onDelete}
-                disabled={acting === photo.id}
-                className="bg-red-500 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-              >
-                {acting === photo.id ? 'Deleting...' : 'Delete'}
-              </button>
-            )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -226,7 +242,6 @@ export default function AdminPhotosClient() {
           pendingData.forEach((p) => { initialEdits[p.id] = photoToEditable(p) })
           setEditState((prev) => ({ ...prev, ...initialEdits }))
 
-          // AI detection per pending photo
           pendingData.forEach((photo) => {
             ;(async () => {
               setAiFlags((prev) => ({ ...prev, [photo.id]: 'checking' }))
@@ -322,17 +337,17 @@ export default function AdminPhotosClient() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-border mb-6">
+      <div className="flex border-b border-border mb-5">
         <button
           onClick={() => setActiveTab('pending')}
           className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
@@ -369,16 +384,15 @@ export default function AdminPhotosClient() {
         <p className="text-textMuted text-sm">Loading...</p>
       ) : (
         <>
-          {/* Pending Tab */}
           {activeTab === 'pending' && (
             <>
               {pendingPhotos.length === 0 ? (
-                <div className="card p-12 text-center">
+                <div className="py-16 text-center">
                   <p className="text-textSecond text-lg mb-1">All clear ✓</p>
                   <p className="text-textMuted text-sm">No photos pending review.</p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-2">
                   {pendingPhotos.map((photo) => {
                     const fields = editState[photo.id]
                     if (!fields) return null
@@ -404,15 +418,14 @@ export default function AdminPhotosClient() {
             </>
           )}
 
-          {/* Approved Tab */}
           {activeTab === 'approved' && (
             <>
               {approvedPhotos.length === 0 ? (
-                <div className="card p-12 text-center">
+                <div className="py-16 text-center">
                   <p className="text-textSecond">No approved photos yet.</p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-2">
                   {approvedPhotos.map((photo) => {
                     const fields = editState[photo.id]
                     if (!fields) return null
