@@ -178,8 +178,8 @@ export default function UploadClient() {
       setError('File must be under 20MB')
       return
     }
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
-      setError('Only JPEG, PNG, or WebP images are allowed')
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
+      setError('Only JPEG, PNG, WebP, or AVIF images are allowed')
       return
     }
     setError('')
@@ -335,8 +335,8 @@ export default function UploadClient() {
       setError('File must be under 20MB')
       return
     }
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
-      setError('Only JPEG, PNG, or WebP images are allowed')
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
+      setError('Only JPEG, PNG, WebP, or AVIF images are allowed')
       return
     }
     setError('')
@@ -565,7 +565,7 @@ export default function UploadClient() {
                     <p className="text-textMuted mb-1">
                       {compressing ? 'Optimising image...' : isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
                     </p>
-                    <p className="text-textMuted text-sm">JPEG, PNG, or WebP &middot; Up to 20MB</p>
+                    <p className="text-textMuted text-sm">JPEG, PNG, WebP, or AVIF &middot; Up to 20MB</p>
                   </div>
                 ) : files.length < MAX_PHOTOS ? (
                   <button
@@ -583,7 +583,7 @@ export default function UploadClient() {
                 <input
                   ref={fileRef}
                   type="file"
-                  accept="image/jpeg,image/png,image/webp"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
                   onChange={handleFileInput}
                   className="hidden"
                 />
