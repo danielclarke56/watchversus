@@ -24,7 +24,7 @@ const ClerkAuth = clerkEnabled
                 <div className="flex items-center gap-4">
                   <Link
                     href="/dashboard"
-                    className="text-sm text-textSecond hover:text-accent transition-colors font-medium"
+                    className="hidden sm:inline text-sm text-textSecond hover:text-accent transition-colors font-medium"
                   >
                     Dashboard
                   </Link>
@@ -41,8 +41,8 @@ const ClerkAuth = clerkEnabled
 
 export default function Navigation() {
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border drop-shadow-sm">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border drop-shadow-sm overflow-x-hidden">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center">
@@ -56,7 +56,8 @@ export default function Navigation() {
             href="/upload"
             className="btn-gold text-xs px-4 py-2 rounded-md font-semibold"
           >
-            Upload a Photo
+            <span className="sm:hidden">Upload</span>
+            <span className="hidden sm:inline">Upload a Photo</span>
           </Link>
           <ClerkAuth avatarSize="w-8 h-8" />
         </div>
