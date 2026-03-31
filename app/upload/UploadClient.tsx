@@ -415,45 +415,45 @@ export default function UploadClient() {
 
   return (
     <main className="min-h-screen bg-surfaceAlt text-textPrimary">
-      <div className="max-w-[80rem] mx-auto px-4 py-16">
-        <Link href="/" className="text-sm text-textMuted hover:text-textPrimary mb-8 inline-block">
+      <div className="max-w-[80rem] mx-auto px-4 py-8 sm:py-16">
+        <Link href="/" className="text-xs sm:text-sm text-textMuted hover:text-textPrimary mb-6 sm:mb-8 inline-block">
           &larr; Back to home
         </Link>
 
-        <h1 className="text-3xl font-bold mb-2">Upload Your Watch Photo</h1>
-        <p className="text-textMuted mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Upload Your Watch Photo</h1>
+        <p className="text-textMuted mb-8 text-sm sm:text-base">
           Share a real wrist shot. Help others see how this watch looks in real life.
         </p>
 
         {!isSignedIn ? (
-          <div className="bg-surface border border-borderStrong rounded-xl p-8 text-center shadow-sm">
-            <p className="text-textSecond mb-4">Sign in to upload your watch photos</p>
+          <div className="bg-surface border border-borderStrong rounded-xl p-6 sm:p-8 text-center shadow-sm">
+            <p className="text-textSecond mb-4 text-sm sm:text-base">Sign in to upload your watch photos</p>
             <SignInButton mode="modal">
-              <button className="px-6 py-3 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors">
+              <button className="px-4 sm:px-6 py-2 sm:py-3 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors text-sm sm:text-base w-full sm:w-auto">
                 Sign in to upload
               </button>
             </SignInButton>
           </div>
         ) : success ? (
-          <div className="bg-surface border border-borderStrong rounded-xl p-8 text-center shadow-sm">
+          <div className="bg-surface border border-borderStrong rounded-xl p-6 sm:p-8 text-center shadow-sm">
             {/* Success thumbnails */}
             {successPreviews.length > 0 && (
-              <div className="flex justify-center gap-3 mb-4">
+              <div className="flex justify-center gap-2 sm:gap-3 mb-4 flex-wrap">
                 {successPreviews.map((src, i) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={i}
                     src={src}
-                    className="w-32 h-32 object-cover rounded-xl"
+                    className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-xl"
                     alt={`Your submitted photo ${i + 1}`}
                   />
                 ))}
               </div>
             )}
-            <h2 className="text-2xl font-bold text-textPrimary mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-textPrimary mb-4">
               {successPreviews.length > 1 ? 'Photos submitted!' : 'Photo submitted!'}
             </h2>
-            <p className="text-textMuted mb-8">
+            <p className="text-textMuted mb-8 text-sm sm:text-base">
               {successPreviews.length > 1
                 ? 'Your images are being reviewed and will be approved soon. Thanks for contributing to the community.'
                 : 'Your image is being reviewed and will be approved soon. Thanks for contributing to the community.'}
@@ -555,17 +555,17 @@ export default function UploadClient() {
                       setEditingSlotIndex(-1)
                       fileRef.current?.click()
                     }}
-                    className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all flex-1 flex flex-col items-center justify-center ${
+                    className={`border-2 border-dashed rounded-lg p-6 sm:p-12 text-center cursor-pointer transition-all flex-1 flex flex-col items-center justify-center ${
                       isDragging
                         ? 'border-accent bg-accent/5'
                         : 'border-borderStrong hover:border-accent'
                     }`}
                   >
-                    <div className="text-5xl mb-3">{'\uD83D\uDCF7'}</div>
-                    <p className="text-textMuted mb-1">
+                    <div className="text-4xl sm:text-5xl mb-3">{'\uD83D\uDCF7'}</div>
+                    <p className="text-textMuted mb-1 text-xs sm:text-sm">
                       {compressing ? 'Optimising image...' : isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
                     </p>
-                    <p className="text-textMuted text-sm">JPEG, PNG, WebP, or AVIF &middot; Up to 20MB</p>
+                    <p className="text-textMuted text-xs sm:text-sm">JPEG, PNG, WebP, or AVIF &middot; Up to 20MB</p>
                   </div>
                 ) : files.length < MAX_PHOTOS ? (
                   <button
@@ -574,7 +574,7 @@ export default function UploadClient() {
                       setEditingSlotIndex(-1)
                       fileRef.current?.click()
                     }}
-                    className="w-full border-2 border-dashed border-borderStrong hover:border-accent rounded-lg p-4 text-center cursor-pointer transition-all text-textMuted hover:text-textPrimary text-sm"
+                    className="w-full border-2 border-dashed border-borderStrong hover:border-accent rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all text-textMuted hover:text-textPrimary text-xs sm:text-sm"
                   >
                     + Add another photo
                   </button>
@@ -734,8 +734,8 @@ export default function UploadClient() {
                     </div>
                   </div>
 
-                  {/* Case dimensions — 2-column grid */}
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Case dimensions — 2-column grid (responsive on mobile) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Case size <span className="text-textMuted">(optional)</span>

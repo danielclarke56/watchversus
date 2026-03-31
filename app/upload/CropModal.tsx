@@ -68,8 +68,8 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-      <div className="bg-surface rounded-xl p-6 max-w-lg w-full shadow-lg">
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-surface rounded-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-lg shadow-lg">
         <h2 className="text-xl font-bold text-textPrimary mb-4">Crop your photo</h2>
 
         <div className="mb-4">

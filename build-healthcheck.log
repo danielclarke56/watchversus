@@ -41,9 +41,7 @@
    Collecting page data ...
  ΓÜá Using edge runtime on a page currently disables static generation for that page
    Generating static pages (0/47) ...
-[2026-03-31T02:00:47.257Z] Fetching Core Web Vitals for watchvswatch.com...
-[2026-03-31T02:00:47.258Z] Fetching GSC metrics for watchvswatch.com...
-GSC metrics: GOOGLE_SERVICE_ACCOUNT_JSON not configured. Skipping GSC fetch.
+[2026-03-31T05:00:43.571Z] Fetching Core Web Vitals for watchvswatch.com...
 Error fetching pending reviews: n [Error]: Dynamic server usage: Route /api/admin/reviews couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at l (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\.next\server\chunks\8948.js:1:56329)
     at d (C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\.next\server\chunks\3388.js:17:5585)
@@ -58,6 +56,8 @@ Error fetching pending reviews: n [Error]: Dynamic server usage: Route /api/admi
   description: "Route /api/admin/reviews couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
+[2026-03-31T05:00:43.593Z] Fetching GSC metrics for watchvswatch.com...
+GSC metrics: GOOGLE_SERVICE_ACCOUNT_JSON not configured. Skipping GSC fetch.
 Γ£à Core Web Vitals recorded:
   LCP: N/A ΓÜá∩╕Å
   FID: N/A ΓÜá∩╕Å

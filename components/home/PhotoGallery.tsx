@@ -74,6 +74,8 @@ function PhotoGalleryContent() {
 
   // Lightbox: which group + which photo within it
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
+  const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
+  const touchStartXRef = useRef<number | null>(null)
 
   const fetchPhotos = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
@@ -144,6 +146,48 @@ function PhotoGalleryContent() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lightbox])
+
+  // Preload adjacent lightbox images when lightbox group changes
+  useEffect(() => {
+    if (!lightbox) return
+    
+    // Note: groups is defined as a useMemo below, but we access it here
+    // ESLint will warn about missing dependency, but we suppress it because
+    // groups changes whenever photos changes, which would cause unnecessary re-preloads
+    // We only need to re-preload when lightbox groupIdx changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const preloadAdjacentImages = () => {
+      const { groupIdx } = lightbox
+      const urlsToPreload = []
+      
+      // Preload next group's first photo
+      if (groupIdx < groups.length - 1) {
+        const nextPhoto = groups[groupIdx + 1]?.photos[0]
+        if (nextPhoto) urlsToPreload.push(nextPhoto.url)
+      }
+      
+      // Preload previous group's first photo
+      if (groupIdx > 0) {
+        const prevPhoto = groups[groupIdx - 1]?.photos[0]
+        if (prevPhoto) urlsToPreload.push(prevPhoto.url)
+      }
+      
+      // Create Image objects to preload
+      urlsToPreload.forEach((url) => {
+        const img = document.createElement('img')
+        img.src = url
+        img.style.display = 'none'
+      })
+    }
+    preloadAdjacentImages()
+  }, [lightbox?.groupIdx])
+
+  // Show loading state when lightbox photo changes
+  useEffect(() => {
+    if (lightbox === null) return
+    setLightboxImageLoading(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightbox?.groupIdx, lightbox?.photoIdx])
 
   const groups = useMemo(() => groupByWatch(photos), [photos])
 
@@ -249,6 +293,26 @@ function PhotoGalleryContent() {
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
           onClick={() => setLightbox(null)}
+          onTouchStart={(e) => { touchStartXRef.current = e.touches[0]?.clientX ?? null }}
+          onTouchEnd={(e) => {
+            const touchEndX = e.changedTouches[0]?.clientX
+            const touchStartX = touchStartXRef.current
+            if (touchStartX === null || touchEndX === null) return
+            
+            const diff = touchStartX - touchEndX
+            const threshold = 50
+            
+            if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
+              // Left swipe → next watch
+              setLightboxImageLoading(true)
+              setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 })
+            } else if (diff < -threshold && lightbox.groupIdx > 0) {
+              // Right swipe → previous watch
+              setLightboxImageLoading(true)
+              setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 })
+            }
+            touchStartXRef.current = null
+          }}
         >
           {/* Close */}
           <button
@@ -264,7 +328,7 @@ function PhotoGalleryContent() {
           {lightbox.groupIdx > 0 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 }) }}
+              onClick={(e) => { e.stopPropagation(); setLightboxImageLoading(true); setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 }) }}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
               aria-label="Previous watch"
             >
@@ -276,7 +340,7 @@ function PhotoGalleryContent() {
           {lightbox.groupIdx < groups.length - 1 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 }) }}
+              onClick={(e) => { e.stopPropagation(); setLightboxImageLoading(true); setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 }) }}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
               aria-label="Next watch"
             >
@@ -286,9 +350,16 @@ function PhotoGalleryContent() {
 
           {/* Main image + info */}
           <div
-            className="flex flex-col items-center max-h-[90vh] max-w-[90vw]"
+            className="flex flex-col items-center max-h-[90vh] max-w-[90vw] relative"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Loading spinner overlay */}
+            {lightboxImageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <div className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              </div>
+            )}
+            
             <Image
               src={activeLightboxPhoto.url}
               alt={activeLightboxPhoto.watchName ?? 'Watch photo'}
@@ -296,6 +367,7 @@ function PhotoGalleryContent() {
               height={1200}
               style={{ objectFit: 'contain', maxHeight: '70vh', maxWidth: '90vw', width: 'auto', height: 'auto' }}
               priority
+              onLoad={() => setLightboxImageLoading(false)}
             />
 
             {/* Watch info */}
@@ -333,7 +405,7 @@ function PhotoGalleryContent() {
                   <button
                     key={thumb.id}
                     type="button"
-                    onClick={() => setLightbox({ ...lightbox, photoIdx: thumbIdx })}
+                    onClick={() => { setLightboxImageLoading(true); setLightbox({ ...lightbox, photoIdx: thumbIdx }) }}
                     className={`shrink-0 relative w-14 h-14 rounded overflow-hidden border-2 transition-colors ${
                       thumbIdx === lightbox.photoIdx
                         ? 'border-white'
