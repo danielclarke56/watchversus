@@ -101,19 +101,19 @@ function PhotoCard({
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-surface">
       {/* Compact row */}
-      <div className="flex gap-3 items-center p-3">
+      <div className="flex gap-2 sm:gap-3 items-center p-2 sm:p-3 flex-col sm:flex-row">
         {/* Thumb */}
-        <div className="shrink-0 w-14 h-14 bg-surfaceAlt rounded overflow-hidden border border-border">
+        <div className="shrink-0 w-12 sm:w-14 h-12 sm:h-14 bg-surfaceAlt rounded overflow-hidden border border-border">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photo.url} alt="Submission" className="w-full h-full object-cover" />
         </div>
 
         {/* Info */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 w-full sm:w-auto">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <p className="text-sm font-semibold text-textPrimary truncate">{displayName}</p>
+            <p className="text-xs sm:text-sm font-semibold text-textPrimary truncate">{displayName}</p>
             {fields.referenceNumber && (
-              <span className="text-xs text-textMuted">· {fields.referenceNumber}</span>
+              <span className="text-xs text-textMuted hidden sm:inline">· {fields.referenceNumber}</span>
             )}
             {aiFlag === 'checking' && (
               <span className="text-[10px] text-textMuted bg-gray-100 px-1.5 py-0.5 rounded">AI check...</span>
@@ -131,38 +131,41 @@ function PhotoCard({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 w-full sm:w-auto flex-wrap justify-start sm:justify-end">
           <button
             onClick={() => setExpanded((e) => !e)}
-            className="text-xs px-2.5 py-1.5 rounded border border-border text-textMuted hover:text-textPrimary hover:border-gray-400 transition-colors"
+            className="text-xs px-2 sm:px-2.5 py-1 sm:py-1.5 rounded border border-border text-textMuted hover:text-textPrimary hover:border-gray-400 transition-colors font-medium"
           >
-            {expanded ? 'Close' : 'Edit'}
+            {expanded ? '✕' : '✎'}
           </button>
           {!isApproved && onApprove && (
             <button
               onClick={onApprove}
               disabled={acting === photo.id || saving === photo.id}
-              className="text-xs bg-green-600 text-white px-2.5 py-1.5 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+              className="text-xs bg-green-600 text-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
             >
-              Approve
+              <span className="hidden sm:inline">Approve</span>
+              <span className="sm:hidden">✓</span>
             </button>
           )}
           {!isApproved && onReject && (
             <button
               onClick={onReject}
               disabled={acting === photo.id || saving === photo.id}
-              className="text-xs bg-red-500 text-white px-2.5 py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="text-xs bg-red-500 text-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
             >
-              Reject
+              <span className="hidden sm:inline">Reject</span>
+              <span className="sm:hidden">✕</span>
             </button>
           )}
           {isApproved && onDelete && (
             <button
               onClick={onDelete}
               disabled={acting === photo.id}
-              className="text-xs bg-red-500 text-white px-2.5 py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="text-xs bg-red-500 text-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
             >
-              {acting === photo.id ? '...' : 'Delete'}
+              <span className="hidden sm:inline">{acting === photo.id ? '...' : 'Delete'}</span>
+              <span className="sm:hidden">{acting === photo.id ? '...' : '🗑'}</span>
             </button>
           )}
         </div>
@@ -170,8 +173,8 @@ function PhotoCard({
 
       {/* Expanded edit panel */}
       {expanded && (
-        <div className="border-t border-border bg-surfaceAlt px-3 py-3">
-          <div className="grid grid-cols-3 gap-2 mb-2">
+        <div className="border-t border-border bg-surfaceAlt px-3 py-3 overflow-x-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-2">
             <FieldInput label="Brand" value={fields.brandName} onChange={(v) => onUpdateField('brandName', v)} />
             <FieldInput label="Model" value={fields.modelName} onChange={(v) => onUpdateField('modelName', v)} />
             <FieldInput label="Reference No." value={fields.referenceNumber} onChange={(v) => onUpdateField('referenceNumber', v)} />
@@ -337,35 +340,35 @@ export default function AdminPhotosClient() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
+    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+      <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs sm:text-sm">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-border mb-5">
+      <div className="flex border-b border-border mb-5 overflow-x-auto">
         <button
           onClick={() => setActiveTab('pending')}
-          className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === 'pending'
               ? 'border-blue-600 text-blue-600'
               : 'border-transparent text-textMuted hover:text-textPrimary'
           }`}
         >
-          Pending Review
+          Pending
           {!loading && pendingPhotos.length > 0 && (
-            <span className="ml-2 bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+            <span className="ml-1 sm:ml-2 bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
               {pendingPhotos.length}
             </span>
           )}
         </button>
         <button
           onClick={() => setActiveTab('approved')}
-          className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === 'approved'
               ? 'border-blue-600 text-blue-600'
               : 'border-transparent text-textMuted hover:text-textPrimary'
@@ -373,7 +376,7 @@ export default function AdminPhotosClient() {
         >
           Approved
           {!loading && (
-            <span className="ml-2 bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+            <span className="ml-1 sm:ml-2 bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
               {approvedPhotos.length}
             </span>
           )}

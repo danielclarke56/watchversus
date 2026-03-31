@@ -266,9 +266,9 @@ function GroupCard({ group }: { group: WatchGroup }) {
                 Editing info for all {group.photos.length} photos of this watch
               </p>
             )}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {FIELD_CONFIG.map(({ key, label }) => (
-                <div key={key} className={key === 'caption' ? 'col-span-2' : ''}>
+                <div key={key} className={key === 'caption' ? 'sm:col-span-2' : ''}>
                   <label className="block text-xs text-gray-500 mb-0.5">{label}</label>
                   <input
                     type="text"
