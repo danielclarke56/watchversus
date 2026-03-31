@@ -30,21 +30,30 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
 
     if (!ctx) return
 
-    // Set canvas size
-    canvas.width = completedCrop.width
-    canvas.height = completedCrop.height
+    // Scale factor: completedCrop is in display pixels, but drawImage needs natural image pixels
+    const scaleX = img.naturalWidth / img.width
+    const scaleY = img.naturalHeight / img.height
 
-    // Draw the cropped image
+    const cropX = completedCrop.x * scaleX
+    const cropY = completedCrop.y * scaleY
+    const cropW = completedCrop.width * scaleX
+    const cropH = completedCrop.height * scaleY
+
+    // Set canvas size to the real crop dimensions
+    canvas.width = cropW
+    canvas.height = cropH
+
+    // Draw the cropped image using natural pixel coordinates
     ctx.drawImage(
       img,
-      completedCrop.x,
-      completedCrop.y,
-      completedCrop.width,
-      completedCrop.height,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
       0,
       0,
-      completedCrop.width,
-      completedCrop.height
+      cropW,
+      cropH
     )
 
     // Convert canvas to blob
