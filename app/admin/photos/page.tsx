@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { checkAdmin } from '@/lib/admin'
 import AdminPhotosClient from './AdminPhotosClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminPhotosPage() {
   let userId: string | null = null
 

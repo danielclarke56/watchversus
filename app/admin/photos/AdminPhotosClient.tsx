@@ -21,6 +21,16 @@ type EditableFields = {
   caption: string
 }
 
+type PhotoGroup<T extends PendingPhoto | ApprovedPhoto> = {
+  watchId: string
+  photos: T[]
+  brandName: string
+  modelName: string
+  referenceNumber: string
+  submitterName: string
+  submittedDate: string
+}
+
 function photoToEditable(photo: PendingPhoto | ApprovedPhoto): EditableFields {
   return {
     brandName: photo.brandName ?? '',
@@ -37,6 +47,41 @@ function photoToEditable(photo: PendingPhoto | ApprovedPhoto): EditableFields {
     waterResistance: photo.waterResistance ?? '',
     caption: photo.caption ?? '',
   }
+}
+
+/**
+ * Group photos by watchId. Each group takes metadata from the first photo.
+ * Photos are ordered newest first within each group.
+ */
+function groupPhotosByWatch<T extends PendingPhoto | ApprovedPhoto>(photos: T[]): PhotoGroup<T>[] {
+  const grouped = new Map<string, PhotoGroup<T>>()
+
+  photos.forEach((photo) => {
+    if (!grouped.has(photo.watchId)) {
+      grouped.set(photo.watchId, {
+        watchId: photo.watchId,
+        photos: [],
+        brandName: photo.brandName ?? '',
+        modelName: photo.modelName ?? '',
+        referenceNumber: photo.referenceNumber ?? '',
+        submitterName: photo.userName,
+        submittedDate: photo.createdAt,
+      })
+    }
+    grouped.get(photo.watchId)!.photos.push(photo)
+  })
+
+  // Sort each group's photos by date descending (newest first)
+  grouped.forEach((group) => {
+    group.photos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  })
+
+  // Return groups sorted by most recent photo in each group
+  return Array.from(grouped.values()).sort((a, b) => {
+    const aDate = new Date(a.photos[0]!.createdAt).getTime()
+    const bDate = new Date(b.photos[0]!.createdAt).getTime()
+    return bDate - aDate
+  })
 }
 
 function FieldInput({
@@ -67,10 +112,36 @@ function FieldInput({
   )
 }
 
-function PhotoCard({
+/**
+ * PhotoThumbnail: Compact thumbnail for grouped photos.
+ */
+function PhotoThumbnail({
   photo,
-  fields,
-  aiFlag,
+  onClick,
+}: {
+  photo: PendingPhoto | ApprovedPhoto
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-surfaceAlt rounded overflow-hidden border border-border hover:border-gray-400 transition-colors group"
+      aria-label="View photo"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={photo.url} alt="Thumbnail" className="w-full h-full object-cover" />
+      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all" />
+    </button>
+  )
+}
+
+/**
+ * GroupedPhotoCard: Displays a group of photos for the same watch.
+ * Shows thumbnail strip at top, then expandable list of individual photos below.
+ */
+function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
+  group,
+  editState,
   acting,
   saving,
   savedOk,
@@ -78,133 +149,170 @@ function PhotoCard({
   onSave,
   onApprove,
   onReject,
-  isApproved,
   onDelete,
+  isApproved,
 }: {
-  photo: PendingPhoto | ApprovedPhoto
-  fields: EditableFields
-  aiFlag?: boolean | 'checking'
+  group: PhotoGroup<T>
+  editState: Record<string, EditableFields>
   acting: string | null
   saving: string | null
   savedOk: string | null
-  onUpdateField: (field: keyof EditableFields, value: string) => void
-  onSave: () => void
-  onApprove?: () => void
-  onReject?: () => void
+  onUpdateField: (photoId: string, field: keyof EditableFields, value: string) => void
+  onSave: (photoId: string) => void
+  onApprove?: (photo: T) => void
+  onReject?: (photo: T) => void
+  onDelete?: (photo: T) => void
   isApproved: boolean
-  onDelete?: () => void
 }) {
-  const [expanded, setExpanded] = useState(false)
+  const [expandedPhotos, setExpandedPhotos] = useState<Set<string>>(new Set())
 
-  const displayName = [fields.brandName, fields.modelName].filter(Boolean).join(' ') || photo.watchId
+  const togglePhotoExpanded = (photoId: string) => {
+    setExpandedPhotos((prev) => {
+      const next = new Set(prev)
+      if (next.has(photoId)) {
+        next.delete(photoId)
+      } else {
+        next.add(photoId)
+      }
+      return next
+    })
+  }
+
+  const displayName = [group.brandName, group.modelName].filter(Boolean).join(' ') || group.watchId
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-surface">
-      {/* Compact row */}
-      <div className="flex gap-2 sm:gap-3 items-center p-2 sm:p-3 flex-col sm:flex-row">
-        {/* Thumb */}
-        <div className="shrink-0 w-12 sm:w-14 h-12 sm:h-14 bg-surfaceAlt rounded overflow-hidden border border-border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photo.url} alt="Submission" className="w-full h-full object-cover" />
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0 w-full sm:w-auto">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <p className="text-xs sm:text-sm font-semibold text-textPrimary truncate">{displayName}</p>
-            {fields.referenceNumber && (
-              <span className="text-xs text-textMuted hidden sm:inline">· {fields.referenceNumber}</span>
-            )}
-            {aiFlag === 'checking' && (
-              <span className="text-[10px] text-textMuted bg-gray-100 px-1.5 py-0.5 rounded">AI check...</span>
-            )}
-            {aiFlag === true && (
-              <span className="text-[10px] text-red-600 font-semibold bg-red-50 px-1.5 py-0.5 rounded">🤖 AI detected</span>
-            )}
+      {/* Header: watch info + thumbnail gallery */}
+      <div className="p-3 sm:p-4 border-b border-border bg-surfaceAlt">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap mb-1">
+              <h3 className="text-sm sm:text-base font-bold text-textPrimary truncate">{displayName}</h3>
+              {group.referenceNumber && (
+                <span className="text-xs text-textMuted hidden sm:inline">· {group.referenceNumber}</span>
+              )}
+            </div>
+            <p className="text-xs text-textMuted">
+              {group.submitterName} ·{' '}
+              {new Date(group.submittedDate).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+              })}
+            </p>
           </div>
-          <p className="text-xs text-textMuted mt-0.5">
-            {photo.userName} ·{' '}
-            {new Date(photo.createdAt).toLocaleDateString('en-US', {
-              month: 'short', day: 'numeric', year: 'numeric',
-            })}
-          </p>
+          <div className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded-full shrink-0">
+            {group.photos.length} {group.photos.length === 1 ? 'photo' : 'photos'}
+          </div>
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 w-full sm:w-auto flex-wrap justify-start sm:justify-end">
-          <button
-            onClick={() => setExpanded((e) => !e)}
-            className="text-xs px-2 sm:px-2.5 py-1 sm:py-1.5 rounded border border-border text-textMuted hover:text-textPrimary hover:border-gray-400 transition-colors font-medium"
-          >
-            {expanded ? '✕' : '✎'}
-          </button>
-          {!isApproved && onApprove && (
-            <button
-              onClick={onApprove}
-              disabled={acting === photo.id || saving === photo.id}
-              className="text-xs bg-green-600 text-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
-            >
-              <span className="hidden sm:inline">Approve</span>
-              <span className="sm:hidden">✓</span>
-            </button>
-          )}
-          {!isApproved && onReject && (
-            <button
-              onClick={onReject}
-              disabled={acting === photo.id || saving === photo.id}
-              className="text-xs bg-red-500 text-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-            >
-              <span className="hidden sm:inline">Reject</span>
-              <span className="sm:hidden">✕</span>
-            </button>
-          )}
-          {isApproved && onDelete && (
-            <button
-              onClick={onDelete}
-              disabled={acting === photo.id}
-              className="text-xs bg-red-500 text-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-            >
-              <span className="hidden sm:inline">{acting === photo.id ? '...' : 'Delete'}</span>
-              <span className="sm:hidden">{acting === photo.id ? '...' : '🗑'}</span>
-            </button>
-          )}
+        {/* Thumbnail gallery */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {group.photos.map((photo) => (
+            <PhotoThumbnail
+              key={photo.id}
+              photo={photo}
+              onClick={() => togglePhotoExpanded(photo.id)}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Expanded edit panel */}
-      {expanded && (
-        <div className="border-t border-border bg-surfaceAlt px-3 py-3 overflow-x-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-2">
-            <FieldInput label="Brand" value={fields.brandName} onChange={(v) => onUpdateField('brandName', v)} />
-            <FieldInput label="Model" value={fields.modelName} onChange={(v) => onUpdateField('modelName', v)} />
-            <FieldInput label="Reference No." value={fields.referenceNumber} onChange={(v) => onUpdateField('referenceNumber', v)} />
-            <FieldInput label="Movement" value={fields.movement} onChange={(v) => onUpdateField('movement', v)} />
-            <FieldInput label="Case Size" value={fields.caseSize} onChange={(v) => onUpdateField('caseSize', v)} unit="mm" />
-            <FieldInput label="Wrist Size" value={fields.wristSize} onChange={(v) => onUpdateField('wristSize', v)} unit="mm" />
-            <FieldInput label="Year" value={fields.productionYear} onChange={(v) => onUpdateField('productionYear', v)} />
-            <FieldInput label="Est. Price" value={fields.estimatedPrice} onChange={(v) => onUpdateField('estimatedPrice', v)} unit="USD" />
-            <FieldInput label="Lug-to-Lug" value={fields.lugToLug} onChange={(v) => onUpdateField('lugToLug', v)} unit="mm" />
-            <FieldInput label="Between Lugs" value={fields.betweenLugs} onChange={(v) => onUpdateField('betweenLugs', v)} unit="mm" />
-            <FieldInput label="Thickness" value={fields.thickness} onChange={(v) => onUpdateField('thickness', v)} unit="mm" />
-            <FieldInput label="Water Resist." value={fields.waterResistance} onChange={(v) => onUpdateField('waterResistance', v)} unit="m" />
-          </div>
-          <div className="mb-2">
-            <FieldInput label="Caption" value={fields.caption} onChange={(v) => onUpdateField('caption', v)} />
-          </div>
-          <div className="flex items-center gap-2 mt-2">
-            <button
-              onClick={onSave}
-              disabled={saving === photo.id || acting === photo.id}
-              className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              {saving === photo.id ? 'Saving...' : 'Save'}
-            </button>
-            {savedOk === photo.id && (
-              <span className="text-xs text-green-600 font-medium">✓ Saved</span>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Expandable list of individual photos */}
+      <div className="space-y-2 p-3 sm:p-4">
+        {group.photos.map((photo) => {
+          const fields = editState[photo.id]
+          if (!fields) return null
+          const isExpanded = expandedPhotos.has(photo.id)
+
+          return (
+            <div key={photo.id} className="space-y-1">
+              {/* Compact photo row */}
+              <button
+                onClick={() => togglePhotoExpanded(photo.id)}
+                className="w-full text-left border border-border rounded p-2 sm:p-2.5 hover:bg-surfaceAlt transition-colors flex items-center gap-2"
+              >
+                <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded bg-surfaceAlt border border-border overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0 text-xs sm:text-sm">
+                  <p className="text-textMuted">
+                    {new Date(photo.createdAt).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric',
+                    })}
+                  </p>
+                </div>
+                <span className="text-textMuted shrink-0">
+                  {isExpanded ? '▼' : '▶'}
+                </span>
+              </button>
+
+              {/* Expanded controls for this photo */}
+              {isExpanded && (
+                <div className="border border-border rounded p-2 sm:p-3 bg-surfaceAlt space-y-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    <FieldInput label="Brand" value={fields.brandName} onChange={(v) => onUpdateField(photo.id, 'brandName', v)} />
+                    <FieldInput label="Model" value={fields.modelName} onChange={(v) => onUpdateField(photo.id, 'modelName', v)} />
+                    <FieldInput label="Reference No." value={fields.referenceNumber} onChange={(v) => onUpdateField(photo.id, 'referenceNumber', v)} />
+                    <FieldInput label="Movement" value={fields.movement} onChange={(v) => onUpdateField(photo.id, 'movement', v)} />
+                    <FieldInput label="Case Size" value={fields.caseSize} onChange={(v) => onUpdateField(photo.id, 'caseSize', v)} unit="mm" />
+                    <FieldInput label="Wrist Size" value={fields.wristSize} onChange={(v) => onUpdateField(photo.id, 'wristSize', v)} unit="mm" />
+                    <FieldInput label="Year" value={fields.productionYear} onChange={(v) => onUpdateField(photo.id, 'productionYear', v)} />
+                    <FieldInput label="Est. Price" value={fields.estimatedPrice} onChange={(v) => onUpdateField(photo.id, 'estimatedPrice', v)} unit="USD" />
+                    <FieldInput label="Lug-to-Lug" value={fields.lugToLug} onChange={(v) => onUpdateField(photo.id, 'lugToLug', v)} unit="mm" />
+                    <FieldInput label="Between Lugs" value={fields.betweenLugs} onChange={(v) => onUpdateField(photo.id, 'betweenLugs', v)} unit="mm" />
+                    <FieldInput label="Thickness" value={fields.thickness} onChange={(v) => onUpdateField(photo.id, 'thickness', v)} unit="mm" />
+                    <FieldInput label="Water Resist." value={fields.waterResistance} onChange={(v) => onUpdateField(photo.id, 'waterResistance', v)} unit="m" />
+                  </div>
+                  <div>
+                    <FieldInput label="Caption" value={fields.caption} onChange={(v) => onUpdateField(photo.id, 'caption', v)} />
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-border">
+                    <button
+                      onClick={() => onSave(photo.id)}
+                      disabled={saving === photo.id || acting === photo.id}
+                      className="text-xs bg-blue-600 text-white px-3 py-1 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    >
+                      {saving === photo.id ? 'Saving...' : 'Save'}
+                    </button>
+                    {savedOk === photo.id && (
+                      <span className="text-xs text-green-600 font-medium">✓ Saved</span>
+                    )}
+                    {!isApproved && onApprove && (
+                      <button
+                        onClick={() => onApprove(photo)}
+                        disabled={acting === photo.id || saving === photo.id}
+                        className="text-xs bg-green-600 text-white px-3 py-1 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                      >
+                        Approve
+                      </button>
+                    )}
+                    {!isApproved && onReject && (
+                      <button
+                        onClick={() => onReject(photo)}
+                        disabled={acting === photo.id || saving === photo.id}
+                        className="text-xs bg-red-500 text-white px-3 py-1 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                      >
+                        Reject
+                      </button>
+                    )}
+                    {isApproved && onDelete && (
+                      <button
+                        onClick={() => onDelete(photo)}
+                        disabled={acting === photo.id}
+                        className="text-xs bg-red-500 text-white px-3 py-1 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                      >
+                        {acting === photo.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -218,8 +326,11 @@ export default function AdminPhotosClient() {
   const [acting, setActing] = useState<string | null>(null)
   const [saving, setSaving] = useState<string | null>(null)
   const [savedOk, setSavedOk] = useState<string | null>(null)
-  const [aiFlags, setAiFlags] = useState<Record<string, boolean | 'checking'>>({})
   const [editState, setEditState] = useState<Record<string, EditableFields>>({})
+
+  // Grouped photos for display
+  const pendingGroups = groupPhotosByWatch(pendingPhotos)
+  const approvedGroups = groupPhotosByWatch(approvedPhotos)
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -244,26 +355,6 @@ export default function AdminPhotosClient() {
           const initialEdits: Record<string, EditableFields> = {}
           pendingData.forEach((p) => { initialEdits[p.id] = photoToEditable(p) })
           setEditState((prev) => ({ ...prev, ...initialEdits }))
-
-          pendingData.forEach((photo) => {
-            ;(async () => {
-              setAiFlags((prev) => ({ ...prev, [photo.id]: 'checking' }))
-              try {
-                const photoBlob = await fetch(photo.url).then((r) => r.blob())
-                const fd = new FormData()
-                fd.append('photo', photoBlob)
-                const res = await fetch('/api/photos/identify', { method: 'POST', body: fd })
-                if (res.ok) {
-                  const data = await res.json()
-                  setAiFlags((prev) => ({ ...prev, [photo.id]: data.isAiGenerated === true }))
-                } else {
-                  setAiFlags((prev) => { const n = { ...prev }; delete n[photo.id]; return n })
-                }
-              } catch {
-                setAiFlags((prev) => { const n = { ...prev }; delete n[photo.id]; return n })
-              }
-            })()
-          })
         }
 
         if (Array.isArray(approvedData)) {
@@ -395,27 +486,22 @@ export default function AdminPhotosClient() {
                   <p className="text-textMuted text-sm">No photos pending review.</p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {pendingPhotos.map((photo) => {
-                    const fields = editState[photo.id]
-                    if (!fields) return null
-                    return (
-                      <PhotoCard
-                        key={photo.id}
-                        photo={photo}
-                        fields={fields}
-                        aiFlag={aiFlags[photo.id]}
-                        acting={acting}
-                        saving={saving}
-                        savedOk={savedOk}
-                        onUpdateField={(field, value) => updateField(photo.id, field, value)}
-                        onSave={() => handleSave(photo.id)}
-                        onApprove={() => handleAction('approve', photo)}
-                        onReject={() => handleAction('delete', photo)}
-                        isApproved={false}
-                      />
-                    )
-                  })}
+                <div className="space-y-3">
+                  {pendingGroups.map((group) => (
+                    <GroupedPhotoCard
+                      key={group.watchId}
+                      group={group}
+                      editState={editState}
+                      acting={acting}
+                      saving={saving}
+                      savedOk={savedOk}
+                      onUpdateField={(photoId, field, value) => updateField(photoId, field, value)}
+                      onSave={(photoId) => handleSave(photoId)}
+                      onApprove={(photo) => handleAction('approve', photo)}
+                      onReject={(photo) => handleAction('delete', photo)}
+                      isApproved={false}
+                    />
+                  ))}
                 </div>
               )}
             </>
@@ -428,25 +514,21 @@ export default function AdminPhotosClient() {
                   <p className="text-textSecond">No approved photos yet.</p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {approvedPhotos.map((photo) => {
-                    const fields = editState[photo.id]
-                    if (!fields) return null
-                    return (
-                      <PhotoCard
-                        key={photo.id}
-                        photo={photo}
-                        fields={fields}
-                        acting={acting}
-                        saving={saving}
-                        savedOk={savedOk}
-                        onUpdateField={(field, value) => updateField(photo.id, field, value)}
-                        onSave={() => handleSave(photo.id)}
-                        onDelete={() => handleDeleteApproved(photo)}
-                        isApproved={true}
-                      />
-                    )
-                  })}
+                <div className="space-y-3">
+                  {approvedGroups.map((group) => (
+                    <GroupedPhotoCard
+                      key={group.watchId}
+                      group={group}
+                      editState={editState}
+                      acting={acting}
+                      saving={saving}
+                      savedOk={savedOk}
+                      onUpdateField={(photoId, field, value) => updateField(photoId, field, value)}
+                      onSave={(photoId) => handleSave(photoId)}
+                      onDelete={(photo) => handleDeleteApproved(photo)}
+                      isApproved={true}
+                    />
+                  ))}
                 </div>
               )}
             </>
