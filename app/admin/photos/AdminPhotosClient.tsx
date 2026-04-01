@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 
 type Tab = 'pending' | 'approved'
@@ -31,6 +31,12 @@ type PhotoGroup<T extends PendingPhoto | ApprovedPhoto> = {
   referenceNumber: string
   submitterName: string
   submittedDate: string
+}
+
+type LightboxState = {
+  isOpen: boolean
+  currentIndex: number
+  watchId: string
 }
 
 
@@ -115,9 +121,93 @@ function FieldInput({
 }
 
 /**
+ * Lightbox modal component for viewing full-size photo with navigation
+ */
+function PhotoLightbox({
+  isOpen,
+  photos,
+  currentIndex,
+  onClose,
+  onNext,
+  onPrev,
+}: {
+  isOpen: boolean
+  photos: (PendingPhoto | ApprovedPhoto)[]
+  currentIndex: number
+  onClose: () => void
+  onNext: () => void
+  onPrev: () => void
+}) {
+  if (!isOpen || photos.length === 0) return null
+
+  const photo = photos[currentIndex]
+  if (!photo) return null
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors text-2xl font-bold z-10"
+        aria-label="Close lightbox"
+      >
+        ✕
+      </button>
+
+      {/* Previous button */}
+      {photos.length > 1 && (
+        <button
+          onClick={onPrev}
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full transition-colors text-xl"
+          aria-label="Previous photo"
+        >
+          ❮
+        </button>
+      )}
+
+      {/* Main image */}
+      <div className="flex flex-col items-center gap-3 max-w-3xl max-h-[90vh]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={photo.url}
+          alt="Full size"
+          className="max-w-full max-h-[80vh] object-contain rounded"
+        />
+
+        {/* Navigation info */}
+        {photos.length > 1 && (
+          <p className="text-white text-sm">
+            {currentIndex + 1} / {photos.length}
+          </p>
+        )}
+
+        {/* Caption */}
+        {photo.caption && (
+          <p className="text-white text-center text-sm max-w-xl">{photo.caption}</p>
+        )}
+      </div>
+
+      {/* Next button */}
+      {photos.length > 1 && (
+        <button
+          onClick={onNext}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full transition-colors text-xl"
+          aria-label="Next photo"
+        >
+          ❯
+        </button>
+      )}
+    </div>
+  )
+}
+
+/**
  * GroupedPhotoCard: Displays a group of photos for the same watch.
- * Watch metadata is shown ONCE at the group level.
- * Individual photos show only their caption + approve/reject actions.
+ * - Watch metadata shown ONCE at the group level
+ * - Compact thumbnail grid (3-4 per row)
+ * - Single "Approve Watch" button for entire group (pending tab)
+ * - Individual delete buttons per photo (approved tab)
+ * - Lightbox modal for viewing full-size photos with gallery nav
  */
 function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   group,
@@ -129,8 +219,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onUpdateWatchMeta,
   onSaveGroup,
   onUpdateCaption,
-  onApprove,
-  onReject,
+  onApproveGroup,
   onDelete,
   isApproved,
 }: {
@@ -143,150 +232,173 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
   onSaveGroup: (watchId: string, photoIds: string[]) => void
   onUpdateCaption: (photoId: string, caption: string) => void
-  onApprove?: (photo: T) => void
-  onReject?: (photo: T) => void
+  onApproveGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
   isApproved: boolean
 }) {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
+  const [lightbox, setLightbox] = useState<LightboxState>({
+    isOpen: false,
+    currentIndex: 0,
+    watchId: group.watchId,
+  })
 
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
   const isSavingGroup = savingGroup === group.watchId
   const groupSavedOk = savedGroupOk === group.watchId
+  const isApprovingGroup = acting === `group-${group.watchId}`
+
+  const openLightbox = useCallback((index: number) => {
+    setLightbox({ isOpen: true, currentIndex: index, watchId: group.watchId })
+  }, [group.watchId])
+
+  const closeLightbox = useCallback(() => {
+    setLightbox((prev) => ({ ...prev, isOpen: false }))
+  }, [])
+
+  const goNext = useCallback(() => {
+    setLightbox((prev) => ({
+      ...prev,
+      currentIndex: (prev.currentIndex + 1) % group.photos.length,
+    }))
+  }, [group.photos.length])
+
+  const goPrev = useCallback(() => {
+    setLightbox((prev) => ({
+      ...prev,
+      currentIndex:
+        prev.currentIndex === 0 ? group.photos.length - 1 : prev.currentIndex - 1,
+    }))
+  }, [group.photos.length])
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-surface">
-      {/* Header */}
-      <div className="p-3 sm:p-4 border-b border-border bg-surfaceAlt">
-        <div className="flex items-start justify-between gap-3 mb-1">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm sm:text-base font-bold text-textPrimary truncate">{displayName || 'New Watch'}</h3>
-            <p className="text-xs text-textMuted mt-0.5">
-              {group.submitterName} ·{' '}
-              {new Date(group.submittedDate).toLocaleDateString('en-US', {
-                month: 'short', day: 'numeric', year: 'numeric',
-              })}
-            </p>
-          </div>
-          <div className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded-full shrink-0">
-            {group.photos.length} {group.photos.length === 1 ? 'photo' : 'photos'}
+    <>
+      <div className="border border-border rounded-lg overflow-hidden bg-surface">
+        {/* Header */}
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border bg-surfaceAlt">
+          <div className="flex items-start justify-between gap-2 mb-0.5">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm sm:text-base font-bold text-textPrimary truncate">{displayName || 'New Watch'}</h3>
+              <p className="text-xs text-textMuted mt-0.5">
+                {group.submitterName} ·{' '}
+                {new Date(group.submittedDate).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                })}
+              </p>
+            </div>
+            <div className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full shrink-0">
+              {group.photos.length}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Watch metadata — shown ONCE per group */}
-      <div className="p-3 sm:p-4 border-b border-border">
-        <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-2">Watch Info</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-          <FieldInput label="Brand" value={watchMeta.brandName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'brandName', v)} />
-          <FieldInput label="Model" value={watchMeta.modelName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'modelName', v)} />
-          <FieldInput label="Reference No." value={watchMeta.referenceNumber} onChange={(v) => onUpdateWatchMeta(group.watchId, 'referenceNumber', v)} />
-          <FieldInput label="Movement" value={watchMeta.movement} onChange={(v) => onUpdateWatchMeta(group.watchId, 'movement', v)} />
-          <FieldInput label="Case Size" value={watchMeta.caseSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'caseSize', v)} unit="mm" />
-          <FieldInput label="Wrist Size" value={watchMeta.wristSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'wristSize', v)} unit="mm" />
-          <FieldInput label="Est. Price" value={watchMeta.estimatedPrice} onChange={(v) => onUpdateWatchMeta(group.watchId, 'estimatedPrice', v)} unit="USD" />
-          <FieldInput label="Lug-to-Lug" value={watchMeta.lugToLug} onChange={(v) => onUpdateWatchMeta(group.watchId, 'lugToLug', v)} unit="mm" />
-          <FieldInput label="Between Lugs" value={watchMeta.betweenLugs} onChange={(v) => onUpdateWatchMeta(group.watchId, 'betweenLugs', v)} unit="mm" />
-          <FieldInput label="Thickness" value={watchMeta.thickness} onChange={(v) => onUpdateWatchMeta(group.watchId, 'thickness', v)} unit="mm" />
-          <FieldInput label="Water Resist." value={watchMeta.waterResistance} onChange={(v) => onUpdateWatchMeta(group.watchId, 'waterResistance', v)} unit="m" />
+        {/* Watch metadata — compact grid */}
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
+          <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Watch Info</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+            <FieldInput label="Brand" value={watchMeta.brandName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'brandName', v)} />
+            <FieldInput label="Model" value={watchMeta.modelName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'modelName', v)} />
+            <FieldInput label="Ref #" value={watchMeta.referenceNumber} onChange={(v) => onUpdateWatchMeta(group.watchId, 'referenceNumber', v)} />
+            <FieldInput label="Movement" value={watchMeta.movement} onChange={(v) => onUpdateWatchMeta(group.watchId, 'movement', v)} />
+            <FieldInput label="Case" value={watchMeta.caseSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'caseSize', v)} unit="mm" />
+            <FieldInput label="Wrist" value={watchMeta.wristSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'wristSize', v)} unit="mm" />
+            <FieldInput label="Price" value={watchMeta.estimatedPrice} onChange={(v) => onUpdateWatchMeta(group.watchId, 'estimatedPrice', v)} unit="USD" />
+            <FieldInput label="L-L" value={watchMeta.lugToLug} onChange={(v) => onUpdateWatchMeta(group.watchId, 'lugToLug', v)} unit="mm" />
+            <FieldInput label="B.L." value={watchMeta.betweenLugs} onChange={(v) => onUpdateWatchMeta(group.watchId, 'betweenLugs', v)} unit="mm" />
+            <FieldInput label="Thick" value={watchMeta.thickness} onChange={(v) => onUpdateWatchMeta(group.watchId, 'thickness', v)} unit="mm" />
+            <FieldInput label="WR" value={watchMeta.waterResistance} onChange={(v) => onUpdateWatchMeta(group.watchId, 'waterResistance', v)} unit="m" />
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <button
+              onClick={() => onSaveGroup(group.watchId, group.photos.map((p) => p.id))}
+              disabled={isSavingGroup}
+              className="text-xs bg-blue-600 text-white px-2.5 py-1 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              {isSavingGroup ? '...' : 'Save Meta'}
+            </button>
+            {groupSavedOk && <span className="text-xs text-green-600 font-medium">✓</span>}
+          </div>
         </div>
-        <div className="flex items-center gap-2 mt-3">
-          <button
-            onClick={() => onSaveGroup(group.watchId, group.photos.map(p => p.id))}
-            disabled={isSavingGroup}
-            className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            {isSavingGroup ? 'Saving...' : group.photos.length > 1 ? `Save to all ${group.photos.length} photos` : 'Save'}
-          </button>
-          {groupSavedOk && (
-            <span className="text-xs text-green-600 font-medium">✓ Saved</span>
+
+        {/* Compact thumbnail grid */}
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+            {group.photos.map((photo, idx) => (
+              <button
+                key={photo.id}
+                onClick={() => openLightbox(idx)}
+                className="aspect-square rounded overflow-hidden border border-border hover:border-blue-400 hover:ring-1 hover:ring-blue-300 transition-all"
+                aria-label={`View photo ${idx + 1}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo.url}
+                  alt={`Photo ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Per-photo captions and delete buttons */}
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
+          <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Photos</p>
+          <div className="space-y-1.5">
+            {group.photos.map((photo) => {
+              const caption = captionState[photo.id] ?? ''
+              const isActing = acting === photo.id
+
+              return (
+                <div key={photo.id} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Caption"
+                    value={caption}
+                    onChange={(e) => onUpdateCaption(photo.id, e.target.value)}
+                    className="flex-1 text-xs border border-border rounded px-1.5 py-0.5 bg-surface text-textPrimary focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  />
+                  {isApproved && onDelete && (
+                    <button
+                      onClick={() => onDelete(photo)}
+                      disabled={isActing}
+                      className="text-xs bg-red-500 text-white px-2 py-0.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                    >
+                      {isActing ? '...' : 'Del'}
+                    </button>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Action buttons — bottom of card */}
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3 bg-surfaceAlt flex items-center gap-2">
+          {!isApproved && onApproveGroup && (
+            <button
+              onClick={() => onApproveGroup(group.watchId, group.photos.map((p) => p.id))}
+              disabled={isApprovingGroup}
+              className="flex-1 text-sm bg-green-600 text-white px-4 py-2 rounded font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              {isApprovingGroup ? 'Approving...' : `Approve Watch (${group.photos.length})`}
+            </button>
+          )}
+          {isApproved && (
+            <div className="text-sm text-green-600 font-semibold">✓ Approved</div>
           )}
         </div>
       </div>
 
-      {/* Individual photos */}
-      <div className="divide-y divide-border">
-        {group.photos.map((photo) => {
-          const caption = captionState[photo.id] ?? ''
-          const isSelected = selectedPhoto === photo.id
-          const isActing = acting === photo.id
-
-          return (
-            <div key={photo.id} className="p-3 sm:p-4">
-              <div className="flex gap-3">
-                {/* Thumbnail — click to enlarge */}
-                <button
-                  onClick={() => setSelectedPhoto(isSelected ? null : photo.id)}
-                  className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded overflow-hidden border border-border hover:border-gray-400 transition-colors"
-                  aria-label="View photo"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photo.url} alt="Thumbnail" className="w-full h-full object-cover" />
-                </button>
-
-                <div className="flex-1 min-w-0 space-y-2">
-                  <p className="text-xs text-textMuted">
-                    Submitted {new Date(photo.createdAt).toLocaleDateString('en-US', {
-                      month: 'short', day: 'numeric', year: 'numeric',
-                    })}
-                  </p>
-
-                  {/* Caption — per photo */}
-                  <FieldInput
-                    label="Caption"
-                    value={caption}
-                    onChange={(v) => onUpdateCaption(photo.id, v)}
-                  />
-
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {!isApproved && onApprove && (
-                      <button
-                        onClick={() => onApprove(photo)}
-                        disabled={isActing}
-                        className="text-xs bg-green-600 text-white px-3 py-1 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
-                      >
-                        {isActing ? '...' : 'Approve'}
-                      </button>
-                    )}
-                    {!isApproved && onReject && (
-                      <button
-                        onClick={() => onReject(photo)}
-                        disabled={isActing}
-                        className="text-xs bg-red-500 text-white px-3 py-1 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-                      >
-                        {isActing ? '...' : 'Reject'}
-                      </button>
-                    )}
-                    {isApproved && onDelete && (
-                      <button
-                        onClick={() => onDelete(photo)}
-                        disabled={isActing}
-                        className="text-xs bg-red-500 text-white px-3 py-1 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-                      >
-                        {isActing ? 'Deleting...' : 'Delete'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Enlarged photo view */}
-              {isSelected && (
-                <div className="mt-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={photo.url}
-                    alt="Full size"
-                    className="max-w-full max-h-96 object-contain rounded border border-border"
-                  />
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-    </div>
+      {/* Lightbox modal */}
+      <PhotoLightbox
+        isOpen={lightbox.isOpen && lightbox.watchId === group.watchId}
+        photos={group.photos}
+        currentIndex={lightbox.currentIndex}
+        onClose={closeLightbox}
+        onNext={goNext}
+        onPrev={goPrev}
+      />
+    </>
   )
 }
 
@@ -308,8 +420,8 @@ export default function AdminPhotosClient() {
   const [savedGroupOk, setSavedGroupOk] = useState<string | null>(null)
 
   // Grouped photos for display
-  const pendingGroups = groupPhotosByWatch(pendingPhotos)
-  const approvedGroups = groupPhotosByWatch(approvedPhotos)
+  const pendingGroups = useMemo(() => groupPhotosByWatch(pendingPhotos), [pendingPhotos])
+  const approvedGroups = useMemo(() => groupPhotosByWatch(approvedPhotos), [approvedPhotos])
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -402,32 +514,48 @@ export default function AdminPhotosClient() {
     setSavingGroup(null)
   }
 
-  async function handleAction(action: 'approve' | 'delete', photo: PendingPhoto) {
-    setActing(photo.id)
+  /**
+   * Approve entire watch group — all photos and metadata approved at once
+   */
+  async function handleApproveGroup(watchId: string, photoIds: string[]) {
+    setActing(`group-${watchId}`)
     try {
-      // Save caption before approving
-      const meta = watchMetaState[photo.watchId]
+      // Save all metadata and captions first
+      const meta = watchMetaState[watchId]
       if (meta) {
-        await fetch('/api/admin/photos', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            photoId: photo.id,
-            fields: { ...meta, caption: captionState[photo.id] ?? '' },
-          }),
-        })
+        await Promise.all(
+          photoIds.map((photoId) =>
+            fetch('/api/admin/photos', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                photoId,
+                fields: { ...meta, caption: captionState[photoId] ?? '' },
+              }),
+            })
+          )
+        )
       }
 
-      const res = await fetch('/api/admin/photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, watchId: photo.watchId, photoId: photo.id }),
-      })
-      if (res.ok) {
-        setPendingPhotos((prev) => prev.filter((p) => p.id !== photo.id))
-        if (action === 'approve') {
-          setApprovedPhotos((prev) => [{ ...photo, approved: true as const }, ...prev])
-        }
+      // Approve all photos in group
+      const approveResults = await Promise.all(
+        photoIds.map((photoId) =>
+          fetch('/api/admin/photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'approve', watchId, photoId }),
+          })
+        )
+      )
+
+      if (approveResults.every((res) => res.ok)) {
+        // Move all photos from pending to approved
+        const photosToApprove = pendingPhotos.filter((p) => photoIds.includes(p.id))
+        setPendingPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))
+        setApprovedPhotos((prev) => [
+          ...photosToApprove.map((p) => ({ ...p, approved: true as const })),
+          ...prev,
+        ])
       }
     } catch { /* ignore */ }
     setActing(null)
@@ -517,8 +645,7 @@ export default function AdminPhotosClient() {
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
                       onUpdateCaption={updateCaption}
-                      onApprove={(photo) => handleAction('approve', photo)}
-                      onReject={(photo) => handleAction('delete', photo)}
+                      onApproveGroup={handleApproveGroup}
                       isApproved={false}
                     />
                   ))}
