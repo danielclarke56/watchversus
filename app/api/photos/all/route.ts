@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getWatchById } from '@/lib/watches'
+import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and, desc } from 'drizzle-orm'
+import { eq, lt, and, desc, or, ilike, inArray } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 
 /**
- * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex
+ * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex&q=seiko
  * Fetch ALL approved photos across ALL watches from Postgres
- * Supports cursor-based pagination and optional brand filtering
+ * Supports cursor-based pagination, brand filtering, and full-text search
+ * Search filters are applied at the database level to find all matching photos, not just recent ones
  */
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
@@ -27,6 +28,36 @@ export async function GET(req: NextRequest) {
     }
     if (watchId) {
       conditions.push(eq(photos.watchId, watchId))
+    }
+
+    // If q (search query) is provided and no watchId, filter at DB level
+    if (q && !watchId) {
+      // Find watchIds from static library that match the query
+      const matchingWatchIds = watches
+        .filter((w) => {
+          const name = (w.name ?? '').toLowerCase()
+          const b = (w.brand ?? '').toLowerCase()
+          return name.includes(q) || b.includes(q)
+        })
+        .map((w) => w.id)
+
+      // Build search conditions array
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const photoFieldConditions: any[] = [
+        ilike(photos.brandName, `%${q}%`),
+        ilike(photos.modelName, `%${q}%`),
+        ilike(photos.referenceNumber, `%${q}%`),
+      ]
+
+      // Add watchId condition if there are matches from the static library
+      if (matchingWatchIds.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        photoFieldConditions.push(inArray(photos.watchId, matchingWatchIds) as any)
+      }
+
+      // Combine all search conditions with OR
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      conditions.push(or(...photoFieldConditions) as any)
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
@@ -84,18 +115,8 @@ export async function GET(req: NextRequest) {
       filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
     }
 
-    // Filter by free-text query (brand/name prefix search, case-insensitive)
-    // Checks both static watch library fields AND user-submitted photo fields
-    if (q && !watchId) {
-      filtered = filtered.filter((p) => {
-        const name = (p.watchName ?? '').toLowerCase()
-        const b = (p.watchBrand ?? '').toLowerCase()
-        const photoBrand = (p.brandName ?? '').toLowerCase()
-        const photoModel = (p.modelName ?? '').toLowerCase()
-        const photoRef = (p.referenceNumber ?? '').toLowerCase()
-        return name.includes(q) || b.includes(q) || photoBrand.includes(q) || photoModel.includes(q) || photoRef.includes(q)
-      })
-    }
+    // Note: free-text query filtering is now applied at the database level (see conditions above)
+    // No client-side filtering needed
 
     // Take limit and compute next cursor
     const result = filtered.slice(0, limit)
