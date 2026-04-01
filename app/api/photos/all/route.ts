@@ -85,11 +85,15 @@ export async function GET(req: NextRequest) {
     }
 
     // Filter by free-text query (brand/name prefix search, case-insensitive)
+    // Checks both static watch library fields AND user-submitted photo fields
     if (q && !watchId) {
       filtered = filtered.filter((p) => {
         const name = (p.watchName ?? '').toLowerCase()
         const b = (p.watchBrand ?? '').toLowerCase()
-        return name.includes(q) || b.includes(q)
+        const photoBrand = (p.brandName ?? '').toLowerCase()
+        const photoModel = (p.modelName ?? '').toLowerCase()
+        const photoRef = (p.referenceNumber ?? '').toLowerCase()
+        return name.includes(q) || b.includes(q) || photoBrand.includes(q) || photoModel.includes(q) || photoRef.includes(q)
       })
     }
 
