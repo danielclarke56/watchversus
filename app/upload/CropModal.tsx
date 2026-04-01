@@ -19,91 +19,52 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
     y: 10,
   })
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null)
-  const [error, setError] = useState<string>('')
   const imgRef = useRef<HTMLImageElement>(null)
 
   function handleCrop() {
-    try {
-      if (!imgRef.current || !completedCrop) {
-        setError('No crop area selected. Please select an area and try again.')
-        return
-      }
+    if (!imgRef.current || !completedCrop) return
 
-      const img = imgRef.current
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
+    const img = imgRef.current
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
 
-      if (!ctx) {
-        setError('Failed to initialize canvas. Please try again.')
-        console.error('[CropModal] Canvas context 2d not available')
-        return
-      }
+    if (!ctx) return
 
-      // Scale factor: completedCrop is in display pixels, but drawImage needs natural image pixels
-      const scaleX = img.naturalWidth / img.width
-      const scaleY = img.naturalHeight / img.height
+    // Scale factor: completedCrop is in display pixels, but drawImage needs natural image pixels
+    const scaleX = img.naturalWidth / img.width
+    const scaleY = img.naturalHeight / img.height
 
-      const cropX = completedCrop.x * scaleX
-      const cropY = completedCrop.y * scaleY
-      const cropW = completedCrop.width * scaleX
-      const cropH = completedCrop.height * scaleY
+    const cropX = completedCrop.x * scaleX
+    const cropY = completedCrop.y * scaleY
+    const cropW = completedCrop.width * scaleX
+    const cropH = completedCrop.height * scaleY
 
-      // Set canvas size to the real crop dimensions
-      canvas.width = cropW
-      canvas.height = cropH
+    // Set canvas size to the real crop dimensions
+    canvas.width = cropW
+    canvas.height = cropH
 
-      // Draw the cropped image using natural pixel coordinates
-      try {
-        ctx.drawImage(
-          img,
-          cropX,
-          cropY,
-          cropW,
-          cropH,
-          0,
-          0,
-          cropW,
-          cropH
-        )
-      } catch (drawErr) {
-        setError('Failed to process image. Please try again.')
-        console.error('[CropModal] drawImage failed:', drawErr)
-        return
-      }
+    // Draw the cropped image using natural pixel coordinates
+    ctx.drawImage(
+      img,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
+      0,
+      0,
+      cropW,
+      cropH
+    )
 
-      // Convert canvas to blob with error handling
-      canvas.toBlob(
-        (blob) => {
-          if (!blob || blob.size === 0) {
-            setError('Image encoding failed. Please try a different photo or browser.')
-            console.error('[CropModal] canvas.toBlob returned null or empty blob:', { size: blob?.size })
-            return
-          }
+    // Convert canvas to blob
+    canvas.toBlob((blob) => {
+      if (!blob) return
 
-          try {
-            const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' })
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
+      const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' })
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
 
-            if (!dataUrl || !dataUrl.startsWith('data:')) {
-              setError('Failed to generate image preview. Please try again.')
-              console.error('[CropModal] Invalid toDataURL result')
-              return
-            }
-
-            setError('') // Clear any previous errors
-            onConfirm(file, dataUrl)
-          } catch (err) {
-            setError('Failed to create file. Please try again.')
-            console.error('[CropModal] Error in toBlob callback:', err)
-          }
-        },
-        'image/jpeg',
-        0.92
-      )
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.')
-      console.error('[CropModal] Unexpected error in handleCrop:', err)
-    }
+      onConfirm(file, dataUrl)
+    }, 'image/jpeg', 0.92)
   }
 
   return (
@@ -128,13 +89,6 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
             />
           </ReactCrop>
         </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
-        )}
 
         <div className="flex gap-3">
           <button

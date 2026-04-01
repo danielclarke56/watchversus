@@ -138,7 +138,6 @@ function GroupCard({ group }: { group: WatchGroup }) {
 
   const [deleting, setDeleting]        = useState(false)
   const [deleteError, setDeleteError]  = useState<string | null>(null)
-  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null)
 
   // Save metadata to ALL photos in the group so the entire entry is consistent
   async function handleSave() {
@@ -212,20 +211,6 @@ function GroupCard({ group }: { group: WatchGroup }) {
     }
   }
 
-  async function handleDeletePhoto(photoId: string) {
-    if (!confirm('Delete this photo?')) return
-    setDeletingPhotoId(photoId)
-    setDeleteError(null)
-    try {
-      const res = await fetch(`/api/user/photos/${photoId}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Delete failed')
-      setTimeout(() => router.refresh(), 600)
-    } catch (e) {
-      setDeleteError(e instanceof Error ? e.message : 'Delete failed')
-      setDeletingPhotoId(null)
-    }
-  }
-
   const badge = STATUS_BADGE[group.dominantStatus] ?? STATUS_BADGE.pending
   const extraCount = group.photos.length - 1
 
@@ -248,39 +233,17 @@ function GroupCard({ group }: { group: WatchGroup }) {
 
       {/* Additional photo strip */}
       {group.photos.length > 1 && (
-        <div className="flex gap-1.5 px-3 pt-2 pb-2 overflow-x-auto border-t border-gray-100">
-          {group.photos.slice(1).map((photo) => {
-            const canDelete = group.photos.length > 1
-            return (
-              <div key={photo.id} className="relative shrink-0 group">
-                <div className="relative w-12 h-12 rounded overflow-hidden bg-gray-100 border border-gray-200">
-                  <PhotoThumb url={photo.url} alt="Photo" size="mini" />
-                  <div className={`absolute inset-x-0 bottom-0 h-1 ${
-                    photo.status === 'approved' ? 'bg-green-400' :
-                    photo.status === 'rejected' ? 'bg-red-400' : 'bg-yellow-400'
-                  }`} />
-                </div>
-                {/* Delete button on hover */}
-                {canDelete && (
-                  <button
-                    onClick={() => handleDeletePhoto(photo.id)}
-                    disabled={!canDelete || deletingPhotoId === photo.id}
-                    className={`absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow opacity-0 group-hover:opacity-100 transition-opacity ${
-                      !canDelete || deletingPhotoId === photo.id
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-red-500 text-white hover:bg-red-600 cursor-pointer'
-                    }`}
-                    title={!canDelete ? 'Cannot delete last photo' : 'Delete photo'}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            )
-          })}
-          {extraCount > 0 && (
-            <p className="self-center text-xs text-gray-400 ml-1 shrink-0">+{extraCount} more</p>
-          )}
+        <div className="flex gap-1.5 px-3 pt-2 overflow-x-auto">
+          {group.photos.slice(1).map((photo) => (
+            <div key={photo.id} className="relative shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 border border-gray-200">
+              <PhotoThumb url={photo.url} alt="Photo" size="mini" />
+              <div className={`absolute inset-x-0 bottom-0 h-1 ${
+                photo.status === 'approved' ? 'bg-green-400' :
+                photo.status === 'rejected' ? 'bg-red-400' : 'bg-yellow-400'
+              }`} />
+            </div>
+          ))}
+          <p className="self-center text-xs text-gray-400 ml-1 shrink-0">+{extraCount} more</p>
         </div>
       )}
 
@@ -335,7 +298,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
         {addingPhoto && (
           <div className="mb-4 rounded-md border border-dashed border-gray-300 bg-gray-50 p-3 space-y-2">
             <p className="text-xs text-gray-500 font-medium">Add another photo for this watch</p>
-            <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/avif"
+            <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
               className="block w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
             {selectedFile && !uploadSuccess && (

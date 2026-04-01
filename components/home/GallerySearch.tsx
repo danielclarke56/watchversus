@@ -8,8 +8,6 @@ interface WatchWithCount {
   watchName: string
   watchBrand: string | null
   watchReference: string | null
-  photoBrandName: string | null
-  photoModelName: string | null
   count: number
 }
 
@@ -84,15 +82,12 @@ export default function GallerySearch() {
   }, [activeWatchId, activeQuery, watches])
 
   // Filter watches by input text
-  // Checks static library fields AND user-submitted photo fields (photoBrandName/photoModelName)
   const filtered = input
     ? watches.filter((w) => {
         const searchText = input.toLowerCase()
         const name = w.watchName.toLowerCase()
         const brand = (w.watchBrand ?? '').toLowerCase()
-        const photoBrand = (w.photoBrandName ?? '').toLowerCase()
-        const photoModel = (w.photoModelName ?? '').toLowerCase()
-        return name.includes(searchText) || brand.includes(searchText) || photoBrand.includes(searchText) || photoModel.includes(searchText)
+        return name.includes(searchText) || brand.includes(searchText)
       })
     : []
 
@@ -212,9 +207,9 @@ export default function GallerySearch() {
                 <p className="font-semibold text-gray-900 truncate">
                   {watch.watchName}
                 </p>
-                {(watch.watchBrand || watch.photoBrandName) && (
+                {watch.watchBrand && (
                   <p className="text-sm text-gray-500 truncate">
-                    {watch.watchBrand ?? watch.photoBrandName}
+                    {watch.watchBrand}
                   </p>
                 )}
               </div>
