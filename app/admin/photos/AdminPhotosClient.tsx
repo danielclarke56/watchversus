@@ -857,13 +857,11 @@ export default function AdminPhotosClient() {
                       key={group.watchId}
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
-                      captionState={captionState}
                       acting={acting}
                       savingGroup={savingGroup}
                       savedGroupOk={savedGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
-                      onUpdateCaption={updateCaption}
                       onRestoreGroup={handleRestoreGroup}
                       onDelete={(photo) => handleDeleteRejected(photo)}
                       isApproved={false}
