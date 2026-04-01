@@ -21,6 +21,9 @@ type EditableFields = {
   caption: string
 }
 
+// Watch-level metadata (shared across all photos for same watch)
+type WatchMetaFields = Omit<EditableFields, 'caption'>
+
 type PhotoGroup<T extends PendingPhoto | ApprovedPhoto> = {
   watchId: string
   photos: T[]
@@ -31,7 +34,9 @@ type PhotoGroup<T extends PendingPhoto | ApprovedPhoto> = {
   submittedDate: string
 }
 
-function photoToEditable(photo: PendingPhoto | ApprovedPhoto): EditableFields {
+
+
+function photoToWatchMeta(photo: PendingPhoto | ApprovedPhoto): WatchMetaFields {
   return {
     brandName: photo.brandName ?? '',
     modelName: photo.modelName ?? '',
@@ -45,7 +50,6 @@ function photoToEditable(photo: PendingPhoto | ApprovedPhoto): EditableFields {
     betweenLugs: photo.betweenLugs ?? '',
     thickness: photo.thickness ?? '',
     waterResistance: photo.waterResistance ?? '',
-    caption: photo.caption ?? '',
   }
 }
 
@@ -113,86 +117,53 @@ function FieldInput({
 }
 
 /**
- * PhotoThumbnail: Compact thumbnail for grouped photos.
- */
-function PhotoThumbnail({
-  photo,
-  onClick,
-}: {
-  photo: PendingPhoto | ApprovedPhoto
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-surfaceAlt rounded overflow-hidden border border-border hover:border-gray-400 transition-colors group"
-      aria-label="View photo"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photo.url} alt="Thumbnail" className="w-full h-full object-cover" />
-      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all" />
-    </button>
-  )
-}
-
-/**
  * GroupedPhotoCard: Displays a group of photos for the same watch.
- * Shows thumbnail strip at top, then expandable list of individual photos below.
+ * Watch metadata is shown ONCE at the group level.
+ * Individual photos show only their caption + approve/reject actions.
  */
 function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   group,
-  editState,
+  watchMeta,
+  captionState,
   acting,
-  saving,
-  savedOk,
-  onUpdateField,
-  onSave,
+  savingGroup,
+  savedGroupOk,
+  onUpdateWatchMeta,
+  onSaveGroup,
+  onUpdateCaption,
   onApprove,
   onReject,
   onDelete,
   isApproved,
 }: {
   group: PhotoGroup<T>
-  editState: Record<string, EditableFields>
+  watchMeta: WatchMetaFields
+  captionState: Record<string, string>
   acting: string | null
-  saving: string | null
-  savedOk: string | null
-  onUpdateField: (photoId: string, field: keyof EditableFields, value: string) => void
-  onSave: (photoId: string) => void
+  savingGroup: string | null
+  savedGroupOk: string | null
+  onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
+  onSaveGroup: (watchId: string, photoIds: string[]) => void
+  onUpdateCaption: (photoId: string, caption: string) => void
   onApprove?: (photo: T) => void
   onReject?: (photo: T) => void
   onDelete?: (photo: T) => void
   isApproved: boolean
 }) {
-  const [expandedPhotos, setExpandedPhotos] = useState<Set<string>>(new Set())
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
 
-  const togglePhotoExpanded = (photoId: string) => {
-    setExpandedPhotos((prev) => {
-      const next = new Set(prev)
-      if (next.has(photoId)) {
-        next.delete(photoId)
-      } else {
-        next.add(photoId)
-      }
-      return next
-    })
-  }
-
-  const displayName = [group.brandName, group.modelName].filter(Boolean).join(' ') || group.watchId
+  const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
+  const isSavingGroup = savingGroup === group.watchId
+  const groupSavedOk = savedGroupOk === group.watchId
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-surface">
-      {/* Header: watch info + thumbnail gallery */}
+      {/* Header */}
       <div className="p-3 sm:p-4 border-b border-border bg-surfaceAlt">
-        <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex items-start justify-between gap-3 mb-1">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap mb-1">
-              <h3 className="text-sm sm:text-base font-bold text-textPrimary truncate">{displayName}</h3>
-              {group.referenceNumber && (
-                <span className="text-xs text-textMuted hidden sm:inline">· {group.referenceNumber}</span>
-              )}
-            </div>
-            <p className="text-xs text-textMuted">
+            <h3 className="text-sm sm:text-base font-bold text-textPrimary truncate">{displayName || 'New Watch'}</h3>
+            <p className="text-xs text-textMuted mt-0.5">
               {group.submitterName} ·{' '}
               {new Date(group.submittedDate).toLocaleDateString('en-US', {
                 month: 'short', day: 'numeric', year: 'numeric',
@@ -203,110 +174,115 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
             {group.photos.length} {group.photos.length === 1 ? 'photo' : 'photos'}
           </div>
         </div>
+      </div>
 
-        {/* Thumbnail gallery */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {group.photos.map((photo) => (
-            <PhotoThumbnail
-              key={photo.id}
-              photo={photo}
-              onClick={() => togglePhotoExpanded(photo.id)}
-            />
-          ))}
+      {/* Watch metadata — shown ONCE per group */}
+      <div className="p-3 sm:p-4 border-b border-border">
+        <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-2">Watch Info</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+          <FieldInput label="Brand" value={watchMeta.brandName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'brandName', v)} />
+          <FieldInput label="Model" value={watchMeta.modelName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'modelName', v)} />
+          <FieldInput label="Reference No." value={watchMeta.referenceNumber} onChange={(v) => onUpdateWatchMeta(group.watchId, 'referenceNumber', v)} />
+          <FieldInput label="Movement" value={watchMeta.movement} onChange={(v) => onUpdateWatchMeta(group.watchId, 'movement', v)} />
+          <FieldInput label="Case Size" value={watchMeta.caseSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'caseSize', v)} unit="mm" />
+          <FieldInput label="Wrist Size" value={watchMeta.wristSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'wristSize', v)} unit="mm" />
+          <FieldInput label="Year" value={watchMeta.productionYear} onChange={(v) => onUpdateWatchMeta(group.watchId, 'productionYear', v)} />
+          <FieldInput label="Est. Price" value={watchMeta.estimatedPrice} onChange={(v) => onUpdateWatchMeta(group.watchId, 'estimatedPrice', v)} unit="USD" />
+          <FieldInput label="Lug-to-Lug" value={watchMeta.lugToLug} onChange={(v) => onUpdateWatchMeta(group.watchId, 'lugToLug', v)} unit="mm" />
+          <FieldInput label="Between Lugs" value={watchMeta.betweenLugs} onChange={(v) => onUpdateWatchMeta(group.watchId, 'betweenLugs', v)} unit="mm" />
+          <FieldInput label="Thickness" value={watchMeta.thickness} onChange={(v) => onUpdateWatchMeta(group.watchId, 'thickness', v)} unit="mm" />
+          <FieldInput label="Water Resist." value={watchMeta.waterResistance} onChange={(v) => onUpdateWatchMeta(group.watchId, 'waterResistance', v)} unit="m" />
+        </div>
+        <div className="flex items-center gap-2 mt-3">
+          <button
+            onClick={() => onSaveGroup(group.watchId, group.photos.map(p => p.id))}
+            disabled={isSavingGroup}
+            className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            {isSavingGroup ? 'Saving...' : group.photos.length > 1 ? `Save to all ${group.photos.length} photos` : 'Save'}
+          </button>
+          {groupSavedOk && (
+            <span className="text-xs text-green-600 font-medium">✓ Saved</span>
+          )}
         </div>
       </div>
 
-      {/* Expandable list of individual photos */}
-      <div className="space-y-2 p-3 sm:p-4">
+      {/* Individual photos */}
+      <div className="divide-y divide-border">
         {group.photos.map((photo) => {
-          const fields = editState[photo.id]
-          if (!fields) return null
-          const isExpanded = expandedPhotos.has(photo.id)
+          const caption = captionState[photo.id] ?? ''
+          const isSelected = selectedPhoto === photo.id
+          const isActing = acting === photo.id
 
           return (
-            <div key={photo.id} className="space-y-1">
-              {/* Compact photo row */}
-              <button
-                onClick={() => togglePhotoExpanded(photo.id)}
-                className="w-full text-left border border-border rounded p-2 sm:p-2.5 hover:bg-surfaceAlt transition-colors flex items-center gap-2"
-              >
-                <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded bg-surfaceAlt border border-border overflow-hidden">
+            <div key={photo.id} className="p-3 sm:p-4">
+              <div className="flex gap-3">
+                {/* Thumbnail — click to enlarge */}
+                <button
+                  onClick={() => setSelectedPhoto(isSelected ? null : photo.id)}
+                  className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded overflow-hidden border border-border hover:border-gray-400 transition-colors"
+                  aria-label="View photo"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photo.url} alt="" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0 text-xs sm:text-sm">
-                  <p className="text-textMuted">
-                    {new Date(photo.createdAt).toLocaleDateString('en-US', {
-                      month: 'short', day: 'numeric',
+                  <img src={photo.url} alt="Thumbnail" className="w-full h-full object-cover" />
+                </button>
+
+                <div className="flex-1 min-w-0 space-y-2">
+                  <p className="text-xs text-textMuted">
+                    Submitted {new Date(photo.createdAt).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric', year: 'numeric',
                     })}
                   </p>
-                </div>
-                <span className="text-textMuted shrink-0">
-                  {isExpanded ? '▼' : '▶'}
-                </span>
-              </button>
 
-              {/* Expanded controls for this photo */}
-              {isExpanded && (
-                <div className="border border-border rounded p-2 sm:p-3 bg-surfaceAlt space-y-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                    <FieldInput label="Brand" value={fields.brandName} onChange={(v) => onUpdateField(photo.id, 'brandName', v)} />
-                    <FieldInput label="Model" value={fields.modelName} onChange={(v) => onUpdateField(photo.id, 'modelName', v)} />
-                    <FieldInput label="Reference No." value={fields.referenceNumber} onChange={(v) => onUpdateField(photo.id, 'referenceNumber', v)} />
-                    <FieldInput label="Movement" value={fields.movement} onChange={(v) => onUpdateField(photo.id, 'movement', v)} />
-                    <FieldInput label="Case Size" value={fields.caseSize} onChange={(v) => onUpdateField(photo.id, 'caseSize', v)} unit="mm" />
-                    <FieldInput label="Wrist Size" value={fields.wristSize} onChange={(v) => onUpdateField(photo.id, 'wristSize', v)} unit="mm" />
-                    <FieldInput label="Year" value={fields.productionYear} onChange={(v) => onUpdateField(photo.id, 'productionYear', v)} />
-                    <FieldInput label="Est. Price" value={fields.estimatedPrice} onChange={(v) => onUpdateField(photo.id, 'estimatedPrice', v)} unit="USD" />
-                    <FieldInput label="Lug-to-Lug" value={fields.lugToLug} onChange={(v) => onUpdateField(photo.id, 'lugToLug', v)} unit="mm" />
-                    <FieldInput label="Between Lugs" value={fields.betweenLugs} onChange={(v) => onUpdateField(photo.id, 'betweenLugs', v)} unit="mm" />
-                    <FieldInput label="Thickness" value={fields.thickness} onChange={(v) => onUpdateField(photo.id, 'thickness', v)} unit="mm" />
-                    <FieldInput label="Water Resist." value={fields.waterResistance} onChange={(v) => onUpdateField(photo.id, 'waterResistance', v)} unit="m" />
-                  </div>
-                  <div>
-                    <FieldInput label="Caption" value={fields.caption} onChange={(v) => onUpdateField(photo.id, 'caption', v)} />
-                  </div>
+                  {/* Caption — per photo */}
+                  <FieldInput
+                    label="Caption"
+                    value={caption}
+                    onChange={(v) => onUpdateCaption(photo.id, v)}
+                  />
 
                   {/* Action buttons */}
-                  <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-border">
-                    <button
-                      onClick={() => onSave(photo.id)}
-                      disabled={saving === photo.id || acting === photo.id}
-                      className="text-xs bg-blue-600 text-white px-3 py-1 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-                    >
-                      {saving === photo.id ? 'Saving...' : 'Save'}
-                    </button>
-                    {savedOk === photo.id && (
-                      <span className="text-xs text-green-600 font-medium">✓ Saved</span>
-                    )}
+                  <div className="flex items-center gap-2 flex-wrap">
                     {!isApproved && onApprove && (
                       <button
                         onClick={() => onApprove(photo)}
-                        disabled={acting === photo.id || saving === photo.id}
+                        disabled={isActing}
                         className="text-xs bg-green-600 text-white px-3 py-1 rounded font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
                       >
-                        Approve
+                        {isActing ? '...' : 'Approve'}
                       </button>
                     )}
                     {!isApproved && onReject && (
                       <button
                         onClick={() => onReject(photo)}
-                        disabled={acting === photo.id || saving === photo.id}
+                        disabled={isActing}
                         className="text-xs bg-red-500 text-white px-3 py-1 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
                       >
-                        Reject
+                        {isActing ? '...' : 'Reject'}
                       </button>
                     )}
                     {isApproved && onDelete && (
                       <button
                         onClick={() => onDelete(photo)}
-                        disabled={acting === photo.id}
+                        disabled={isActing}
                         className="text-xs bg-red-500 text-white px-3 py-1 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
                       >
-                        {acting === photo.id ? 'Deleting...' : 'Delete'}
+                        {isActing ? 'Deleting...' : 'Delete'}
                       </button>
                     )}
                   </div>
+                </div>
+              </div>
+
+              {/* Enlarged photo view */}
+              {isSelected && (
+                <div className="mt-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.url}
+                    alt="Full size"
+                    className="max-w-full max-h-96 object-contain rounded border border-border"
+                  />
                 </div>
               )}
             </div>
@@ -324,9 +300,15 @@ export default function AdminPhotosClient() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [acting, setActing] = useState<string | null>(null)
-  const [saving, setSaving] = useState<string | null>(null)
-  const [savedOk, setSavedOk] = useState<string | null>(null)
-  const [editState, setEditState] = useState<Record<string, EditableFields>>({})
+
+  // Group-level watch metadata state (keyed by watchId)
+  const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
+  // Per-photo caption state (keyed by photoId)
+  const [captionState, setCaptionState] = useState<Record<string, string>>({})
+
+  // Saving state
+  const [savingGroup, setSavingGroup] = useState<string | null>(null)
+  const [savedGroupOk, setSavedGroupOk] = useState<string | null>(null)
 
   // Grouped photos for display
   const pendingGroups = groupPhotosByWatch(pendingPhotos)
@@ -352,16 +334,12 @@ export default function AdminPhotosClient() {
 
         if (Array.isArray(pendingData)) {
           setPendingPhotos(pendingData)
-          const initialEdits: Record<string, EditableFields> = {}
-          pendingData.forEach((p) => { initialEdits[p.id] = photoToEditable(p) })
-          setEditState((prev) => ({ ...prev, ...initialEdits }))
+          initializeState(pendingData)
         }
 
         if (Array.isArray(approvedData)) {
           setApprovedPhotos(approvedData)
-          const initialEdits: Record<string, EditableFields> = {}
-          approvedData.forEach((p) => { initialEdits[p.id] = photoToEditable(p) })
-          setEditState((prev) => ({ ...prev, ...initialEdits }))
+          initializeState(approvedData)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -373,33 +351,76 @@ export default function AdminPhotosClient() {
     fetchPhotos()
   }, [])
 
-  function updateField(photoId: string, field: keyof EditableFields, value: string) {
-    setEditState((prev) => ({
+  function initializeState(photos: (PendingPhoto | ApprovedPhoto)[]) {
+    // Group by watchId — take metadata from the first photo per watch
+    const metaByWatch: Record<string, WatchMetaFields> = {}
+    const captions: Record<string, string> = {}
+
+    photos.forEach((photo) => {
+      if (!metaByWatch[photo.watchId]) {
+        metaByWatch[photo.watchId] = photoToWatchMeta(photo)
+      }
+      captions[photo.id] = photo.caption ?? ''
+    })
+
+    setWatchMetaState((prev) => ({ ...prev, ...metaByWatch }))
+    setCaptionState((prev) => ({ ...prev, ...captions }))
+  }
+
+  function updateWatchMeta(watchId: string, field: keyof WatchMetaFields, value: string) {
+    setWatchMetaState((prev) => ({
       ...prev,
-      [photoId]: { ...prev[photoId], [field]: value },
+      [watchId]: { ...prev[watchId], [field]: value },
     }))
   }
 
-  async function handleSave(photoId: string) {
-    setSaving(photoId)
-    setSavedOk(null)
+  function updateCaption(photoId: string, caption: string) {
+    setCaptionState((prev) => ({ ...prev, [photoId]: caption }))
+  }
+
+  async function handleSaveGroup(watchId: string, photoIds: string[]) {
+    const meta = watchMetaState[watchId]
+    if (!meta) return
+
+    setSavingGroup(watchId)
+    setSavedGroupOk(null)
+
     try {
-      const res = await fetch('/api/admin/photos', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photoId, fields: editState[photoId] }),
-      })
-      if (res.ok) {
-        setSavedOk(photoId)
-        setTimeout(() => setSavedOk(null), 2000)
-      }
+      await Promise.all(
+        photoIds.map((photoId) =>
+          fetch('/api/admin/photos', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              photoId,
+              fields: { ...meta, caption: captionState[photoId] ?? '' },
+            }),
+          })
+        )
+      )
+      setSavedGroupOk(watchId)
+      setTimeout(() => setSavedGroupOk(null), 2500)
     } catch { /* silent */ }
-    setSaving(null)
+
+    setSavingGroup(null)
   }
 
   async function handleAction(action: 'approve' | 'delete', photo: PendingPhoto) {
     setActing(photo.id)
     try {
+      // Save caption before approving
+      const meta = watchMetaState[photo.watchId]
+      if (meta) {
+        await fetch('/api/admin/photos', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            photoId: photo.id,
+            fields: { ...meta, caption: captionState[photo.id] ?? '' },
+          }),
+        })
+      }
+
       const res = await fetch('/api/admin/photos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -491,12 +512,14 @@ export default function AdminPhotosClient() {
                     <GroupedPhotoCard
                       key={group.watchId}
                       group={group}
-                      editState={editState}
+                      watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
+                      captionState={captionState}
                       acting={acting}
-                      saving={saving}
-                      savedOk={savedOk}
-                      onUpdateField={(photoId, field, value) => updateField(photoId, field, value)}
-                      onSave={(photoId) => handleSave(photoId)}
+                      savingGroup={savingGroup}
+                      savedGroupOk={savedGroupOk}
+                      onUpdateWatchMeta={updateWatchMeta}
+                      onSaveGroup={handleSaveGroup}
+                      onUpdateCaption={updateCaption}
                       onApprove={(photo) => handleAction('approve', photo)}
                       onReject={(photo) => handleAction('delete', photo)}
                       isApproved={false}
@@ -519,12 +542,14 @@ export default function AdminPhotosClient() {
                     <GroupedPhotoCard
                       key={group.watchId}
                       group={group}
-                      editState={editState}
+                      watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
+                      captionState={captionState}
                       acting={acting}
-                      saving={saving}
-                      savedOk={savedOk}
-                      onUpdateField={(photoId, field, value) => updateField(photoId, field, value)}
-                      onSave={(photoId) => handleSave(photoId)}
+                      savingGroup={savingGroup}
+                      savedGroupOk={savedGroupOk}
+                      onUpdateWatchMeta={updateWatchMeta}
+                      onSaveGroup={handleSaveGroup}
+                      onUpdateCaption={updateCaption}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       isApproved={true}
                     />
