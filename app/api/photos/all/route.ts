@@ -3,6 +3,7 @@ import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, lt, and, desc } from 'drizzle-orm'
+import { checkAdmin } from '@/lib/admin'
 
 /**
  * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex
@@ -56,6 +57,7 @@ export async function GET(req: NextRequest) {
     // Enrich photos with watch data
     const enriched = photoRecords.map((p) => {
       const watch = getWatchById(p.watchId)
+      const isAdmin = checkAdmin(p.userId)
       return {
         id: p.id,
         watchId: p.watchId,
@@ -65,6 +67,7 @@ export async function GET(req: NextRequest) {
         caption: p.caption ?? undefined,
         createdAt: p.createdAt.toISOString(),
         approved: true,
+        isOfficial: isAdmin,
         watchSlug: watch?.slug ?? p.watchId,
         watchName: watch?.name ?? unslugify(p.watchId),
         watchBrand: watch?.brand ?? null,
