@@ -179,6 +179,21 @@ function PhotoGalleryContent() {
     preloadAdjacentImages()
   }, [lightbox, groups])
 
+  // Fetch more photos when navigating near the end of loaded groups in the lightbox
+  // (the scroll sentinel can't fire while the lightbox is open)
+  useEffect(() => {
+    if (!lightbox || !nextCursor || loadingMore) return
+    // Pre-fetch when within 5 groups of the end
+    if (lightbox.groupIdx >= groups.length - 5) {
+      setLoadingMore(true)
+      fetchPhotos(nextCursor).then((data) => {
+        setPhotos((prev) => [...prev, ...data.photos])
+        setNextCursor(data.nextCursor)
+        setLoadingMore(false)
+      }).catch(() => setLoadingMore(false))
+    }
+  }, [lightbox?.groupIdx, groups.length, nextCursor, loadingMore, fetchPhotos])
+
   // Show loading state when lightbox photo changes
   useEffect(() => {
     if (lightbox === null) return
