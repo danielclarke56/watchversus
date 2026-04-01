@@ -177,13 +177,13 @@ function PhotoGalleryContent() {
       })
     }
     preloadAdjacentImages()
-  }, [lightbox?.groupIdx, groups])
+  }, [lightbox, groups])
 
   // Show loading state when lightbox photo changes
   useEffect(() => {
     if (lightbox === null) return
     setLightboxImageLoading(true)
-  }, [lightbox?.groupIdx, lightbox?.photoIdx])
+  }, [lightbox])
 
   const selectedWatchName = activeWatchId && photos.length > 0
     ? photos[0].watchBrand && photos[0].watchName

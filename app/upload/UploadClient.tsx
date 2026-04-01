@@ -14,10 +14,6 @@ function toSlug(str: string) {
 
 const MOVEMENT_OPTIONS = ['Automatic', 'Mechanical', 'Quartz', 'Digital']
 const WRIST_SIZE_OPTIONS = ['Under 6"', '6"', '6.5"', '7"', '7.5"', '8"', 'Over 8"']
-const PRODUCTION_YEAR_OPTIONS = [
-  ...Array.from({ length: new Date().getFullYear() - 1949 }, (_, i) => String(new Date().getFullYear() - i)),
-]
-
 const ESTIMATED_PRICE_OPTIONS = [
   'Under $500',
   '$500 – $1,000',
@@ -38,7 +34,6 @@ interface AiCandidate {
   caseSize: string | null
   wristSize: string | null
   estimatedPrice: string | null
-  productionYear: string | null
   lugToLug: string | null
   betweenLugs: string | null
   thickness: string | null
@@ -62,7 +57,6 @@ export default function UploadClient() {
   const [caseSize, setCaseSize] = useState('')
   const [wristSize, setWristSize] = useState('')
   const [estimatedPrice, setEstimatedPrice] = useState('')
-  const [productionYear, setProductionYear] = useState('')
   const [lugToLug, setLugToLug] = useState('')
   const [betweenLugs, setBetweenLugs] = useState('')
   const [thickness, setThickness] = useState('')
@@ -304,7 +298,6 @@ export default function UploadClient() {
     setCaseSize(candidate.caseSize || '')
     setWristSize(candidate.wristSize || '')
     setEstimatedPrice(candidate.estimatedPrice || '')
-    setProductionYear(candidate.productionYear || '')
     setLugToLug(candidate.lugToLug || '')
     setBetweenLugs(candidate.betweenLugs || '')
     setThickness(candidate.thickness || '')
@@ -376,7 +369,6 @@ export default function UploadClient() {
         if (caseSize.trim()) formData.append('caseSize', caseSize.trim())
         if (wristSize) formData.append('wristSize', wristSize)
         if (estimatedPrice) formData.append('estimatedPrice', estimatedPrice)
-        if (productionYear) formData.append('productionYear', productionYear)
         if (lugToLug.trim()) formData.append('lugToLug', lugToLug.trim())
         if (betweenLugs.trim()) formData.append('betweenLugs', betweenLugs.trim())
         if (thickness.trim()) formData.append('thickness', thickness.trim())
@@ -479,7 +471,6 @@ export default function UploadClient() {
                   setCaseSize('')
                   setWristSize('')
                   setEstimatedPrice('')
-                  setProductionYear('')
                   setLugToLug('')
                   setBetweenLugs('')
                   setThickness('')
@@ -808,23 +799,6 @@ export default function UploadClient() {
                       maxLength={40}
                       className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
                     />
-                  </div>
-
-                  {/* Production year */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Production year <span className="text-textMuted">(optional)</span>
-                    </label>
-                    <select
-                      value={productionYear}
-                      onChange={(e) => setProductionYear(e.target.value)}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                    >
-                      <option value="">Select year</option>
-                      {PRODUCTION_YEAR_OPTIONS.map((yr) => (
-                        <option key={yr} value={yr}>{yr}</option>
-                      ))}
-                    </select>
                   </div>
 
                   {/* Personal fields — user-only */}

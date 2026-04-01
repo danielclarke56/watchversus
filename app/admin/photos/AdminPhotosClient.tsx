@@ -13,7 +13,6 @@ type EditableFields = {
   caseSize: string
   wristSize: string
   estimatedPrice: string
-  productionYear: string
   lugToLug: string
   betweenLugs: string
   thickness: string
@@ -45,7 +44,6 @@ function photoToWatchMeta(photo: PendingPhoto | ApprovedPhoto): WatchMetaFields 
     caseSize: photo.caseSize ?? '',
     wristSize: photo.wristSize ?? '',
     estimatedPrice: photo.estimatedPrice ?? '',
-    productionYear: photo.productionYear ?? '',
     lugToLug: photo.lugToLug ?? '',
     betweenLugs: photo.betweenLugs ?? '',
     thickness: photo.thickness ?? '',
@@ -186,7 +184,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           <FieldInput label="Movement" value={watchMeta.movement} onChange={(v) => onUpdateWatchMeta(group.watchId, 'movement', v)} />
           <FieldInput label="Case Size" value={watchMeta.caseSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'caseSize', v)} unit="mm" />
           <FieldInput label="Wrist Size" value={watchMeta.wristSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'wristSize', v)} unit="mm" />
-          <FieldInput label="Year" value={watchMeta.productionYear} onChange={(v) => onUpdateWatchMeta(group.watchId, 'productionYear', v)} />
           <FieldInput label="Est. Price" value={watchMeta.estimatedPrice} onChange={(v) => onUpdateWatchMeta(group.watchId, 'estimatedPrice', v)} unit="USD" />
           <FieldInput label="Lug-to-Lug" value={watchMeta.lugToLug} onChange={(v) => onUpdateWatchMeta(group.watchId, 'lugToLug', v)} unit="mm" />
           <FieldInput label="Between Lugs" value={watchMeta.betweenLugs} onChange={(v) => onUpdateWatchMeta(group.watchId, 'betweenLugs', v)} unit="mm" />
