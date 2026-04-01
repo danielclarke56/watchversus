@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 
-type Tab = 'pending' | 'approved'
+type Tab = 'pending' | 'approved' | 'rejected'
 
 type EditableFields = {
   brandName: string
@@ -212,8 +212,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onUpdateWatchMeta,
   onSaveGroup,
   onApproveGroup,
+  onRejectGroup,
+  onRestoreGroup,
   onDelete,
   isApproved,
+  isRejected,
 }: {
   group: PhotoGroup<T>
   watchMeta: WatchMetaFields
@@ -223,8 +226,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
   onSaveGroup: (watchId: string, photoIds: string[]) => void
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
+  onRejectGroup?: (watchId: string, photoIds: string[]) => void
+  onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
   isApproved: boolean
+  isRejected?: boolean
 }) {
   const [lightbox, setLightbox] = useState<LightboxState>({
     isOpen: false,
@@ -236,6 +242,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   const isSavingGroup = savingGroup === group.watchId
   const groupSavedOk = savedGroupOk === group.watchId
   const isApprovingGroup = acting === `group-${group.watchId}`
+  const isRejectingGroup = acting === `reject-${group.watchId}`
+  const isRestoringGroup = acting === `restore-${group.watchId}`
 
   const openLightbox = useCallback((index: number) => {
     setLightbox({ isOpen: true, currentIndex: index, watchId: group.watchId })
@@ -331,21 +339,28 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         </div>
 
         {/* Per-photo delete buttons */}
-        {isApproved && onDelete && (
+        {(isApproved || isRejected) && onDelete && (
           <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
             <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Photos</p>
             <div className="space-y-1.5">
               {group.photos.map((photo) => {
                 const isActing = acting === photo.id
+                const isLastPhoto = group.photos.length === 1
+                const canDelete = isRejected ? true : !isLastPhoto
 
                 return (
                   <div key={photo.id} className="flex items-center gap-2">
                     <button
                       onClick={() => onDelete(photo)}
-                      disabled={isActing}
-                      className="text-xs bg-red-500 text-white px-2 py-0.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                      disabled={isActing || !canDelete}
+                      className={`text-xs px-2 py-0.5 rounded font-medium transition-colors ${
+                        canDelete
+                          ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                      title={isLastPhoto && !isRejected ? 'Cannot delete the last photo' : ''}
                     >
-                      {isActing ? '...' : 'Delete'}
+                      {isActing ? '...' : isRejected ? 'Delete Permanently' : 'Del'}
                     </button>
                   </div>
                 )
@@ -356,7 +371,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
 
         {/* Action buttons — bottom of card */}
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 bg-surfaceAlt flex items-center gap-2">
-          {!isApproved && onApproveGroup && (
+          {!isApproved && !isRejected && onApproveGroup && (
             <button
               onClick={() => onApproveGroup(group.watchId, group.photos.map((p) => p.id))}
               disabled={isApprovingGroup}
@@ -365,8 +380,29 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               {isApprovingGroup ? 'Approving...' : `Approve Watch (${group.photos.length})`}
             </button>
           )}
+          {!isApproved && !isRejected && onRejectGroup && (
+            <button
+              onClick={() => onRejectGroup(group.watchId, group.photos.map((p) => p.id))}
+              disabled={isRejectingGroup}
+              className="bg-red-600 hover:bg-red-700 text-white rounded px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50"
+            >
+              {isRejectingGroup ? 'Rejecting...' : `Reject Watch`}
+            </button>
+          )}
+          {isRejected && onRestoreGroup && (
+            <button
+              onClick={() => onRestoreGroup(group.watchId, group.photos.map((p) => p.id))}
+              disabled={isRestoringGroup}
+              className="flex-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50"
+            >
+              {isRestoringGroup ? 'Restoring...' : `Restore to Pending`}
+            </button>
+          )}
           {isApproved && (
             <div className="text-sm text-green-600 font-semibold">✓ Approved</div>
+          )}
+          {isRejected && (
+            <div className="text-sm text-red-600 font-semibold">✗ Rejected</div>
           )}
         </div>
       </div>
@@ -388,9 +424,11 @@ export default function AdminPhotosClient() {
   const [activeTab, setActiveTab] = useState<Tab>('pending')
   const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([])
   const [approvedPhotos, setApprovedPhotos] = useState<ApprovedPhoto[]>([])
+  const [rejectedPhotos, setRejectedPhotos] = useState<PendingPhoto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [acting, setActing] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   // Group-level watch metadata state (keyed by watchId)
   const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
@@ -402,16 +440,49 @@ export default function AdminPhotosClient() {
   // Grouped photos for display
   const pendingGroups = useMemo(() => groupPhotosByWatch(pendingPhotos), [pendingPhotos])
   const approvedGroups = useMemo(() => groupPhotosByWatch(approvedPhotos), [approvedPhotos])
+  const rejectedGroups = useMemo(() => groupPhotosByWatch(rejectedPhotos), [rejectedPhotos])
+
+  // Filter groups by search query
+  const filteredPendingGroups = useMemo(() => {
+    if (!searchQuery.trim()) return pendingGroups
+    const query = searchQuery.toLowerCase()
+    return pendingGroups.filter((group) => {
+      return group.brandName.toLowerCase().includes(query) ||
+        group.modelName.toLowerCase().includes(query) ||
+        group.referenceNumber.toLowerCase().includes(query)
+    })
+  }, [pendingGroups, searchQuery])
+
+  const filteredApprovedGroups = useMemo(() => {
+    if (!searchQuery.trim()) return approvedGroups
+    const query = searchQuery.toLowerCase()
+    return approvedGroups.filter((group) => {
+      return group.brandName.toLowerCase().includes(query) ||
+        group.modelName.toLowerCase().includes(query) ||
+        group.referenceNumber.toLowerCase().includes(query)
+    })
+  }, [approvedGroups, searchQuery])
+
+  const filteredRejectedGroups = useMemo(() => {
+    if (!searchQuery.trim()) return rejectedGroups
+    const query = searchQuery.toLowerCase()
+    return rejectedGroups.filter((group) => {
+      return group.brandName.toLowerCase().includes(query) ||
+        group.modelName.toLowerCase().includes(query) ||
+        group.referenceNumber.toLowerCase().includes(query)
+    })
+  }, [rejectedGroups, searchQuery])
 
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        const [pendingRes, approvedRes] = await Promise.all([
+        const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
           fetch('/api/admin/photos'),
           fetch('/api/admin/photos?status=approved'),
+          fetch('/api/admin/photos?status=rejected'),
         ])
 
-        if (!pendingRes.ok || !approvedRes.ok) {
+        if (!pendingRes.ok || !approvedRes.ok || !rejectedRes.ok) {
           if (pendingRes.status === 401 || pendingRes.status === 403) {
             throw new Error('Access denied — admin only')
           }
@@ -420,6 +491,7 @@ export default function AdminPhotosClient() {
 
         const pendingData = (await pendingRes.json()) as PendingPhoto[]
         const approvedData = (await approvedRes.json()) as ApprovedPhoto[]
+        const rejectedData = (await rejectedRes.json()) as PendingPhoto[]
 
         if (Array.isArray(pendingData)) {
           setPendingPhotos(pendingData)
@@ -429,6 +501,11 @@ export default function AdminPhotosClient() {
         if (Array.isArray(approvedData)) {
           setApprovedPhotos(approvedData)
           initializeState(approvedData)
+        }
+
+        if (Array.isArray(rejectedData)) {
+          setRejectedPhotos(rejectedData)
+          initializeState(rejectedData)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -549,6 +626,66 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
+  async function handleRejectGroup(watchId: string, photoIds: string[]) {
+    setActing(`reject-${watchId}`)
+    try {
+      const results = await Promise.all(
+        photoIds.map((photoId) =>
+          fetch('/api/admin/photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'reject', watchId, photoId }),
+          })
+        )
+      )
+
+      if (results.every((res) => res.ok)) {
+        const photosToReject = pendingPhotos.filter((p) => photoIds.includes(p.id))
+        setPendingPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))
+        setRejectedPhotos((prev) => [...photosToReject, ...prev])
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
+  async function handleRestoreGroup(watchId: string, photoIds: string[]) {
+    setActing(`restore-${watchId}`)
+    try {
+      const results = await Promise.all(
+        photoIds.map((photoId) =>
+          fetch('/api/admin/photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'restore', watchId, photoId }),
+          })
+        )
+      )
+
+      if (results.every((res) => res.ok)) {
+        const photosToRestore = rejectedPhotos.filter((p) => photoIds.includes(p.id))
+        setRejectedPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))
+        setPendingPhotos((prev) => [...photosToRestore, ...prev])
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
+  async function handleDeleteRejected(photo: PendingPhoto) {
+    if (!confirm('Permanently delete this photo? This cannot be undone.')) return
+    setActing(photo.id)
+    try {
+      const res = await fetch('/api/admin/photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', watchId: photo.watchId, photoId: photo.id }),
+      })
+      if (res.ok) {
+        setRejectedPhotos((prev) => prev.filter((p) => p.id !== photo.id))
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
@@ -558,6 +695,30 @@ export default function AdminPhotosClient() {
           {error}
         </div>
       )}
+
+      {/* Search Bar */}
+      <div className="mb-6 flex items-center gap-2">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            placeholder="Search by brand, model, or reference #..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full text-sm border border-border rounded px-3 py-2 bg-surface text-textPrimary placeholder-textMuted focus:outline-none focus:ring-1 focus:ring-blue-400"
+            aria-label="Search watches"
+          />
+        </div>
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="px-2.5 py-2 text-xl text-textMuted hover:text-textPrimary transition-colors"
+            aria-label="Clear search"
+            title="Clear search"
+          >
+            ×
+          </button>
+        )}
+      </div>
 
       {/* Tabs */}
       <div className="flex border-b border-border mb-5 overflow-x-auto">
@@ -591,6 +752,21 @@ export default function AdminPhotosClient() {
             </span>
           )}
         </button>
+        <button
+          onClick={() => setActiveTab('rejected')}
+          className={`px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+            activeTab === 'rejected'
+              ? 'border-blue-600 text-blue-600'
+              : 'border-transparent text-textMuted hover:text-textPrimary'
+          }`}
+        >
+          Rejected
+          {!loading && rejectedPhotos.length > 0 && (
+            <span className="ml-1 sm:ml-2 bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
+              {rejectedPhotos.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {loading ? (
@@ -604,9 +780,14 @@ export default function AdminPhotosClient() {
                   <p className="text-textSecond text-lg mb-1">All clear ✓</p>
                   <p className="text-textMuted text-sm">No photos pending review.</p>
                 </div>
+              ) : filteredPendingGroups.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-textSecond text-lg mb-1">No matches</p>
+                  <p className="text-textMuted text-sm">No watches match your search.</p>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {pendingGroups.map((group) => (
+                  {filteredPendingGroups.map((group) => (
                     <GroupedPhotoCard
                       key={group.watchId}
                       group={group}
@@ -617,6 +798,7 @@ export default function AdminPhotosClient() {
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
                       onApproveGroup={handleApproveGroup}
+                      onRejectGroup={handleRejectGroup}
                       isApproved={false}
                     />
                   ))}
@@ -631,9 +813,14 @@ export default function AdminPhotosClient() {
                 <div className="py-16 text-center">
                   <p className="text-textSecond">No approved photos yet.</p>
                 </div>
+              ) : filteredApprovedGroups.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-textSecond text-lg mb-1">No matches</p>
+                  <p className="text-textMuted text-sm">No watches match your search.</p>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {approvedGroups.map((group) => (
+                  {filteredApprovedGroups.map((group) => (
                     <GroupedPhotoCard
                       key={group.watchId}
                       group={group}
@@ -645,6 +832,42 @@ export default function AdminPhotosClient() {
                       onSaveGroup={handleSaveGroup}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       isApproved={true}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'rejected' && (
+            <>
+              {rejectedPhotos.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-textSecond">No rejected photos.</p>
+                </div>
+              ) : filteredRejectedGroups.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-textSecond text-lg mb-1">No matches</p>
+                  <p className="text-textMuted text-sm">No watches match your search.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredRejectedGroups.map((group) => (
+                    <GroupedPhotoCard
+                      key={group.watchId}
+                      group={group}
+                      watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
+                      captionState={captionState}
+                      acting={acting}
+                      savingGroup={savingGroup}
+                      savedGroupOk={savedGroupOk}
+                      onUpdateWatchMeta={updateWatchMeta}
+                      onSaveGroup={handleSaveGroup}
+                      onUpdateCaption={updateCaption}
+                      onRestoreGroup={handleRestoreGroup}
+                      onDelete={(photo) => handleDeleteRejected(photo)}
+                      isApproved={false}
+                      isRejected={true}
                     />
                   ))}
                 </div>

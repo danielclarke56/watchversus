@@ -9,6 +9,7 @@ export const photos = pgTable(
     userId: text('user_id').notNull(),
     userName: text('user_name').notNull(),
     url: text('url').notNull(),
+    thumbnailUrl: text('thumbnail_url'), // Optional: 600px wide thumbnail
     brandName: text('brand_name'),
     modelName: text('model_name'),
     referenceNumber: text('reference_number'),
