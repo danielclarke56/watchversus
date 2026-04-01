@@ -348,14 +348,21 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
             <div className="space-y-1.5">
               {group.photos.map((photo) => {
                 const isActing = acting === photo.id
+                const isLastPhoto = group.photos.length === 1
+                const canDelete = !isLastPhoto
 
                 return (
                   <div key={photo.id} className="flex items-center gap-2">
                     <p className="flex-1 text-xs text-textMuted">Photo {group.photos.indexOf(photo) + 1}</p>
                     <button
                       onClick={() => onDelete(photo)}
-                      disabled={isActing}
-                      className="text-xs bg-red-500 text-white px-2 py-0.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                      disabled={isActing || !canDelete}
+                      className={`text-xs px-2 py-0.5 rounded font-medium transition-colors ${
+                        canDelete
+                          ? 'bg-red-500 text-white hover:bg-red-600 disabled:opacity-50'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                      title={isLastPhoto ? 'Cannot delete the last photo' : ''}
                     >
                       {isActing ? '...' : 'Delete'}
                     </button>

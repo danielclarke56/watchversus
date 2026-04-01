@@ -6,7 +6,7 @@ import { isValidSlug } from '@/lib/validation'
 import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 
 /** GET /api/admin/photos — list pending or approved photos (?status=pending|approved) */
 export async function GET(req: NextRequest) {
@@ -96,6 +96,21 @@ export async function POST(req: NextRequest) {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
     } else if (action === 'delete' || action === 'reject' || action === 'delete-approved') {
+      // For delete-approved, check if this is the last photo
+      if (action === 'delete-approved') {
+        const approvedPhotoCount = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(photos)
+          .where(and(eq(photos.watchId, watchId), eq(photos.status, 'approved')))
+          .then((result) => result[0]?.count || 0)
+
+        if (approvedPhotoCount <= 1) {
+          return NextResponse.json(
+            { error: 'Cannot delete the last photo — a watch must have at least one photo' },
+            { status: 400 }
+          )
+        }
+      }
       // Delete photo from R2 or filesystem
       const url = photoRecord.url
       if (url.startsWith('/images/')) {
