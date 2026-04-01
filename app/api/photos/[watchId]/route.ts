@@ -5,7 +5,6 @@ import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import type { ApprovedPhoto } from '@/lib/photos'
-import { ACCEPTED_TYPES } from '@/lib/photos'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
 import { checkRateLimit } from '@/lib/ratelimit'
 import { db } from '@/lib/db'
@@ -53,6 +52,7 @@ export async function GET(
       userId: p.userId,
       userName: p.userName,
       url: p.url,
+      thumbnailUrl: p.thumbnailUrl ?? undefined,
       caption: p.caption ?? undefined,
       brandName: p.brandName ?? undefined,
       modelName: p.modelName ?? undefined,
@@ -112,9 +112,12 @@ export async function POST(
     return NextResponse.json({ error: 'No photo provided' }, { status: 400 })
   }
 
-  if (!ACCEPTED_TYPES.includes(file.type)) {
+  // Note: Client-side compression converts HEIC/HEIF to JPEG automatically
+  // API should only receive JPEG, PNG, WebP, or AVIF
+  const apiAcceptedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+  if (!apiAcceptedTypes.includes(file.type)) {
     auditLog('upload.validation_failed', { reason: 'mime_type', userId, ip, mime: file.type })
-    return NextResponse.json({ error: 'Only JPEG, PNG, and WebP images are accepted' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid image format. Please try another photo.' }, { status: 400 })
   }
 
   // Server-side safety check (8 MB limit, after client-side compression should be much smaller)
@@ -142,8 +145,23 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid image file' }, { status: 400 })
   }
 
+  // Generate thumbnail: 600px wide, proportional height, max 600px, JPEG quality 80
+  let thumbnailBuffer: Buffer
+  try {
+    thumbnailBuffer = await sharp(rawBuffer)
+      .rotate()
+      .resize(600, 600, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 80 })
+      .toBuffer()
+  } catch {
+    auditLog('upload.thumbnail_failed', { reason: 'sharp_thumbnail', userId, ip, size: file.size })
+    // Thumbnail generation failed, but continue with upload (thumbnailUrl will be null)
+    thumbnailBuffer = Buffer.alloc(0)
+  }
+
   const photoId = crypto.randomUUID()
   let photoUrl: string
+  let thumbnailUrl: string | undefined
 
   // Read metadata fields from formData early (needed for dedup)
   const wristSize = formData.get('wristSize') as string | null
@@ -177,8 +195,18 @@ export async function POST(
   const { isR2Configured } = await import('@/lib/r2')
   if (isR2Configured) {
     try {
-      const { uploadPhotoToR2 } = await import('@/lib/r2')
+      const { uploadPhotoToR2, uploadThumbnailToR2 } = await import('@/lib/r2')
       photoUrl = await uploadPhotoToR2(effectiveWatchId, photoId, cleanBuffer)
+      
+      // Upload thumbnail if generation succeeded
+      if (thumbnailBuffer.length > 0) {
+        try {
+          thumbnailUrl = await uploadThumbnailToR2(photoId, thumbnailBuffer)
+        } catch (error) {
+          // Thumbnail upload failed, but log and continue (thumbnailUrl will be undefined)
+          auditLog('upload.thumbnail_upload_failed', { userId, ip, photoId, error: String(error) })
+        }
+      }
     } catch (error) {
       auditLog('upload.storage_failed', { userId, ip, photoId, error: String(error) })
       return NextResponse.json({ error: 'Storage unavailable. Please try again later.' }, { status: 503 })
@@ -190,6 +218,13 @@ export async function POST(
     const localFilename = `${photoId}.webp`
     fs.writeFileSync(path.join(dir, localFilename), cleanBuffer)
     photoUrl = `/images/user-uploads/${effectiveWatchId}/${localFilename}`
+    
+    // Also save thumbnail locally for consistency
+    if (thumbnailBuffer.length > 0) {
+      const thumbFilename = `thumb-${photoId}.jpg`
+      fs.writeFileSync(path.join(dir, thumbFilename), thumbnailBuffer)
+      thumbnailUrl = `/images/user-uploads/${effectiveWatchId}/${thumbFilename}`
+    }
   }
 
   const referenceNumber = formData.get('referenceNumber') as string | null
@@ -209,6 +244,7 @@ export async function POST(
       userId,
       userName: sanitizeText(userName, 50),
       url: photoUrl,
+      thumbnailUrl: thumbnailUrl || undefined,
       brandName: brandName || undefined,
       modelName: modelName || undefined,
       referenceNumber: referenceNumber || undefined,

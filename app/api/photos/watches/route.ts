@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { count } from 'drizzle-orm'
 
 /**
@@ -13,10 +13,14 @@ import { count } from 'drizzle-orm'
 export async function GET() {
   try {
     // Query for distinct watchIds with approved photos, grouped with count
+    // Also pull a representative brandName/modelName from user-submitted photo data
     const photosByWatch = await db
       .select({
         watchId: photos.watchId,
         photoCount: count(photos.id),
+        // Pick the first non-null user-submitted brand/model for this watchId
+        photoBrandName: sql<string | null>`MAX(${photos.brandName})`,
+        photoModelName: sql<string | null>`MAX(${photos.modelName})`,
       })
       .from(photos)
       .where(eq(photos.status, 'approved'))
@@ -35,6 +39,9 @@ export async function GET() {
           watchName: watch?.name ?? unslugify(item.watchId),
           watchBrand: watch?.brand ?? null,
           watchReference: watch?.reference ?? null,
+          // User-submitted fields — used as fallback when static library has no match
+          photoBrandName: item.photoBrandName ?? null,
+          photoModelName: item.photoModelName ?? null,
           count: item.photoCount,
         }
       })
