@@ -3,6 +3,7 @@ export interface Photo {
   watchId: string
   userId: string
   userName: string
+  isOfficial?: boolean
   url: string
   brandName?: string | null
   modelName?: string | null

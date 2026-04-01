@@ -11,6 +11,7 @@ interface PhotoItem {
   userId: string
   url: string
   userName: string
+  isOfficial?: boolean
   createdAt: string
   watchSlug?: string
   watchName?: string
@@ -379,13 +380,17 @@ function PhotoGalleryContent() {
                   {ref && <p className="text-white/60 text-sm">Ref. {ref}</p>}
                   <p className="text-white/50 text-xs">
                     by{' '}
-                    <Link
-                      href={`/profile/${p.userId}`}
-                      className="text-accent hover:text-accentHover transition-colors underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {p.userName}
-                    </Link>
+                    {p.isOfficial ? (
+                      <span className="text-accent">WatchVsWatch</span>
+                    ) : (
+                      <Link
+                        href={`/profile/${p.userId}`}
+                        className="text-accent hover:text-accentHover transition-colors underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {p.userName}
+                      </Link>
+                    )}
                   </p>
                 </div>
               )
