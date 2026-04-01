@@ -410,6 +410,7 @@ export default function AdminPhotosClient() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [acting, setActing] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   // Group-level watch metadata state (keyed by watchId)
   const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
@@ -421,6 +422,29 @@ export default function AdminPhotosClient() {
   // Grouped photos for display
   const pendingGroups = useMemo(() => groupPhotosByWatch(pendingPhotos), [pendingPhotos])
   const approvedGroups = useMemo(() => groupPhotosByWatch(approvedPhotos), [approvedPhotos])
+
+  // Filter groups by search query
+  const filteredPendingGroups = useMemo(() => {
+    if (!searchQuery.trim()) return pendingGroups
+    const query = searchQuery.toLowerCase()
+    return pendingGroups.filter((group) => {
+      const brandMatch = group.brandName.toLowerCase().includes(query)
+      const modelMatch = group.modelName.toLowerCase().includes(query)
+      const refMatch = group.referenceNumber.toLowerCase().includes(query)
+      return brandMatch || modelMatch || refMatch
+    })
+  }, [pendingGroups, searchQuery])
+
+  const filteredApprovedGroups = useMemo(() => {
+    if (!searchQuery.trim()) return approvedGroups
+    const query = searchQuery.toLowerCase()
+    return approvedGroups.filter((group) => {
+      const brandMatch = group.brandName.toLowerCase().includes(query)
+      const modelMatch = group.modelName.toLowerCase().includes(query)
+      const refMatch = group.referenceNumber.toLowerCase().includes(query)
+      return brandMatch || modelMatch || refMatch
+    })
+  }, [approvedGroups, searchQuery])
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -578,6 +602,30 @@ export default function AdminPhotosClient() {
         </div>
       )}
 
+      {/* Search Bar */}
+      <div className="mb-6 flex items-center gap-2">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            placeholder="Search by brand, model, or reference #..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full text-sm border border-border rounded px-3 py-2 bg-surface text-textPrimary placeholder-textMuted focus:outline-none focus:ring-1 focus:ring-blue-400"
+            aria-label="Search watches"
+          />
+        </div>
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="px-2.5 py-2 text-xl text-textMuted hover:text-textPrimary transition-colors"
+            aria-label="Clear search"
+            title="Clear search"
+          >
+            ×
+          </button>
+        )}
+      </div>
+
       {/* Tabs */}
       <div className="flex border-b border-border mb-5 overflow-x-auto">
         <button
@@ -623,9 +671,14 @@ export default function AdminPhotosClient() {
                   <p className="text-textSecond text-lg mb-1">All clear ✓</p>
                   <p className="text-textMuted text-sm">No photos pending review.</p>
                 </div>
+              ) : filteredPendingGroups.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-textSecond text-lg mb-1">No matches</p>
+                  <p className="text-textMuted text-sm">No watches match your search.</p>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {pendingGroups.map((group) => (
+                  {filteredPendingGroups.map((group) => (
                     <GroupedPhotoCard
                       key={group.watchId}
                       group={group}
@@ -650,9 +703,14 @@ export default function AdminPhotosClient() {
                 <div className="py-16 text-center">
                   <p className="text-textSecond">No approved photos yet.</p>
                 </div>
+              ) : filteredApprovedGroups.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-textSecond text-lg mb-1">No matches</p>
+                  <p className="text-textMuted text-sm">No watches match your search.</p>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {approvedGroups.map((group) => (
+                  {filteredApprovedGroups.map((group) => (
                     <GroupedPhotoCard
                       key={group.watchId}
                       group={group}
