@@ -87,6 +87,9 @@ function PhotoGalleryContent() {
     return data
   }, [activeWatchId, activeQuery])
 
+  // Group photos by watchId early — used in useEffect hooks below
+  const groups = useMemo(() => groupByWatch(photos), [photos])
+
   useEffect(() => {
     let cancelled = false
     setLoading(true)
@@ -144,18 +147,12 @@ function PhotoGalleryContent() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lightbox])
+  }, [lightbox, groups])
 
   // Preload adjacent lightbox images when lightbox group changes
   useEffect(() => {
     if (!lightbox) return
     
-    // Note: groups is defined as a useMemo below, but we access it here
-    // ESLint will warn about missing dependency, but we suppress it because
-    // groups changes whenever photos changes, which would cause unnecessary re-preloads
-    // We only need to re-preload when lightbox groupIdx changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const preloadAdjacentImages = () => {
       const { groupIdx } = lightbox
       const urlsToPreload = []
@@ -180,16 +177,13 @@ function PhotoGalleryContent() {
       })
     }
     preloadAdjacentImages()
-  }, [lightbox?.groupIdx])
+  }, [lightbox?.groupIdx, groups])
 
   // Show loading state when lightbox photo changes
   useEffect(() => {
     if (lightbox === null) return
     setLightboxImageLoading(true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lightbox?.groupIdx, lightbox?.photoIdx])
-
-  const groups = useMemo(() => groupByWatch(photos), [photos])
 
   const selectedWatchName = activeWatchId && photos.length > 0
     ? photos[0].watchBrand && photos[0].watchName
