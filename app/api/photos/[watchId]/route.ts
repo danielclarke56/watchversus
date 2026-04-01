@@ -5,7 +5,6 @@ import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import type { ApprovedPhoto } from '@/lib/photos'
-import { ACCEPTED_TYPES } from '@/lib/photos'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
 import { checkRateLimit } from '@/lib/ratelimit'
 import { db } from '@/lib/db'
@@ -112,9 +111,12 @@ export async function POST(
     return NextResponse.json({ error: 'No photo provided' }, { status: 400 })
   }
 
-  if (!ACCEPTED_TYPES.includes(file.type)) {
+  // Note: Client-side compression converts HEIC/HEIF to JPEG automatically
+  // API should only receive JPEG, PNG, WebP, or AVIF
+  const apiAcceptedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+  if (!apiAcceptedTypes.includes(file.type)) {
     auditLog('upload.validation_failed', { reason: 'mime_type', userId, ip, mime: file.type })
-    return NextResponse.json({ error: 'Only JPEG, PNG, and WebP images are accepted' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid image format. Please try another photo.' }, { status: 400 })
   }
 
   // Server-side safety check (8 MB limit, after client-side compression should be much smaller)

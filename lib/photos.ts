@@ -28,6 +28,8 @@ export interface ApprovedPhoto extends Photo {
   approved: true
 }
 
-export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+// Supported image formats. HEIC/HEIF (iPhone) are auto-converted to JPEG during compression.
+// On iOS Safari, WebP encoding is disabled to use JPEG fallback due to canvas.toBlob() issues.
+export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif']
 export const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB (pre-compression client validation)
 export const PHOTOS_PER_PAGE = 12

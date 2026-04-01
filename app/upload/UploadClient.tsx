@@ -90,21 +90,49 @@ export default function UploadClient() {
       .slice(0, 20)
   }, [search])
 
+  // Detect iOS Safari
+  const isIOSSafari = () => {
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
+    const isIOS = /iPhone|iPad|iPod/.test(ua)
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua)
+    return isIOS && isSafari
+  }
+
   // Compress image to target max 2400px on longest side, 85% quality, max output 3MB
-  const compressImage = async (file: File): Promise<File> => {
+  // Falls back to JPEG on iOS Safari (WebP canvas encoding is unreliable)
+  const compressImage = async (file: File): Promise<{ file: File; error?: string }> => {
     try {
+      // iOS Safari doesn't reliably support WebP canvas.toBlob() encoding
+      // Use JPEG fallback for safety
+      const useWebP = !isIOSSafari()
+      const targetMimeType = useWebP ? 'image/webp' : 'image/jpeg'
+
+      if (!useWebP) {
+        console.warn('[Upload] iOS Safari detected: using JPEG fallback instead of WebP')
+      }
+
       const options = {
         maxSizeMB: 3,
         maxWidthOrHeight: 2400,
         useWebWorker: true,
-        fileType: 'image/webp',
-        initialQuality: 0.85,
+        fileType: targetMimeType,
+        initialQuality: useWebP ? 0.85 : 0.9,
       }
+
       const compressedBlob = await imageCompression(file, options)
-      return new File([compressedBlob], file.name, { type: 'image/webp' })
+
+      // Validate that compression produced a blob
+      if (!compressedBlob || compressedBlob.size === 0) {
+        const errMsg = 'Image compression failed (empty result). Please try another photo.'
+        console.error('[Upload] Compression returned empty blob:', { size: compressedBlob?.size, mimeType: targetMimeType })
+        return { file, error: errMsg }
+      }
+
+      return { file: new File([compressedBlob], file.name, { type: targetMimeType }) }
     } catch (err) {
-      console.error('Compression failed:', err)
-      return file
+      const errMsg = 'Image compression failed. Please try another photo.'
+      console.error('[Upload] Compression error:', { error: err, fileName: file.name, fileType: file.type })
+      return { file, error: errMsg }
     }
   }
 
@@ -172,8 +200,8 @@ export default function UploadClient() {
       setError('File must be under 20MB')
       return
     }
-    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
-      setError('Only JPEG, PNG, WebP, or AVIF images are allowed')
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif'].includes(f.type)) {
+      setError('Only JPEG, PNG, WebP, AVIF, or HEIC images are allowed')
       return
     }
     setError('')
@@ -184,36 +212,57 @@ export default function UploadClient() {
 
     // Compress image before processing
     setCompressing(true)
-    const compressedFile = await compressImage(f)
+    const { file: compressedFile, error: compressionError } = await compressImage(f)
     setCompressing(false)
 
+    // Show error if compression failed
+    if (compressionError) {
+      setError(compressionError)
+      return
+    }
+
     const reader = new FileReader()
+    reader.onerror = () => {
+      setError('Failed to read file. Please try again.')
+      console.error('[Upload] FileReader error:', reader.error)
+    }
     reader.onload = () => {
-      const dataUrl = reader.result as string
-      if (slotIndex >= 0) {
-        // Replace existing slot
-        setFiles((prev) => {
-          const next = [...prev]
-          next[slotIndex] = compressedFile
-          return next
-        })
-        setPreviews((prev) => {
-          const next = [...prev]
-          next[slotIndex] = dataUrl
-          return next
-        })
-        // Reset AI state when photo is replaced
-        if (slotIndex === 0) {
-          setIsWatch(null)
-          setAiGenerated(null)
-          setAiIdentified(false)
+      try {
+        const dataUrl = reader.result as string
+        if (!dataUrl || !dataUrl.startsWith('data:')) {
+          setError('Failed to process file preview. Please try again.')
+          console.error('[Upload] Invalid data URL generated')
+          return
         }
-      } else {
-        // Add new
-        if (files.length < MAX_PHOTOS) {
-          setFiles((prev) => [...prev, compressedFile])
-          setPreviews((prev) => [...prev, dataUrl])
+
+        if (slotIndex >= 0) {
+          // Replace existing slot
+          setFiles((prev) => {
+            const next = [...prev]
+            next[slotIndex] = compressedFile
+            return next
+          })
+          setPreviews((prev) => {
+            const next = [...prev]
+            next[slotIndex] = dataUrl
+            return next
+          })
+          // Reset AI state when photo is replaced
+          if (slotIndex === 0) {
+            setIsWatch(null)
+            setAiGenerated(null)
+            setAiIdentified(false)
+          }
+        } else {
+          // Add new
+          if (files.length < MAX_PHOTOS) {
+            setFiles((prev) => [...prev, compressedFile])
+            setPreviews((prev) => [...prev, dataUrl])
+          }
         }
+      } catch (err) {
+        setError('Failed to process file. Please try again.')
+        console.error('[Upload] Error processing file in onload:', err)
       }
     }
     reader.readAsDataURL(compressedFile)
@@ -328,23 +377,44 @@ export default function UploadClient() {
       setError('File must be under 20MB')
       return
     }
-    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
-      setError('Only JPEG, PNG, WebP, or AVIF images are allowed')
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif'].includes(f.type)) {
+      setError('Only JPEG, PNG, WebP, AVIF, or HEIC images are allowed')
       return
     }
     setError('')
 
     // Compress image before processing
     setCompressing(true)
-    const compressedFile = await compressImage(f)
+    const { file: compressedFile, error: compressionError } = await compressImage(f)
     setCompressing(false)
 
+    // Show error if compression failed
+    if (compressionError) {
+      setError(compressionError)
+      return
+    }
+
     const reader = new FileReader()
+    reader.onerror = () => {
+      setError('Failed to read file. Please try again.')
+      console.error('[Upload] FileReader error in handleDrop:', reader.error)
+    }
     reader.onload = () => {
-      const dataUrl = reader.result as string
-      if (files.length < MAX_PHOTOS) {
-        setFiles((prev) => [...prev, compressedFile])
-        setPreviews((prev) => [...prev, dataUrl])
+      try {
+        const dataUrl = reader.result as string
+        if (!dataUrl || !dataUrl.startsWith('data:')) {
+          setError('Failed to process file preview. Please try again.')
+          console.error('[Upload] Invalid data URL in handleDrop')
+          return
+        }
+
+        if (files.length < MAX_PHOTOS) {
+          setFiles((prev) => [...prev, compressedFile])
+          setPreviews((prev) => [...prev, dataUrl])
+        }
+      } catch (err) {
+        setError('Failed to process file. Please try again.')
+        console.error('[Upload] Error in handleDrop onload:', err)
       }
     }
     reader.readAsDataURL(compressedFile)
