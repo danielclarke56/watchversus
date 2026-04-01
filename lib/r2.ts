@@ -63,6 +63,35 @@ export async function uploadPhotoToR2(
 }
 
 /**
+ * Upload a thumbnail buffer to Cloudflare R2
+ * Returns the public URL on success
+ */
+export async function uploadThumbnailToR2(
+  photoId: string,
+  buffer: Buffer
+): Promise<string> {
+  const key = `user-photos/thumbs/thumb-${photoId}.jpg`
+  const client = getS3Client()
+
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET_NAME!,
+    Key: key,
+    Body: buffer,
+    ContentType: 'image/jpeg',
+    CacheControl: 'public, max-age=31536000, immutable', // 1 year cache for immutable files
+  })
+
+  try {
+    await client.send(command)
+    // Return the public URL
+    return `${R2_PUBLIC_URL}/${key}`
+  } catch (error) {
+    console.error('Failed to upload thumbnail to R2:', error)
+    throw error
+  }
+}
+
+/**
  * Delete a photo from Cloudflare R2 by URL
  */
 export async function deletePhotoFromR2(photoUrl: string): Promise<boolean> {

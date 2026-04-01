@@ -36,16 +36,28 @@
   - Environments: .env.local
 
    Creating an optimized production build ...
- Γ£ô Compiled successfully
-   Linting and checking validity of types ...
-
 Failed to compile.
 
-./app/admin/photos/AdminPhotosClient.tsx
-141:10  Error: 'SinglePhotoCard' is defined but never used.  @typescript-eslint/no-unused-vars
-290:3  Error: 'aiFlags' is defined but never used.  @typescript-eslint/no-unused-vars
-
 ./components/home/PhotoGallery.tsx
-183:6  Warning: React Hook useEffect has missing dependencies: 'groups' and 'lightbox'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+Error: 
+  x Unexpected token `section`. Expected jsx identifier
+     ,-[C:\Users\daniel\.openclaw\workspace\business\projects\watchvswatch\site\components\home\PhotoGallery.tsx:200:1]
+ 200 |   const activeLightboxPhoto = activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null
+ 201 | 
+ 202 |   return (
+ 203 |     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+     :      ^^^^^^^
+ 204 |       {/* Filter indicators */}
+ 205 |       {activeWatchId && selectedWatchName && (
+ 206 |         <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+     `----
 
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/home/PhotoGallery.tsx
+./app/page.tsx
+
+
+> Build failed because of webpack errors
