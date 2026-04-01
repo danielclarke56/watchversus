@@ -73,7 +73,7 @@ export default function TrendingPhotos({ photos }: TrendingPhotosProps) {
                 <div className="relative aspect-square bg-surfaceAlt border border-border rounded-sm overflow-hidden">
                   <Image
                     src={photo.url}
-                    alt={photo.caption || watchName}
+                    alt={watchName}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"

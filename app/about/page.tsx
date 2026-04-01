@@ -48,7 +48,7 @@ export default function AboutPage() {
           <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
               Anyone can upload photos of their watch collection. Sign in with Google or email,
-              upload a photo, add a caption, and it appears in the gallery for other enthusiasts
+              upload a photo, and it appears in the gallery for other enthusiasts
               to discover. We moderate submissions to keep quality high.
             </p>
           </div>

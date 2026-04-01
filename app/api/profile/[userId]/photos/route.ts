@@ -29,7 +29,6 @@ export async function GET(
         userId: p.userId,
         userName: p.userName,
         url: p.url,
-        caption: p.caption ?? undefined,
         createdAt: p.createdAt.toISOString(),
         approved: true,
       }))

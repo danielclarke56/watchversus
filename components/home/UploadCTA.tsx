@@ -29,7 +29,7 @@ export default function UploadCTA({ photos }: UploadCTAProps) {
                   >
                     <Image
                       src={photo.url}
-                      alt={photo.caption || 'Owner photo'}
+                      alt="Owner photo"
                       fill
                       className="object-cover"
                       sizes="80px"

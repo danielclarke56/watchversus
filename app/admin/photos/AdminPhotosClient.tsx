@@ -17,11 +17,10 @@ type EditableFields = {
   betweenLugs: string
   thickness: string
   waterResistance: string
-  caption: string
 }
 
 // Watch-level metadata (shared across all photos for same watch)
-type WatchMetaFields = Omit<EditableFields, 'caption'>
+type WatchMetaFields = EditableFields
 
 type PhotoGroup<T extends PendingPhoto | ApprovedPhoto> = {
   watchId: string
@@ -180,11 +179,6 @@ function PhotoLightbox({
             {currentIndex + 1} / {photos.length}
           </p>
         )}
-
-        {/* Caption */}
-        {photo.caption && (
-          <p className="text-white text-center text-sm max-w-xl">{photo.caption}</p>
-        )}
       </div>
 
       {/* Next button */}
@@ -212,26 +206,22 @@ function PhotoLightbox({
 function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   group,
   watchMeta,
-  captionState,
   acting,
   savingGroup,
   savedGroupOk,
   onUpdateWatchMeta,
   onSaveGroup,
-  onUpdateCaption,
   onApproveGroup,
   onDelete,
   isApproved,
 }: {
   group: PhotoGroup<T>
   watchMeta: WatchMetaFields
-  captionState: Record<string, string>
   acting: string | null
   savingGroup: string | null
   savedGroupOk: string | null
   onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
   onSaveGroup: (watchId: string, photoIds: string[]) => void
-  onUpdateCaption: (photoId: string, caption: string) => void
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
   isApproved: boolean
@@ -340,37 +330,29 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           </div>
         </div>
 
-        {/* Per-photo captions and delete buttons */}
-        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
-          <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Photos</p>
-          <div className="space-y-1.5">
-            {group.photos.map((photo) => {
-              const caption = captionState[photo.id] ?? ''
-              const isActing = acting === photo.id
+        {/* Per-photo delete buttons */}
+        {isApproved && onDelete && (
+          <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
+            <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Photos</p>
+            <div className="space-y-1.5">
+              {group.photos.map((photo) => {
+                const isActing = acting === photo.id
 
-              return (
-                <div key={photo.id} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Caption"
-                    value={caption}
-                    onChange={(e) => onUpdateCaption(photo.id, e.target.value)}
-                    className="flex-1 text-xs border border-border rounded px-1.5 py-0.5 bg-surface text-textPrimary focus:outline-none focus:ring-1 focus:ring-blue-400"
-                  />
-                  {isApproved && onDelete && (
+                return (
+                  <div key={photo.id} className="flex items-center gap-2">
                     <button
                       onClick={() => onDelete(photo)}
                       disabled={isActing}
                       className="text-xs bg-red-500 text-white px-2 py-0.5 rounded font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
                     >
-                      {isActing ? '...' : 'Del'}
+                      {isActing ? '...' : 'Delete'}
                     </button>
-                  )}
-                </div>
-              )
-            })}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Action buttons — bottom of card */}
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 bg-surfaceAlt flex items-center gap-2">
@@ -412,8 +394,6 @@ export default function AdminPhotosClient() {
 
   // Group-level watch metadata state (keyed by watchId)
   const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
-  // Per-photo caption state (keyed by photoId)
-  const [captionState, setCaptionState] = useState<Record<string, string>>({})
 
   // Saving state
   const [savingGroup, setSavingGroup] = useState<string | null>(null)
@@ -463,17 +443,14 @@ export default function AdminPhotosClient() {
   function initializeState(photos: (PendingPhoto | ApprovedPhoto)[]) {
     // Group by watchId — take metadata from the first photo per watch
     const metaByWatch: Record<string, WatchMetaFields> = {}
-    const captions: Record<string, string> = {}
 
     photos.forEach((photo) => {
       if (!metaByWatch[photo.watchId]) {
         metaByWatch[photo.watchId] = photoToWatchMeta(photo)
       }
-      captions[photo.id] = photo.caption ?? ''
     })
 
     setWatchMetaState((prev) => ({ ...prev, ...metaByWatch }))
-    setCaptionState((prev) => ({ ...prev, ...captions }))
   }
 
   function updateWatchMeta(watchId: string, field: keyof WatchMetaFields, value: string) {
@@ -481,10 +458,6 @@ export default function AdminPhotosClient() {
       ...prev,
       [watchId]: { ...prev[watchId], [field]: value },
     }))
-  }
-
-  function updateCaption(photoId: string, caption: string) {
-    setCaptionState((prev) => ({ ...prev, [photoId]: caption }))
   }
 
   async function handleSaveGroup(watchId: string, photoIds: string[]) {
@@ -502,7 +475,7 @@ export default function AdminPhotosClient() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               photoId,
-              fields: { ...meta, caption: captionState[photoId] ?? '' },
+              fields: { ...meta },
             }),
           })
         )
@@ -520,7 +493,7 @@ export default function AdminPhotosClient() {
   async function handleApproveGroup(watchId: string, photoIds: string[]) {
     setActing(`group-${watchId}`)
     try {
-      // Save all metadata and captions first
+      // Save all metadata first
       const meta = watchMetaState[watchId]
       if (meta) {
         await Promise.all(
@@ -530,7 +503,7 @@ export default function AdminPhotosClient() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 photoId,
-                fields: { ...meta, caption: captionState[photoId] ?? '' },
+                fields: { ...meta },
               }),
             })
           )
@@ -638,13 +611,11 @@ export default function AdminPhotosClient() {
                       key={group.watchId}
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
-                      captionState={captionState}
                       acting={acting}
                       savingGroup={savingGroup}
                       savedGroupOk={savedGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
-                      onUpdateCaption={updateCaption}
                       onApproveGroup={handleApproveGroup}
                       isApproved={false}
                     />
@@ -667,13 +638,11 @@ export default function AdminPhotosClient() {
                       key={group.watchId}
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
-                      captionState={captionState}
                       acting={acting}
                       savingGroup={savingGroup}
                       savedGroupOk={savedGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
-                      onUpdateCaption={updateCaption}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       isApproved={true}
                     />

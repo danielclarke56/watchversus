@@ -38,8 +38,7 @@ export default function PrivacyPage() {
 
           <h3>User-generated content</h3>
           <p>
-            Photos you upload and captions and descriptions you provide are stored in our
-            database along with your display name and the date of submission. Photos are
+            Photos you upload are stored in our database along with your display name and the date of submission. Photos are
             stored on Vercel Blob storage. Photo metadata is stored on Upstash Redis.
           </p>
 
@@ -62,7 +61,7 @@ export default function PrivacyPage() {
         <section>
           <h2>3. How we use your data</h2>
           <ul>
-            <li>To display your photos and captions in the gallery</li>
+            <li>To display your photos in the gallery</li>
             <li>To authenticate your identity when you sign in</li>
             <li>To prevent abuse (spam and malicious uploads)</li>
             <li>To understand site usage and improve the platform</li>
@@ -123,7 +122,7 @@ export default function PrivacyPage() {
               Delete your account through Clerk to remove it.
             </li>
             <li>
-              <strong>Photos and captions</strong> are retained as long as they are
+              <strong>Photos</strong> are retained as long as they are
               published. You can request removal by emailing us.
             </li>
             <li>

@@ -54,7 +54,7 @@ export default function AdminPhotoList({ initialPhotos, watchNames }: Props) {
             <div className="relative w-24 h-24 bg-surfaceAlt rounded-sm overflow-hidden shrink-0">
               <Image
                 src={p.url}
-                alt={p.caption || 'Pending photo'}
+                alt="Pending photo"
                 fill
                 className="object-cover"
                 sizes="96px"
@@ -65,9 +65,6 @@ export default function AdminPhotoList({ initialPhotos, watchNames }: Props) {
                 {watchNames[p.watchId] ?? p.watchId}
               </p>
               <p className="text-textPrimary text-sm font-semibold">{p.userName}</p>
-              {p.caption && (
-                <p className="text-textSecond text-sm mt-1 truncate">{p.caption}</p>
-              )}
               <div className="flex flex-wrap gap-2 mt-2">
                 {p.wristSize && (
                   <span className="text-xs bg-accentLight text-textSecond px-2 py-0.5 rounded-full">

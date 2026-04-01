@@ -53,7 +53,6 @@ export async function GET(
       userId: p.userId,
       userName: p.userName,
       url: p.url,
-      caption: p.caption ?? undefined,
       brandName: p.brandName ?? undefined,
       modelName: p.modelName ?? undefined,
       referenceNumber: p.referenceNumber ?? undefined,

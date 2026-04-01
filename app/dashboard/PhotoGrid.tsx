@@ -21,7 +21,6 @@ interface Photo {
   betweenLugs: string | null
   thickness: string | null
   waterResistance: string | null
-  caption: string | null
   status: string
   createdAt: Date
 }
@@ -97,7 +96,6 @@ const FIELD_CONFIG = [
   { key: 'betweenLugs',     label: 'Between Lugs (mm)' },
   { key: 'thickness',       label: 'Thickness (mm)' },
   { key: 'waterResistance', label: 'Water Resistance' },
-  { key: 'caption',         label: 'Caption' },
 ] as const
 
 type EditableKey = typeof FIELD_CONFIG[number]['key']
@@ -108,7 +106,7 @@ function groupToEditable(photos: Photo[]): Record<EditableKey, string> {
   const fields: Record<EditableKey, string> = {
     brandName: '', modelName: '', referenceNumber: '', movement: '',
     caseSize: '', wristSize: '', estimatedPrice: '', productionYear: '',
-    lugToLug: '', betweenLugs: '', thickness: '', waterResistance: '', caption: '',
+    lugToLug: '', betweenLugs: '', thickness: '', waterResistance: '',
   }
   for (const photo of photos) {
     for (const { key } of FIELD_CONFIG) {
@@ -268,7 +266,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {FIELD_CONFIG.map(({ key, label }) => (
-                <div key={key} className={key === 'caption' ? 'sm:col-span-2' : ''}>
+                <div key={key}>
                   <label className="block text-xs text-gray-500 mb-0.5">{label}</label>
                   <input
                     type="text"

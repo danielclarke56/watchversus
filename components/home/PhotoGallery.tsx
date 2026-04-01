@@ -10,7 +10,6 @@ interface PhotoItem {
   watchId: string
   userId: string
   url: string
-  caption?: string
   userName: string
   createdAt: string
   watchSlug?: string

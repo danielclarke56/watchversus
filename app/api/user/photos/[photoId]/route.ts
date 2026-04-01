@@ -57,7 +57,6 @@ export async function PATCH(
 
   // Allowlist of editable columns
   const allowedKeys = new Set([
-    'caption',
     'brandName',
     'modelName',
     'referenceNumber',

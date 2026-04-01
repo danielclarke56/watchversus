@@ -31,7 +31,6 @@ export async function GET(req: NextRequest) {
       userId: p.userId,
       userName: p.userName,
       url: p.url,
-      caption: p.caption,
       brandName: p.brandName,
       modelName: p.modelName,
       referenceNumber: p.referenceNumber,
@@ -146,7 +145,6 @@ export async function PATCH(req: NextRequest) {
 
   // Allowlist of editable columns
   const allowedKeys: Record<string, keyof typeof photos> = {
-    caption: 'caption',
     brandName: 'brandName',
     modelName: 'modelName',
     referenceNumber: 'referenceNumber',

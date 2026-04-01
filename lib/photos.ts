@@ -4,7 +4,6 @@ export interface Photo {
   userId: string
   userName: string
   url: string
-  caption?: string | null
   brandName?: string | null
   modelName?: string | null
   referenceNumber?: string | null
