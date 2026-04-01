@@ -6,7 +6,7 @@ import { isValidSlug } from '@/lib/validation'
 import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 
 /** GET /api/admin/photos — list pending or approved photos (?status=pending|approved) */
 export async function GET(req: NextRequest) {
@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden', yourUserId: userId }, { status: 403 })
   }
 
-  const status = req.nextUrl.searchParams.get('status') === 'approved' ? 'approved' : 'pending'
+  const statusParam = req.nextUrl.searchParams.get('status')
+  const status = statusParam === 'approved' ? 'approved' : statusParam === 'rejected' ? 'rejected' : 'pending'
 
   try {
     const rows = await db
@@ -64,13 +65,13 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject' | 'delete-approved'; watchId: string; photoId: string }
+  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject' | 'delete-approved' | 'restore'; watchId: string; photoId: string }
   const { action, watchId, photoId } = body
 
   if (!action || !watchId || !photoId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
-  if (action !== 'approve' && action !== 'delete' && action !== 'reject' && action !== 'delete-approved') {
+  if (!['approve', 'delete', 'reject', 'delete-approved', 'restore'].includes(action)) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
   if (!isValidSlug(watchId)) {
@@ -78,8 +79,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Find the photo — for delete-approved, look for approved; otherwise pending
-    const expectedStatus = action === 'delete-approved' ? 'approved' : 'pending'
+    // Find the photo with the expected status based on action
+    const expectedStatus =
+      action === 'delete-approved' ? 'approved' :
+      action === 'restore' ? 'rejected' :
+      action === 'delete' ? 'rejected' :
+      'pending'
     const photo = await db
       .select()
       .from(photos)
@@ -95,9 +100,31 @@ export async function POST(req: NextRequest) {
     if (action === 'approve') {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
-    } else if (action === 'delete' || action === 'reject' || action === 'delete-approved') {
+    } else if (action === 'reject') {
+      // Only update status to rejected — do NOT delete the file
+      await db.update(photos).set({ status: 'rejected' }).where(eq(photos.id, photoId))
+    } else if (action === 'restore') {
+      // Restore a rejected photo back to pending
+      await db.update(photos).set({ status: 'pending' }).where(eq(photos.id, photoId))
+    } else if (action === 'delete' || action === 'delete-approved') {
+      // For delete-approved, check if this is the last photo
+      if (action === 'delete-approved') {
+        const approvedPhotoCount = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(photos)
+          .where(and(eq(photos.watchId, watchId), eq(photos.status, 'approved')))
+          .then((result) => result[0]?.count || 0)
+
+        if (approvedPhotoCount <= 1) {
+          return NextResponse.json(
+            { error: 'Cannot delete the last photo — a watch must have at least one photo' },
+            { status: 400 }
+          )
+        }
+      }
       // Delete photo from R2 or filesystem
       const url = photoRecord.url
+      const thumbUrl = photoRecord.thumbnailUrl
       if (url.startsWith('/images/')) {
         // Local filesystem
         const filePath = path.join(process.cwd(), 'public', url)
@@ -105,11 +132,14 @@ export async function POST(req: NextRequest) {
           fs.unlinkSync(filePath)
         }
       } else {
-        // Try to delete from R2
+        // Try to delete from R2 (original + thumbnail)
         try {
           const { deletePhotoFromR2, isR2Configured } = await import('@/lib/r2')
           if (isR2Configured) {
             await deletePhotoFromR2(url)
+            if (thumbUrl) {
+              await deletePhotoFromR2(thumbUrl)
+            }
           }
         } catch (error) {
           console.error('Failed to delete from R2:', error)
@@ -117,8 +147,8 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Update photo status to rejected
-      await db.update(photos).set({ status: 'rejected' }).where(eq(photos.id, photoId))
+      // Remove photo record from DB entirely
+      await db.delete(photos).where(eq(photos.id, photoId))
     }
 
     return NextResponse.json({ success: true })
