@@ -61,7 +61,7 @@ export const brands: BrandData[] = [
       },
       {
         question: 'Omega Seamaster 300m vs Rolex Submariner - which to choose?',
-        answer: 'The Omega Seamaster 300m ($5,700-6,200) vs Rolex Submariner 41 ($9,100-9,600) is one of watchmaking\'s most discussed comparisons. The Omega wins on: movement technology (Master Chronometer vs COSC+), price (significantly cheaper), and immediate availability. The Rolex wins on: brand prestige, resale value, case refinement, and the cultural cachet of the Submariner name. For a watch you plan to wear and not resell, the Omega makes strong technical and financial sense. Compare them directly on our platform.',
+        answer: 'The Omega Seamaster 300m ($5,700-6,200) vs Rolex Submariner 41 ($9,100-9,600) is one of watchmaking\'s most discussed comparisons. The Omega wins on: movement technology (Master Chronometer vs COSC+), price (significantly cheaper), and immediate availability. The Rolex wins on: brand prestige, resale value, case refinement, and the cultural cachet of the Submariner name. For a watch you plan to wear and not resell, the Omega makes strong technical and financial sense. See both models in our community photo gallery to compare designs side-by-side through real wrist shots.',
       },
       {
         question: 'Which Omega holds its value best?',
@@ -230,7 +230,7 @@ export const brands: BrandData[] = [
       },
       {
         question: 'Patek Philippe vs Audemars Piguet - which is the greater brand?',
-        answer: 'Patek Philippe is generally considered the apex of watchmaking prestige - independent family ownership, unmatched auction record, and the perception of ultimate horological refinement. Audemars Piguet (Royal Oak) holds its own as the defining luxury sports watch, with secondary market prices that sometimes rival Patek. In terms of movement complexity and finishing standards, Patek has a slight edge historically. In terms of cultural cool and modern sports watch dominance, AP\'s Royal Oak is peerless. Compare the AP Royal Oak and other watches on our platform.',
+        answer: 'Patek Philippe is generally considered the apex of watchmaking prestige - independent family ownership, unmatched auction record, and the perception of ultimate horological refinement. Audemars Piguet (Royal Oak) holds its own as the defining luxury sports watch, with secondary market prices that sometimes rival Patek. In terms of movement complexity and finishing standards, Patek has a slight edge historically. In terms of cultural cool and modern sports watch dominance, AP\'s Royal Oak is peerless. See both brands\' watches in our community photo gallery to compare designs side-by-side through real wrist shots.',
       },
     ],
   },
@@ -253,7 +253,7 @@ export const brands: BrandData[] = [
       },
       {
         question: 'AP Royal Oak vs Patek Nautilus - which is the better watch?',
-        answer: 'Both are icons of the luxury sports watch genre, both designed by Gerald Genta, and both trade at extraordinary secondary market premiums. The Royal Oak (41mm, 10.4mm thick, integrated steel bracelet) is more contemporary and sport-forward. The Nautilus 5711 (40mm, 8.3mm, incredibly slim) is more elegant and refined. AP production continues; the 5711 is discontinued. If you can find either at rational prices, both are exceptional. The choice ultimately comes down to which design speaks to you - compare them on our platform.',
+        answer: 'Both are icons of the luxury sports watch genre, both designed by Gerald Genta, and both trade at extraordinary secondary market premiums. The Royal Oak (41mm, 10.4mm thick, integrated steel bracelet) is more contemporary and sport-forward. The Nautilus 5711 (40mm, 8.3mm, incredibly slim) is more elegant and refined. AP production continues; the 5711 is discontinued. If you can find either at rational prices, both are exceptional. The choice ultimately comes down to which design speaks to you - see both in our community photo gallery to compare designs side-by-side through real wrist shots.',
       },
     ],
   },
@@ -425,7 +425,7 @@ export const brands: BrandData[] = [
     founded: 1946,
     watchBrand: 'Casio',
     heroFact: 'The Casio G-Shock withstood being run over by a 10-ton truck during testing in 1983 - the engineer designed it to survive a three-story fall onto concrete. It passed both tests.',
-    overview: `Casio was founded in Tokyo in 1946 and is Japan's most versatile consumer electronics company, producing calculators, keyboards, cameras, and watches. Its watch division spans from $15 entry-level quartz pieces to $700+ G-Shock MRG series. The G-Shock (1983) is one of the most influential watch designs in history - its shock-resistant module-within-module construction achieved military-grade durability at consumer prices and has become a streetwear and outdoor sports icon. The Edifice, Pro Trek, and Oceanus lines extend Casio's technical expertise into different market segments. G-Shock's collaboration with brands including A Bathing Ape, Reebok, and recent luxury-tier MRG models have made it a credible collector's watch in unexpected circles. We do not currently carry Casio models in our comparison database.`,
+    overview: `Casio was founded in Tokyo in 1946 and is Japan's most versatile consumer electronics company, producing calculators, keyboards, cameras, and watches. Its watch division spans from $15 entry-level quartz pieces to $700+ G-Shock MRG series. The G-Shock (1983) is one of the most influential watch designs in history - its shock-resistant module-within-module construction achieved military-grade durability at consumer prices and has become a streetwear and outdoor sports icon. The Edifice, Pro Trek, and Oceanus lines extend Casio's technical expertise into different market segments. G-Shock's collaboration with brands including A Bathing Ape, Reebok, and recent luxury-tier MRG models have made it a credible collector's watch in unexpected circles. We currently focus on mechanical and automatic timepieces in our community photo gallery.`,
     faq: [
       {
         question: 'Is the Casio G-Shock worth buying?',
@@ -436,8 +436,8 @@ export const brands: BrandData[] = [
         answer: 'Different tools for different purposes. A mechanical automatic offers the craft, heritage, and horological appreciation that quartz digital watches don\'t. A G-Shock offers near-indestructibility, solar charging, atomic time sync, world time, stopwatch, and alarm functions that no mechanical watch can match. Many collectors own both - an automatic for appreciation, a G-Shock for when conditions are harsh. The choice depends on priorities: craft vs function, heritage vs practicality.',
       },
       {
-        question: 'Why doesn\'t WatchVsWatch have Casio watches in its database?',
-        answer: 'Our current comparison database of 50 watches focuses on mechanical and automatic timepieces in the $100-$150,000 range, where direct specification comparison (power reserve, water resistance rating, case material) provides the most value. Casio\'s G-Shock and quartz lines operate in a different market segment. We plan to expand the database - sign up to be notified when Casio models are added to the comparison tool.',
+        question: 'Can I find Casio watches in the WatchVsWatch gallery?',
+        answer: 'Our community photo gallery currently features 50+ mechanical and automatic watches in the $100-$150,000 range, focusing on luxury timepieces where owner photos showcase design and finishing quality. Casio\'s G-Shock and quartz lines operate in a different market segment. Browse Casio owner photos in our gallery or submit your own wrist shots to help the community see how these watches look in real life.',
       },
     ],
   },
@@ -448,7 +448,7 @@ export const brands: BrandData[] = [
     founded: 1918,
     watchBrand: 'Citizen',
     heroFact: 'Citizen invented Eco-Drive in 1976 - a solar-powered movement that can run for six months in total darkness after full charge. Over 100 million Eco-Drive watches have been sold.',
-    overview: `Citizen Watch Co. was founded in Tokyo in 1918 and is Japan's second-largest watch manufacturer (after Seiko). The brand is best known for Eco-Drive solar technology, invented in 1976, which converts any light source to power and offers effectively permanent battery life with routine light exposure. Citizen also produces the Miyota movement family - used by hundreds of independent and microbrand watchmakers worldwide - and its high-end Caliber 0100 Grand Seiko-challenging movement (Â±1 second per year accuracy) sits among the most precise non-atomic timekeepers ever produced. The Promaster series (dive, aviation, land) delivers professional specifications at accessible prices. We do not currently carry Citizen models in our comparison database.`,
+    overview: `Citizen Watch Co. was founded in Tokyo in 1918 and is Japan's second-largest watch manufacturer (after Seiko). The brand is best known for Eco-Drive solar technology, invented in 1976, which converts any light source to power and offers effectively permanent battery life with routine light exposure. Citizen also produces the Miyota movement family - used by hundreds of independent and microbrand watchmakers worldwide - and its high-end Caliber 0100 Grand Seiko-challenging movement (±1 second per year accuracy) sits among the most precise non-atomic timekeepers ever produced. The Promaster series (dive, aviation, land) delivers professional specifications at accessible prices. We currently focus on mechanical and automatic timepieces in our community photo gallery.`,
     faq: [
       {
         question: 'What is Citizen Eco-Drive?',
@@ -460,7 +460,7 @@ export const brands: BrandData[] = [
       },
       {
         question: 'Why doesn\'t WatchVsWatch include Citizen watches?',
-        answer: 'Our comparison database currently focuses on 50 mechanical and automatic watches in the $100-$150,000 tier. Citizen\'s strongest products (Eco-Drive, Promaster series) operate primarily in quartz and solar categories where the comparison dimensions we track (power reserve, movement caliber specifications) are less relevant. We plan to expand - check back as we add Citizen Promaster and Eco-Drive models to allow direct comparison with Seiko and other Japanese brands.',
+        answer: 'Our community photo gallery currently features 50+ mechanical and automatic watches in the $100-$150,000 tier, where owner photos showcase design and finishing quality. Citizen\'s strongest products (Eco-Drive, Promaster series) operate primarily in quartz and solar categories. Browse Citizen owner photos in our gallery or submit your own wrist shots to show how these watches look on real collectors. See Citizen Promaster and Eco-Drive models side-by-side with Seiko and other Japanese brands through community-submitted photos.',
       },
     ],
   },

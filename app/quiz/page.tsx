@@ -52,7 +52,7 @@ export default function QuizPage() {
           {/* Q2 */}
           <div className="card p-6">
             <h3 className="text-lg font-semibold text-textPrimary mb-3">How many watches are in the database?</h3>
-            <p className="text-textSecond">We maintain a curated database of 57 premium watches across all price ranges, from affordable entry-level automatic watches to luxury Swiss timepieces. Each watch is reviewed and compared against others to give you the best recommendations.</p>
+            <p className="text-textSecond">Explore real owner photos of 57+ luxury watches across all price ranges, from affordable entry-level automatic watches to luxury Swiss timepieces. See how watches look on different wrist sizes with community-submitted photos from real collectors.</p>
           </div>
 
           {/* Q3 */}

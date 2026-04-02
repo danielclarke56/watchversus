@@ -113,8 +113,7 @@ export default function TermsPage() {
         <section>
           <h2>6. Intellectual property</h2>
           <p>
-            The WatchVsWatch name, logo, site design, and comparison data
-            editorial content, and code are owned by WatchVsWatch and protected by
+            The WatchVsWatch name, logo, site design, watch data, and editorial content, and code are owned by WatchVsWatch and protected by
             applicable intellectual property laws. You may not reproduce, distribute, or
             create derivative works from our content without written permission.
           </p>

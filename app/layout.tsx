@@ -23,20 +23,20 @@ export const metadata: Metadata = {
     template: '%s | WatchVsWatch',
   },
   description:
-    'Community-driven watch comparisons, honest reviews, and personalized recommendations. Compare any two watches side-by-side with real community ratings.',
-  keywords: ['watch comparison', 'compare watches', 'rolex vs omega', 'seiko vs hamilton', 'rolex vs tudor', 'best watches 2026', 'watch reviews', 'watch recommendations', 'best watches under 500', 'head to head watch comparison'],
+    'Discover real owner photos of luxury watches. Browse Rolex, Omega, Tudor, and premium timepieces with community-submitted wrist shots and honest reviews.',
+  keywords: ['watch photos', 'watch owner photos', 'luxury watch gallery', 'wrist shots', 'rolex photos', 'omega photos', 'seiko photos', 'watch collection', 'watch reviews'],
   openGraph: {
     type: 'website',
     siteName: 'WatchVsWatch',
-    title: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
-    description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
+    title: 'WatchVsWatch - Luxury Watch Gallery & Community Photos',
+    description: 'Real owner photos of luxury watches. Browse community-submitted wrist shots, reviews, and recommendations for Rolex, Omega, Tudor, and more.',
     url: 'https://watchvswatch.com',
     images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
-    description: 'Community-driven watch comparisons, honest reviews, and personalized recommendations.',
+    title: 'WatchVsWatch - Luxury Watch Gallery & Community Photos',
+    description: 'Real owner photos of luxury watches. Browse community-submitted wrist shots, reviews, and recommendations for Rolex, Omega, Tudor, and more.',
     images: ['https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews'],
   },
   verification: {
