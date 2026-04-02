@@ -769,7 +769,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 </div>
 
                 {/* Scrollable thumbnails */}
-                <div className="flex-1 overflow-y-auto px-3 py-4 grid grid-cols-2 gap-2">
+                <div className="flex-1 overflow-y-auto px-3 py-4 grid grid-cols-2 gap-2 content-start">
                   {relatedPhotosLoading ? (
                     <>
                       {Array.from({ length: 6 }).map((_, i) => (
