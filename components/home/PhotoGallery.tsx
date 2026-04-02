@@ -498,19 +498,19 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
           ref={lightboxContainerRef}
-          className="fixed inset-0 z-50 bg-black overflow-hidden"
+          className="fixed inset-0 z-50 bg-white overflow-hidden"
           onClick={closeLightbox}
           style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
           <div className="flex flex-col md:flex-row w-full h-screen" onClick={(e) => e.stopPropagation()}>
             {/* Left column: Main image + watch info (desktop: 70% width, mobile: full width) */}
-            <div className="flex flex-col w-full md:w-[70%] h-auto md:h-screen overflow-y-auto md:overflow-hidden">
+            <div className={`flex flex-col w-full ${relatedPhotos.length > 0 ? 'md:w-[70%]' : ''} h-auto md:h-screen overflow-y-auto md:overflow-hidden`}>
               {/* Share + Close buttons */}
               <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.id) }}
-                  className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                  className="text-gray-700 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center transition-all"
                   aria-label="Share photo"
                 >
                   {copied ? (
@@ -526,7 +526,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.id) }}
-                  className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full h-10 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
+                  className="text-gray-700 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded-full h-10 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
                   aria-label="Copy link"
                 >
                   {linkCopied ? (
@@ -548,7 +548,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-                  className="text-white text-2xl bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                  className="text-gray-700 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center transition-all"
                   aria-label="Close"
                 >
                   ✕
@@ -560,7 +560,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
-                  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
+                  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 text-2xl bg-white border border-gray-200 shadow-sm opacity-80 hover:opacity-100 hover:bg-gray-50 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
                   aria-label="Previous watch"
                 >
                   ←
@@ -572,7 +572,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
-                  className="hidden md:flex absolute right-8 md:right-[30%] top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
+                  className={`hidden md:flex absolute ${relatedPhotos.length > 0 ? 'right-8 md:right-[30%]' : 'right-4'} top-1/2 -translate-y-1/2 text-gray-700 text-2xl bg-white border border-gray-200 shadow-sm opacity-80 hover:opacity-100 hover:bg-gray-50 rounded-full w-12 h-12 items-center justify-center transition-all z-10`}
                   aria-label="Next watch"
                 >
                   →
@@ -581,7 +581,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
               {/* Main image area — fixed height on mobile, full height on desktop */}
               <div
-                className="relative w-full h-[55vh] md:h-full flex items-center justify-center flex-shrink-0 md:flex-shrink"
+                className="relative w-full h-[55vh] md:h-full flex items-center justify-center flex-shrink-0 md:flex-shrink pt-16"
                 onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
                 onTouchEnd={(e) => {
                   const touchEndY = e.changedTouches[0]?.clientY
@@ -605,7 +605,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 {/* Loading spinner overlay */}
                 {lightboxImageLoading && (
                   <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <div className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-12 h-12 border-3 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
                   </div>
                 )}
                 
@@ -620,7 +620,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               </div>
 
               {/* Watch info — below main image (mobile) or at bottom (desktop) */}
-              <div className="relative bg-gradient-to-t from-black via-black/80 to-transparent p-6 text-center flex-shrink-0">
+              <div className="relative bg-white border-t border-gray-100 p-6 text-center flex-shrink-0">
                 {(() => {
                   const p = activeLightboxPhoto
                   const brand = p.brandName || p.watchBrand || null
@@ -629,12 +629,12 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   return (
                     <div className="space-y-1">
                       {(brand || model) && (
-                        <p className="text-white font-semibold text-lg">
+                        <p className="text-gray-900 font-semibold text-lg">
                           {[brand, model].filter(Boolean).join(' ')}
                         </p>
                       )}
-                      {ref && <p className="text-white/70 text-sm">Ref. {ref}</p>}
-                      <p className="text-white/60 text-xs">
+                      {ref && <p className="text-gray-500 text-sm">Ref. {ref}</p>}
+                      <p className="text-gray-400 text-xs">
                         by{' '}
                         {p.isOfficial ? (
                           <span className="text-accent">Watchems</span>
@@ -655,7 +655,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
               {/* Mobile: Horizontal thumbnail strip below watch info */}
               {activeLightboxPhotos.length > 1 && (
-                <div className="md:hidden w-full px-4 py-4 bg-black/80 flex-shrink-0">
+                <div className="md:hidden w-full px-4 py-4 bg-gray-50 flex-shrink-0">
                   <div className="flex gap-3 overflow-x-auto pb-2">
                     {activeLightboxPhotos.map((thumb, thumbIdx) => (
                       <button
@@ -664,7 +664,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                         onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, thumbIdx) }}
                         className={`shrink-0 relative rounded overflow-hidden border-2 transition-colors ${
                           thumbIdx === lightbox.photoIdx
-                            ? 'border-white w-20 h-20'
+                            ? 'border-gray-900 w-20 h-20'
                             : 'border-transparent opacity-60 hover:opacity-90 w-20 h-20'
                         }`}
                         aria-label={`Photo ${thumbIdx + 1}`}
@@ -684,14 +684,14 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
               {/* Mobile: Related photos as horizontal thumbnail strip */}
               {relatedPhotos.length > 0 && (
-                <div className="md:hidden w-full px-4 py-4 bg-black/60 flex-shrink-0">
-                  <h3 className="text-white font-semibold text-sm mb-3">More like this</h3>
+                <div className="md:hidden w-full px-4 py-4 bg-gray-100 flex-shrink-0">
+                  <h3 className="text-gray-900 font-semibold text-sm mb-3">More like this</h3>
                   {relatedPhotosLoading ? (
                     <div className="flex gap-3 overflow-x-auto pb-2">
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div
                           key={i}
-                          className="shrink-0 w-20 h-20 rounded-lg bg-white/10 animate-pulse"
+                          className="shrink-0 w-20 h-20 rounded-lg bg-gray-200 animate-pulse"
                         />
                       ))}
                     </div>
@@ -709,7 +709,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                               e.stopPropagation()
                               router.push('/photo/' + relatedPhoto.id)
                             }}
-                            className="shrink-0 group relative rounded-lg overflow-hidden bg-white/10 w-20 h-20"
+                            className="shrink-0 group relative rounded-lg overflow-hidden bg-gray-200 w-20 h-20"
                             aria-label={relatedLabel || 'Related photo'}
                           >
                             <Image
@@ -730,10 +730,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
             {/* DESKTOP ONLY: Right column (30%) — Related photos scrollable panel */}
             {relatedPhotos.length > 0 && (
-              <div className="hidden md:flex flex-col w-[30%] h-screen bg-[#111] border-l border-white/10 overflow-hidden">
+              <div className="hidden md:flex flex-col w-[30%] h-screen bg-gray-50 border-l border-gray-200 overflow-hidden">
                 {/* Header */}
-                <div className="flex-shrink-0 px-4 py-4 border-b border-white/10">
-                  <h3 className="text-white font-semibold text-base">More like this</h3>
+                <div className="flex-shrink-0 px-4 py-4 border-b border-gray-200">
+                  <h3 className="text-gray-900 font-semibold text-base">More like this</h3>
                 </div>
 
                 {/* Scrollable thumbnails */}
@@ -761,7 +761,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                               e.stopPropagation()
                               router.push('/photo/' + relatedPhoto.id)
                             }}
-                            className="group relative aspect-square rounded-lg overflow-hidden bg-white/10 hover:bg-white/20 transition-colors"
+                            className="group relative aspect-square rounded-lg overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
                             aria-label={relatedLabel || 'Related photo'}
                           >
                             <Image
