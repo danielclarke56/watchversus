@@ -76,10 +76,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Lightbox: which group + which photo within it
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
-  const [showScrollCue, setShowScrollCue] = useState(false)
   const [copied, setCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
-  const scrollCueTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const lightboxContainerRef = useRef<HTMLDivElement>(null)
 
@@ -296,15 +294,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxImageLoading(true)
   }, [lightbox])
 
-  // Cleanup scroll cue timeout on unmount or lightbox close
-  useEffect(() => {
-    return () => {
-      if (scrollCueTimeoutRef.current) {
-        clearTimeout(scrollCueTimeoutRef.current)
-      }
-    }
-  }, [])
-
   // Lock body scroll when lightbox is open (prevents background scroll on mobile)
   const savedScrollYRef = useRef(0)
   useEffect(() => {
@@ -341,10 +330,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       galleryUrlRef.current = window.location.pathname + window.location.search
       window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
       lightboxOpenRef.current = true
-      // Show scroll cue on first open
-      setShowScrollCue(true)
-      if (scrollCueTimeoutRef.current) clearTimeout(scrollCueTimeoutRef.current)
-      scrollCueTimeoutRef.current = setTimeout(() => setShowScrollCue(false), 3000)
     } else if (photo && lightboxOpenRef.current) {
       window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
     }
@@ -367,8 +352,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       window.history.replaceState(null, '', galleryUrlRef.current)
       lightboxOpenRef.current = false
     }
-    setShowScrollCue(false)
-    if (scrollCueTimeoutRef.current) clearTimeout(scrollCueTimeoutRef.current)
     setLightbox(null)
   }, [])
 
@@ -515,252 +498,295 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
           ref={lightboxContainerRef}
-          className="fixed inset-0 z-50 bg-black overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black overflow-hidden"
           onClick={closeLightbox}
           style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
-          <div className="flex flex-col w-full min-h-screen" onClick={(e) => e.stopPropagation()}>
-            {/* Share + Close */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.id) }}
-                className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
-                aria-label="Share photo"
-              >
-                {copied ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                  </svg>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.id) }}
-                className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full h-10 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
-                aria-label="Copy link"
-              >
-                {linkCopied ? (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+          <div className="flex flex-col md:flex-row w-full h-screen" onClick={(e) => e.stopPropagation()}>
+            {/* Left column: Main image + watch info (desktop: 70% width, mobile: full width) */}
+            <div className="flex flex-col w-full md:w-[70%] h-auto md:h-screen overflow-y-auto md:overflow-hidden">
+              {/* Share + Close buttons */}
+              <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.id) }}
+                  className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                  aria-label="Share photo"
+                >
+                  {copied ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 001.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
                     </svg>
-                    <span className="hidden sm:inline">Copy link</span>
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-                className="text-white text-2xl bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.id) }}
+                  className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full h-10 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
+                  aria-label="Copy link"
+                >
+                  {linkCopied ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 001.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                      </svg>
+                      <span className="hidden sm:inline">Copy link</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); closeLightbox() }}
+                  className="text-white text-2xl bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
 
-            {/* Left arrow — previous watch (hidden on mobile) */}
-            {lightbox.groupIdx > 0 && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
-                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
-                aria-label="Previous watch"
-              >
-                ←
-              </button>
-            )}
-
-            {/* Right arrow — next watch (hidden on mobile) */}
-            {lightbox.groupIdx < groups.length - 1 && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
-                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
-                aria-label="Next watch"
-              >
-                →
-              </button>
-            )}
-
-            {/* Main image area — fixed/sticky height */}
-            <div
-              className="relative w-full h-[60vh] md:h-[75vh] flex items-center justify-center flex-shrink-0"
-              onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
-              onTouchEnd={(e) => {
-                const touchEndY = e.changedTouches[0]?.clientY
-                const touchStartY = touchStartYRef.current
-                if (touchStartY === null || touchEndY === null) return
-
-                const diff = touchStartY - touchEndY
-                const threshold = 50
-
-                // Swipe up → next photo
-                if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
-                  navigateLightbox(lightbox.groupIdx + 1, 0)
-                }
-                // Swipe down → previous photo
-                else if (diff < -threshold && lightbox.groupIdx > 0) {
-                  navigateLightbox(lightbox.groupIdx - 1, 0)
-                }
-                touchStartYRef.current = null
-              }}
-            >
-              {/* Loading spinner overlay */}
-              {lightboxImageLoading && (
-                <div className="absolute inset-0 flex items-center justify-center z-20">
-                  <div className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                </div>
+              {/* Left arrow — previous watch (hidden on mobile) */}
+              {lightbox.groupIdx > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
+                  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
+                  aria-label="Previous watch"
+                >
+                  ←
+                </button>
               )}
-              
-              <Image
-                src={activeLightboxPhoto.url}
-                alt={buildPhotoAltText(activeLightboxPhoto)}
-                fill
-                className="object-contain"
-                priority
-                onLoad={() => setLightboxImageLoading(false)}
-              />
 
-              {/* Scroll cue — bouncing chevron (mobile only) */}
-              {showScrollCue && (
-                <div className="block md:hidden absolute bottom-24 left-1/2 -translate-x-1/2 animate-bounce z-20">
-                  <div className="text-white/70 text-2xl">⌃⌃</div>
-                </div>
+              {/* Right arrow — next watch (hidden on mobile) */}
+              {lightbox.groupIdx < groups.length - 1 && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
+                  className="hidden md:flex absolute right-8 md:right-[30%] top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
+                  aria-label="Next watch"
+                >
+                  →
+                </button>
               )}
-            </div>
 
-            {/* Watch info — relative positioning inside flex layout */}
-            <div className="relative bg-gradient-to-t from-black via-black/80 to-transparent p-6 text-center">
-              {(() => {
-                const p = activeLightboxPhoto
-                const brand = p.brandName || p.watchBrand || null
-                const model = p.modelName || p.watchName || null
-                const ref = p.referenceNumber || p.watchReference || null
-                return (
-                  <div className="space-y-1">
-                    {(brand || model) && (
-                      <p className="text-white font-semibold text-lg">
-                        {[brand, model].filter(Boolean).join(' ')}
-                      </p>
-                    )}
-                    {ref && <p className="text-white/70 text-sm">Ref. {ref}</p>}
-                    <p className="text-white/60 text-xs">
-                      by{' '}
-                      {p.isOfficial ? (
-                        <span className="text-accent">Watchems</span>
-                      ) : (
-                        <Link
-                          href={`/profile/${p.userId}`}
-                          className="text-accent hover:text-accentHover transition-colors underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {p.userName}
-                        </Link>
-                      )}
-                    </p>
+              {/* Main image area — fixed height on mobile, full height on desktop */}
+              <div
+                className="relative w-full h-[55vh] md:h-full flex items-center justify-center flex-shrink-0 md:flex-shrink"
+                onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
+                onTouchEnd={(e) => {
+                  const touchEndY = e.changedTouches[0]?.clientY
+                  const touchStartY = touchStartYRef.current
+                  if (touchStartY === null || touchEndY === null) return
+
+                  const diff = touchStartY - touchEndY
+                  const threshold = 50
+
+                  // Swipe up → next photo
+                  if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
+                    navigateLightbox(lightbox.groupIdx + 1, 0)
+                  }
+                  // Swipe down → previous photo
+                  else if (diff < -threshold && lightbox.groupIdx > 0) {
+                    navigateLightbox(lightbox.groupIdx - 1, 0)
+                  }
+                  touchStartYRef.current = null
+                }}
+              >
+                {/* Loading spinner overlay */}
+                {lightboxImageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center z-20">
+                    <div className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                   </div>
-                )
-              })()}
+                )}
+                
+                <Image
+                  src={activeLightboxPhoto.url}
+                  alt={buildPhotoAltText(activeLightboxPhoto)}
+                  fill
+                  className="object-contain"
+                  priority
+                  onLoad={() => setLightboxImageLoading(false)}
+                />
+              </div>
 
-              {/* Thumbnail strip — only shown when multiple photos */}
+              {/* Watch info — below main image (mobile) or at bottom (desktop) */}
+              <div className="relative bg-gradient-to-t from-black via-black/80 to-transparent p-6 text-center flex-shrink-0">
+                {(() => {
+                  const p = activeLightboxPhoto
+                  const brand = p.brandName || p.watchBrand || null
+                  const model = p.modelName || p.watchName || null
+                  const ref = p.referenceNumber || p.watchReference || null
+                  return (
+                    <div className="space-y-1">
+                      {(brand || model) && (
+                        <p className="text-white font-semibold text-lg">
+                          {[brand, model].filter(Boolean).join(' ')}
+                        </p>
+                      )}
+                      {ref && <p className="text-white/70 text-sm">Ref. {ref}</p>}
+                      <p className="text-white/60 text-xs">
+                        by{' '}
+                        {p.isOfficial ? (
+                          <span className="text-accent">Watchems</span>
+                        ) : (
+                          <Link
+                            href={`/profile/${p.userId}`}
+                            className="text-accent hover:text-accentHover transition-colors underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {p.userName}
+                          </Link>
+                        )}
+                      </p>
+                    </div>
+                  )
+                })()}
+              </div>
+
+              {/* Mobile: Horizontal thumbnail strip below watch info */}
               {activeLightboxPhotos.length > 1 && (
-                <div className="mt-4 flex gap-2 justify-center overflow-x-auto pb-1">
-                  {activeLightboxPhotos.map((thumb, thumbIdx) => (
-                    <button
-                      key={thumb.id}
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, thumbIdx) }}
-                      className={`shrink-0 relative w-14 h-14 rounded overflow-hidden border-2 transition-colors ${
-                        thumbIdx === lightbox.photoIdx
-                          ? 'border-white'
-                          : 'border-transparent opacity-60 hover:opacity-90'
-                      }`}
-                      aria-label={`Photo ${thumbIdx + 1}`}
-                    >
-                      <Image
-                        src={thumb.url}
-                        alt={buildPhotoAltText(thumb)}
-                        fill
-                        className="object-cover"
-                        sizes="56px"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Related photos section — "More like this" */}
-            {relatedPhotos.length > 0 && (
-              <div className="w-full px-4 sm:px-6 py-8 bg-black">
-                {/* Section title with divider */}
-                <div className="mb-6">
-                  <h3 className="text-white font-semibold text-lg">More like this</h3>
-                  <div className="mt-2 h-px bg-white/20" />
-                </div>
-
-                {/* Loading state — skeleton placeholders */}
-                {relatedPhotosLoading ? (
-                  <div className="flex md:grid grid-cols-3 gap-4 overflow-x-auto md:overflow-visible pb-1">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="shrink-0 w-24 md:w-full aspect-square rounded-lg bg-white/10 animate-pulse"
-                      />
+                <div className="md:hidden w-full px-4 py-4 bg-black/80 flex-shrink-0">
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {activeLightboxPhotos.map((thumb, thumbIdx) => (
+                      <button
+                        key={thumb.id}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, thumbIdx) }}
+                        className={`shrink-0 relative rounded overflow-hidden border-2 transition-colors ${
+                          thumbIdx === lightbox.photoIdx
+                            ? 'border-white w-20 h-20'
+                            : 'border-transparent opacity-60 hover:opacity-90 w-20 h-20'
+                        }`}
+                        aria-label={`Photo ${thumbIdx + 1}`}
+                      >
+                        <Image
+                          src={thumb.url}
+                          alt={buildPhotoAltText(thumb)}
+                          fill
+                          className="object-cover"
+                          sizes="80px"
+                        />
+                      </button>
                     ))}
                   </div>
-                ) : (
-                  /* Grid layout — horizontal scroll on mobile, 3-col grid on desktop */
-                  <div className="flex md:grid grid-cols-3 gap-4 overflow-x-auto md:overflow-visible pb-1">
-                    {relatedPhotos.slice(0, 12).map((relatedPhoto) => {
-                      const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
-                      const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
-                      const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
-                      return (
-                        <button
-                          key={relatedPhoto.id}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            router.push('/photo/' + relatedPhoto.id)
-                          }}
-                          className="shrink-0 w-24 md:w-full group relative aspect-square rounded-lg overflow-hidden bg-white/10"
-                          aria-label={relatedLabel || 'Related photo'}
-                        >
-                          <Image
-                            src={relatedPhoto.url}
-                            alt={buildPhotoAltText(relatedPhoto)}
-                            fill
-                            className="object-cover transition-transform duration-200 group-hover:scale-105"
-                            sizes="(max-width: 768px) 96px, (max-width: 1280px) 33vw, 25vw"
-                          />
-                          
-                          {/* Watch name + submitter label */}
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                            <p className="text-white text-xs font-medium line-clamp-2 text-center">
-                              {relatedLabel}
-                            </p>
-                            <p className="text-white/60 text-xs text-center">
-                              by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}
-                            </p>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
+                </div>
+              )}
+
+              {/* Mobile: Related photos as horizontal thumbnail strip */}
+              {relatedPhotos.length > 0 && (
+                <div className="md:hidden w-full px-4 py-4 bg-black/60 flex-shrink-0">
+                  <h3 className="text-white font-semibold text-sm mb-3">More like this</h3>
+                  {relatedPhotosLoading ? (
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="shrink-0 w-20 h-20 rounded-lg bg-white/10 animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {relatedPhotos.slice(0, 12).map((relatedPhoto) => {
+                        const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                        const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                        const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                        return (
+                          <button
+                            key={relatedPhoto.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              router.push('/photo/' + relatedPhoto.id)
+                            }}
+                            className="shrink-0 group relative rounded-lg overflow-hidden bg-white/10 w-20 h-20"
+                            aria-label={relatedLabel || 'Related photo'}
+                          >
+                            <Image
+                              src={relatedPhoto.url}
+                              alt={buildPhotoAltText(relatedPhoto)}
+                              fill
+                              className="object-cover transition-transform duration-200 group-hover:scale-105"
+                              sizes="80px"
+                            />
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* DESKTOP ONLY: Right column (30%) — Related photos scrollable panel */}
+            {relatedPhotos.length > 0 && (
+              <div className="hidden md:flex flex-col w-[30%] h-screen bg-[#111] border-l border-white/10 overflow-hidden">
+                {/* Header */}
+                <div className="flex-shrink-0 px-4 py-4 border-b border-white/10">
+                  <h3 className="text-white font-semibold text-base">More like this</h3>
+                </div>
+
+                {/* Scrollable thumbnails */}
+                <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
+                  {relatedPhotosLoading ? (
+                    <>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-full aspect-square rounded-lg bg-white/10 animate-pulse"
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {relatedPhotos.slice(0, 20).map((relatedPhoto) => {
+                        const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                        const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                        const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                        return (
+                          <button
+                            key={relatedPhoto.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              router.push('/photo/' + relatedPhoto.id)
+                            }}
+                            className="w-full group relative aspect-square rounded-lg overflow-hidden bg-white/10 hover:bg-white/20 transition-colors"
+                            aria-label={relatedLabel || 'Related photo'}
+                          >
+                            <Image
+                              src={relatedPhoto.url}
+                              alt={buildPhotoAltText(relatedPhoto)}
+                              fill
+                              className="object-cover transition-transform duration-200 group-hover:scale-105"
+                              sizes="(max-width: 1280px) 30vw, 20vw"
+                            />
+                            
+                            {/* Watch name label */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                              <p className="text-white text-xs font-medium line-clamp-2">
+                                {relatedLabel}
+                              </p>
+                              <p className="text-white/60 text-xs text-left mt-1">
+                                by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}
+                              </p>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
               </div>
             )}
           </div>
