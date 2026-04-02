@@ -76,6 +76,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Lightbox: which group + which photo within it
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
+  const [showScrollCue, setShowScrollCue] = useState(false)
+  const scrollCueTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -238,11 +240,14 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxImageLoading(true)
   }, [lightbox])
 
-  // Cleanup wheel debounce on unmount or lightbox close
+  // Cleanup wheel debounce and scroll cue timeout on unmount or lightbox close
   useEffect(() => {
     return () => {
       if (wheelDebounceRef.current) {
         clearTimeout(wheelDebounceRef.current)
+      }
+      if (scrollCueTimeoutRef.current) {
+        clearTimeout(scrollCueTimeoutRef.current)
       }
     }
   }, [])
@@ -254,6 +259,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       galleryUrlRef.current = window.location.pathname + window.location.search
       window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
       lightboxOpenRef.current = true
+      // Show scroll cue on first open
+      setShowScrollCue(true)
+      if (scrollCueTimeoutRef.current) clearTimeout(scrollCueTimeoutRef.current)
+      scrollCueTimeoutRef.current = setTimeout(() => setShowScrollCue(false), 3000)
     } else if (photo && lightboxOpenRef.current) {
       window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
     }
@@ -274,6 +283,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       window.history.replaceState(null, '', galleryUrlRef.current)
       lightboxOpenRef.current = false
     }
+    setShowScrollCue(false)
+    if (scrollCueTimeoutRef.current) clearTimeout(scrollCueTimeoutRef.current)
     setLightbox(null)
   }, [])
 
@@ -440,24 +451,24 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               ✕
             </button>
 
-            {/* Left arrow — previous watch */}
+            {/* Left arrow — previous watch (hidden on mobile) */}
             {lightbox.groupIdx > 0 && (
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 flex items-center justify-center transition-all z-10"
+                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
                 aria-label="Previous watch"
               >
                 ←
               </button>
             )}
 
-            {/* Right arrow — next watch */}
+            {/* Right arrow — next watch (hidden on mobile) */}
             {lightbox.groupIdx < groups.length - 1 && (
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 flex items-center justify-center transition-all z-10"
+                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/40 opacity-50 hover:opacity-100 hover:bg-black/60 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
                 aria-label="Next watch"
               >
                 →
@@ -481,6 +492,13 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 priority
                 onLoad={() => setLightboxImageLoading(false)}
               />
+
+              {/* Scroll cue — bouncing chevron (mobile hint) */}
+              {showScrollCue && (
+                <div className="absolute bottom-24 left-1/2 -translate-x-1/2 animate-bounce z-20">
+                  <div className="text-white/70 text-2xl">⌃⌃</div>
+                </div>
+              )}
             </div>
 
             {/* Watch info at bottom with gradient overlay */}
