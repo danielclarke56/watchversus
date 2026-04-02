@@ -82,11 +82,15 @@ export async function GET(req: NextRequest) {
     }
 
     // Filter by free-text query (brand/name prefix search, case-insensitive)
+    // Checks both static library fields (watchBrand, watchName) and user-submitted fields (brandName, modelName, referenceNumber)
     if (q && !watchId) {
       filtered = filtered.filter((p) => {
         const name = (p.watchName ?? '').toLowerCase()
         const b = (p.watchBrand ?? '').toLowerCase()
-        return name.includes(q) || b.includes(q)
+        const brandName = (p.brandName ?? '').toLowerCase()
+        const modelName = (p.modelName ?? '').toLowerCase()
+        const ref = (p.referenceNumber ?? '').toLowerCase()
+        return name.includes(q) || b.includes(q) || brandName.includes(q) || modelName.includes(q) || ref.includes(q)
       })
     }
 
