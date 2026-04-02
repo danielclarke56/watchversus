@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, ilike, ne } from 'drizzle-orm'
 import { getWatchById } from '@/lib/watches'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
@@ -58,15 +58,19 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
       .slice(1)
       .join(' ')
 
+  const photoCount = photoRecords.length
+  const refs = photoRecords[0]?.referenceNumber
+  const refString = refs ? `, including ref. ${refs}` : ''
+
   return {
-    title: `${brand} ${model} Owner Photos | WatchVsWatch`,
-    description: `See real ${brand} ${model} photos from owners. Actual wrist shots, specs, and reviews.`,
+    title: `${brand} ${model} Wrist Photos — Real Owner Shots | WatchVsWatch`,
+    description: `Browse ${photoCount} real ${brand} ${model} on-wrist photos submitted by owners. See how the ${brand} ${model} looks on different wrist sizes${refString}.`,
     alternates: {
       canonical: `https://watchvswatch.com/w/${params.watchId}`,
     },
     openGraph: {
-      title: `${brand} ${model} Owner Photos | WatchVsWatch`,
-      description: `See real ${brand} ${model} photos from owners. Actual wrist shots, specs, and reviews.`,
+      title: `${brand} ${model} Wrist Photos — Real Owner Shots | WatchVsWatch`,
+      description: `Browse ${photoCount} real ${brand} ${model} on-wrist photos submitted by owners. See how the ${brand} ${model} looks on different wrist sizes${refString}.`,
       url: `https://watchvswatch.com/w/${params.watchId}`,
       type: 'website',
       images: [
@@ -89,6 +93,23 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
   if (photoRecords.length === 0) {
     notFound()
+  }
+
+  // Extract brand from first photo for related photos query
+  const initialBrand = photoRecords[0].brandName
+  let relatedPhotos: typeof photoRecords = []
+  if (initialBrand) {
+    relatedPhotos = await db
+      .select()
+      .from(photos)
+      .where(
+        and(
+          eq(photos.status, 'approved'),
+          ilike(photos.brandName, initialBrand),
+          ne(photos.watchId, params.watchId)
+        )
+      )
+      .limit(8)
   }
 
   // Convert DB records to ApprovedPhoto interface
@@ -182,6 +203,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
     name: `${brandName} ${modelName} Owner Photos`,
+    description: `Real owner wrist photos of the ${brandName} ${modelName}, submitted by WatchVsWatch community members.`,
     image: approvedPhotos.map((photo) => ({
       '@type': 'ImageObject',
       contentUrl: photo.url,
@@ -211,6 +233,13 @@ export default async function WatchPage({ params }: WatchPageProps) {
             <p className="text-lg text-textSecond">
               {approvedPhotos.length} {approvedPhotos.length === 1 ? 'photo' : 'photos'} from owners
             </p>
+            <p className="text-base text-textSecond mt-3 max-w-2xl">
+              Browse real owner photos of the {brandName} {modelName}
+              {metadata.referenceNumber ? ` (${Array.from(metadata.referenceNumber).join(', ')})` : ''}.
+              {' '}See how this watch looks on the wrist from different angles, submitted by the WatchVsWatch community.
+              {metadata.caseSize ? ` Case size: ${Array.from(metadata.caseSize).join(', ')}.` : ''}
+              {metadata.movement ? ` Movement: ${Array.from(metadata.movement).join(', ')}.` : ''}
+            </p>
           </div>
 
           {/* Photo Grid */}
@@ -222,7 +251,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
               >
                 <Image
                   src={photo.url}
-                  alt={`${brandName} ${modelName} photo by ${photo.userName}`}
+                  alt={`${brandName} ${modelName}${photo.referenceNumber ? ` ref. ${photo.referenceNumber}` : ''} wrist photo by ${photo.userName}`}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -309,6 +338,44 @@ export default async function WatchPage({ params }: WatchPageProps) {
                     </p>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Related Photos Section */}
+          {relatedPhotos.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-textPrimary mb-4">More {brandName} Watches</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {(() => {
+                  // Group related photos by watchId and show first photo of each group
+                  const grouped = new Map<string, typeof relatedPhotos[0]>()
+                  relatedPhotos.forEach((photo) => {
+                    if (!grouped.has(photo.watchId)) {
+                      grouped.set(photo.watchId, photo)
+                    }
+                  })
+                  return Array.from(grouped.values()).map((photo) => (
+                    <Link
+                      key={photo.watchId}
+                      href={`/w/${photo.watchId}`}
+                      className="group"
+                    >
+                      <div className="relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors">
+                        <Image
+                          src={photo.url}
+                          alt={`${photo.brandName} ${photo.modelName}${photo.referenceNumber ? ` ref. ${photo.referenceNumber}` : ''}`}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
+                        />
+                      </div>
+                      <p className="text-sm text-textSecond mt-2 group-hover:text-accent transition-colors">
+                        {photo.modelName}
+                      </p>
+                    </Link>
+                  ))
+                })()}
               </div>
             </div>
           )}

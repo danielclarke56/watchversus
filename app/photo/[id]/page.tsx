@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and, ilike, ne } from 'drizzle-orm'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import type { ApprovedPhoto } from '@/lib/photos'
@@ -40,10 +40,8 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
   const p = photoRecord[0]
   const brandName = p.brandName || 'Watch'
   const modelName = p.modelName || 'on the wrist'
-  const title = `${brandName} ${modelName} on the wrist | WatchVsWatch`
-  const description = `${brandName} ${modelName} photo submitted by ${p.userName}. ${
-    p.caseSize ? `Case size: ${p.caseSize}. ` : ''
-  }${p.movement ? `Movement: ${p.movement}. ` : ''}`
+  const title = `${brandName} ${modelName} Wrist Photo by ${p.userName} | WatchVsWatch`
+  const description = `Real owner photo of the ${brandName} ${modelName}${p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''} submitted by ${p.userName} on WatchVsWatch.${p.caseSize ? ` Case size: ${p.caseSize}.` : ''}${p.movement ? ` Movement: ${p.movement}.` : ''}`
 
   return {
     title,
@@ -61,7 +59,7 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
           url: p.url,
           width: 800,
           height: 800,
-          alt: `${brandName} ${modelName}`,
+          alt: `${brandName} ${modelName}${p.referenceNumber ? ` ref. ${p.referenceNumber}` : ''} wrist photo by ${p.userName}`,
         },
       ],
     },
@@ -80,6 +78,22 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
   }
 
   const p = photoRecord[0]
+
+  // Fetch related photos (same brand, different watchId)
+  let relatedPhotos: typeof photoRecord = []
+  if (p.brandName) {
+    relatedPhotos = await db
+      .select()
+      .from(photos)
+      .where(
+        and(
+          eq(photos.status, 'approved'),
+          ilike(photos.brandName, p.brandName),
+          ne(photos.watchId, p.watchId)
+        )
+      )
+      .limit(6)
+  }
 
   // Convert DB record to ApprovedPhoto interface
   const photo: ApprovedPhoto = {
@@ -143,7 +157,7 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
             <div className="relative w-full h-auto bg-surfaceAlt rounded-lg overflow-hidden border border-border">
               <Image
                 src={photo.url}
-                alt={`${brandName} ${modelName} on the wrist`}
+                alt={`${brandName} ${modelName}${photo.referenceNumber ? ` ref. ${photo.referenceNumber}` : ''} on the wrist — submitted by ${photo.userName}`}
                 width={900}
                 height={900}
                 className="w-full h-auto object-contain"
@@ -269,6 +283,44 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
               </div>
             </div>
           </div>
+
+          {/* Related Photos Section */}
+          {relatedPhotos.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-textPrimary mb-4">More {brandName} Watches</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {(() => {
+                  // Group related photos by watchId and show first photo of each group
+                  const grouped = new Map<string, typeof relatedPhotos[0]>()
+                  relatedPhotos.forEach((p) => {
+                    if (!grouped.has(p.watchId)) {
+                      grouped.set(p.watchId, p)
+                    }
+                  })
+                  return Array.from(grouped.values()).map((photo) => (
+                    <Link
+                      key={photo.watchId}
+                      href={`/w/${photo.watchId}`}
+                      className="group"
+                    >
+                      <div className="relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors">
+                        <Image
+                          src={photo.url}
+                          alt={`${photo.brandName} ${photo.modelName}${photo.referenceNumber ? ` ref. ${photo.referenceNumber}` : ''}`}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 33vw"
+                        />
+                      </div>
+                      <p className="text-sm text-textSecond mt-2 group-hover:text-accent transition-colors">
+                        {photo.modelName}
+                      </p>
+                    </Link>
+                  ))
+                })()}
+              </div>
+            </div>
+          )}
         </Container>
       </Section>
     </>
