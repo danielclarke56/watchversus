@@ -1,11 +1,12 @@
 import { Suspense } from 'react'
-import { ExploreClient } from './components/ExploreClient'
+import HeroSearch from '@/components/home/HeroSearch'
+import PhotoGallery from '@/components/home/PhotoGallery'
 import type { Metadata } from 'next'
 
 const faqItems = [
   {
     q: 'What is WatchVsWatch?',
-    a: 'WatchVsWatch is a watch photo gallery and resource. Browse community-submitted photos of watches at every price point — from affordable favourites like Seiko and Casio to luxury brands like Rolex, Omega, and Patek Philippe.',
+    a: 'WatchVsWatch is a watch photo gallery and resource. Browse community-submitted photos of watches at every price point ΓÇö from affordable favourites like Seiko and Casio to luxury brands like Rolex, Omega, and Patek Philippe.',
   },
   {
     q: 'Can I upload my own watch photos?',
@@ -17,7 +18,7 @@ const faqItems = [
   },
   {
     q: 'What watches are featured?',
-    a: 'We feature watches at every price point — from affordable favourites like Seiko, Casio, Orient, and Tissot to mid-range brands like Hamilton, Longines, and Oris, all the way up to Rolex, Omega, Tudor, Breitling, IWC, Cartier, Grand Seiko, and beyond.',
+    a: 'We feature watches at every price point ΓÇö from affordable favourites like Seiko, Casio, Orient, and Tissot to mid-range brands like Hamilton, Longines, and Oris, all the way up to Rolex, Omega, Tudor, Breitling, IWC, Cartier, Grand Seiko, and beyond.',
   },
 ]
 
@@ -105,8 +106,9 @@ export default function HomePage() {
       />
 
       <main className="min-h-screen">
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-textSecond">Loading gallery...</div></div>}>
-          <ExploreClient />
+        <Suspense>
+          <HeroSearch />
+          <PhotoGallery />
         </Suspense>
       </main>
     </>
