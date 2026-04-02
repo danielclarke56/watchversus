@@ -78,6 +78,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
   const [showScrollCue, setShowScrollCue] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
   const scrollCueTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null)
@@ -324,6 +325,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     }
     setLightboxImageLoading(true)
     setCopied(false)
+    setLinkCopied(false)
     setLightbox({ groupIdx, photoIdx })
   }, [groups])
 
@@ -350,6 +352,13 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
+  }, [])
+
+  const handleCopyLink = useCallback(async (photoId: string) => {
+    const shareUrl = `https://watchems.com/photo/${photoId}`
+    await navigator.clipboard.writeText(shareUrl)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
   }, [])
 
   // Handle browser back button while lightbox is open
@@ -522,6 +531,28 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
                   </svg>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.id) }}
+                className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full h-10 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
+                aria-label="Copy link"
+              >
+                {linkCopied ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 001.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                    </svg>
+                    <span className="hidden sm:inline">Copy link</span>
+                  </>
                 )}
               </button>
               <button
