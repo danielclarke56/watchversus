@@ -34,7 +34,7 @@ export async function generateMetadata(
       description: `View ${displayName}'s watch collection on WatchVsWatch — real wrist shots from real owners.`,
       robots: { index: true, follow: true },
       alternates: {
-        canonical: `https://watchvswatch.com/u/${params.username}`,
+        canonical: `https://watchems.com/u/${params.username}`,
       },
     }
   } catch {

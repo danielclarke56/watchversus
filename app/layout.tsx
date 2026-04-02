@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://watchvswatch.com'),
+  metadataBase: new URL('https://watchems.com'),
   title: {
     default: 'WatchVsWatch - Head-to-Head Watch Comparisons & Reviews',
     template: '%s | WatchVsWatch',
@@ -30,14 +30,14 @@ export const metadata: Metadata = {
     siteName: 'WatchVsWatch',
     title: 'WatchVsWatch - Luxury Watch Gallery & Community Photos',
     description: 'Real owner photos of luxury watches. Browse community-submitted wrist shots, reviews, and recommendations for Rolex, Omega, Tudor, and more.',
-    url: 'https://watchvswatch.com',
-    images: [{ url: 'https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews', width: 1200, height: 630 }],
+    url: 'https://watchems.com',
+    images: [{ url: 'https://watchems.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'WatchVsWatch - Luxury Watch Gallery & Community Photos',
     description: 'Real owner photos of luxury watches. Browse community-submitted wrist shots, reviews, and recommendations for Rolex, Omega, Tudor, and more.',
-    images: ['https://watchvswatch.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews'],
+    images: ['https://watchems.com/api/og?title=WatchVsWatch&subtitle=Head-to-Head+Watch+Comparisons+%26+Reviews'],
   },
   verification: {
     google: 'uJXK23x_lAigHXvAoywJqmmZAaZXeEpAntrOo_KV4gM',
@@ -48,7 +48,7 @@ const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'WatchVsWatch',
-  url: 'https://watchvswatch.com',
+  url: 'https://watchems.com',
   description: 'Community watch photo gallery featuring photos of watches at every price point.',
 }
 

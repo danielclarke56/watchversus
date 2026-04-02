@@ -9,6 +9,7 @@ export default function robots(): MetadataRoute.Robots {
           '/',
           '/upload',
           '/about',
+          '/profile',
         ],
         disallow: [
           '/api',
@@ -27,6 +28,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://watchvswatch.com/sitemap.xml',
+    sitemap: 'https://watchems.com/sitemap.xml',
   }
 }

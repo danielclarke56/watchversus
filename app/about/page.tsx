@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: 'About WatchVsWatch — Real Watch Photos from Real Owners',
   description: 'WatchVsWatch is a community photo gallery for watch enthusiasts. Browse and upload real watch photos — no affiliate links, no sponsored content.',
   alternates: {
-    canonical: 'https://watchvswatch.com/about',
+    canonical: 'https://watchems.com/about',
   },
   openGraph: {
     title: 'About | WatchVsWatch',
     description: 'A community photo gallery for watch enthusiasts. Real watches, real owners, no affiliate links.',
-    url: 'https://watchvswatch.com/about',
+    url: 'https://watchems.com/about',
     type: 'website',
   },
 }
@@ -80,7 +80,7 @@ export default function AboutPage() {
             </p>
             <p>
               <strong className="text-textPrimary">Email:</strong>{' '}
-              <span className="text-accent">hello@watchvswatch.com</span>
+              <span className="text-accent">hello@watchems.com</span>
             </p>
             <p className="text-textMuted text-sm">
               We read every email and respond within 48 hours.

@@ -25,7 +25,7 @@ export interface FAQItem {
  * Generate Product schema for a single watch
  */
 export function generateProductSchema(watch: Watch, imageUrl: string) {
-  const baseUrl = 'https://watchvswatch.com'
+  const baseUrl = 'https://watchems.com'
 
   return {
     '@context': 'https://schema.org',
@@ -100,7 +100,7 @@ export function generateArticleSchema(
   slug: string,
   authors: string[]
 ) {
-  const baseUrl = 'https://watchvswatch.com'
+  const baseUrl = 'https://watchems.com'
   const now = new Date().toISOString()
 
   return {
@@ -148,7 +148,7 @@ export function generateBreadcrumbSchema(
  * Generate comparison-specific BreadcrumbList
  */
 export function generateComparisonBreadcrumbs(watch1Name: string, watch2Name: string) {
-  const baseUrl = 'https://watchvswatch.com'
+  const baseUrl = 'https://watchems.com'
   return generateBreadcrumbSchema([
     { name: 'Home', url: baseUrl },
     { name: 'Comparisons', url: `${baseUrl}/compare` },

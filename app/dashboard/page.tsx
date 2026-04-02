@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     follow: false,
   },
   alternates: {
-    canonical: 'https://watchvswatch.com/dashboard',
+    canonical: 'https://watchems.com/dashboard',
   },
 }
 

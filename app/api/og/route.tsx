@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
           }}
         >
           <span style={{ color: '#777777', fontSize: 20 }}>
-            watchvswatch.com
+            watchems.com
           </span>
         </div>
       </div>

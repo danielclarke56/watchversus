@@ -161,9 +161,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    console.log(`[${new Date().toISOString()}] Fetching Core Web Vitals for watchvswatch.com...`)
+    console.log(`[${new Date().toISOString()}] Fetching Core Web Vitals for watchems.com...`)
 
-    const data = await fetchPageSpeedInsights('https://watchvswatch.com')
+    const data = await fetchPageSpeedInsights('https://watchems.com')
     const metrics = extractCoreWebVitals(data)
     const alerts = checkThresholds(metrics)
 

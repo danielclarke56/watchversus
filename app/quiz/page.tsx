@@ -7,20 +7,20 @@ export const metadata: Metadata = {
   title: 'What Watch Should I Buy? — Free Quiz',
   description: 'Not sure which watch is right for you? Answer 5 quick questions and get personalized recommendations from 57 watches.',
   alternates: {
-    canonical: 'https://watchvswatch.com/quiz',
+    canonical: 'https://watchems.com/quiz',
   },
   openGraph: {
     title: 'What Watch Should I Buy? — Free Quiz',
     description: 'Not sure which watch is right for you? Answer 5 quick questions and get personalized recommendations from 57 watches.',
-    url: 'https://watchvswatch.com/quiz',
+    url: 'https://watchems.com/quiz',
     type: 'website',
-    images: [{ url: 'https://watchvswatch.com/api/og?title=What+Watch+Should+I+Buy&subtitle=5+questions+to+your+perfect+watch', width: 1200, height: 630 }],
+    images: [{ url: 'https://watchems.com/api/og?title=What+Watch+Should+I+Buy&subtitle=5+questions+to+your+perfect+watch', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'What Watch Should I Buy? — Free Quiz',
     description: 'Not sure which watch is right for you? Answer 5 quick questions and get personalized recommendations.',
-    images: ['https://watchvswatch.com/api/og?title=What+Watch+Should+I+Buy&subtitle=5+questions+to+your+perfect+watch'],
+    images: ['https://watchems.com/api/og?title=What+Watch+Should+I+Buy&subtitle=5+questions+to+your+perfect+watch'],
   },
 }
 

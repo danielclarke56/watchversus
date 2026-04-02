@@ -11,7 +11,7 @@ import { getRedis } from '@/lib/redis'
  * Metrics: top keywords, average position, CTR, impressions
  */
 
-const PROPERTY_URL = 'https://watchvswatch.com/'
+const PROPERTY_URL = 'https://watchems.com/'
 const SCOPES = ['https://www.googleapis.com/auth/webmasters.readonly']
 
 interface GoogleServiceAccount {
@@ -219,7 +219,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    console.log(`[${new Date().toISOString()}] Fetching GSC metrics for watchvswatch.com...`)
+    console.log(`[${new Date().toISOString()}] Fetching GSC metrics for watchems.com...`)
 
     // Check if service account is configured
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {

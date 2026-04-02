@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql } from 'drizzle-orm'
@@ -66,12 +67,12 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
     title: `${displayBrand} Watch Photos | WatchVsWatch`,
     description: `Browse real ${displayBrand} watch photos from owners. See how ${displayBrand} watches actually look on the wrist.`,
     alternates: {
-      canonical: `https://watchvswatch.com/brand/${params.brand}`,
+      canonical: `https://watchems.com/brand/${params.brand}`,
     },
     openGraph: {
       title: `${displayBrand} Watch Photos | WatchVsWatch`,
       description: `Browse real ${displayBrand} watch photos from owners. See how ${displayBrand} watches actually look on the wrist.`,
-      url: `https://watchvswatch.com/brand/${params.brand}`,
+      url: `https://watchems.com/brand/${params.brand}`,
       type: 'website',
     },
   }
@@ -173,7 +174,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
                   >
                     <Image
                       src={photo.url}
-                      alt={`${displayBrand} ${watchModelName} photo by ${photo.userName}`}
+                      alt={buildPhotoAltText(photo)}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

@@ -4,7 +4,7 @@ import { photos } from '@/lib/db/schema'
 import { eq, sql, and, desc } from 'drizzle-orm'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://watchvswatch.com'
+  const base = 'https://watchems.com'
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
@@ -88,5 +88,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...staticPages, ...photoPages, ...watchPages, ...brandPages]
+  // All profile pages (distinct userIds from approved photos)
+  const userIds = await db
+    .selectDistinct({ userId: photos.userId })
+    .from(photos)
+    .where(eq(photos.status, 'approved'))
+
+  const profilePages: MetadataRoute.Sitemap = userIds.map((row) => ({
+    url: `${base}/profile/${row.userId}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }))
+
+  return [...staticPages, ...photoPages, ...watchPages, ...brandPages, ...profilePages]
 }

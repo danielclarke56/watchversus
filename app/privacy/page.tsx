@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'How WatchVsWatch collects, uses, and protects your personal data.',
   alternates: {
-    canonical: 'https://watchvswatch.com/privacy',
+    canonical: 'https://watchems.com/privacy',
   },
 }
 
@@ -20,8 +20,8 @@ export default function PrivacyPage() {
           <h2>1. Who we are</h2>
           <p>
             WatchVsWatch (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) operates the website at{' '}
-            <strong>watchvswatch.com</strong>. We are an independently run watch photo gallery. For questions about this policy, email{' '}
-            <span className="text-accent">hello@watchvswatch.com</span>.
+            <strong>watchems.com</strong>. We are an independently run watch photo gallery. For questions about this policy, email{' '}
+            <span className="text-accent">hello@watchems.com</span>.
           </p>
         </section>
 
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
           </ul>
           <p>
             To exercise any of these rights, email{' '}
-            <span className="text-accent">hello@watchvswatch.com</span>. We will respond
+            <span className="text-accent">hello@watchems.com</span>. We will respond
             within 30 days.
           </p>
         </section>
@@ -171,7 +171,7 @@ export default function PrivacyPage() {
           <h2>10. Contact</h2>
           <p>
             Questions about this privacy policy? Email us at{' '}
-            <span className="text-accent">hello@watchvswatch.com</span>.
+            <span className="text-accent">hello@watchems.com</span>.
           </p>
         </section>
       </div>

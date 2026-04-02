@@ -11,8 +11,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "monitor:cwv": "curl https://watchvswatch.com/api/cron/core-web-vitals",
-    "monitor:gsc": "curl https://watchvswatch.com/api/cron/gsc-metrics",
+    "monitor:cwv": "curl https://watchems.com/api/cron/core-web-vitals",
+    "monitor:gsc": "curl https://watchems.com/api/cron/gsc-metrics",
     "test:cwv-local": "node -e \"import('./app/api/cron/core-web-vitals/route.ts')\""
   },
   "dependencies": {

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Terms of Use',
   description: 'Terms and conditions for using WatchVsWatch, including user content, moderation, and liability.',
   alternates: {
-    canonical: 'https://watchvswatch.com/terms',
+    canonical: 'https://watchems.com/terms',
   },
 }
 
@@ -163,7 +163,7 @@ export default function TermsPage() {
           <h2>9. DMCA and copyright claims</h2>
           <p>
             If you believe content on WatchVsWatch infringes your copyright, please email{' '}
-            <span className="text-accent">hello@watchvswatch.com</span> with:
+            <span className="text-accent">hello@watchems.com</span> with:
           </p>
           <ul>
             <li>A description of the copyrighted work</li>
@@ -198,7 +198,7 @@ export default function TermsPage() {
           <h2>12. Contact</h2>
           <p>
             Questions about these terms? Email us at{' '}
-            <span className="text-accent">hello@watchvswatch.com</span>.
+            <span className="text-accent">hello@watchems.com</span>.
           </p>
         </section>
       </div>

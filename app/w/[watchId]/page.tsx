@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, ilike, ne } from 'drizzle-orm'
@@ -66,12 +67,12 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
     title: `${brand} ${model} Wrist Photos — Real Owner Shots | WatchVsWatch`,
     description: `Browse ${photoCount} real ${brand} ${model} on-wrist photos submitted by owners. See how the ${brand} ${model} looks on different wrist sizes${refString}.`,
     alternates: {
-      canonical: `https://watchvswatch.com/w/${params.watchId}`,
+      canonical: `https://watchems.com/w/${params.watchId}`,
     },
     openGraph: {
       title: `${brand} ${model} Wrist Photos — Real Owner Shots | WatchVsWatch`,
       description: `Browse ${photoCount} real ${brand} ${model} on-wrist photos submitted by owners. See how the ${brand} ${model} looks on different wrist sizes${refString}.`,
-      url: `https://watchvswatch.com/w/${params.watchId}`,
+      url: `https://watchems.com/w/${params.watchId}`,
       type: 'website',
       images: [
         {
@@ -251,7 +252,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
               >
                 <Image
                   src={photo.url}
-                  alt={`${brandName} ${modelName}${photo.referenceNumber ? ` ref. ${photo.referenceNumber}` : ''} wrist photo by ${photo.userName}`}
+                  alt={buildPhotoAltText(photo)}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -364,7 +365,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                       <div className="relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors">
                         <Image
                           src={photo.url}
-                          alt={`${photo.brandName} ${photo.modelName}${photo.referenceNumber ? ` ref. ${photo.referenceNumber}` : ''}`}
+                          alt={buildPhotoAltText(photo)}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"

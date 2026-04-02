@@ -5,8 +5,8 @@ export async function GET() {
 
 ## Site structure
 
-- **Home**: https://watchvswatch.com — community photo gallery
-- **Quiz**: https://watchvswatch.com/quiz — interactive watch finder quiz
+- **Home**: https://watchems.com — community photo gallery
+- **Quiz**: https://watchems.com/quiz — interactive watch finder quiz
 
 ## Brands covered
 
@@ -14,9 +14,9 @@ Rolex, Omega, Tudor, Grand Seiko, Seiko, Breitling, Tag Heuer, IWC, Cartier, Pan
 
 ## Example queries
 
-- "Help me choose a watch" → https://watchvswatch.com/quiz
-- "Show me dive watches" → https://watchvswatch.com — search/filter gallery
-- "Best beginner watches" → https://watchvswatch.com — explore community photos
+- "Help me choose a watch" → https://watchems.com/quiz
+- "Show me dive watches" → https://watchems.com — search/filter gallery
+- "Best beginner watches" → https://watchems.com — explore community photos
 `
 
   return new Response(content, {

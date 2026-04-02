@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: 'https://watchvswatch.com/upload',
+    canonical: 'https://watchems.com/upload',
   },
 }
 

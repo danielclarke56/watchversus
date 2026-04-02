@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -45,19 +46,19 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
     title,
     description,
     alternates: {
-      canonical: `https://watchvswatch.com/photo/${params.id}`,
+      canonical: `https://watchems.com/photo/${params.id}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://watchvswatch.com/photo/${params.id}`,
+      url: `https://watchems.com/photo/${params.id}`,
       type: 'website',
       images: [
         {
           url: p.url,
           width: 800,
           height: 800,
-          alt: `${brandName} ${modelName}${p.referenceNumber ? ` ref. ${p.referenceNumber}` : ''} wrist photo by ${p.userName}`,
+          alt: buildPhotoAltText(p),
         },
       ],
     },

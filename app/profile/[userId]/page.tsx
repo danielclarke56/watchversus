@@ -8,24 +8,53 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ProfileClient from './ProfileClient'
 
+async function getProfileData(userId: string) {
+  const clerk = await clerkClient()
+  const user = await clerk.users.getUser(userId)
+  const displayName = user.firstName
+    ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
+    : user.username || 'User'
+
+  const photoRecords = await db
+    .select()
+    .from(photos)
+    .where(and(eq(photos.userId, userId), eq(photos.status, 'approved')))
+
+  const brands = Array.from(new Set(photoRecords.map(p => p.brandName).filter(Boolean)))
+
+  return { user, displayName, photoRecords, brands }
+}
+
 export async function generateMetadata(
   { params }: { params: { userId: string } }
 ): Promise<Metadata> {
   try {
-    const user = await (await clerkClient()).users.getUser(params.userId)
-    const displayName = user.firstName
-      ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
-      : user.username || 'User'
+    const { displayName, photoRecords, brands } = await getProfileData(params.userId)
+    const photoCount = photoRecords.length
+    const brandList = brands.slice(0, 3).join(', ')
+    const description = photoCount > 0
+      ? `Browse ${displayName}'s watch photos on WatchVsWatch. ${photoCount} photo${photoCount !== 1 ? 's' : ''} of ${brandList}${brands.length > 3 ? ' and more' : ''}.`
+      : `View ${displayName}'s watch collection on WatchVsWatch.`
+
+    const ogImage = photoRecords[0]?.url
 
     return {
-      title: `${displayName}'s Watch Collection | WatchVsWatch`,
-      description: `View ${displayName}'s watch collection on WatchVsWatch — real wrist shots from real owners.`,
+      title: `${displayName}'s Watch Collection — WatchVsWatch`,
+      description,
       robots: {
         index: true,
         follow: true,
       },
       alternates: {
-        canonical: `https://watchvswatch.com/profile/${params.userId}`,
+        canonical: `https://watchems.com/profile/${params.userId}`,
+      },
+      openGraph: {
+        title: `${displayName}'s Watch Collection — WatchVsWatch`,
+        description,
+        url: `https://watchems.com/profile/${params.userId}`,
+        siteName: 'WatchVsWatch',
+        type: 'profile',
+        ...(ogImage ? { images: [{ url: ogImage }] } : {}),
       },
     }
   } catch {
@@ -37,19 +66,14 @@ export async function generateMetadata(
 }
 
 export default async function ProfilePage({ params }: { params: { userId: string } }) {
-  // Fetch user from Clerk
-  let user
+  let profileData
   try {
-    user = await (await clerkClient()).users.getUser(params.userId)
+    profileData = await getProfileData(params.userId)
   } catch {
     notFound()
   }
 
-  // Fetch approved photos for this user
-  const photoRecords = await db
-    .select()
-    .from(photos)
-    .where(and(eq(photos.userId, params.userId), eq(photos.status, 'approved')))
+  const { user, displayName, photoRecords } = profileData
 
   // Group photos by watchId
   const groupedPhotos: Record<string, typeof photoRecords> = {}
@@ -65,11 +89,6 @@ export default async function ProfilePage({ params }: { params: { userId: string
     photos: watchPhotos,
   }))
 
-  // Get display name and avatar
-  const displayName = user.firstName
-    ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
-    : user.username || 'User'
-
   const avatar = user.imageUrl
 
   const initials = displayName
@@ -78,7 +97,33 @@ export default async function ProfilePage({ params }: { params: { userId: string
     .map((word) => word[0]?.toUpperCase())
     .join('')
 
+  // JSON-LD ProfilePage schema
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    name: `${displayName}'s Watch Collection`,
+    url: `https://watchems.com/profile/${params.userId}`,
+    mainEntity: {
+      '@type': 'Person',
+      name: displayName,
+      ...(avatar ? { image: avatar } : {}),
+    },
+    ...(photoRecords.length > 0 ? {
+      hasPart: photoRecords.slice(0, 10).map(photo => ({
+        '@type': 'ImageObject',
+        contentUrl: photo.url,
+        name: [photo.brandName, photo.modelName].filter(Boolean).join(' ') || 'Watch photo',
+        creator: { '@type': 'Person', name: displayName },
+      })),
+    } : {}),
+  }
+
   return (
+    <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
     <main className="min-h-screen bg-surfaceAlt text-textPrimary">
       <div className="max-w-[80rem] mx-auto px-4 py-12">
         {/* Back link */}
@@ -148,5 +193,6 @@ export default async function ProfilePage({ params }: { params: { userId: string
         )}
       </div>
     </main>
+    </>
   )
 }
