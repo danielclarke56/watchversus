@@ -86,6 +86,9 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const [relatedPhotosLoading, setRelatedPhotosLoading] = useState(false)
   const relatedPhotosCacheRef = useRef<Map<string, PhotoItem[]>>(new Map())
 
+  // Override: a related photo not yet in `groups` shown directly without page nav
+  const [photoOverride, setPhotoOverride] = useState<PhotoItem | null>(null)
+
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
   const lightboxOpenRef = useRef(false)
@@ -341,11 +344,31 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     if (photo) {
       window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
     }
+    setPhotoOverride(null)
     setLightboxImageLoading(true)
     setCopied(false)
     setLinkCopied(false)
     setLightbox({ groupIdx, photoIdx })
   }, [groups])
+
+  // Open a related photo in-lightbox without page navigation.
+  // If the photo is in the current groups, navigate there directly.
+  // Otherwise show it via a local override (URL still updates, no page reload).
+  const openRelatedPhoto = useCallback((photo: PhotoItem) => {
+    for (let gi = 0; gi < groups.length; gi++) {
+      const pi = groups[gi].photos.findIndex((p) => p.id === photo.id)
+      if (pi !== -1) {
+        navigateLightbox(gi, pi)
+        return
+      }
+    }
+    // Not yet in gallery groups — show directly via override
+    setPhotoOverride(photo)
+    window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    setLightboxImageLoading(true)
+    setCopied(false)
+    setLinkCopied(false)
+  }, [groups, navigateLightbox])
 
   const closeLightbox = useCallback(() => {
     if (lightboxOpenRef.current) {
@@ -401,7 +424,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Photos in ascending order (oldest = index 0 = primary card image)
   // Thumbnails let user select a specific photo; arrows navigate between watches
   const activeLightboxPhotos = activeLightboxGroup ? activeLightboxGroup.photos : []
-  const activeLightboxPhoto = activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null
+  // photoOverride lets related-photo clicks stay in the lightbox without a page nav
+  const activeLightboxPhoto = photoOverride ?? (activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null)
 
   // Fetch related photos when lightbox photo changes
   useEffect(() => {
@@ -712,7 +736,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation()
-                              router.push('/photo/' + relatedPhoto.id)
+                              openRelatedPhoto(relatedPhoto)
                             }}
                             className="shrink-0 group relative rounded-lg overflow-hidden bg-gray-200 w-20 h-20"
                             aria-label={relatedLabel || 'Related photo'}
@@ -764,7 +788,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation()
-                              router.push('/photo/' + relatedPhoto.id)
+                              openRelatedPhoto(relatedPhoto)
                             }}
                             className="group relative aspect-square rounded-lg overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
                             aria-label={relatedLabel || 'Related photo'}
