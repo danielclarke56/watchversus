@@ -232,9 +232,13 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
         if (lightbox.groupIdx > 0) {
           navigateLightbox(lightbox.groupIdx - 1, 0)
         }
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (lightbox.groupIdx < groups.length - 1) {
           navigateLightbox(lightbox.groupIdx + 1, 0)
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (lightbox.groupIdx > 0) {
+          navigateLightbox(lightbox.groupIdx - 1, 0)
         }
       }
     }
@@ -333,23 +337,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     }
   }, [lightbox])
 
-  // Attach non-passive touchmove listener to lightbox to prevent scroll passthrough
-  useEffect(() => {
-    const container = lightboxContainerRef.current
-    if (!container) return
-
-    const preventScroll = (e: TouchEvent) => {
-      e.preventDefault()
-    }
-
-    if (lightbox !== null) {
-      container.addEventListener('touchmove', preventScroll, { passive: false })
-    }
-
-    return () => {
-      container.removeEventListener('touchmove', preventScroll)
-    }
-  }, [lightbox])
 
   // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
@@ -534,26 +521,9 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
           ref={lightboxContainerRef}
           className="fixed inset-0 z-50 bg-black overflow-y-auto"
           onClick={closeLightbox}
-          onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
-          onTouchEnd={(e) => {
-            const touchEndY = e.changedTouches[0]?.clientY
-            const touchStartY = touchStartYRef.current
-            if (touchStartY === null || touchEndY === null) return
-            
-            const diff = touchStartY - touchEndY
-            const threshold = 50
-            
-            // Swipe up → next photo
-            if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
-              navigateLightbox(lightbox.groupIdx + 1, 0)
-            }
-            // Swipe down → previous photo
-            else if (diff < -threshold && lightbox.groupIdx > 0) {
-              navigateLightbox(lightbox.groupIdx - 1, 0)
-            }
-            touchStartYRef.current = null
-          }}
           onWheel={(e) => {
+            // Only navigate between photos when scrolled to top; otherwise let native scroll handle it
+            if (e.currentTarget.scrollTop > 0) return
             // Debounced scroll wheel navigation
             if (wheelDebounceRef.current) {
               clearTimeout(wheelDebounceRef.current)
@@ -568,7 +538,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               }
             }, 300)
           }}
-          style={{ overscrollBehavior: 'contain', touchAction: 'none' }}
+          style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
           <div className="flex flex-col w-full min-h-screen" onClick={(e) => e.stopPropagation()}>
             {/* Share + Close */}
@@ -646,7 +616,28 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
             )}
 
             {/* Main image area — fixed/sticky height */}
-            <div className="relative w-full h-[70vh] md:h-screen flex items-center justify-center flex-shrink-0">
+            <div
+              className="relative w-full h-[70vh] md:h-screen flex items-center justify-center flex-shrink-0"
+              onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
+              onTouchEnd={(e) => {
+                const touchEndY = e.changedTouches[0]?.clientY
+                const touchStartY = touchStartYRef.current
+                if (touchStartY === null || touchEndY === null) return
+
+                const diff = touchStartY - touchEndY
+                const threshold = 50
+
+                // Swipe up → next photo
+                if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
+                  navigateLightbox(lightbox.groupIdx + 1, 0)
+                }
+                // Swipe down → previous photo
+                else if (diff < -threshold && lightbox.groupIdx > 0) {
+                  navigateLightbox(lightbox.groupIdx - 1, 0)
+                }
+                touchStartYRef.current = null
+              }}
+            >
               {/* Loading spinner overlay */}
               {lightboxImageLoading && (
                 <div className="absolute inset-0 flex items-center justify-center z-20">
