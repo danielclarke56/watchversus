@@ -117,7 +117,7 @@ export function generateArticleSchema(
     })),
     publisher: {
       '@type': 'Organization',
-      name: 'WatchVsWatch',
+      name: 'Watchems',
       logo: {
         '@type': 'ImageObject',
         url: `${baseUrl}/logo.png`,

@@ -1,9 +1,9 @@
 
-> WatchVsWatch@0.1.0 prebuild
+> Watchems@0.1.0 prebuild
 > npm run validate
 
 
-> WatchVsWatch@0.1.0 validate
+> Watchems@0.1.0 validate
 > tsx scripts/validate-integrity.ts
 
 
@@ -29,7 +29,7 @@
 Γ£à ALL CHECKS PASSED ΓÇö content integrity verified
 
 
-> WatchVsWatch@0.1.0 build
+> Watchems@0.1.0 build
 > next build
 
   Γû▓ Next.js 14.2.35

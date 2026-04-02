@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
 
   if (photoRecords.length === 0) {
     return {
-      title: 'Watch Not Found | WatchVsWatch',
+      title: 'Watch Not Found | Watchems',
     }
   }
 
@@ -64,13 +64,13 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
   const refString = refs ? `, including ref. ${refs}` : ''
 
   return {
-    title: `${brand} ${model} Wrist Photos — Real Owner Shots | WatchVsWatch`,
+    title: `${brand} ${model} Wrist Photos — Real Owner Shots | Watchems`,
     description: `Browse ${photoCount} real ${brand} ${model} on-wrist photos submitted by owners. See how the ${brand} ${model} looks on different wrist sizes${refString}.`,
     alternates: {
       canonical: `https://watchems.com/w/${params.watchId}`,
     },
     openGraph: {
-      title: `${brand} ${model} Wrist Photos — Real Owner Shots | WatchVsWatch`,
+      title: `${brand} ${model} Wrist Photos — Real Owner Shots | Watchems`,
       description: `Browse ${photoCount} real ${brand} ${model} on-wrist photos submitted by owners. See how the ${brand} ${model} looks on different wrist sizes${refString}.`,
       url: `https://watchems.com/w/${params.watchId}`,
       type: 'website',
@@ -204,7 +204,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
     name: `${brandName} ${modelName} Owner Photos`,
-    description: `Real owner wrist photos of the ${brandName} ${modelName}, submitted by WatchVsWatch community members.`,
+    description: `Real owner wrist photos of the ${brandName} ${modelName}, submitted by Watchems community members.`,
     image: approvedPhotos.map((photo) => ({
       '@type': 'ImageObject',
       contentUrl: photo.url,
@@ -237,7 +237,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
             <p className="text-base text-textSecond mt-3 max-w-2xl">
               Browse real owner photos of the {brandName} {modelName}
               {metadata.referenceNumber ? ` (${Array.from(metadata.referenceNumber).join(', ')})` : ''}.
-              {' '}See how this watch looks on the wrist from different angles, submitted by the WatchVsWatch community.
+              {' '}See how this watch looks on the wrist from different angles, submitted by the Watchems community.
               {metadata.caseSize ? ` Case size: ${Array.from(metadata.caseSize).join(', ')}.` : ''}
               {metadata.movement ? ` Movement: ${Array.from(metadata.movement).join(', ')}.` : ''}
             </p>

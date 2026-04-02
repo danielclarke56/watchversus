@@ -57,20 +57,20 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
 
   if (photoRecords.length === 0) {
     return {
-      title: 'Brand Not Found | WatchVsWatch',
+      title: 'Brand Not Found | Watchems',
     }
   }
 
   const displayBrand = photoRecords[0].brandName || unslugify(params.brand)
 
   return {
-    title: `${displayBrand} Watch Photos | WatchVsWatch`,
+    title: `${displayBrand} Watch Photos | Watchems`,
     description: `Browse real ${displayBrand} watch photos from owners. See how ${displayBrand} watches actually look on the wrist.`,
     alternates: {
       canonical: `https://watchems.com/brand/${params.brand}`,
     },
     openGraph: {
-      title: `${displayBrand} Watch Photos | WatchVsWatch`,
+      title: `${displayBrand} Watch Photos | Watchems`,
       description: `Browse real ${displayBrand} watch photos from owners. See how ${displayBrand} watches actually look on the wrist.`,
       url: `https://watchems.com/brand/${params.brand}`,
       type: 'website',

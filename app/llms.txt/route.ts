@@ -1,5 +1,5 @@
 export async function GET() {
-  const content = `# WatchVsWatch
+  const content = `# Watchems
 
 > A community watch photo gallery featuring photographs and uploads from watch enthusiasts. Browse watches at every price point from Seiko and Casio to Rolex and Patek Philippe, with no affiliate links or sponsored content.
 

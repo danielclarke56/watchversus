@@ -47,7 +47,7 @@ export default function Navigation() {
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="Watchems" className="w-auto" style={{ height: '1.5rem' }} />
+          <img src="/logo.svg" alt="Watchems" className="h-8 w-auto" />
         </Link>
 
         {/* Right side: CTA + auth */}

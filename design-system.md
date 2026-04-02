@@ -1,4 +1,4 @@
-# WatchVsWatch Design System
+# Watchems Design System
 
 > Implementation-ready reference. Keep in sync with `globals.css` and `tailwind.config.ts`.
 

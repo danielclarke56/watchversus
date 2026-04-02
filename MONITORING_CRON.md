@@ -1,7 +1,7 @@
-# WatchVsWatch Monitoring & Cron Jobs
+# Watchems Monitoring & Cron Jobs
 
 ## Overview
-This document describes the monitoring infrastructure for WatchVsWatch, including cron jobs that run periodically to collect performance and SEO metrics.
+This document describes the monitoring infrastructure for Watchems, including cron jobs that run periodically to collect performance and SEO metrics.
 
 **Migration Date:** 2026-03-25  
 **Previous System:** Windows Task Scheduler (deprecated)  
@@ -38,7 +38,7 @@ This document describes the monitoring infrastructure for WatchVsWatch, includin
 
 **What it does:**
 - Fetches Core Web Vitals from Google PageSpeed Insights API
-- Collects metrics for `https://watchvswatch.com`:
+- Collects metrics for `https://watchems.com`:
   - **LCP** (Largest Contentful Paint): target < 2.5s
   - **FID** (First Input Delay): target < 0.1s (100ms)
   - **CLS** (Cumulative Layout Shift): target < 0.1 (unitless)
@@ -218,18 +218,18 @@ This document describes the monitoring infrastructure for WatchVsWatch, includin
 
 **Test Core Web Vitals:**
 ```bash
-curl https://watchvswatch.com/api/cron/core-web-vitals
+curl https://watchems.com/api/cron/core-web-vitals
 ```
 
 **Test GSC Metrics (with auth header):**
 ```bash
 curl -H "Authorization: Bearer <VERCEL_CRON_SECRET>" \
-  https://watchvswatch.com/api/cron/gsc-metrics
+  https://watchems.com/api/cron/gsc-metrics
 ```
 
 ### Vercel Dashboard
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select WatchVsWatch project
+2. Select Watchems project
 3. Navigate to "Crons" tab
 4. View execution history, logs, and next scheduled runs
 

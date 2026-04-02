@@ -1,4 +1,4 @@
-# WatchVsWatch — SEO Robots Configuration
+# Watchems — SEO Robots Configuration
 # Next.js 14 app/robots.ts takes precedence for dynamic routes.
 # This file provides fallback rules for static assets and bot discovery.
 
@@ -23,4 +23,4 @@ Disallow: /private/
 Crawl-delay: 1
 
 # Sitemap for optimal crawl efficiency
-Sitemap: https://watchvswatch.com/sitemap.xml
+Sitemap: https://watchems.com/sitemap.xml

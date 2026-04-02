@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'How WatchVsWatch collects, uses, and protects your personal data.',
+  description: 'How Watchems collects, uses, and protects your personal data.',
   alternates: {
     canonical: 'https://watchems.com/privacy',
   },
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
         <section>
           <h2>1. Who we are</h2>
           <p>
-            WatchVsWatch (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) operates the website at{' '}
+            Watchems (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) operates the website at{' '}
             <strong>watchems.com</strong>. We are an independently run watch photo gallery. For questions about this policy, email{' '}
             <span className="text-accent">hello@watchems.com</span>.
           </p>
@@ -152,7 +152,7 @@ export default function PrivacyPage() {
         <section>
           <h2>8. Children</h2>
           <p>
-            WatchVsWatch is not directed at children under 16. We do not knowingly collect
+            Watchems is not directed at children under 16. We do not knowingly collect
             personal data from children. If you believe a child has provided us with
             personal data, please contact us and we will delete it.
           </p>

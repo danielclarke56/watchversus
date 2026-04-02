@@ -32,15 +32,15 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
 
   if (photoRecord.length === 0 || photoRecord[0].status !== 'approved') {
     return {
-      title: 'Photo Not Found | WatchVsWatch',
+      title: 'Photo Not Found | Watchems',
     }
   }
 
   const p = photoRecord[0]
   const brandName = p.brandName || 'Watch'
   const modelName = p.modelName || 'on the wrist'
-  const title = `${brandName} ${modelName} Wrist Photo by ${p.userName} | WatchVsWatch`
-  const description = `Real owner photo of the ${brandName} ${modelName}${p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''} submitted by ${p.userName} on WatchVsWatch.${p.caseSize ? ` Case size: ${p.caseSize}.` : ''}${p.movement ? ` Movement: ${p.movement}.` : ''}`
+  const title = `${brandName} ${modelName} Wrist Photo by ${p.userName} | Watchems`
+  const description = `Real owner photo of the ${brandName} ${modelName}${p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''} submitted by ${p.userName} on Watchems.${p.caseSize ? ` Case size: ${p.caseSize}.` : ''}${p.movement ? ` Movement: ${p.movement}.` : ''}`
 
   return {
     title,

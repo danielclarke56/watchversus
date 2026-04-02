@@ -1,7 +1,7 @@
 # Review Submission System Documentation
 
 ## Overview
-This document describes the complete review submission pipeline implemented for WatchVsWatch, enabling authenticated users to submit and manage watch reviews.
+This document describes the complete review submission pipeline implemented for Watchems, enabling authenticated users to submit and manage watch reviews.
 
 ## Architecture
 

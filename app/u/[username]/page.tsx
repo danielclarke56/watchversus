@@ -22,7 +22,7 @@ export async function generateMetadata(
   try {
     const user = await getUserByUsername(params.username)
     if (!user) {
-      return { title: 'Profile Not Found | WatchVsWatch' }
+      return { title: 'Profile Not Found | Watchems' }
     }
 
     const displayName = user.firstName
@@ -30,15 +30,15 @@ export async function generateMetadata(
       : user.username || 'User'
 
     return {
-      title: `${displayName}'s Watch Collection | WatchVsWatch`,
-      description: `View ${displayName}'s watch collection on WatchVsWatch — real wrist shots from real owners.`,
+      title: `${displayName}'s Watch Collection | Watchems`,
+      description: `View ${displayName}'s watch collection on Watchems — real wrist shots from real owners.`,
       robots: { index: true, follow: true },
       alternates: {
         canonical: `https://watchems.com/u/${params.username}`,
       },
     }
   } catch {
-    return { title: 'Profile Not Found | WatchVsWatch' }
+    return { title: 'Profile Not Found | Watchems' }
   }
 }
 

@@ -1,6 +1,6 @@
 /**
  * Content Integrity Validator
- * Validates all cross-references in the WatchVsWatch codebase.
+ * Validates all cross-references in the Watchems codebase.
  * Run: npm run validate
  * Exits with code 1 if any violations found, 0 if clean.
  */

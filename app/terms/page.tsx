@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Terms of Use',
-  description: 'Terms and conditions for using WatchVsWatch, including user content, moderation, and liability.',
+  description: 'Terms and conditions for using Watchems, including user content, moderation, and liability.',
   alternates: {
     canonical: 'https://watchems.com/terms',
   },
@@ -19,7 +19,7 @@ export default function TermsPage() {
         <section>
           <h2>1. Acceptance</h2>
           <p>
-            By accessing or using WatchVsWatch (&quot;the Site&quot;), you agree to these
+            By accessing or using Watchems (&quot;the Site&quot;), you agree to these
             Terms of Use. If you do not agree, do not use the Site. We may update these
             terms at any time — continued use after changes constitutes acceptance.
           </p>
@@ -28,7 +28,7 @@ export default function TermsPage() {
         <section>
           <h2>2. What we provide</h2>
           <p>
-            WatchVsWatch is a community watch photo gallery where enthusiasts upload and
+            Watchems is a community watch photo gallery where enthusiasts upload and
             browse real photos of watches. All content is for informational purposes only
             and does not constitute professional advice.
           </p>
@@ -56,14 +56,14 @@ export default function TermsPage() {
         <section>
           <h2>4. User-generated content</h2>
           <p>
-            When you submit content to WatchVsWatch — including reviews, ratings, and
+            When you submit content to Watchems — including reviews, ratings, and
             photos — the following applies:
           </p>
 
           <h3>Ownership</h3>
           <p>
             You retain ownership of the content you create. However, by submitting content
-            to WatchVsWatch, you grant us a worldwide, non-exclusive, royalty-free,
+            to Watchems, you grant us a worldwide, non-exclusive, royalty-free,
             perpetual, irrevocable license to use, display, reproduce, modify, distribute,
             and create derivative works from your content in connection with operating and
             promoting the platform. This license survives account deletion.
@@ -113,7 +113,8 @@ export default function TermsPage() {
         <section>
           <h2>6. Intellectual property</h2>
           <p>
-            The WatchVsWatch name, logo, site design, watch data, and editorial content, and code are owned by WatchVsWatch and protected by
+            The Watchems name, logo, site design, and comparison data
+            editorial content, and code are owned by Watchems and protected by
             applicable intellectual property laws. You may not reproduce, distribute, or
             create derivative works from our content without written permission.
           </p>
@@ -146,7 +147,7 @@ export default function TermsPage() {
         <section>
           <h2>8. Limitation of liability</h2>
           <p>
-            To the maximum extent permitted by law, WatchVsWatch and its operators shall
+            To the maximum extent permitted by law, Watchems and its operators shall
             not be liable for any indirect, incidental, special, consequential, or punitive
             damages arising from your use of the Site. This includes but is not limited to
             damages from purchasing decisions made based on information found on the Site,
@@ -162,7 +163,7 @@ export default function TermsPage() {
         <section>
           <h2>9. DMCA and copyright claims</h2>
           <p>
-            If you believe content on WatchVsWatch infringes your copyright, please email{' '}
+            If you believe content on Watchems infringes your copyright, please email{' '}
             <span className="text-accent">hello@watchems.com</span> with:
           </p>
           <ul>

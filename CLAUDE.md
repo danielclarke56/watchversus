@@ -1,9 +1,9 @@
-# WatchVsWatch — Agent Rules
+# Watchems — Agent Rules
 
 Read this before doing anything.
 
 ## Project
-- Live at: https://watchvswatch.com
+- Live at: https://watchems.com
 - GitHub: https://github.com/danielclarke56/watchversus
 - Stack: Next.js 14, TypeScript strict, Tailwind
 - Deploy: Vercel (auto-deploys on push to master)
@@ -25,7 +25,7 @@ Read this before doing anything.
 - `lib/types.ts` — Watch interface (no affiliate fields)
 - `app/compare/[slug]/page.tsx` — 121 static comparison pages with FAQ + JSON-LD
 - `app/watches/[slug]/page.tsx` — 50 static watch detail pages
-- Domain canonical: `https://watchvswatch.com`
+- Domain canonical: `https://watchems.com`
 
 ## Current Status (2026-03-14)
 - Affiliate links fully removed (data + types + about page)
@@ -46,6 +46,6 @@ After every task, log to `C:\Users\daniel\.openclaw\workspace\.learnings\`:
 - Better approaches discovered → `LEARNINGS.md`
 
 ## DO NOT
-- Ask about domain setup — already live at watchvswatch.com
+- Ask about domain setup — already live at watchems.com
 - Re-suggest affiliate links
 - Create hardcoded lists that mirror data already in a TypeScript file

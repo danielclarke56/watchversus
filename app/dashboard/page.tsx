@@ -10,7 +10,7 @@ import PhotoGrid from './PhotoGrid'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'My Uploads | WatchVsWatch',
+  title: 'My Uploads | Watchems',
   description: 'Manage your watch photo uploads.',
   robots: {
     index: false,
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
                   No uploads yet
                 </h3>
                 <p className="text-gray-600 mb-6 text-sm sm:text-base">
-                  You haven&apos;t uploaded any watch photos yet. Start contributing to the WatchVsWatch community!
+                  You haven&apos;t uploaded any watch photos yet. Start contributing to the Watchems community!
                 </p>
                 <Link
                   href="/upload"

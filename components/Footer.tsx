@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center mb-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.svg" alt="WatchVsWatch" className="h-7 w-auto" />
+              <img src="/logo.svg" alt="Watchems" className="h-7 w-auto" />
             </div>
             <p className="text-textSecond text-sm leading-relaxed max-w-sm">
               A community photo gallery for watch enthusiasts. Browse and upload real watch
@@ -37,7 +37,7 @@ export default function Footer() {
 
         <div className="border-t border-border mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-textMuted text-xs">
-            © {new Date().getFullYear()} WatchVsWatch. All rights reserved.
+            © {new Date().getFullYear()} Watchems. All rights reserved.
           </p>
           <div className="flex gap-5">
             <Link href="/about" className="text-textMuted hover:text-textSecond text-xs transition-colors">About</Link>

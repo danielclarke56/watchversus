@@ -472,7 +472,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   <p className="text-white/50 text-xs">
                     by{' '}
                     {p.isOfficial ? (
-                      <span className="text-accent">WatchVsWatch</span>
+                      <span className="text-accent">Watchems</span>
                     ) : (
                       <Link
                         href={`/profile/${p.userId}`}

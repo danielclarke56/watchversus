@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About WatchVsWatch — Real Watch Photos from Real Owners',
-  description: 'WatchVsWatch is a community photo gallery for watch enthusiasts. Browse and upload real watch photos — no affiliate links, no sponsored content.',
+  title: 'About Watchems — Real Watch Photos from Real Owners',
+  description: 'Watchems is a community photo gallery for watch enthusiasts. Browse and upload real watch photos — no affiliate links, no sponsored content.',
   alternates: {
     canonical: 'https://watchems.com/about',
   },
   openGraph: {
-    title: 'About | WatchVsWatch',
+    title: 'About | Watchems',
     description: 'A community photo gallery for watch enthusiasts. Real watches, real owners, no affiliate links.',
     url: 'https://watchems.com/about',
     type: 'website',
@@ -19,7 +19,7 @@ export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-textPrimary mb-3">About WatchVsWatch</h1>
+        <h1 className="text-4xl font-bold text-textPrimary mb-3">About Watchems</h1>
         <p className="text-textSecond text-lg">A community photo gallery for watch enthusiasts</p>
       </div>
 
@@ -32,7 +32,7 @@ export default function AboutPage() {
           </h2>
           <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
-              WatchVsWatch is a community photo gallery for watch enthusiasts. Browse real photos of
+              Watchems is a community photo gallery for watch enthusiasts. Browse real photos of
               watches worn in real life — from affordable Seikos to luxury Rolexes. No affiliate links,
               no sponsored content, just real watches from real owners.
             </p>
