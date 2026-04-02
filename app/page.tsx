@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
-import HeroSearch from '@/components/home/HeroSearch'
-import PhotoGallery from '@/components/home/PhotoGallery'
+import { ExploreClient } from './components/ExploreClient'
 import type { Metadata } from 'next'
 
 const faqItems = [
@@ -106,9 +105,8 @@ export default function HomePage() {
       />
 
       <main className="min-h-screen">
-        <Suspense>
-          <HeroSearch />
-          <PhotoGallery />
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-textSecond">Loading gallery...</div></div>}>
+          <ExploreClient />
         </Suspense>
       </main>
     </>

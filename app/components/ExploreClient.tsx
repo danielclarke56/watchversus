@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
@@ -9,17 +10,27 @@ import type { ApprovedPhoto } from '@/lib/photos'
 import { watches } from '@/lib/watches'
 
 export function ExploreClient() {
+  const searchParams = useSearchParams()
   const [photos, setPhotos] = useState<ApprovedPhoto[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [cursor, setCursor] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(false)
   const [brands, setBrands] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Initialize search query from URL params
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q) {
+      setSearchQuery(q)
+    }
+  }, [searchParams])
 
   // Fetch initial photos
   useEffect(() => {
     loadPhotos(null)
     loadBrands()
-  }, [])
+  }, [searchQuery])
 
   async function loadPhotos(cursorParam: string | null) {
     setIsLoading(true)
@@ -28,6 +39,9 @@ export function ExploreClient() {
       url.searchParams.set('limit', '50')
       if (cursorParam) {
         url.searchParams.set('cursor', cursorParam)
+      }
+      if (searchQuery) {
+        url.searchParams.set('q', searchQuery)
       }
 
       const res = await fetch(url.toString())
@@ -75,10 +89,37 @@ export function ExploreClient() {
     <Section>
       <Container>
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-textPrimary mb-2">Explore Watch Photos</h1>
-          <p className="text-lg text-textSecond">
-            Real photos from watch owners around the world
+          <h1 className="text-4xl font-bold text-textPrimary mb-4">Watch Photos</h1>
+          <p className="text-lg text-textSecond mb-6">
+            Real photos from watch owners around the world. Search by brand or model.
           </p>
+          {/* Search Input */}
+          <div className="max-w-md">
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Search watches (Rolex, Omega, Tudor...)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-semibold"
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Brand Navigation Pills */}
