@@ -737,13 +737,13 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 </div>
 
                 {/* Scrollable thumbnails */}
-                <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
+                <div className="flex-1 overflow-y-auto px-3 py-4 grid grid-cols-2 gap-2">
                   {relatedPhotosLoading ? (
                     <>
-                      {Array.from({ length: 5 }).map((_, i) => (
+                      {Array.from({ length: 6 }).map((_, i) => (
                         <div
                           key={i}
-                          className="w-full aspect-square rounded-lg bg-white/10 animate-pulse"
+                          className="aspect-square rounded-lg bg-white/10 animate-pulse"
                         />
                       ))}
                     </>
@@ -761,7 +761,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                               e.stopPropagation()
                               router.push('/photo/' + relatedPhoto.id)
                             }}
-                            className="w-full group relative aspect-square rounded-lg overflow-hidden bg-white/10 hover:bg-white/20 transition-colors"
+                            className="group relative aspect-square rounded-lg overflow-hidden bg-white/10 hover:bg-white/20 transition-colors"
                             aria-label={relatedLabel || 'Related photo'}
                           >
                             <Image
