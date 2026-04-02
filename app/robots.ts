@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
           '/_next',
           '/private',
           '/compare/*',
-          '/guides/*',
+  
           '/watches/*',
           '/quiz',
         ],

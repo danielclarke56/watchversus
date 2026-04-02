@@ -143,7 +143,7 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  // Default / watch / guide layout
+  // Default / watch layout
   return new ImageResponse(
     (
       <div
@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
           </span>
           {type !== 'default' && (
             <span style={{ color: '#AAAAAA', fontSize: 20, marginLeft: 16 }}>
-              {type === 'watch' ? 'Watch Profile' : type === 'guide' ? 'Buying Guide' : ''}
+              {type === 'watch' ? 'Watch Profile' : ''}
             </span>
           )}
         </div>

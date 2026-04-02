@@ -442,11 +442,7 @@ export default function QuizClient({ watches }: Props) {
               📋 {copied ? 'Copied!' : 'Share results'}
             </button>
           </div>
-          <div>
-            <Link href="/guides" className="text-textSecond hover:text-accent text-sm transition-colors">
-              Read our buying guides &rarr;
-            </Link>
-          </div>
+
         </div>
       </div>
     )

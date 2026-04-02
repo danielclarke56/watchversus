@@ -11,8 +11,8 @@ function legacyRootLevelRedirect(req: NextRequest): NextResponse | null {
   const { pathname } = req.nextUrl
   
   // Match pattern: /{slug1}-vs-{slug2}/ at root level
-  // Exclude /compare/, /guides/, /watches/, /about/, /quiz/, /api/, /admin/, /sign-in/, /sign-up/
-  const reservedPaths = ['/compare', '/guides', '/watches', '/about', '/quiz', '/api', '/admin', '/sign-in', '/sign-up', '/_next']
+  // Exclude /compare/, /watches/, /about/, /quiz/, /api/, /admin/, /sign-in/, /sign-up/
+  const reservedPaths = ['/compare', '/watches', '/about', '/quiz', '/api', '/admin', '/sign-in', '/sign-up', '/_next']
   if (reservedPaths.some(p => pathname.startsWith(p))) return null
   
   const match = pathname.match(/^\/([a-z0-9\-]+)-vs-([a-z0-9\-]+)\/?$/)

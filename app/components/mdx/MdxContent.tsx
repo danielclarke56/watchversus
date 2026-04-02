@@ -9,7 +9,7 @@ import ProsCons from './ProsCons'
 
 // Custom MDX components map — these are available inside .mdx files
 const components = {
-  // Custom guide components
+  // Custom MDX components
   WatchRecommendation,
   ComparisonTable,
   Callout,
