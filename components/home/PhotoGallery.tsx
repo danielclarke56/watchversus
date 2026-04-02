@@ -77,6 +77,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
   const [showScrollCue, setShowScrollCue] = useState(false)
+  const [copied, setCopied] = useState(false)
   const scrollCueTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null)
@@ -322,6 +323,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
     }
     setLightboxImageLoading(true)
+    setCopied(false)
     setLightbox({ groupIdx, photoIdx })
   }, [groups])
 
@@ -333,6 +335,21 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setShowScrollCue(false)
     if (scrollCueTimeoutRef.current) clearTimeout(scrollCueTimeoutRef.current)
     setLightbox(null)
+  }, [])
+
+  const handleShare = useCallback(async (photoId: string) => {
+    const shareUrl = `https://watchems.com/photo/${photoId}`
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ url: shareUrl })
+      } catch {
+        // User cancelled or share failed — ignore
+      }
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }, [])
 
   // Handle browser back button while lightbox is open
@@ -489,15 +506,33 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
           style={{ overscrollBehavior: 'contain', touchAction: 'none' }}
         >
           <div className="flex flex-col items-center justify-center w-full h-full" onClick={(e) => e.stopPropagation()}>
-            {/* Close */}
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-              className="absolute top-4 right-4 text-white text-2xl bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all z-10"
-              aria-label="Close"
-            >
-              ✕
-            </button>
+            {/* Share + Close */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.id) }}
+                className="text-white bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                aria-label="Share photo"
+              >
+                {copied ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                  </svg>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); closeLightbox() }}
+                className="text-white text-2xl bg-black/40 opacity-70 hover:opacity-100 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
 
             {/* Left arrow — previous watch (hidden on mobile) */}
             {lightbox.groupIdx > 0 && (
