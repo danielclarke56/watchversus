@@ -131,7 +131,7 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
           {/* Navigation */}
           <div className="mb-8">
             <Link
-              href={photo.brandName ? `/brand/${encodeURIComponent(photo.brandName.toLowerCase())}` : '/explore'}
+              href={photo.brandName ? `/brand/${encodeURIComponent(photo.brandName.toLowerCase())}` : '/'}
               className="text-accent hover:text-accentDark inline-block"
             >
               ← More {photo.brandName || 'watches'}
@@ -260,10 +260,10 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
                 </div>
                 <div className="card p-4">
                   <Link
-                    href="/explore"
+                    href="/"
                     className="block w-full text-center px-4 py-2.5 bg-surfaceAlt border border-border text-textPrimary font-semibold rounded hover:bg-surface hover:border-borderStrong transition-colors"
                   >
-                    Explore all photos
+                    Browse all photos
                   </Link>
                 </div>
               </div>

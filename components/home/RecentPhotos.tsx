@@ -48,7 +48,7 @@ export function RecentPhotos() {
             </p>
           </div>
           <Link
-            href="/explore"
+            href="/"
             className="text-accent hover:text-accentHover transition-colors font-medium text-sm shrink-0"
           >
             View all →

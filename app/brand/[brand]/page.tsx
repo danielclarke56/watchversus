@@ -136,7 +136,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
     <Section>
       <Container>
         <div className="mb-8">
-          <Link href="/explore" className="text-accent hover:text-accentDark mb-4 inline-block">
+          <Link href="/" className="text-accent hover:text-accentDark mb-4 inline-block">
             ← All watches
           </Link>
           <h1 className="text-4xl font-bold text-textPrimary mb-2">{displayBrand} Watch Photos</h1>
@@ -199,7 +199,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
         })}
 
         <div className="text-center py-8">
-          <Link href="/explore" className="btn-outline px-6 py-2.5">
+          <Link href="/" className="btn-outline px-6 py-2.5">
             ← Back to All Watches
           </Link>
         </div>
