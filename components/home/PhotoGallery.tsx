@@ -77,6 +77,10 @@ function PhotoGalleryContent() {
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
   const touchStartXRef = useRef<number | null>(null)
 
+  // Pinterest-style URL tracking
+  const galleryUrlRef = useRef<string>('/')
+  const lightboxOpenRef = useRef(false)
+
   const fetchPhotos = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
     if (cursor) params.set('cursor', cursor)
@@ -134,14 +138,14 @@ function PhotoGalleryContent() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!lightbox) return
       if (e.key === 'Escape') {
-        setLightbox(null)
+        closeLightbox()
       } else if (e.key === 'ArrowLeft') {
         if (lightbox.groupIdx > 0) {
-          setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 })
+          navigateLightbox(lightbox.groupIdx - 1, 0)
         }
       } else if (e.key === 'ArrowRight') {
         if (lightbox.groupIdx < groups.length - 1) {
-          setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 })
+          navigateLightbox(lightbox.groupIdx + 1, 0)
         }
       }
     }
@@ -199,6 +203,50 @@ function PhotoGalleryContent() {
     if (lightbox === null) return
     setLightboxImageLoading(true)
   }, [lightbox])
+
+  // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
+  const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
+    const photo = groups[groupIdx]?.photos[photoIdx]
+    if (photo && !lightboxOpenRef.current) {
+      galleryUrlRef.current = window.location.pathname + window.location.search
+      window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
+      lightboxOpenRef.current = true
+    } else if (photo && lightboxOpenRef.current) {
+      window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    }
+    setLightbox({ groupIdx, photoIdx })
+  }, [groups])
+
+  const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
+    const photo = groups[groupIdx]?.photos[photoIdx]
+    if (photo) {
+      window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    }
+    setLightboxImageLoading(true)
+    setLightbox({ groupIdx, photoIdx })
+  }, [groups])
+
+  const closeLightbox = useCallback(() => {
+    if (lightboxOpenRef.current) {
+      window.history.replaceState(null, '', galleryUrlRef.current)
+      lightboxOpenRef.current = false
+    }
+    setLightbox(null)
+  }, [])
+
+  // Handle browser back button while lightbox is open
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (lightboxOpenRef.current) {
+        lightboxOpenRef.current = false
+        setLightbox(null)
+        // Prevent Next.js from doing a full navigation
+        e.preventDefault?.()
+      }
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   const selectedWatchName = activeWatchId && photos.length > 0
     ? photos[0].watchBrand && photos[0].watchName
@@ -260,7 +308,7 @@ function PhotoGalleryContent() {
               <button
                 key={group.watchId}
                 type="button"
-                onClick={() => setLightbox({ groupIdx, photoIdx: 0 })}
+                onClick={() => openLightbox(groupIdx, 0)}
                 className="group relative aspect-square rounded-lg overflow-hidden bg-surface"
               >
                 <Image
@@ -301,7 +349,7 @@ function PhotoGalleryContent() {
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
-          onClick={() => setLightbox(null)}
+          onClick={closeLightbox}
           onTouchStart={(e) => { touchStartXRef.current = e.touches[0]?.clientX ?? null }}
           onTouchEnd={(e) => {
             const touchEndX = e.changedTouches[0]?.clientX
@@ -312,13 +360,9 @@ function PhotoGalleryContent() {
             const threshold = 50
             
             if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
-              // Left swipe → next watch
-              setLightboxImageLoading(true)
-              setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 })
+              navigateLightbox(lightbox.groupIdx + 1, 0)
             } else if (diff < -threshold && lightbox.groupIdx > 0) {
-              // Right swipe → previous watch
-              setLightboxImageLoading(true)
-              setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 })
+              navigateLightbox(lightbox.groupIdx - 1, 0)
             }
             touchStartXRef.current = null
           }}
@@ -326,7 +370,7 @@ function PhotoGalleryContent() {
           {/* Close */}
           <button
             type="button"
-            onClick={() => setLightbox(null)}
+            onClick={closeLightbox}
             className="absolute top-4 right-4 text-white text-2xl bg-black/50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
             aria-label="Close"
           >
@@ -337,7 +381,7 @@ function PhotoGalleryContent() {
           {lightbox.groupIdx > 0 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setLightboxImageLoading(true); setLightbox({ groupIdx: lightbox.groupIdx - 1, photoIdx: 0 }) }}
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
               aria-label="Previous watch"
             >
@@ -349,7 +393,7 @@ function PhotoGalleryContent() {
           {lightbox.groupIdx < groups.length - 1 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setLightboxImageLoading(true); setLightbox({ groupIdx: lightbox.groupIdx + 1, photoIdx: 0 }) }}
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
               aria-label="Next watch"
             >
@@ -418,7 +462,7 @@ function PhotoGalleryContent() {
                   <button
                     key={thumb.id}
                     type="button"
-                    onClick={() => { setLightboxImageLoading(true); setLightbox({ ...lightbox, photoIdx: thumbIdx }) }}
+                    onClick={() => { navigateLightbox(lightbox.groupIdx, thumbIdx) }}
                     className={`shrink-0 relative w-14 h-14 rounded overflow-hidden border-2 transition-colors ${
                       thumbIdx === lightbox.photoIdx
                         ? 'border-white'
