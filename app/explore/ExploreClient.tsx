@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import type { ApprovedPhoto } from '@/lib/photos'
@@ -12,10 +13,12 @@ export function ExploreClient() {
   const [isLoading, setIsLoading] = useState(true)
   const [cursor, setCursor] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(false)
+  const [brands, setBrands] = useState<string[]>([])
 
   // Fetch initial photos
   useEffect(() => {
     loadPhotos(null)
+    loadBrands()
   }, [])
 
   async function loadPhotos(cursorParam: string | null) {
@@ -45,6 +48,18 @@ export function ExploreClient() {
     }
   }
 
+  async function loadBrands() {
+    try {
+      const url = new URL('/api/brands', window.location.origin)
+      const res = await fetch(url.toString())
+      const data = (await res.json()) as { brands: string[] }
+      // Show top 8 brands
+      setBrands(data.brands.slice(0, 8))
+    } catch (error) {
+      console.error('Failed to load brands:', error)
+    }
+  }
+
   function getWatchName(watchId: string): string {
     const watch = watches.find((w) => w.slug === watchId)
     return watch ? `${watch.brand} ${watch.name}` : watchId
@@ -66,6 +81,24 @@ export function ExploreClient() {
           </p>
         </div>
 
+        {/* Brand Navigation Pills */}
+        {brands.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-lg font-semibold text-textPrimary mb-4">Browse by Brand</h2>
+            <div className="flex flex-wrap gap-2">
+              {brands.map((brand) => (
+                <Link
+                  key={brand}
+                  href={`/brand/${encodeURIComponent(brand.toLowerCase())}`}
+                  className="px-4 py-2 bg-surfaceAlt border border-border rounded-full text-textPrimary hover:bg-surface hover:border-borderStrong transition-colors text-sm font-medium"
+                >
+                  {brand}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isLoading && photos.length === 0 ? (
           <div className="text-center py-16">
             <div className="inline-block">
@@ -85,9 +118,10 @@ export function ExploreClient() {
               {photos.map((photo) => {
                 const watchName = getWatchName(photo.watchId)
                 return (
-                  <div
+                  <Link
                     key={photo.id}
-                    className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors"
+                    href={`/w/${photo.watchId}`}
+                    className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors block"
                   >
                     <Image
                       src={photo.url}
@@ -110,7 +144,7 @@ export function ExploreClient() {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 )
               })}
             </div>
