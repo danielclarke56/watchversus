@@ -60,7 +60,7 @@ function getWatchLabel(group: WatchGroup) {
   return { brand, model, ref }
 }
 
-function PhotoGalleryContent() {
+function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
@@ -80,6 +80,7 @@ function PhotoGalleryContent() {
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
   const lightboxOpenRef = useRef(false)
+  const initialPhotoOpenedRef = useRef(false)
 
   const fetchPhotos = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
@@ -93,6 +94,37 @@ function PhotoGalleryContent() {
 
   // Group photos by watchId early — used in useEffect hooks below
   const groups = useMemo(() => groupByWatch(photos), [photos])
+
+  // Auto-open lightbox when initialPhotoId is provided (Pinterest-style direct link)
+  useEffect(() => {
+    if (!initialPhotoId || initialPhotoOpenedRef.current || loading || groups.length === 0) return
+
+    // Search all loaded groups for the target photo
+    for (let gi = 0; gi < groups.length; gi++) {
+      const pi = groups[gi].photos.findIndex((p) => p.id === initialPhotoId)
+      if (pi !== -1) {
+        initialPhotoOpenedRef.current = true
+        galleryUrlRef.current = '/'
+        lightboxOpenRef.current = true
+        window.history.replaceState({ lightbox: true }, '', window.location.pathname)
+        setLightbox({ groupIdx: gi, photoIdx: pi })
+        return
+      }
+    }
+
+    // Photo not found yet — fetch more if available
+    if (nextCursor && !loadingMore) {
+      setLoadingMore(true)
+      fetchPhotos(nextCursor).then((data) => {
+        setPhotos((prev) => [...prev, ...data.photos])
+        setNextCursor(data.nextCursor)
+        setLoadingMore(false)
+      }).catch(() => setLoadingMore(false))
+    } else if (!nextCursor) {
+      // No more pages — stop retrying
+      initialPhotoOpenedRef.current = true
+    }
+  }, [initialPhotoId, groups, loading, nextCursor, loadingMore, fetchPhotos])
 
   useEffect(() => {
     let cancelled = false
@@ -488,7 +520,7 @@ function PhotoGalleryContent() {
   )
 }
 
-export default function PhotoGallery() {
+export default function PhotoGallery({ initialPhotoId }: { initialPhotoId?: string }) {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -499,7 +531,7 @@ export default function PhotoGallery() {
         </div>
       </div>
     }>
-      <PhotoGalleryContent />
+      <PhotoGalleryContent initialPhotoId={initialPhotoId} />
     </Suspense>
   )
 }
