@@ -155,8 +155,6 @@ export default async function PublicProfilePage({ params }: { params: { username
                   key={watchId}
                   watchId={watchId}
                   photos={watchPhotos}
-                  displayName={displayName}
-                  userId={user.id}
                 />
               ))}
             </div>

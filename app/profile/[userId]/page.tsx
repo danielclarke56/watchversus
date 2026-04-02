@@ -139,8 +139,6 @@ export default async function ProfilePage({ params }: { params: { userId: string
                   key={watchId}
                   watchId={watchId}
                   photos={watchPhotos}
-                  displayName={displayName}
-                  userId={params.userId}
                 />
               ))}
             </div>
