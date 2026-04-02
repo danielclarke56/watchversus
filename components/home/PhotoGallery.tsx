@@ -581,7 +581,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
               {/* Main image area — fixed height on mobile, full height on desktop */}
               <div
-                className="relative w-full h-[55vh] md:h-full flex items-center justify-center flex-shrink-0 md:flex-shrink pt-16"
+                className="relative w-full h-[55vh] md:h-full flex flex-col flex-shrink-0 md:flex-shrink"
                 onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
                 onTouchEnd={(e) => {
                   const touchEndY = e.changedTouches[0]?.clientY
@@ -602,21 +602,26 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   touchStartYRef.current = null
                 }}
               >
-                {/* Loading spinner overlay */}
-                {lightboxImageLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <div className="w-12 h-12 border-3 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-                  </div>
-                )}
-                
-                <Image
-                  src={activeLightboxPhoto.url}
-                  alt={buildPhotoAltText(activeLightboxPhoto)}
-                  fill
-                  className="object-contain"
-                  priority
-                  onLoad={() => setLightboxImageLoading(false)}
-                />
+                {/* Spacer so the photo doesn't sit behind the top buttons */}
+                <div className="h-14 flex-shrink-0" />
+                {/* Image wrapper — fills remaining space */}
+                <div className="relative flex-1 min-h-0">
+                  {/* Loading spinner overlay */}
+                  {lightboxImageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                      <div className="w-12 h-12 border-3 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
+                    </div>
+                  )}
+                  
+                  <Image
+                    src={activeLightboxPhoto.url}
+                    alt={buildPhotoAltText(activeLightboxPhoto)}
+                    fill
+                    className="object-contain"
+                    priority
+                    onLoad={() => setLightboxImageLoading(false)}
+                  />
+                </div>
               </div>
 
               {/* Watch info — below main image (mobile) or at bottom (desktop) */}
