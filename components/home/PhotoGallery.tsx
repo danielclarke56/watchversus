@@ -793,7 +793,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                               e.stopPropagation()
                               openRelatedPhoto(relatedPhoto)
                             }}
-                            className="group relative aspect-square rounded-lg overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
+                            className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
                             aria-label={relatedLabel || 'Related photo'}
                           >
                             <Image
