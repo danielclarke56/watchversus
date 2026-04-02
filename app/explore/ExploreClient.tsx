@@ -120,7 +120,7 @@ export function ExploreClient() {
                 return (
                   <Link
                     key={photo.id}
-                    href={`/w/${photo.watchId}`}
+                    href={`/photo/${photo.id}`}
                     className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors block"
                   >
                     <Image

@@ -21,6 +21,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from(photos)
     .where(and(eq(photos.status, 'approved'), sql`${photos.brandName} IS NOT NULL`))
 
+  // Fetch all approved photo IDs
+  const photoIds = await db
+    .select({ id: photos.id })
+    .from(photos)
+    .where(eq(photos.status, 'approved'))
+
   const watchPages = watchIds.map((row) => ({
     url: `${base}/w/${row.watchId}`,
     lastModified: lastMod,
@@ -32,6 +38,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${base}/brand/${encodeURIComponent(row.brand)}`,
     lastModified: lastMod,
     changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }))
+
+  const photoPages = photoIds.map((row) => ({
+    url: `${base}/photo/${row.id}`,
+    lastModified: lastMod,
+    changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
 
@@ -74,5 +87,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...staticPages, ...brandPages, ...watchPages]
+  return [...staticPages, ...brandPages, ...watchPages, ...photoPages]
 }
