@@ -254,22 +254,29 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   }, [])
 
   // Lock body scroll when lightbox is open (prevents background scroll on mobile)
+  const savedScrollYRef = useRef(0)
   useEffect(() => {
     if (lightbox !== null) {
+      // Save current scroll position before locking
+      savedScrollYRef.current = window.scrollY
       // Lock body scroll
       document.body.style.overflow = 'hidden'
       document.body.style.position = 'fixed'
+      document.body.style.top = `-${savedScrollYRef.current}px`
       document.body.style.width = '100%'
     } else {
-      // Restore body scroll
+      // Restore body scroll and position
       document.body.style.overflow = ''
       document.body.style.position = ''
+      document.body.style.top = ''
       document.body.style.width = ''
+      window.scrollTo(0, savedScrollYRef.current)
     }
     return () => {
       // Cleanup on unmount
       document.body.style.overflow = ''
       document.body.style.position = ''
+      document.body.style.top = ''
       document.body.style.width = ''
     }
   }, [lightbox])
@@ -534,9 +541,9 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 onLoad={() => setLightboxImageLoading(false)}
               />
 
-              {/* Scroll cue — bouncing chevron (mobile hint) */}
+              {/* Scroll cue — bouncing chevron (mobile only) */}
               {showScrollCue && (
-                <div className="absolute bottom-24 left-1/2 -translate-x-1/2 animate-bounce z-20">
+                <div className="block md:hidden absolute bottom-24 left-1/2 -translate-x-1/2 animate-bounce z-20">
                   <div className="text-white/70 text-2xl">⌃⌃</div>
                 </div>
               )}
