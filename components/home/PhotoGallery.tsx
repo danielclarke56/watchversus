@@ -80,6 +80,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const scrollCueTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const lightboxContainerRef = useRef<HTMLDivElement>(null)
 
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
@@ -252,6 +253,45 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     }
   }, [])
 
+  // Lock body scroll when lightbox is open (prevents background scroll on mobile)
+  useEffect(() => {
+    if (lightbox !== null) {
+      // Lock body scroll
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+    } else {
+      // Restore body scroll
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+    }
+    return () => {
+      // Cleanup on unmount
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+    }
+  }, [lightbox])
+
+  // Attach non-passive touchmove listener to lightbox to prevent scroll passthrough
+  useEffect(() => {
+    const container = lightboxContainerRef.current
+    if (!container) return
+
+    const preventScroll = (e: TouchEvent) => {
+      e.preventDefault()
+    }
+
+    if (lightbox !== null) {
+      container.addEventListener('touchmove', preventScroll, { passive: false })
+    }
+
+    return () => {
+      container.removeEventListener('touchmove', preventScroll)
+    }
+  }, [lightbox])
+
   // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
@@ -402,6 +442,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {/* Lightbox */}
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
+          ref={lightboxContainerRef}
           className="fixed inset-0 z-50 bg-black"
           onClick={closeLightbox}
           onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
@@ -438,7 +479,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               }
             }, 300)
           }}
-          style={{ overscrollBehavior: 'contain' }}
+          style={{ overscrollBehavior: 'contain', touchAction: 'none' }}
         >
           <div className="flex flex-col items-center justify-center w-full h-full" onClick={(e) => e.stopPropagation()}>
             {/* Close */}
