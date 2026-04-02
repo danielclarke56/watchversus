@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and, desc } from 'drizzle-orm'
+import { eq, lt, and, desc, or, ilike } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 
 /**
@@ -27,6 +27,17 @@ export async function GET(req: NextRequest) {
     }
     if (watchId) {
       conditions.push(eq(photos.watchId, watchId))
+    }
+    // Push search query to DB level (fixes pagination + filter mismatch)
+    if (q && !watchId) {
+      conditions.push(
+        or(
+          ilike(photos.brandName, `%${q}%`),
+          ilike(photos.modelName, `%${q}%`),
+          ilike(photos.referenceNumber, `%${q}%`),
+          ilike(photos.watchId, `%${q}%`)
+        )!
+      )
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
@@ -79,19 +90,6 @@ export async function GET(req: NextRequest) {
     let filtered = enriched
     if (brand && !watchId) {
       filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
-    }
-
-    // Filter by free-text query (brand/name prefix search, case-insensitive)
-    // Checks both static library fields (watchBrand, watchName) and user-submitted fields (brandName, modelName, referenceNumber)
-    if (q && !watchId) {
-      filtered = filtered.filter((p) => {
-        const name = (p.watchName ?? '').toLowerCase()
-        const b = (p.watchBrand ?? '').toLowerCase()
-        const brandName = (p.brandName ?? '').toLowerCase()
-        const modelName = (p.modelName ?? '').toLowerCase()
-        const ref = (p.referenceNumber ?? '').toLowerCase()
-        return name.includes(q) || b.includes(q) || brandName.includes(q) || modelName.includes(q) || ref.includes(q)
-      })
     }
 
     // Take limit and compute next cursor
