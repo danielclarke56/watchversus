@@ -84,6 +84,11 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const lightboxContainerRef = useRef<HTMLDivElement>(null)
 
+  // Related photos section state
+  const [relatedPhotos, setRelatedPhotos] = useState<PhotoItem[]>([])
+  const [relatedPhotosLoading, setRelatedPhotosLoading] = useState(false)
+  const relatedPhotosCacheRef = useRef<Map<string, PhotoItem[]>>(new Map())
+
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
   const lightboxOpenRef = useRef(false)
@@ -98,6 +103,51 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     const data: PhotosResponse = await res.json()
     return data
   }, [activeWatchId, activeQuery])
+
+  // Fetch related photos for the current lightbox photo
+  const fetchRelatedPhotos = useCallback(async (currentPhoto: PhotoItem) => {
+    const watchId = currentPhoto.watchId
+    
+    // Check cache first
+    if (relatedPhotosCacheRef.current.has(watchId)) {
+      setRelatedPhotos(relatedPhotosCacheRef.current.get(watchId) || [])
+      return
+    }
+
+    setRelatedPhotosLoading(true)
+    try {
+      // Fetch by watchId
+      const watchParams = new URLSearchParams({ watchId, limit: '12' })
+      const watchRes = await fetch(`/api/photos/all?${watchParams.toString()}`)
+      const watchData: PhotosResponse = await watchRes.json()
+      
+      let relatedList = watchData.photos.filter((p) => p.id !== currentPhoto.id)
+      
+      // If fewer than 4 results, also fetch by brand
+      if (relatedList.length < 4) {
+        const brand = currentPhoto.watchBrand || currentPhoto.brandName
+        if (brand) {
+          const brandParams = new URLSearchParams({ q: brand, limit: '12' })
+          const brandRes = await fetch(`/api/photos/all?${brandParams.toString()}`)
+          const brandData: PhotosResponse = await brandRes.json()
+          
+          // Merge and dedup by id
+          const existingIds = new Set(relatedList.map((p) => p.id))
+          const brandPhotos = brandData.photos.filter((p) => !existingIds.has(p.id) && p.id !== currentPhoto.id)
+          relatedList = [...relatedList, ...brandPhotos]
+        }
+      }
+
+      // Cache the results
+      relatedPhotosCacheRef.current.set(watchId, relatedList)
+      setRelatedPhotos(relatedList)
+    } catch (error) {
+      console.error('Failed to fetch related photos:', error)
+      setRelatedPhotos([])
+    } finally {
+      setRelatedPhotosLoading(false)
+    }
+  }, [])
 
   // Group photos by watchId early — used in useEffect hooks below
   const groups = useMemo(() => groupByWatch(photos), [photos])
@@ -387,6 +437,12 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const activeLightboxPhotos = activeLightboxGroup ? activeLightboxGroup.photos : []
   const activeLightboxPhoto = activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null
 
+  // Fetch related photos when lightbox photo changes
+  useEffect(() => {
+    if (!activeLightboxPhoto) return
+    fetchRelatedPhotos(activeLightboxPhoto)
+  }, [activeLightboxPhoto, fetchRelatedPhotos])
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
       {/* Filter indicators */}
@@ -476,7 +532,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
           ref={lightboxContainerRef}
-          className="fixed inset-0 z-50 bg-black"
+          className="fixed inset-0 z-50 bg-black overflow-y-auto"
           onClick={closeLightbox}
           onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
           onTouchEnd={(e) => {
@@ -514,7 +570,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
           }}
           style={{ overscrollBehavior: 'contain', touchAction: 'none' }}
         >
-          <div className="flex flex-col items-center justify-center w-full h-full" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-col w-full min-h-screen" onClick={(e) => e.stopPropagation()}>
             {/* Share + Close */}
             <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
               <button
@@ -589,8 +645,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               </button>
             )}
 
-            {/* Main image — full-screen fill */}
-            <div className="relative w-full h-full flex items-center justify-center">
+            {/* Main image area — fixed/sticky height */}
+            <div className="relative w-full h-[70vh] md:h-screen flex items-center justify-center flex-shrink-0">
               {/* Loading spinner overlay */}
               {lightboxImageLoading && (
                 <div className="absolute inset-0 flex items-center justify-center z-20">
@@ -615,8 +671,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               )}
             </div>
 
-            {/* Watch info at bottom with gradient overlay */}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6 text-center">
+            {/* Watch info — relative positioning inside flex layout */}
+            <div className="relative bg-gradient-to-t from-black via-black/80 to-transparent p-6 text-center">
               {(() => {
                 const p = activeLightboxPhoto
                 const brand = p.brandName || p.watchBrand || null
@@ -675,6 +731,68 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 </div>
               )}
             </div>
+
+            {/* Related photos section — "More like this" */}
+            {relatedPhotos.length > 0 && (
+              <div className="w-full px-4 sm:px-6 py-8 bg-black">
+                {/* Section title with divider */}
+                <div className="mb-6">
+                  <h3 className="text-white font-semibold text-lg">More like this</h3>
+                  <div className="mt-2 h-px bg-white/20" />
+                </div>
+
+                {/* Loading state — skeleton placeholders */}
+                {relatedPhotosLoading ? (
+                  <div className="flex md:grid grid-cols-3 gap-4 overflow-x-auto md:overflow-visible pb-1">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="shrink-0 w-24 md:w-full aspect-square rounded-lg bg-white/10 animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  /* Grid layout — horizontal scroll on mobile, 3-col grid on desktop */
+                  <div className="flex md:grid grid-cols-3 gap-4 overflow-x-auto md:overflow-visible pb-1">
+                    {relatedPhotos.slice(0, 12).map((relatedPhoto) => {
+                      const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                      const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                      const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                      return (
+                        <button
+                          key={relatedPhoto.id}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            router.push('/photo/' + relatedPhoto.id)
+                          }}
+                          className="shrink-0 w-24 md:w-full group relative aspect-square rounded-lg overflow-hidden bg-white/10"
+                          aria-label={relatedLabel || 'Related photo'}
+                        >
+                          <Image
+                            src={relatedPhoto.url}
+                            alt={buildPhotoAltText(relatedPhoto)}
+                            fill
+                            className="object-cover transition-transform duration-200 group-hover:scale-105"
+                            sizes="(max-width: 768px) 96px, (max-width: 1280px) 33vw, 25vw"
+                          />
+                          
+                          {/* Watch name + submitter label */}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                            <p className="text-white text-xs font-medium line-clamp-2 text-center">
+                              {relatedLabel}
+                            </p>
+                            <p className="text-white/60 text-xs text-center">
+                              by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}
+                            </p>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
