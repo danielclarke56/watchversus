@@ -81,7 +81,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const [linkCopied, setLinkCopied] = useState(false)
   const scrollCueTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartYRef = useRef<number | null>(null)
-  const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const lightboxContainerRef = useRef<HTMLDivElement>(null)
 
   // Related photos section state
@@ -297,12 +296,9 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxImageLoading(true)
   }, [lightbox])
 
-  // Cleanup wheel debounce and scroll cue timeout on unmount or lightbox close
+  // Cleanup scroll cue timeout on unmount or lightbox close
   useEffect(() => {
     return () => {
-      if (wheelDebounceRef.current) {
-        clearTimeout(wheelDebounceRef.current)
-      }
       if (scrollCueTimeoutRef.current) {
         clearTimeout(scrollCueTimeoutRef.current)
       }
@@ -521,23 +517,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
           ref={lightboxContainerRef}
           className="fixed inset-0 z-50 bg-black overflow-y-auto"
           onClick={closeLightbox}
-          onWheel={(e) => {
-            // Only navigate between photos when scrolled to top; otherwise let native scroll handle it
-            if (e.currentTarget.scrollTop > 0) return
-            // Debounced scroll wheel navigation
-            if (wheelDebounceRef.current) {
-              clearTimeout(wheelDebounceRef.current)
-            }
-            wheelDebounceRef.current = setTimeout(() => {
-              if (e.deltaY < 0 && lightbox.groupIdx < groups.length - 1) {
-                // Scroll up → next photo (matches mobile swipe-up = next)
-                navigateLightbox(lightbox.groupIdx + 1, 0)
-              } else if (e.deltaY > 0 && lightbox.groupIdx > 0) {
-                // Scroll down → previous photo
-                navigateLightbox(lightbox.groupIdx - 1, 0)
-              }
-            }, 300)
-          }}
           style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
           <div className="flex flex-col w-full min-h-screen" onClick={(e) => e.stopPropagation()}>
@@ -617,7 +596,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
             {/* Main image area — fixed/sticky height */}
             <div
-              className="relative w-full h-[70vh] md:h-screen flex items-center justify-center flex-shrink-0"
+              className="relative w-full h-[60vh] md:h-[75vh] flex items-center justify-center flex-shrink-0"
               onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
               onTouchEnd={(e) => {
                 const touchEndY = e.changedTouches[0]?.clientY
