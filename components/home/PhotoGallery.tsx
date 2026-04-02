@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 
 interface PhotoItem {
   id: string
@@ -345,7 +346,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               >
                 <Image
                   src={primary.url}
-                  alt={primary.watchName ?? 'Watch photo'}
+                  alt={buildPhotoAltText(primary)}
                   fill
                   className="object-cover transition-transform duration-200 group-hover:scale-105"
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
@@ -447,7 +448,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
             
             <Image
               src={activeLightboxPhoto.url}
-              alt={activeLightboxPhoto.watchName ?? 'Watch photo'}
+              alt={buildPhotoAltText(activeLightboxPhoto)}
               width={1200}
               height={1200}
               style={{ objectFit: 'contain', maxHeight: '70vh', maxWidth: '90vw', width: 'auto', height: 'auto' }}
@@ -504,7 +505,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   >
                     <Image
                       src={thumb.url}
-                      alt={`Thumbnail ${thumbIdx + 1}`}
+                      alt={buildPhotoAltText(thumb)}
                       fill
                       className="object-cover"
                       sizes="56px"

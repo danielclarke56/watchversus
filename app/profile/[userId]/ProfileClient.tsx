@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Photo } from '@/lib/db/schema'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 
 interface ProfileClientProps {
   watchId: string
@@ -106,7 +107,7 @@ export default function ProfileClient({ watchId, photos, displayName, userId }: 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={selectedPhoto.url}
-              alt={watchName}
+              alt={buildPhotoAltText(selectedPhoto)}
               style={{ maxHeight: '70vh', maxWidth: '90vw', width: 'auto', height: 'auto' }}
             />
 
@@ -150,7 +151,7 @@ export default function ProfileClient({ watchId, photos, displayName, userId }: 
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={thumb.url}
-                      alt={`Thumbnail ${thumbIdx + 1}`}
+                      alt={buildPhotoAltText(thumb)}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   </button>
