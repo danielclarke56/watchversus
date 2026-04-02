@@ -559,11 +559,11 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               clearTimeout(wheelDebounceRef.current)
             }
             wheelDebounceRef.current = setTimeout(() => {
-              if (e.deltaY > 0 && lightbox.groupIdx < groups.length - 1) {
-                // Scroll down → next photo
+              if (e.deltaY < 0 && lightbox.groupIdx < groups.length - 1) {
+                // Scroll up → next photo (matches mobile swipe-up = next)
                 navigateLightbox(lightbox.groupIdx + 1, 0)
-              } else if (e.deltaY < 0 && lightbox.groupIdx > 0) {
-                // Scroll up → previous photo
+              } else if (e.deltaY > 0 && lightbox.groupIdx > 0) {
+                // Scroll down → previous photo
                 navigateLightbox(lightbox.groupIdx - 1, 0)
               }
             }, 300)
