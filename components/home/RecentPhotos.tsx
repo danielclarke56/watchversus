@@ -75,7 +75,7 @@ export function RecentPhotos() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-end justify-end p-3">
                   <div className="w-full text-right">
                     <p className="text-white text-xs font-semibold truncate">{watchName}</p>
-                    <p className="text-white/70 text-[10px] truncate">by {photo.userName}</p>
+                    <p className="text-white/70 text-[10px] truncate">by {(photo as { isOfficial?: boolean }).isOfficial ? 'WatchVsWatch' : photo.userName}</p>
                   </div>
                 </div>
               </Link>

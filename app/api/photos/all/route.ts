@@ -3,6 +3,7 @@ import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, lt, and, desc } from 'drizzle-orm'
+import { checkAdmin } from '@/lib/admin'
 
 /**
  * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex
@@ -60,6 +61,7 @@ export async function GET(req: NextRequest) {
         watchId: p.watchId,
         userId: p.userId,
         userName: p.userName,
+        isOfficial: p.userId ? checkAdmin(p.userId) : false,
         url: p.url,
         createdAt: p.createdAt.toISOString(),
         approved: true,

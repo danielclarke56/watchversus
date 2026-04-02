@@ -8,7 +8,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql } from 'drizzle-orm'
 
-/** GET /api/admin/photos — list pending or approved photos (?status=pending|approved) */
+/** GET /api/admin/photos - list pending or approved photos (?status=pending|approved) */
 export async function GET(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/** POST /api/admin/photos — approve or delete a pending photo */
+/** POST /api/admin/photos - approve or delete a pending photo */
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -100,38 +100,38 @@ export async function POST(req: NextRequest) {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
     } else if (action === 'reject') {
-      // Only update status to rejected — do NOT delete the file
+      // Only update status to rejected - do NOT delete the file
       await db.update(photos).set({ status: 'rejected' }).where(eq(photos.id, photoId))
     } else if (action === 'restore') {
       // Restore a rejected photo back to pending
       await db.update(photos).set({ status: 'pending' }).where(eq(photos.id, photoId))
-    } else if (action === 'delete' || action === 'delete-approved') {
-      // For delete-approved, check if this is the last photo
-      if (action === 'delete-approved') {
-        const approvedPhotoCount = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(photos)
-          .where(and(eq(photos.watchId, watchId), eq(photos.status, 'approved')))
-          .then((result) => result[0]?.count || 0)
+    } else if (action === 'delete') {
+      // Delete rejected photo entry only — do NOT remove images from R2
+      await db.delete(photos).where(eq(photos.id, photoId))
+    } else if (action === 'delete-approved') {
+      // For approved photos, check if this is the last photo
+      const approvedPhotoCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(photos)
+        .where(and(eq(photos.watchId, watchId), eq(photos.status, 'approved')))
+        .then((result) => result[0]?.count || 0)
 
-        if (approvedPhotoCount <= 1) {
-          return NextResponse.json(
-            { error: 'Cannot delete the last photo — a watch must have at least one photo' },
-            { status: 400 }
-          )
-        }
+      if (approvedPhotoCount <= 1) {
+        return NextResponse.json(
+          { error: 'Cannot delete the last photo - a watch must have at least one photo' },
+          { status: 400 }
+        )
       }
+
       // Delete photo from R2 or filesystem
       const url = photoRecord.url
       const thumbUrl = photoRecord.thumbnailUrl
       if (url.startsWith('/images/')) {
-        // Local filesystem
         const filePath = path.join(process.cwd(), 'public', url)
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath)
         }
       } else {
-        // Try to delete from R2 (original + thumbnail)
         try {
           const { deletePhotoFromR2, isR2Configured } = await import('@/lib/r2')
           if (isR2Configured) {
@@ -142,11 +142,9 @@ export async function POST(req: NextRequest) {
           }
         } catch (error) {
           console.error('Failed to delete from R2:', error)
-          // Continue anyway
         }
       }
 
-      // Remove photo record from DB entirely
       await db.delete(photos).where(eq(photos.id, photoId))
     }
 
@@ -157,7 +155,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-/** PATCH /api/admin/photos — update metadata fields on a photo */
+/** PATCH /api/admin/photos - update metadata fields on a photo */
 export async function PATCH(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

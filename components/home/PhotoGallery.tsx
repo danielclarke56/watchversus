@@ -11,6 +11,7 @@ interface PhotoItem {
   userId: string
   url: string
   userName: string
+  isOfficial?: boolean
   createdAt: string
   watchSlug?: string
   watchName?: string
@@ -177,6 +178,21 @@ function PhotoGalleryContent() {
     }
     preloadAdjacentImages()
   }, [lightbox, groups])
+
+  // Fetch more photos when navigating near the end of loaded groups in the lightbox
+  // (the scroll sentinel can't fire while the lightbox is open)
+  useEffect(() => {
+    if (!lightbox || !nextCursor || loadingMore) return
+    // Pre-fetch when within 5 groups of the end
+    if (lightbox.groupIdx >= groups.length - 5) {
+      setLoadingMore(true)
+      fetchPhotos(nextCursor).then((data) => {
+        setPhotos((prev) => [...prev, ...data.photos])
+        setNextCursor(data.nextCursor)
+        setLoadingMore(false)
+      }).catch(() => setLoadingMore(false))
+    }
+  }, [lightbox?.groupIdx, groups.length, nextCursor, loadingMore, fetchPhotos])
 
   // Show loading state when lightbox photo changes
   useEffect(() => {
@@ -379,13 +395,17 @@ function PhotoGalleryContent() {
                   {ref && <p className="text-white/60 text-sm">Ref. {ref}</p>}
                   <p className="text-white/50 text-xs">
                     by{' '}
-                    <Link
-                      href={`/profile/${p.userId}`}
-                      className="text-accent hover:text-accentHover transition-colors underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {p.userName}
-                    </Link>
+                    {p.isOfficial ? (
+                      <span className="text-accent">WatchVsWatch</span>
+                    ) : (
+                      <Link
+                        href={`/profile/${p.userId}`}
+                        className="text-accent hover:text-accentHover transition-colors underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {p.userName}
+                      </Link>
+                    )}
                   </p>
                 </div>
               )
