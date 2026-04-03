@@ -326,18 +326,15 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   }, [lightbox])
 
 
-  // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
+  // Open lightbox — use router.push() for proper Next.js app router integration
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
-    if (photo && !lightboxOpenRef.current) {
-      galleryUrlRef.current = window.location.pathname + window.location.search
-      window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
-      lightboxOpenRef.current = true
-    } else if (photo && lightboxOpenRef.current) {
-      window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    if (photo) {
+      // Use router.push() instead of pushState() for proper Next.js navigation
+      // The /photo/[id] page will initialize and open the lightbox automatically
+      router.push(`/photo/${photo.id}`)
     }
-    setLightbox({ groupIdx, photoIdx })
-  }, [groups])
+  }, [groups, router])
 
   const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
@@ -371,11 +368,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   }, [groups, navigateLightbox])
 
   const closeLightbox = useCallback(() => {
-    if (lightboxOpenRef.current) {
-      window.history.replaceState(null, '', galleryUrlRef.current)
-      lightboxOpenRef.current = false
-    }
     setLightbox(null)
+    // Navigation back is handled by the photo page's back button or browser back
   }, [])
 
   const handleShare = useCallback(async (photoId: string) => {
