@@ -461,7 +461,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-surface animate-pulse" />
+            <div key={i} className="aspect-square rounded-2xl bg-surface animate-pulse" />
           ))}
         </div>
       ) : groups.length === 0 ? (
@@ -482,7 +482,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 key={group.watchId}
                 type="button"
                 onClick={() => openLightbox(groupIdx, 0)}
-                className="group relative aspect-square rounded-lg overflow-hidden bg-surface"
+                className="group relative aspect-square rounded-2xl overflow-hidden bg-surface"
               >
                 <Image
                   src={primary.url}
@@ -591,7 +591,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 {/* Spacer so the photo doesn't sit behind the top buttons */}
                 <div className="h-14 flex-shrink-0" />
                 {/* Image wrapper — fills remaining space */}
-                <div className="relative flex-1 min-h-0">
+                <div className="relative flex-1 min-h-0 rounded-2xl overflow-hidden">
                   {/* Loading spinner overlay */}
                   {lightboxImageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center z-20">
@@ -723,7 +723,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div
                           key={i}
-                          className="shrink-0 w-20 h-20 rounded-lg bg-gray-200 animate-pulse"
+                          className="shrink-0 w-20 h-20 rounded-2xl bg-gray-200 animate-pulse"
                         />
                       ))}
                     </div>
@@ -741,7 +741,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                               e.stopPropagation()
                               openRelatedPhoto(relatedPhoto)
                             }}
-                            className="shrink-0 group relative rounded-lg overflow-hidden bg-gray-200 w-20 h-20"
+                            className="shrink-0 group relative rounded-2xl overflow-hidden bg-gray-200 w-20 h-20"
                             aria-label={relatedLabel || 'Related photo'}
                           >
                             <Image
@@ -775,7 +775,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                       {Array.from({ length: 6 }).map((_, i) => (
                         <div
                           key={i}
-                          className="aspect-square rounded-lg bg-white/10 animate-pulse"
+                          className="aspect-square rounded-2xl bg-white/10 animate-pulse"
                         />
                       ))}
                     </>
@@ -834,7 +834,7 @@ export default function PhotoGallery({ initialPhotoId }: { initialPhotoId?: stri
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-surface animate-pulse" />
+            <div key={i} className="aspect-square rounded-2xl bg-surface animate-pulse" />
           ))}
         </div>
       </div>
