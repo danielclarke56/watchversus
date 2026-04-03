@@ -25,6 +25,8 @@ export default function GallerySearch() {
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isTypingRef = useRef(false)
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Debounced URL update for free-text search
   const updateQuery = useCallback((text: string) => {
@@ -39,13 +41,14 @@ export default function GallerySearch() {
       }
       const qs = params.toString()
       router.replace(qs ? `/?${qs}` : '/')
-    }, 250)
+    }, 150)
   }, [router, searchParams])
 
-  // Cleanup debounce on unmount
+  // Cleanup debounce and typing timer on unmount
   useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
     }
   }, [])
 
@@ -68,7 +71,9 @@ export default function GallerySearch() {
   }, [])
 
   // When a watch or query is active, populate the input
+  // Skip if user is actively typing (don't overwrite with stale URL value)
   useEffect(() => {
+    if (isTypingRef.current) return
     if (activeWatchId) {
       const active = watches.find((w) => w.watchId === activeWatchId)
       if (active) {
@@ -146,9 +151,12 @@ export default function GallerySearch() {
   }
 
   const clearFilter = () => {
+    isTypingRef.current = false
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     router.replace('/')
     setInput('')
+    setIsOpen(false)
   }
 
   return (
@@ -165,6 +173,13 @@ export default function GallerySearch() {
           placeholder="Search watches (Rolex, Omega, Tudor...)"
           value={input}
           onChange={(e) => {
+            // Mark as typing, reset after 600ms of no input
+            isTypingRef.current = true
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+            typingTimeoutRef.current = setTimeout(() => {
+              isTypingRef.current = false
+            }, 600)
+
             const val = e.target.value
             setInput(val)
             setIsOpen(true)
@@ -177,8 +192,8 @@ export default function GallerySearch() {
           className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50"
         />
 
-        {/* Clear button (×) when a watch or query is active */}
-        {(activeWatchId || activeQuery) && (
+        {/* Clear button (×) when there's any text in the input */}
+        {(activeWatchId || activeQuery || input) && (
           <button
             type="button"
             onClick={clearFilter}
