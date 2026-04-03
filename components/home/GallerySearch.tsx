@@ -96,14 +96,14 @@ export default function GallerySearch() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: PointerEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false)
       }
     }
 
-    window.addEventListener('mousedown', handleClickOutside)
-    return () => window.removeEventListener('mousedown', handleClickOutside)
+    window.addEventListener('pointerdown', handleClickOutside)
+    return () => window.removeEventListener('pointerdown', handleClickOutside)
   }, [])
 
   // Handle keyboard navigation
@@ -197,6 +197,7 @@ export default function GallerySearch() {
             <button
               key={watch.watchId}
               type="button"
+              onPointerDown={(e) => e.preventDefault()}
               onClick={() => selectWatch(watch)}
               onMouseEnter={() => setSelectedIndex(idx)}
               className={`w-full px-4 py-3 text-left flex items-center justify-between border-b border-gray-200 last:border-b-0 transition-colors ${
