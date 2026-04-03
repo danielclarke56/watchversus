@@ -197,8 +197,10 @@ export default function GallerySearch() {
             <button
               key={watch.watchId}
               type="button"
-              onPointerDown={(e) => e.preventDefault()}
-              onClick={() => selectWatch(watch)}
+              onPointerDown={(e) => {
+                e.preventDefault()
+                selectWatch(watch)
+              }}
               onMouseEnter={() => setSelectedIndex(idx)}
               className={`w-full px-4 py-3 text-left flex items-center justify-between border-b border-gray-200 last:border-b-0 transition-colors ${
                 idx === selectedIndex ? 'bg-gray-100' : 'hover:bg-gray-50'
