@@ -78,12 +78,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Lightbox: which group + which photo within it
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
-<<<<<<< HEAD
   const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
-  const touchStartXRef = useRef<number | null>(null)
-=======
   const [copied, setCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
+  const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const lightboxContainerRef = useRef<HTMLDivElement>(null)
 
@@ -94,7 +92,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
   // Override: a related photo not yet in `groups` shown directly without page nav
   const [photoOverride, setPhotoOverride] = useState<PhotoItem | null>(null)
->>>>>>> 73e909a0a2b6e5008396d5d3980373d9bfa57c4f
 
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
@@ -304,7 +301,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxImageLoading(true)
   }, [lightbox])
 
-<<<<<<< HEAD
   // Fetch watch metadata when lightbox photo changes
   useEffect(() => {
     if (lightbox === null) {
@@ -320,8 +316,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxWatch(watch || null)
   }, [lightbox, groups])
 
-  // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
-=======
   // Lock body scroll when lightbox is open (prevents background scroll on mobile)
   const savedScrollYRef = useRef(0)
   useEffect(() => {
@@ -352,7 +346,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
 
   // Open lightbox — use router.push() for proper Next.js app router integration
->>>>>>> 73e909a0a2b6e5008396d5d3980373d9bfa57c4f
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
     if (photo) {
