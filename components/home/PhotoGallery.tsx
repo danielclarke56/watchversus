@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getWatchById, formatPrice } from '@/lib/watches'
+import { getWatchBySlug, formatPrice } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Watch } from '@/lib/types'
 
@@ -311,7 +311,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       setLightboxWatch(null)
       return
     }
-    const watch = getWatchById(group.watchId)
+    const watch = getWatchBySlug(group.watchId)
     setLightboxWatch(watch || null)
   }, [lightbox, groups])
 
