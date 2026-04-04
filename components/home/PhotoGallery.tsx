@@ -663,7 +663,46 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                           </Link>
                         )}
                       </p>
-                      {/* Share + Copy link buttons — contextually anchored to the watch */}
+                      {/* Watch specs — canonical data from watches.json */}
+                    {lightboxWatch && (
+                      <div className="mt-4 text-left border-t border-gray-100 pt-4">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                          {/* Movement Type */}
+                          <div>
+                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Movement</p>
+                            <p className="text-gray-800 font-medium">{formatMovementType(lightboxWatch.movement_type)}</p>
+                          </div>
+
+                          {/* Case Diameter */}
+                          <div>
+                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Case Diameter</p>
+                            <p className="text-gray-800 font-medium">{lightboxWatch.case_diameter_mm ? `${lightboxWatch.case_diameter_mm}mm` : '—'}</p>
+                          </div>
+
+                          {/* Water Resistance */}
+                          <div>
+                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Water Resistance</p>
+                            <p className="text-gray-800 font-medium">{lightboxWatch.water_resistance_m ? `${lightboxWatch.water_resistance_m}m` : '—'}</p>
+                          </div>
+
+                          {/* Case Material */}
+                          <div>
+                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Case Material</p>
+                            <p className="text-gray-800 font-medium">{formatField(lightboxWatch.case_material)}</p>
+                          </div>
+
+                          {/* Price */}
+                          {lightboxWatch.price_new_usd && (
+                            <div className="col-span-2">
+                              <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Approx. Price</p>
+                              <p className="text-gray-800 font-medium">{formatPrice(lightboxWatch.price_new_usd)}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Share + Copy link buttons — contextually anchored to the watch */}
                       <div className="flex items-center justify-center gap-2 pt-2">
                         <button
                           type="button"
@@ -846,56 +885,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               </div>
             )}
 
-            {/* Watch specs panel — shown when watch metadata is available */}
-            {lightboxWatch && (
-              <div className="mt-4 w-full max-w-[90vw] bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  {/* Brand + Model Name */}
-                  <div className="col-span-2">
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Watch</p>
-                    <p className="text-white font-semibold">
-                      {lightboxWatch.brand} {lightboxWatch.name}
-                    </p>
-                  </div>
 
-                  {/* Reference Number */}
-                  <div>
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Reference</p>
-                    <p className="text-white/80">{formatField(lightboxWatch.reference)}</p>
-                  </div>
-
-                  {/* Movement Type */}
-                  <div>
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Movement</p>
-                    <p className="text-white/80">{formatMovementType(lightboxWatch.movement_type)}</p>
-                  </div>
-
-                  {/* Case Diameter */}
-                  <div>
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Case Diameter</p>
-                    <p className="text-white/80">{formatField(lightboxWatch.case_diameter_mm ? `${lightboxWatch.case_diameter_mm}mm` : null)}</p>
-                  </div>
-
-                  {/* Water Resistance */}
-                  <div>
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Water Resistance</p>
-                    <p className="text-white/80">{formatField(lightboxWatch.water_resistance_m ? `${lightboxWatch.water_resistance_m}m` : null)}</p>
-                  </div>
-
-                  {/* Case Material */}
-                  <div>
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Case Material</p>
-                    <p className="text-white/80">{formatField(lightboxWatch.case_material)}</p>
-                  </div>
-
-                  {/* Price Range */}
-                  <div className="col-span-2">
-                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Approx. Price Range</p>
-                    <p className="text-white/80">{lightboxWatch.price_new_usd ? formatPrice(lightboxWatch.price_new_usd) : '—'}</p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
