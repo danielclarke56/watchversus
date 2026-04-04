@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getWatchById, formatPrice } from '@/lib/watches'
+import type { Watch } from '@/lib/types'
 
 interface PhotoItem {
   id: string
@@ -75,6 +77,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Lightbox: which group + which photo within it
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
+  const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
   const touchStartXRef = useRef<number | null>(null)
 
   // Pinterest-style URL tracking
@@ -236,6 +239,21 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxImageLoading(true)
   }, [lightbox])
 
+  // Fetch watch metadata when lightbox photo changes
+  useEffect(() => {
+    if (lightbox === null) {
+      setLightboxWatch(null)
+      return
+    }
+    const group = groups[lightbox.groupIdx]
+    if (!group) {
+      setLightboxWatch(null)
+      return
+    }
+    const watch = getWatchById(group.watchId)
+    setLightboxWatch(watch || null)
+  }, [lightbox, groups])
+
   // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
@@ -279,6 +297,18 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
+
+  // Helper to format field value or show em dash
+  const formatField = (value: string | number | undefined | null): string => {
+    if (value === null || value === undefined || value === '') return '—'
+    return String(value)
+  }
+
+  // Helper to format movement type display (capitalize)
+  const formatMovementType = (type: string | undefined): string => {
+    if (!type) return '—'
+    return type.charAt(0).toUpperCase() + type.slice(1)
+  }
 
   const selectedWatchName = activeWatchId && photos.length > 0
     ? photos[0].watchBrand && photos[0].watchName
@@ -511,6 +541,57 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     />
                   </button>
                 ))}
+              </div>
+            )}
+
+            {/* Watch specs panel — shown when watch metadata is available */}
+            {lightboxWatch && (
+              <div className="mt-4 w-full max-w-[90vw] bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  {/* Brand + Model Name */}
+                  <div className="col-span-2">
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Watch</p>
+                    <p className="text-white font-semibold">
+                      {lightboxWatch.brand} {lightboxWatch.name}
+                    </p>
+                  </div>
+
+                  {/* Reference Number */}
+                  <div>
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Reference</p>
+                    <p className="text-white/80">{formatField(lightboxWatch.reference)}</p>
+                  </div>
+
+                  {/* Movement Type */}
+                  <div>
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Movement</p>
+                    <p className="text-white/80">{formatMovementType(lightboxWatch.movement_type)}</p>
+                  </div>
+
+                  {/* Case Diameter */}
+                  <div>
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Case Diameter</p>
+                    <p className="text-white/80">{formatField(lightboxWatch.case_diameter_mm ? `${lightboxWatch.case_diameter_mm}mm` : null)}</p>
+                  </div>
+
+                  {/* Water Resistance */}
+                  <div>
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Water Resistance</p>
+                    <p className="text-white/80">{formatField(lightboxWatch.water_resistance_m ? `${lightboxWatch.water_resistance_m}m` : null)}</p>
+                  </div>
+
+                  {/* Case Material */}
+                  <div>
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Case Material</p>
+                    <p className="text-white/80">{formatField(lightboxWatch.case_material)}</p>
+                  </div>
+
+                  {/* Price Range */}
+                  <div className="col-span-2">
+                    <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Approx. Price Range</p>
+                    <p className="text-white/80">{lightboxWatch.price_new_usd ? formatPrice(lightboxWatch.price_new_usd) : '—'}</p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
