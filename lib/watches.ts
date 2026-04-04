@@ -7,7 +7,20 @@ export const watches: Watch[] = watchesData as Watch[]
 export const seedReviews: Review[] = reviewsData as Review[]
 
 export function getWatchBySlug(slug: string): Watch | undefined {
-  return watches.find((w) => w.slug === slug)
+  // Try exact match first
+  const exact = watches.find((w) => w.slug === slug)
+  if (exact) return exact
+  
+  // Fallback: prefix matching for user-generated slugs (e.g., "longines-hydroconquest" → "longines-hydroconquest-41")
+  const prefixMatch = watches.find((w) => w.slug.startsWith(slug + '-') || w.slug.startsWith(slug + '-'))
+  if (prefixMatch) return prefixMatch
+  
+  // Final fallback: if provided slug is longer, try matching with truncation
+  // (e.g., "hamilton-khaki-field-automatic" might match "hamilton-khaki-field-auto-38")
+  const slugNorm = slug.toLowerCase().replace(/-automatic$/, '-auto').replace(/-manual$/, '')
+  const partialMatch = watches.find((w) => w.slug.toLowerCase().includes(slugNorm))
+  
+  return partialMatch
 }
 
 export function getWatchById(id: string): Watch | undefined {
