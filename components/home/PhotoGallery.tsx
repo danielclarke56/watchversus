@@ -81,7 +81,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
   const [copied, setCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
-  const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const lightboxContainerRef = useRef<HTMLDivElement>(null)
 
