@@ -426,12 +426,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
-  // Helper to format field value or show em dash
-  const formatField = (value: string | number | undefined | null): string => {
-    if (value === null || value === undefined || value === '') return '—'
-    return String(value)
-  }
-
   // Helper to format movement type display (capitalize)
   const formatMovementType = (type: string | undefined): string => {
     if (!type) return '—'
@@ -591,7 +585,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
               {/* Main image area — fixed height on mobile, full height on desktop */}
               <div
-                className="relative w-full h-[55vh] md:h-full flex flex-col flex-shrink-0 md:flex-shrink"
+                className="relative w-full h-[65vh] md:h-full flex flex-col flex-shrink-0 md:flex-shrink"
                 onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
                 onTouchEnd={(e) => {
                   const touchEndY = e.changedTouches[0]?.clientY
@@ -613,7 +607,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 }}
               >
                 {/* Spacer so the photo doesn't sit behind the top buttons */}
-                <div className="h-14 flex-shrink-0" />
+                <div className="h-10 flex-shrink-0" />
                 {/* Image wrapper — fills remaining space */}
                 <div className="relative flex-1 min-h-0 rounded-2xl overflow-hidden">
                   {/* Loading spinner overlay */}
@@ -635,16 +629,16 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               </div>
 
               {/* Watch info — below main image (mobile) or at bottom (desktop) */}
-              <div className="relative bg-white border-t border-gray-100 p-6 text-center flex-shrink-0">
+              <div className="relative bg-white border-t border-gray-100 px-4 py-3 text-center flex-shrink-0">
                 {(() => {
                   const p = activeLightboxPhoto
                   const brand = p.brandName || p.watchBrand || null
                   const model = p.modelName || p.watchName || null
                   const ref = p.referenceNumber || p.watchReference || null
                   return (
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       {(brand || model) && (
-                        <p className="text-gray-900 font-semibold text-lg">
+                        <p className="text-gray-900 font-semibold text-base">
                           {[brand, model].filter(Boolean).join(' ')}
                         </p>
                       )}
@@ -663,42 +657,14 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                           </Link>
                         )}
                       </p>
-                      {/* Watch specs — canonical data from watches.json */}
+                      {/* Watch specs — compact inline row */}
                     {lightboxWatch && (
-                      <div className="mt-4 text-left border-t border-gray-100 pt-4">
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-                          {/* Movement Type */}
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Movement</p>
-                            <p className="text-gray-800 font-medium">{formatMovementType(lightboxWatch.movement_type)}</p>
-                          </div>
-
-                          {/* Case Diameter */}
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Case Diameter</p>
-                            <p className="text-gray-800 font-medium">{lightboxWatch.case_diameter_mm ? `${lightboxWatch.case_diameter_mm}mm` : '—'}</p>
-                          </div>
-
-                          {/* Water Resistance */}
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Water Resistance</p>
-                            <p className="text-gray-800 font-medium">{lightboxWatch.water_resistance_m ? `${lightboxWatch.water_resistance_m}m` : '—'}</p>
-                          </div>
-
-                          {/* Case Material */}
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Case Material</p>
-                            <p className="text-gray-800 font-medium">{formatField(lightboxWatch.case_material)}</p>
-                          </div>
-
-                          {/* Price */}
-                          {lightboxWatch.price_new_usd && (
-                            <div className="col-span-2">
-                              <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Approx. Price</p>
-                              <p className="text-gray-800 font-medium">{formatPrice(lightboxWatch.price_new_usd)}</p>
-                            </div>
-                          )}
-                        </div>
+                      <div className="mt-1.5 flex flex-wrap justify-center gap-x-2 gap-y-0.5 text-xs text-gray-500">
+                        {lightboxWatch.movement_type && <span>{formatMovementType(lightboxWatch.movement_type)}</span>}
+                        {lightboxWatch.case_diameter_mm && <><span className="text-gray-300">·</span><span>{lightboxWatch.case_diameter_mm}mm</span></>}
+                        {lightboxWatch.water_resistance_m && <><span className="text-gray-300">·</span><span>{lightboxWatch.water_resistance_m}m WR</span></>}
+                        {lightboxWatch.case_material && <><span className="text-gray-300">·</span><span>{lightboxWatch.case_material}</span></>}
+                        {lightboxWatch.price_new_usd && <><span className="text-gray-300">·</span><span>{formatPrice(lightboxWatch.price_new_usd)}</span></>}
                       </div>
                     )}
 
