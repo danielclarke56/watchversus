@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getWatchBySlug, formatPrice } from '@/lib/watches'
+import { getWatchBySlug } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Watch } from '@/lib/types'
 
@@ -664,7 +664,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                         {lightboxWatch.case_diameter_mm && <><span className="text-gray-300">·</span><span>{lightboxWatch.case_diameter_mm}mm</span></>}
                         {lightboxWatch.water_resistance_m && <><span className="text-gray-300">·</span><span>{lightboxWatch.water_resistance_m}m WR</span></>}
                         {lightboxWatch.case_material && <><span className="text-gray-300">·</span><span>{lightboxWatch.case_material}</span></>}
-                        {lightboxWatch.price_new_usd && <><span className="text-gray-300">·</span><span>{formatPrice(lightboxWatch.price_new_usd)}</span></>}
                       </div>
                     )}
 
