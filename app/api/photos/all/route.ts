@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getWatchById } from '@/lib/watches'
+import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and, desc } from 'drizzle-orm'
+import { eq, lt, and, desc, or, ilike, inArray } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 
 /**
@@ -27,6 +27,32 @@ export async function GET(req: NextRequest) {
     }
     if (watchId) {
       conditions.push(eq(photos.watchId, watchId))
+    }
+    // Push search query to DB level (fixes pagination + filter mismatch)
+    if (q && !watchId) {
+      // Search against static watch library (name, brand, reference)
+      const matchingWatchIds = watches
+        .filter(
+          (w) =>
+            w.name?.toLowerCase().includes(q) ||
+            w.brand?.toLowerCase().includes(q) ||
+            w.reference?.toLowerCase().includes(q)
+        )
+        .map((w) => w.id)
+
+      const searchConditions = [
+        ilike(photos.brandName, `%${q}%`),
+        ilike(photos.modelName, `%${q}%`),
+        ilike(photos.referenceNumber, `%${q}%`),
+        ilike(photos.watchId, `%${q}%`),
+      ]
+
+      // Only add inArray if we found matching watch IDs (inArray with empty array throws)
+      if (matchingWatchIds.length > 0) {
+        searchConditions.push(inArray(photos.watchId, matchingWatchIds))
+      }
+
+      conditions.push(or(...searchConditions)!)
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
@@ -79,15 +105,6 @@ export async function GET(req: NextRequest) {
     let filtered = enriched
     if (brand && !watchId) {
       filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
-    }
-
-    // Filter by free-text query (brand/name prefix search, case-insensitive)
-    if (q && !watchId) {
-      filtered = filtered.filter((p) => {
-        const name = (p.watchName ?? '').toLowerCase()
-        const b = (p.watchBrand ?? '').toLowerCase()
-        return name.includes(q) || b.includes(q)
-      })
     }
 
     // Take limit and compute next cursor

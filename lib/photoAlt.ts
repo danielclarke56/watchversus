@@ -1,41 +1,22 @@
 /**
- * Build descriptive alt text for watch photos for SEO and accessibility
+ * Build consistent, SEO-rich alt text for watch photos.
  */
-
-interface PhotoAltParams {
+export function buildPhotoAltText(photo: {
   watchBrand?: string | null
-  watchName?: string | null
-  watchReference?: string | null
   brandName?: string | null
+  watchName?: string | null
   modelName?: string | null
+  watchReference?: string | null
   referenceNumber?: string | null
-}
+  userName?: string
+}): string {
+  const brand = photo.brandName || photo.watchBrand || ''
+  const model = photo.modelName || photo.watchName || ''
+  const ref = photo.referenceNumber || photo.watchReference || ''
+  const user = photo.userName || 'unknown'
 
-export function buildPhotoAltText(photo: PhotoAltParams): string {
-  const parts: string[] = []
+  const subject = [brand, model].filter(Boolean).join(' ') || 'Watch'
+  const refPart = ref ? ` ref. ${ref}` : ''
 
-  // Use either the API-enriched fields or the photo-specific fields
-  const brand = photo.watchBrand || photo.brandName
-  const model = photo.watchName || photo.modelName
-  const ref = photo.watchReference || photo.referenceNumber
-
-  if (brand || model) {
-    if (brand && model) {
-      parts.push(`${brand} ${model}`)
-    } else if (brand) {
-      parts.push(brand)
-    } else if (model) {
-      parts.push(model)
-    }
-  }
-
-  if (ref) {
-    parts.push(`Ref. ${ref}`)
-  }
-
-  if (parts.length === 0) {
-    return 'Watch photo'
-  }
-
-  return `${parts.join(', ')} watch photo`
+  return `${subject}${refPart} wrist photo by ${user}`
 }

@@ -28,6 +28,9 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://watchems.com/sitemap.xml',
+    sitemap: [
+      'https://watchems.com/sitemap.xml',
+      'https://watchems.com/image-sitemap.xml',
+    ],
   }
 }

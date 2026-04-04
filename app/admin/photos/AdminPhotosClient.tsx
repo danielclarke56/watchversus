@@ -209,8 +209,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   acting,
   savingGroup,
   savedGroupOk,
+  aiFillingGroup,
+  aiFilledGroupOk,
   onUpdateWatchMeta,
   onSaveGroup,
+  onAiFillGroup,
   onApproveGroup,
   onRejectGroup,
   onRestoreGroup,
@@ -223,8 +226,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   acting: string | null
   savingGroup: string | null
   savedGroupOk: string | null
+  aiFillingGroup: string | null
+  aiFilledGroupOk: string | null
   onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
   onSaveGroup: (watchId: string, photoIds: string[]) => void
+  onAiFillGroup: (watchId: string) => void
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
@@ -241,6 +247,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
   const isSavingGroup = savingGroup === group.watchId
   const groupSavedOk = savedGroupOk === group.watchId
+  const isAiFillingGroup = aiFillingGroup === group.watchId
+  const groupAiFilledOk = aiFilledGroupOk === group.watchId
   const isApprovingGroup = acting === `group-${group.watchId}`
   const isRejectingGroup = acting === `reject-${group.watchId}`
   const isRestoringGroup = acting === `restore-${group.watchId}`
@@ -306,6 +314,14 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
             <FieldInput label="WR" value={watchMeta.waterResistance} onChange={(v) => onUpdateWatchMeta(group.watchId, 'waterResistance', v)} unit="m" />
           </div>
           <div className="flex items-center gap-2 mt-2">
+            <button
+              onClick={() => onAiFillGroup(group.watchId)}
+              disabled={isAiFillingGroup}
+              className="text-xs bg-purple-600 text-white px-2.5 py-1 rounded font-medium hover:bg-purple-700 transition-colors disabled:opacity-50"
+            >
+              {isAiFillingGroup ? 'Filling...' : '✨ AI Fill'}
+            </button>
+            {groupAiFilledOk && <span className="text-xs text-green-600 font-medium">✓</span>}
             <button
               onClick={() => onSaveGroup(group.watchId, group.photos.map((p) => p.id))}
               disabled={isSavingGroup}
@@ -437,6 +453,10 @@ export default function AdminPhotosClient() {
   const [savingGroup, setSavingGroup] = useState<string | null>(null)
   const [savedGroupOk, setSavedGroupOk] = useState<string | null>(null)
 
+  // AI Fill state
+  const [aiFillingGroup, setAiFillingGroup] = useState<string | null>(null)
+  const [aiFilledGroupOk, setAiFilledGroupOk] = useState<string | null>(null)
+
   // Grouped photos for display
   const pendingGroups = useMemo(() => groupPhotosByWatch(pendingPhotos), [pendingPhotos])
   const approvedGroups = useMemo(() => groupPhotosByWatch(approvedPhotos), [approvedPhotos])
@@ -562,6 +582,52 @@ export default function AdminPhotosClient() {
     } catch { /* silent */ }
 
     setSavingGroup(null)
+  }
+
+  async function handleAiFillGroup(watchId: string) {
+    const meta = watchMetaState[watchId]
+    if (!meta) return
+
+    setAiFillingGroup(watchId)
+    setAiFilledGroupOk(null)
+
+    try {
+      const response = await fetch('/api/admin/ai-fill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandName: meta.brandName,
+          modelName: meta.modelName,
+          referenceNumber: meta.referenceNumber,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch AI suggestions')
+      }
+
+      const aiSuggestions = (await response.json()) as Record<string, string>
+
+      // Update watchMeta only for empty fields
+      setWatchMetaState((prev) => ({
+        ...prev,
+        [watchId]: {
+          ...prev[watchId],
+          movement: prev[watchId]?.movement.trim() ? prev[watchId]!.movement : aiSuggestions.movement || '',
+          caseSize: prev[watchId]?.caseSize.trim() ? prev[watchId]!.caseSize : aiSuggestions.caseSize || '',
+          lugToLug: prev[watchId]?.lugToLug.trim() ? prev[watchId]!.lugToLug : aiSuggestions.lugToLug || '',
+          betweenLugs: prev[watchId]?.betweenLugs.trim() ? prev[watchId]!.betweenLugs : aiSuggestions.betweenLugs || '',
+          thickness: prev[watchId]?.thickness.trim() ? prev[watchId]!.thickness : aiSuggestions.thickness || '',
+          waterResistance: prev[watchId]?.waterResistance.trim() ? prev[watchId]!.waterResistance : aiSuggestions.waterResistance || '',
+          estimatedPrice: prev[watchId]?.estimatedPrice.trim() ? prev[watchId]!.estimatedPrice : aiSuggestions.estimatedPrice || '',
+        },
+      }))
+
+      setAiFilledGroupOk(watchId)
+      setTimeout(() => setAiFilledGroupOk(null), 2500)
+    } catch { /* silent */ }
+
+    setAiFillingGroup(null)
   }
 
   /**
@@ -795,8 +861,11 @@ export default function AdminPhotosClient() {
                       acting={acting}
                       savingGroup={savingGroup}
                       savedGroupOk={savedGroupOk}
+                      aiFillingGroup={aiFillingGroup}
+                      aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
+                      onAiFillGroup={handleAiFillGroup}
                       onApproveGroup={handleApproveGroup}
                       onRejectGroup={handleRejectGroup}
                       isApproved={false}
@@ -828,8 +897,11 @@ export default function AdminPhotosClient() {
                       acting={acting}
                       savingGroup={savingGroup}
                       savedGroupOk={savedGroupOk}
+                      aiFillingGroup={aiFillingGroup}
+                      aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
+                      onAiFillGroup={handleAiFillGroup}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       isApproved={true}
                     />
@@ -860,8 +932,11 @@ export default function AdminPhotosClient() {
                       acting={acting}
                       savingGroup={savingGroup}
                       savedGroupOk={savedGroupOk}
+                      aiFillingGroup={aiFillingGroup}
+                      aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onSaveGroup={handleSaveGroup}
+                      onAiFillGroup={handleAiFillGroup}
                       onRestoreGroup={handleRestoreGroup}
                       onDelete={(photo) => handleDeleteRejected(photo)}
                       isApproved={false}

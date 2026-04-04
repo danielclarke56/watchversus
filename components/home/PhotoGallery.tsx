@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getWatchById, formatPrice } from '@/lib/watches'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Watch } from '@/lib/types'
 
 interface PhotoItem {
@@ -77,8 +78,23 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Lightbox: which group + which photo within it
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
+<<<<<<< HEAD
   const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
   const touchStartXRef = useRef<number | null>(null)
+=======
+  const [copied, setCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+  const touchStartYRef = useRef<number | null>(null)
+  const lightboxContainerRef = useRef<HTMLDivElement>(null)
+
+  // Related photos section state
+  const [relatedPhotos, setRelatedPhotos] = useState<PhotoItem[]>([])
+  const [relatedPhotosLoading, setRelatedPhotosLoading] = useState(false)
+  const relatedPhotosCacheRef = useRef<Map<string, PhotoItem[]>>(new Map())
+
+  // Override: a related photo not yet in `groups` shown directly without page nav
+  const [photoOverride, setPhotoOverride] = useState<PhotoItem | null>(null)
+>>>>>>> 73e909a0a2b6e5008396d5d3980373d9bfa57c4f
 
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
@@ -94,6 +110,51 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     const data: PhotosResponse = await res.json()
     return data
   }, [activeWatchId, activeQuery])
+
+  // Fetch related photos for the current lightbox photo
+  const fetchRelatedPhotos = useCallback(async (currentPhoto: PhotoItem) => {
+    const watchId = currentPhoto.watchId
+    
+    // Check cache first
+    if (relatedPhotosCacheRef.current.has(watchId)) {
+      setRelatedPhotos(relatedPhotosCacheRef.current.get(watchId) || [])
+      return
+    }
+
+    setRelatedPhotosLoading(true)
+    try {
+      // Fetch by watchId
+      const watchParams = new URLSearchParams({ watchId, limit: '12' })
+      const watchRes = await fetch(`/api/photos/all?${watchParams.toString()}`)
+      const watchData: PhotosResponse = await watchRes.json()
+      
+      let relatedList = watchData.photos.filter((p) => p.id !== currentPhoto.id)
+      
+      // If fewer than 4 results, also fetch by brand
+      if (relatedList.length < 4) {
+        const brand = currentPhoto.watchBrand || currentPhoto.brandName
+        if (brand) {
+          const brandParams = new URLSearchParams({ q: brand, limit: '12' })
+          const brandRes = await fetch(`/api/photos/all?${brandParams.toString()}`)
+          const brandData: PhotosResponse = await brandRes.json()
+          
+          // Merge and dedup by id
+          const existingIds = new Set(relatedList.map((p) => p.id))
+          const brandPhotos = brandData.photos.filter((p) => !existingIds.has(p.id) && p.id !== currentPhoto.id)
+          relatedList = [...relatedList, ...brandPhotos]
+        }
+      }
+
+      // Cache the results
+      relatedPhotosCacheRef.current.set(watchId, relatedList)
+      setRelatedPhotos(relatedList)
+    } catch (error) {
+      console.error('Failed to fetch related photos:', error)
+      setRelatedPhotos([])
+    } finally {
+      setRelatedPhotosLoading(false)
+    }
+  }, [])
 
   // Group photos by watchId early — used in useEffect hooks below
   const groups = useMemo(() => groupByWatch(photos), [photos])
@@ -178,9 +239,13 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
         if (lightbox.groupIdx > 0) {
           navigateLightbox(lightbox.groupIdx - 1, 0)
         }
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (lightbox.groupIdx < groups.length - 1) {
           navigateLightbox(lightbox.groupIdx + 1, 0)
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (lightbox.groupIdx > 0) {
+          navigateLightbox(lightbox.groupIdx - 1, 0)
         }
       }
     }
@@ -239,6 +304,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLightboxImageLoading(true)
   }, [lightbox])
 
+<<<<<<< HEAD
   // Fetch watch metadata when lightbox photo changes
   useEffect(() => {
     if (lightbox === null) {
@@ -255,33 +321,103 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   }, [lightbox, groups])
 
   // Pinterest URL behavior: push /photo/[id] when lightbox opens, restore on close
+=======
+  // Lock body scroll when lightbox is open (prevents background scroll on mobile)
+  const savedScrollYRef = useRef(0)
+  useEffect(() => {
+    if (lightbox !== null) {
+      // Save current scroll position before locking
+      savedScrollYRef.current = window.scrollY
+      // Lock body scroll
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${savedScrollYRef.current}px`
+      document.body.style.width = '100%'
+    } else {
+      // Restore body scroll and position
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, savedScrollYRef.current)
+    }
+    return () => {
+      // Cleanup on unmount
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+    }
+  }, [lightbox])
+
+
+  // Open lightbox — use router.push() for proper Next.js app router integration
+>>>>>>> 73e909a0a2b6e5008396d5d3980373d9bfa57c4f
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
-    if (photo && !lightboxOpenRef.current) {
-      galleryUrlRef.current = window.location.pathname + window.location.search
-      window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
-      lightboxOpenRef.current = true
-    } else if (photo && lightboxOpenRef.current) {
-      window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    if (photo) {
+      // Use router.push() instead of pushState() for proper Next.js navigation
+      // The /photo/[id] page will initialize and open the lightbox automatically
+      router.push(`/photo/${photo.id}`)
     }
-    setLightbox({ groupIdx, photoIdx })
-  }, [groups])
+  }, [groups, router])
 
   const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
     if (photo) {
       window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
     }
+    setPhotoOverride(null)
     setLightboxImageLoading(true)
+    setCopied(false)
+    setLinkCopied(false)
     setLightbox({ groupIdx, photoIdx })
   }, [groups])
 
-  const closeLightbox = useCallback(() => {
-    if (lightboxOpenRef.current) {
-      window.history.replaceState(null, '', galleryUrlRef.current)
-      lightboxOpenRef.current = false
+  // Open a related photo in-lightbox without page navigation.
+  // If the photo is in the current groups, navigate there directly.
+  // Otherwise show it via a local override (URL still updates, no page reload).
+  const openRelatedPhoto = useCallback((photo: PhotoItem) => {
+    for (let gi = 0; gi < groups.length; gi++) {
+      const pi = groups[gi].photos.findIndex((p) => p.id === photo.id)
+      if (pi !== -1) {
+        navigateLightbox(gi, pi)
+        return
+      }
     }
+    // Not yet in gallery groups — show directly via override
+    setPhotoOverride(photo)
+    window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    setLightboxImageLoading(true)
+    setCopied(false)
+    setLinkCopied(false)
+  }, [groups, navigateLightbox])
+
+  const closeLightbox = useCallback(() => {
     setLightbox(null)
+    // Navigation back is handled by the photo page's back button or browser back
+  }, [])
+
+  const handleShare = useCallback(async (photoId: string) => {
+    const shareUrl = `https://watchems.com/photo/${photoId}`
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ url: shareUrl })
+      } catch {
+        // User cancelled or share failed — ignore
+      }
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }, [])
+
+  const handleCopyLink = useCallback(async (photoId: string) => {
+    const shareUrl = `https://watchems.com/photo/${photoId}`
+    await navigator.clipboard.writeText(shareUrl)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
   }, [])
 
   // Handle browser back button while lightbox is open
@@ -320,7 +456,14 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Photos in ascending order (oldest = index 0 = primary card image)
   // Thumbnails let user select a specific photo; arrows navigate between watches
   const activeLightboxPhotos = activeLightboxGroup ? activeLightboxGroup.photos : []
-  const activeLightboxPhoto = activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null
+  // photoOverride lets related-photo clicks stay in the lightbox without a page nav
+  const activeLightboxPhoto = photoOverride ?? (activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null)
+
+  // Fetch related photos when lightbox photo changes
+  useEffect(() => {
+    if (!activeLightboxPhoto) return
+    fetchRelatedPhotos(activeLightboxPhoto)
+  }, [activeLightboxPhoto, fetchRelatedPhotos])
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -350,7 +493,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-surface animate-pulse" />
+            <div key={i} className="aspect-square rounded-2xl bg-surface animate-pulse" />
           ))}
         </div>
       ) : groups.length === 0 ? (
@@ -371,11 +514,11 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 key={group.watchId}
                 type="button"
                 onClick={() => openLightbox(groupIdx, 0)}
-                className="group relative aspect-square rounded-lg overflow-hidden bg-surface"
+                className="group relative aspect-square rounded-2xl overflow-hidden bg-surface"
               >
                 <Image
                   src={primary.url}
-                  alt={primary.watchName ?? 'Watch photo'}
+                  alt={buildPhotoAltText(primary)}
                   fill
                   className="object-cover transition-transform duration-200 group-hover:scale-105"
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
@@ -410,137 +553,304 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {/* Lightbox */}
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
+          ref={lightboxContainerRef}
+          className="fixed inset-0 z-50 bg-white overflow-hidden"
           onClick={closeLightbox}
-          onTouchStart={(e) => { touchStartXRef.current = e.touches[0]?.clientX ?? null }}
-          onTouchEnd={(e) => {
-            const touchEndX = e.changedTouches[0]?.clientX
-            const touchStartX = touchStartXRef.current
-            if (touchStartX === null || touchEndX === null) return
-            
-            const diff = touchStartX - touchEndX
-            const threshold = 50
-            
-            if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
-              navigateLightbox(lightbox.groupIdx + 1, 0)
-            } else if (diff < -threshold && lightbox.groupIdx > 0) {
-              navigateLightbox(lightbox.groupIdx - 1, 0)
-            }
-            touchStartXRef.current = null
-          }}
+          style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
-          {/* Close */}
-          <button
-            type="button"
-            onClick={closeLightbox}
-            className="absolute top-4 right-4 text-white text-2xl bg-black/50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-
-          {/* Left arrow — previous watch */}
-          {lightbox.groupIdx > 0 && (
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
-              aria-label="Previous watch"
-            >
-              ←
-            </button>
-          )}
-
-          {/* Right arrow — next watch */}
-          {lightbox.groupIdx < groups.length - 1 && (
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/80 transition-colors z-10"
-              aria-label="Next watch"
-            >
-              →
-            </button>
-          )}
-
-          {/* Main image + info */}
-          <div
-            className="flex flex-col items-center max-h-[90vh] max-w-[90vw] relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Loading spinner overlay */}
-            {lightboxImageLoading && (
-              <div className="absolute inset-0 flex items-center justify-center z-20">
-                <div className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+          <div className="flex flex-col md:flex-row w-full h-screen" onClick={(e) => e.stopPropagation()}>
+            {/* Left column: Main image + watch info (desktop: 70% width, mobile: full width) */}
+            <div className={`flex flex-col w-full ${relatedPhotos.length > 0 ? 'md:w-[70%]' : ''} h-auto md:h-screen overflow-y-auto md:overflow-hidden`}>
+              {/* Close button (top-right only) */}
+              <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); closeLightbox() }}
+                  className="text-gray-700 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center transition-all"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
               </div>
-            )}
-            
-            <Image
-              src={activeLightboxPhoto.url}
-              alt={activeLightboxPhoto.watchName ?? 'Watch photo'}
-              width={1200}
-              height={1200}
-              style={{ objectFit: 'contain', maxHeight: '70vh', maxWidth: '90vw', width: 'auto', height: 'auto' }}
-              priority
-              onLoad={() => setLightboxImageLoading(false)}
-            />
 
-            {/* Watch info */}
-            {(() => {
-              const p = activeLightboxPhoto
-              const brand = p.brandName || p.watchBrand || null
-              const model = p.modelName || p.watchName || null
-              const ref = p.referenceNumber || p.watchReference || null
-              return (
-                <div className="mt-2 text-center space-y-0.5">
-                  {(brand || model) && (
-                    <p className="text-white font-semibold text-base leading-tight">
-                      {[brand, model].filter(Boolean).join(' ')}
-                    </p>
+              {/* Left arrow — previous watch (hidden on mobile) */}
+              {lightbox.groupIdx > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
+                  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 text-2xl bg-white border border-gray-200 shadow-sm opacity-80 hover:opacity-100 hover:bg-gray-50 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
+                  aria-label="Previous watch"
+                >
+                  ←
+                </button>
+              )}
+
+              {/* Right arrow — next watch (hidden on mobile) */}
+              {lightbox.groupIdx < groups.length - 1 && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
+                  className={`hidden md:flex absolute ${relatedPhotos.length > 0 ? 'right-8 md:right-[30%]' : 'right-4'} top-1/2 -translate-y-1/2 text-gray-700 text-2xl bg-white border border-gray-200 shadow-sm opacity-80 hover:opacity-100 hover:bg-gray-50 rounded-full w-12 h-12 items-center justify-center transition-all z-10`}
+                  aria-label="Next watch"
+                >
+                  →
+                </button>
+              )}
+
+              {/* Main image area — fixed height on mobile, full height on desktop */}
+              <div
+                className="relative w-full h-[55vh] md:h-full flex flex-col flex-shrink-0 md:flex-shrink"
+                onTouchStart={(e) => { touchStartYRef.current = e.touches[0]?.clientY ?? null }}
+                onTouchEnd={(e) => {
+                  const touchEndY = e.changedTouches[0]?.clientY
+                  const touchStartY = touchStartYRef.current
+                  if (touchStartY === null || touchEndY === null) return
+
+                  const diff = touchStartY - touchEndY
+                  const threshold = 50
+
+                  // Swipe up → next photo
+                  if (diff > threshold && lightbox.groupIdx < groups.length - 1) {
+                    navigateLightbox(lightbox.groupIdx + 1, 0)
+                  }
+                  // Swipe down → previous photo
+                  else if (diff < -threshold && lightbox.groupIdx > 0) {
+                    navigateLightbox(lightbox.groupIdx - 1, 0)
+                  }
+                  touchStartYRef.current = null
+                }}
+              >
+                {/* Spacer so the photo doesn't sit behind the top buttons */}
+                <div className="h-14 flex-shrink-0" />
+                {/* Image wrapper — fills remaining space */}
+                <div className="relative flex-1 min-h-0 rounded-2xl overflow-hidden">
+                  {/* Loading spinner overlay */}
+                  {lightboxImageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                      <div className="w-12 h-12 border-3 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
+                    </div>
                   )}
-                  {ref && <p className="text-white/60 text-sm">Ref. {ref}</p>}
-                  <p className="text-white/50 text-xs">
-                    by{' '}
-                    {p.isOfficial ? (
-                      <span className="text-accent">Watchems</span>
-                    ) : (
-                      <Link
-                        href={`/profile/${p.userId}`}
-                        className="text-accent hover:text-accentHover transition-colors underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {p.userName}
-                      </Link>
-                    )}
-                  </p>
+                  
+                  <Image
+                    src={activeLightboxPhoto.url}
+                    alt={buildPhotoAltText(activeLightboxPhoto)}
+                    fill
+                    className="object-contain"
+                    priority
+                    onLoad={() => setLightboxImageLoading(false)}
+                  />
                 </div>
-              )
-            })()}
+              </div>
 
-            {/* Thumbnail strip — only shown when multiple photos; newest left */}
-            {activeLightboxPhotos.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto max-w-[90vw] pb-1">
-                {activeLightboxPhotos.map((thumb, thumbIdx) => (
-                  <button
-                    key={thumb.id}
-                    type="button"
-                    onClick={() => { navigateLightbox(lightbox.groupIdx, thumbIdx) }}
-                    className={`shrink-0 relative w-14 h-14 rounded overflow-hidden border-2 transition-colors ${
-                      thumbIdx === lightbox.photoIdx
-                        ? 'border-white'
-                        : 'border-transparent opacity-60 hover:opacity-90'
-                    }`}
-                    aria-label={`Photo ${thumbIdx + 1}`}
-                  >
-                    <Image
-                      src={thumb.url}
-                      alt={`Thumbnail ${thumbIdx + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="56px"
-                    />
-                  </button>
-                ))}
+              {/* Watch info — below main image (mobile) or at bottom (desktop) */}
+              <div className="relative bg-white border-t border-gray-100 p-6 text-center flex-shrink-0">
+                {(() => {
+                  const p = activeLightboxPhoto
+                  const brand = p.brandName || p.watchBrand || null
+                  const model = p.modelName || p.watchName || null
+                  const ref = p.referenceNumber || p.watchReference || null
+                  return (
+                    <div className="space-y-1">
+                      {(brand || model) && (
+                        <p className="text-gray-900 font-semibold text-lg">
+                          {[brand, model].filter(Boolean).join(' ')}
+                        </p>
+                      )}
+                      {ref && <p className="text-gray-500 text-sm">Ref. {ref}</p>}
+                      <p className="text-gray-400 text-xs">
+                        by{' '}
+                        {p.isOfficial ? (
+                          <span className="text-accent">Watchems</span>
+                        ) : (
+                          <Link
+                            href={`/profile/${p.userId}`}
+                            className="text-accent hover:text-accentHover transition-colors underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {p.userName}
+                          </Link>
+                        )}
+                      </p>
+                      {/* Share + Copy link buttons — contextually anchored to the watch */}
+                      <div className="flex items-center justify-center gap-2 pt-2">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.id) }}
+                          className="text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-9 h-9 flex items-center justify-center transition-all"
+                          aria-label="Share photo"
+                        >
+                          {copied ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.id) }}
+                          className="text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full h-9 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
+                          aria-label="Copy link"
+                        >
+                          {linkCopied ? (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 001.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                              </svg>
+                              <span>Copy link</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+
+              {/* Mobile: Horizontal thumbnail strip below watch info */}
+              {activeLightboxPhotos.length > 1 && (
+                <div className="md:hidden w-full px-4 py-4 bg-gray-50 flex-shrink-0">
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {activeLightboxPhotos.map((thumb, thumbIdx) => (
+                      <button
+                        key={thumb.id}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, thumbIdx) }}
+                        className={`shrink-0 relative rounded overflow-hidden border-2 transition-colors ${
+                          thumbIdx === lightbox.photoIdx
+                            ? 'border-gray-900 w-20 h-20'
+                            : 'border-transparent opacity-60 hover:opacity-90 w-20 h-20'
+                        }`}
+                        aria-label={`Photo ${thumbIdx + 1}`}
+                      >
+                        <Image
+                          src={thumb.url}
+                          alt={buildPhotoAltText(thumb)}
+                          fill
+                          className="object-cover"
+                          sizes="80px"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Mobile: Related photos as horizontal thumbnail strip */}
+              {relatedPhotos.length > 0 && (
+                <div className="md:hidden w-full px-4 py-4 bg-gray-100 flex-shrink-0">
+                  <h3 className="text-gray-900 font-semibold text-sm mb-3">More like this</h3>
+                  {relatedPhotosLoading ? (
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="shrink-0 w-20 h-20 rounded-2xl bg-gray-200 animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {relatedPhotos.slice(0, 12).map((relatedPhoto) => {
+                        const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                        const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                        const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                        return (
+                          <button
+                            key={relatedPhoto.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openRelatedPhoto(relatedPhoto)
+                            }}
+                            className="shrink-0 group relative rounded-2xl overflow-hidden bg-gray-200 w-20 h-20"
+                            aria-label={relatedLabel || 'Related photo'}
+                          >
+                            <Image
+                              src={relatedPhoto.url}
+                              alt={buildPhotoAltText(relatedPhoto)}
+                              fill
+                              className="object-cover transition-transform duration-200 group-hover:scale-105"
+                              sizes="80px"
+                            />
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* DESKTOP ONLY: Right column (30%) — Related photos scrollable panel */}
+            {relatedPhotos.length > 0 && (
+              <div className="hidden md:flex flex-col w-[30%] h-screen bg-gray-50 border-l border-gray-200 overflow-hidden">
+                {/* Header */}
+                <div className="flex-shrink-0 px-4 py-4 border-b border-gray-200">
+                  <h3 className="text-gray-900 font-semibold text-base">More like this</h3>
+                </div>
+
+                {/* Scrollable thumbnails */}
+                <div className="flex-1 overflow-y-auto px-3 py-4 grid grid-cols-2 gap-2 content-start">
+                  {relatedPhotosLoading ? (
+                    <>
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="aspect-square rounded-2xl bg-white/10 animate-pulse"
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {relatedPhotos.slice(0, 20).map((relatedPhoto) => {
+                        const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                        const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                        const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                        return (
+                          <button
+                            key={relatedPhoto.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openRelatedPhoto(relatedPhoto)
+                            }}
+                            className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
+                            aria-label={relatedLabel || 'Related photo'}
+                          >
+                            <Image
+                              src={relatedPhoto.url}
+                              alt={buildPhotoAltText(relatedPhoto)}
+                              fill
+                              className="object-cover transition-transform duration-200 group-hover:scale-105"
+                              sizes="(max-width: 1280px) 30vw, 20vw"
+                            />
+                            
+                            {/* Watch name label */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                              <p className="text-white text-xs font-medium line-clamp-2">
+                                {relatedLabel}
+                              </p>
+                              <p className="text-white/60 text-xs text-left mt-1">
+                                by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}
+                              </p>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
               </div>
             )}
 
@@ -607,7 +917,7 @@ export default function PhotoGallery({ initialPhotoId }: { initialPhotoId?: stri
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-surface animate-pulse" />
+            <div key={i} className="aspect-square rounded-2xl bg-surface animate-pulse" />
           ))}
         </div>
       </div>
