@@ -692,10 +692,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                       if (mat) specs.push({ label: 'Material', value: mat })
                       if (specs.length === 0) return null
                       return (
-                        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-xs text-left max-w-md mx-auto">
+                        <div className="mt-2 flex flex-col gap-1.5 text-xs text-left max-w-md mx-auto">
                           {specs.map((s) => (
-                            <div key={s.label} className="flex flex-col">
-                              <span className="text-gray-400">{s.label}</span>
+                            <div key={s.label} className="flex items-baseline gap-2">
+                              <span className="text-gray-400 min-w-[90px] shrink-0">{s.label}</span>
                               <span className="text-gray-700 font-medium">{s.value}</span>
                             </div>
                           ))}
