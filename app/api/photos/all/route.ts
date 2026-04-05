@@ -56,7 +56,6 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse
-    // Only select columns used by the gallery — avoids pulling spec fields over the wire
     const photoRecords = await db
       .select({
         id: photos.id,
@@ -69,6 +68,15 @@ export async function GET(req: NextRequest) {
         brandName: photos.brandName,
         modelName: photos.modelName,
         referenceNumber: photos.referenceNumber,
+        movement: photos.movement,
+        caseSize: photos.caseSize,
+        wristSize: photos.wristSize,
+        estimatedPrice: photos.estimatedPrice,
+        productionYear: photos.productionYear,
+        lugToLug: photos.lugToLug,
+        betweenLugs: photos.betweenLugs,
+        thickness: photos.thickness,
+        waterResistance: photos.waterResistance,
       })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
@@ -98,6 +106,15 @@ export async function GET(req: NextRequest) {
         brandName: p.brandName ?? null,
         modelName: p.modelName ?? null,
         referenceNumber: p.referenceNumber ?? null,
+        movement: p.movement ?? null,
+        caseSize: p.caseSize ?? null,
+        wristSize: p.wristSize ?? null,
+        estimatedPrice: p.estimatedPrice ?? null,
+        productionYear: p.productionYear ?? null,
+        lugToLug: p.lugToLug ?? null,
+        betweenLugs: p.betweenLugs ?? null,
+        thickness: p.thickness ?? null,
+        waterResistance: p.waterResistance ?? null,
       }
     })
 

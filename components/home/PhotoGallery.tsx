@@ -23,6 +23,15 @@ interface PhotoItem {
   brandName?: string | null
   modelName?: string | null
   referenceNumber?: string | null
+  movement?: string | null
+  caseSize?: string | null
+  wristSize?: string | null
+  estimatedPrice?: string | null
+  productionYear?: string | null
+  lugToLug?: string | null
+  betweenLugs?: string | null
+  thickness?: string | null
+  waterResistance?: string | null
 }
 
 interface PhotosResponse {
@@ -657,15 +666,42 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                           </Link>
                         )}
                       </p>
-                      {/* Watch specs — compact inline row */}
-                    {lightboxWatch && (
-                      <div className="mt-1.5 flex flex-wrap justify-center gap-x-2 gap-y-0.5 text-xs text-gray-500">
-                        {lightboxWatch.movement_type && <span>{formatMovementType(lightboxWatch.movement_type)}</span>}
-                        {lightboxWatch.case_diameter_mm && <><span className="text-gray-300">·</span><span>{lightboxWatch.case_diameter_mm}mm</span></>}
-                        {lightboxWatch.water_resistance_m && <><span className="text-gray-300">·</span><span>{lightboxWatch.water_resistance_m}m WR</span></>}
-                        {lightboxWatch.case_material && <><span className="text-gray-300">·</span><span>{lightboxWatch.case_material}</span></>}
-                      </div>
-                    )}
+                      {/* Watch specs — compact grid from photo metadata + static library fallback */}
+                    {(() => {
+                      const w = lightboxWatch
+                      const specs: { label: string; value: string }[] = []
+                      const mv = p.movement || (w?.movement_type ? formatMovementType(w.movement_type) : null)
+                      if (mv) specs.push({ label: 'Movement', value: mv })
+                      const cs = p.caseSize || (w?.case_diameter_mm ? `${w.case_diameter_mm}mm` : null)
+                      if (cs) specs.push({ label: 'Case Size', value: cs })
+                      const wr = p.waterResistance || (w?.water_resistance_m ? `${w.water_resistance_m}m` : null)
+                      if (wr) specs.push({ label: 'Water Resistance', value: wr })
+                      const l2l = p.lugToLug
+                      if (l2l) specs.push({ label: 'Lug-to-Lug', value: l2l })
+                      const bl = p.betweenLugs
+                      if (bl) specs.push({ label: 'Between Lugs', value: bl })
+                      const th = p.thickness
+                      if (th) specs.push({ label: 'Thickness', value: th })
+                      const ws = p.wristSize
+                      if (ws) specs.push({ label: 'Wrist Size', value: ws })
+                      const yr = p.productionYear
+                      if (yr) specs.push({ label: 'Year', value: yr })
+                      const pr = p.estimatedPrice
+                      if (pr) specs.push({ label: 'Price', value: pr })
+                      const mat = w?.case_material ?? null
+                      if (mat) specs.push({ label: 'Material', value: mat })
+                      if (specs.length === 0) return null
+                      return (
+                        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-xs text-left max-w-md mx-auto">
+                          {specs.map((s) => (
+                            <div key={s.label} className="flex flex-col">
+                              <span className="text-gray-400">{s.label}</span>
+                              <span className="text-gray-700 font-medium">{s.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    })()}
 
                     {/* Share + Copy link buttons — contextually anchored to the watch */}
                       <div className="flex items-center justify-center gap-2 pt-2">
