@@ -6,7 +6,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 interface AiFillRequest {
   brandName: string
   modelName: string
-  referenceNumber: string
+  referenceNumber?: string
+  imageUrls?: string[]
 }
 
 interface AiFillResponse {
@@ -17,6 +18,9 @@ interface AiFillResponse {
   thickness: string
   waterResistance: string
   estimatedPrice: string
+  wristSize: string
+  productionYear: string
+  caseMaterial: string
 }
 
 export async function POST(req: NextRequest) {
@@ -27,7 +31,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = (await req.json()) as AiFillRequest
-  const { brandName, modelName, referenceNumber } = body
+  const { brandName, modelName, referenceNumber, imageUrls } = body
 
   if (!brandName || !modelName) {
     return NextResponse.json(
@@ -50,7 +54,7 @@ export async function POST(req: NextRequest) {
     const model = client.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const watchDescription = [brandName, modelName, referenceNumber].filter(Boolean).join(' ')
-    const prompt = `You are a watch specification database. Given a watch's brand, model name, and optionally reference number, return its known technical specifications as JSON.
+    const prompt = `You are a watch specification expert. Given a watch's brand, model name${imageUrls?.length ? ', and photos of the actual watch' : ''}, return its technical specifications as JSON.
 
 Watch: ${watchDescription}
 
@@ -62,15 +66,53 @@ Return ONLY a JSON object with these exact keys (use empty string "" if unknown)
   "betweenLugs": "",
   "thickness": "",
   "waterResistance": "",
-  "estimatedPrice": ""
+  "estimatedPrice": "",
+  "wristSize": "",
+  "productionYear": "",
+  "caseMaterial": ""
 }
 
-For caseSize, lugToLug, betweenLugs, thickness: return numeric value only (no "mm" unit).
-For waterResistance: return numeric value only (no "m" unit).
-For estimatedPrice: return numeric value only in USD (no "$" or "USD").
+Field rules:
+- movement: type only (e.g. "Automatic", "Quartz", "Manual")
+- caseSize, lugToLug, betweenLugs, thickness, wristSize: numeric mm value only (no "mm")
+- waterResistance: numeric value only in meters (no "m" or "ATM")
+- estimatedPrice: numeric USD value only (no "$" or "USD")
+- productionYear: 4-digit year or range (e.g. "2020" or "2018-2022")
+- caseMaterial: material only (e.g. "Stainless Steel", "Titanium")
+
 No markdown, no explanation — JSON only.`
 
-    const result = await model.generateContent(prompt)
+    // Build content parts: text + optional images
+    type ContentPart = { text: string } | { inlineData: { mimeType: string; data: string } }
+    const parts: ContentPart[] = [{ text: prompt }]
+
+    // Fetch up to 3 images as base64 for Gemini vision
+    if (imageUrls && imageUrls.length > 0) {
+      const imagesToFetch = imageUrls.slice(0, 3)
+      const imageResults = await Promise.allSettled(
+        imagesToFetch.map(async (url) => {
+          const res = await fetch(url)
+          if (!res.ok) throw new Error(`Failed to fetch image: ${url}`)
+          const buffer = await res.arrayBuffer()
+          const base64 = Buffer.from(buffer).toString('base64')
+          const mimeType = res.headers.get('content-type') || 'image/jpeg'
+          return { base64, mimeType }
+        })
+      )
+
+      for (const result of imageResults) {
+        if (result.status === 'fulfilled') {
+          parts.push({
+            inlineData: {
+              mimeType: result.value.mimeType,
+              data: result.value.base64,
+            },
+          })
+        }
+      }
+    }
+
+    const result = await model.generateContent(parts)
     const text = result.response.text()
 
     // Parse the JSON response
@@ -85,8 +127,7 @@ No markdown, no explanation — JSON only.`
 
     const specs = JSON.parse(jsonMatch[0]) as AiFillResponse
 
-    // Ensure all required fields exist and are strings
-    const result2: AiFillResponse = {
+    const response: AiFillResponse = {
       movement: specs.movement ?? '',
       caseSize: specs.caseSize ?? '',
       lugToLug: specs.lugToLug ?? '',
@@ -94,9 +135,12 @@ No markdown, no explanation — JSON only.`
       thickness: specs.thickness ?? '',
       waterResistance: specs.waterResistance ?? '',
       estimatedPrice: specs.estimatedPrice ?? '',
+      wristSize: specs.wristSize ?? '',
+      productionYear: specs.productionYear ?? '',
+      caseMaterial: specs.caseMaterial ?? '',
     }
 
-    return NextResponse.json(result2)
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error calling Gemini API:', error)
     if (error instanceof SyntaxError) {

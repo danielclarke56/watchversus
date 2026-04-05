@@ -207,12 +207,9 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   group,
   watchMeta,
   acting,
-  savingGroup,
-  savedGroupOk,
   aiFillingGroup,
   aiFilledGroupOk,
   onUpdateWatchMeta,
-  onSaveGroup,
   onAiFillGroup,
   onApproveGroup,
   onRejectGroup,
@@ -224,13 +221,10 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   group: PhotoGroup<T>
   watchMeta: WatchMetaFields
   acting: string | null
-  savingGroup: string | null
-  savedGroupOk: string | null
   aiFillingGroup: string | null
   aiFilledGroupOk: string | null
   onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
-  onSaveGroup: (watchId: string, photoIds: string[]) => void
-  onAiFillGroup: (watchId: string) => void
+  onAiFillGroup: (watchId: string, imageUrls: string[]) => void
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
@@ -245,8 +239,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   })
 
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
-  const isSavingGroup = savingGroup === group.watchId
-  const groupSavedOk = savedGroupOk === group.watchId
   const isAiFillingGroup = aiFillingGroup === group.watchId
   const groupAiFilledOk = aiFilledGroupOk === group.watchId
   const isApprovingGroup = acting === `group-${group.watchId}`
@@ -315,21 +307,13 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           </div>
           <div className="flex items-center gap-2 mt-2">
             <button
-              onClick={() => onAiFillGroup(group.watchId)}
+              onClick={() => onAiFillGroup(group.watchId, group.photos.map((p) => p.url))}
               disabled={isAiFillingGroup}
               className="text-xs bg-purple-600 text-white px-2.5 py-1 rounded font-medium hover:bg-purple-700 transition-colors disabled:opacity-50"
             >
               {isAiFillingGroup ? 'Filling...' : '✨ AI Fill'}
             </button>
-            {groupAiFilledOk && <span className="text-xs text-green-600 font-medium">✓</span>}
-            <button
-              onClick={() => onSaveGroup(group.watchId, group.photos.map((p) => p.id))}
-              disabled={isSavingGroup}
-              className="text-xs bg-blue-600 text-white px-2.5 py-1 rounded font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              {isSavingGroup ? '...' : 'Save Meta'}
-            </button>
-            {groupSavedOk && <span className="text-xs text-green-600 font-medium">✓</span>}
+            {groupAiFilledOk && <span className="text-xs text-green-600 font-medium">✓ Filled</span>}
           </div>
         </div>
 
@@ -449,10 +433,6 @@ export default function AdminPhotosClient() {
   // Group-level watch metadata state (keyed by watchId)
   const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
 
-  // Saving state
-  const [savingGroup, setSavingGroup] = useState<string | null>(null)
-  const [savedGroupOk, setSavedGroupOk] = useState<string | null>(null)
-
   // AI Fill state
   const [aiFillingGroup, setAiFillingGroup] = useState<string | null>(null)
   const [aiFilledGroupOk, setAiFilledGroupOk] = useState<string | null>(null)
@@ -557,34 +537,7 @@ export default function AdminPhotosClient() {
     }))
   }
 
-  async function handleSaveGroup(watchId: string, photoIds: string[]) {
-    const meta = watchMetaState[watchId]
-    if (!meta) return
-
-    setSavingGroup(watchId)
-    setSavedGroupOk(null)
-
-    try {
-      await Promise.all(
-        photoIds.map((photoId) =>
-          fetch('/api/admin/photos', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              photoId,
-              fields: { ...meta },
-            }),
-          })
-        )
-      )
-      setSavedGroupOk(watchId)
-      setTimeout(() => setSavedGroupOk(null), 2500)
-    } catch { /* silent */ }
-
-    setSavingGroup(null)
-  }
-
-  async function handleAiFillGroup(watchId: string) {
+  async function handleAiFillGroup(watchId: string, imageUrls: string[]) {
     const meta = watchMetaState[watchId]
     if (!meta) return
 
@@ -599,35 +552,43 @@ export default function AdminPhotosClient() {
           brandName: meta.brandName,
           modelName: meta.modelName,
           referenceNumber: meta.referenceNumber,
+          imageUrls,
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch AI suggestions')
+        const err = await response.json().catch(() => ({})) as { error?: string }
+        throw new Error(err.error || 'Failed to fetch AI suggestions')
       }
 
       const aiSuggestions = (await response.json()) as Record<string, string>
 
-      // Update watchMeta only for empty fields
-      setWatchMetaState((prev) => ({
-        ...prev,
-        [watchId]: {
-          ...prev[watchId],
-          movement: prev[watchId]?.movement.trim() ? prev[watchId]!.movement : aiSuggestions.movement || '',
-          caseSize: prev[watchId]?.caseSize.trim() ? prev[watchId]!.caseSize : aiSuggestions.caseSize || '',
-          lugToLug: prev[watchId]?.lugToLug.trim() ? prev[watchId]!.lugToLug : aiSuggestions.lugToLug || '',
-          betweenLugs: prev[watchId]?.betweenLugs.trim() ? prev[watchId]!.betweenLugs : aiSuggestions.betweenLugs || '',
-          thickness: prev[watchId]?.thickness.trim() ? prev[watchId]!.thickness : aiSuggestions.thickness || '',
-          waterResistance: prev[watchId]?.waterResistance.trim() ? prev[watchId]!.waterResistance : aiSuggestions.waterResistance || '',
-          estimatedPrice: prev[watchId]?.estimatedPrice.trim() ? prev[watchId]!.estimatedPrice : aiSuggestions.estimatedPrice || '',
-        },
-      }))
+      // Update watchMeta — only fill empty fields
+      setWatchMetaState((prev) => {
+        const current = prev[watchId] ?? {}
+        const fill = (key: keyof typeof current) =>
+          (current[key] as string)?.trim() ? current[key] : aiSuggestions[key] || ''
+        return {
+          ...prev,
+          [watchId]: {
+            ...current,
+            movement: fill('movement'),
+            caseSize: fill('caseSize'),
+            lugToLug: fill('lugToLug'),
+            betweenLugs: fill('betweenLugs'),
+            thickness: fill('thickness'),
+            waterResistance: fill('waterResistance'),
+            estimatedPrice: fill('estimatedPrice'),
+            wristSize: fill('wristSize'),
+          },
+        }
+      })
 
       setAiFilledGroupOk(watchId)
       setTimeout(() => setAiFilledGroupOk(null), 2500)
     } catch (err) {
       console.error('AI fill failed:', err)
-      alert('AI fill failed — check that brand and model are filled in.')
+      alert(`AI fill failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
     }
 
     setAiFillingGroup(null)
@@ -862,12 +823,12 @@ export default function AdminPhotosClient() {
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
-                      savingGroup={savingGroup}
-                      savedGroupOk={savedGroupOk}
+
+
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
-                      onSaveGroup={handleSaveGroup}
+
                       onAiFillGroup={handleAiFillGroup}
                       onApproveGroup={handleApproveGroup}
                       onRejectGroup={handleRejectGroup}
@@ -898,12 +859,12 @@ export default function AdminPhotosClient() {
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
-                      savingGroup={savingGroup}
-                      savedGroupOk={savedGroupOk}
+
+
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
-                      onSaveGroup={handleSaveGroup}
+
                       onAiFillGroup={handleAiFillGroup}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       isApproved={true}
@@ -933,12 +894,12 @@ export default function AdminPhotosClient() {
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
-                      savingGroup={savingGroup}
-                      savedGroupOk={savedGroupOk}
+
+
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
-                      onSaveGroup={handleSaveGroup}
+
                       onAiFillGroup={handleAiFillGroup}
                       onRestoreGroup={handleRestoreGroup}
                       onDelete={(photo) => handleDeleteRejected(photo)}
