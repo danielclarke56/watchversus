@@ -646,6 +646,42 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     priority
                     onLoad={() => setLightboxImageLoading(false)}
                   />
+
+                  {/* Within-watch: Previous photo arrow */}
+                  {activeLightboxPhotos.length > 1 && lightbox.photoIdx > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, lightbox.photoIdx - 1) }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all z-10 text-lg"
+                      aria-label="Previous photo"
+                    >
+                      ‹
+                    </button>
+                  )}
+
+                  {/* Within-watch: Next photo arrow */}
+                  {activeLightboxPhotos.length > 1 && lightbox.photoIdx < activeLightboxPhotos.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, lightbox.photoIdx + 1) }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all z-10 text-lg"
+                      aria-label="Next photo"
+                    >
+                      ›
+                    </button>
+                  )}
+
+                  {/* Dot indicators — only when multiple photos for this watch */}
+                  {activeLightboxPhotos.length > 1 && (
+                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
+                      {activeLightboxPhotos.map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-1.5 h-1.5 rounded-full transition-all ${i === lightbox.photoIdx ? 'bg-white scale-125' : 'bg-white/50'}`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -836,56 +872,9 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
               )}
             </div>
 
-            {/* DESKTOP ONLY: Right column (30%) — Same-watch carousel + More like this */}
-            {(sameWatchExtras.length > 0 || otherWatchRelated.length > 0) && (
+            {/* DESKTOP ONLY: Right column (30%) — More like this (different watches only) */}
+            {otherWatchRelated.length > 0 && (
               <div className="hidden md:flex flex-col w-[30%] h-screen bg-gray-50 border-l border-gray-200 overflow-hidden">
-
-                {/* Same-watch carousel (Instagram-style horizontal scroll) */}
-                {sameWatchExtras.length > 0 && (
-                  <div className="flex-shrink-0 border-b border-gray-200">
-                    <div className="px-4 pt-4 pb-2">
-                      <h3 className="text-gray-900 font-semibold text-sm">
-                        More shots of this watch
-                        <span className="ml-1.5 text-gray-400 font-normal text-xs">{sameWatchExtras.length + 1} photos</span>
-                      </h3>
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto px-3 pb-4 scrollbar-none">
-                      {/* Current photo thumbnail (active indicator) */}
-                      {activeLightboxPhoto && (
-                        <div className="shrink-0 relative w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-900">
-                          <Image
-                            src={activeLightboxPhoto.url}
-                            alt="Current photo"
-                            fill
-                            className="object-cover"
-                            sizes="96px"
-                          />
-                        </div>
-                      )}
-                      {sameWatchExtras.map((thumb, i) => (
-                        <button
-                          key={thumb.id}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            const idx = activeLightboxPhotos.findIndex((p) => p.id === thumb.id)
-                            if (idx !== -1 && lightbox) navigateLightbox(lightbox.groupIdx, idx)
-                          }}
-                          className="shrink-0 relative w-24 h-24 rounded-xl overflow-hidden border-2 border-transparent opacity-70 hover:opacity-100 hover:border-gray-400 transition-all"
-                          aria-label={`Photo ${i + 2}`}
-                        >
-                          <Image
-                            src={thumb.url}
-                            alt={buildPhotoAltText(thumb)}
-                            fill
-                            className="object-cover"
-                            sizes="96px"
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* More like this — different watches only */}
                 {otherWatchRelated.length > 0 && (
