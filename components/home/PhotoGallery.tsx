@@ -651,7 +651,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                           {[brand, model].filter(Boolean).join(' ')}
                         </p>
                       )}
-                      {ref && <p className="text-gray-500 text-sm">Ref. {ref}</p>}
                       <p className="text-gray-400 text-xs">
                         by{' '}
                         {p.isOfficial ? (
@@ -670,6 +669,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     {(() => {
                       const w = lightboxWatch
                       const specs: { label: string; value: string }[] = []
+                      if (ref) specs.push({ label: 'Ref.', value: ref })
                       const mv = p.movement || (w?.movement_type ? formatMovementType(w.movement_type) : null)
                       if (mv) specs.push({ label: 'Movement', value: mv })
                       const cs = p.caseSize || (w?.case_diameter_mm ? `${w.case_diameter_mm}mm` : null)
@@ -692,7 +692,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                       if (mat) specs.push({ label: 'Material', value: mat })
                       if (specs.length === 0) return null
                       return (
-                        <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-xs text-center justify-center max-w-md mx-auto">
+                        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2 text-xs text-center justify-center">
                           {specs.map((s) => (
                             <div key={s.label} className="flex flex-col">
                               <span className="text-gray-400">{s.label}</span>
