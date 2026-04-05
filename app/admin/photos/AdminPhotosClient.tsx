@@ -211,6 +211,10 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   aiFilledGroupOk,
   onUpdateWatchMeta,
   onAiFillGroup,
+  onSaveMetadata,
+  isDirty,
+  isSavingMeta,
+  savedMetaOk,
   onApproveGroup,
   onRejectGroup,
   onRestoreGroup,
@@ -225,6 +229,10 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   aiFilledGroupOk: string | null
   onUpdateWatchMeta: (watchId: string, field: keyof WatchMetaFields, value: string) => void
   onAiFillGroup: (watchId: string, imageUrls: string[]) => void
+  onSaveMetadata?: (watchId: string, photoIds: string[]) => void
+  isDirty?: boolean
+  isSavingMeta?: boolean
+  savedMetaOk?: boolean
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
@@ -398,8 +406,19 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               {isRestoringGroup ? 'Restoring...' : `Restore to Pending`}
             </button>
           )}
-          {isApproved && (
-            <div className="text-sm text-green-600 font-semibold">✓ Approved</div>
+          {isApproved && !isDirty && (
+            <div className="text-sm text-green-600 font-semibold">
+              {savedMetaOk ? '✓ Saved' : '✓ Approved'}
+            </div>
+          )}
+          {isApproved && isDirty && onSaveMetadata && (
+            <button
+              onClick={() => onSaveMetadata(group.watchId, group.photos.map((p) => p.id))}
+              disabled={isSavingMeta}
+              className="flex-1 text-sm bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              {isSavingMeta ? 'Saving...' : 'Save Changes'}
+            </button>
           )}
           {isRejected && (
             <div className="text-sm text-red-600 font-semibold">✗ Rejected</div>
@@ -436,6 +455,11 @@ export default function AdminPhotosClient() {
   // AI Fill state
   const [aiFillingGroup, setAiFillingGroup] = useState<string | null>(null)
   const [aiFilledGroupOk, setAiFilledGroupOk] = useState<string | null>(null)
+
+  // Metadata save state (approved tab)
+  const [dirtyGroups, setDirtyGroups] = useState<Set<string>>(new Set())
+  const [savingMetaGroup, setSavingMetaGroup] = useState<string | null>(null)
+  const [savedMetaGroupOk, setSavedMetaGroupOk] = useState<string | null>(null)
 
   // Grouped photos for display
   const pendingGroups = useMemo(() => groupPhotosByWatch(pendingPhotos), [pendingPhotos])
@@ -535,6 +559,38 @@ export default function AdminPhotosClient() {
       ...prev,
       [watchId]: { ...prev[watchId], [field]: value },
     }))
+    setDirtyGroups((prev) => new Set(prev).add(watchId))
+  }
+
+  async function handleSaveMetadata(watchId: string, photoIds: string[]) {
+    const meta = watchMetaState[watchId]
+    if (!meta) return
+    setSavingMetaGroup(watchId)
+    try {
+      const results = await Promise.all(
+        photoIds.map((photoId) =>
+          fetch('/api/admin/photos', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ photoId, fields: { ...meta } }),
+          })
+        )
+      )
+      if (results.every((r) => r.ok)) {
+        setDirtyGroups((prev) => { const next = new Set(prev); next.delete(watchId); return next })
+        // Update local approved photos state so gallery reflects new meta immediately
+        setApprovedPhotos((prev) =>
+          prev.map((p) => (p.watchId !== watchId ? p : { ...p, ...meta }))
+        )
+        setSavedMetaGroupOk(watchId)
+        setTimeout(() => setSavedMetaGroupOk(null), 2500)
+      } else {
+        alert('Save failed — one or more photos could not be updated.')
+      }
+    } catch (err) {
+      alert(`Save failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+    setSavingMetaGroup(null)
   }
 
   async function handleAiFillGroup(watchId: string, imageUrls: string[]) {
@@ -584,6 +640,7 @@ export default function AdminPhotosClient() {
         }
       })
 
+      setDirtyGroups((prev) => new Set(prev).add(watchId))
       setAiFilledGroupOk(watchId)
       setTimeout(() => setAiFilledGroupOk(null), 2500)
     } catch (err) {
@@ -859,13 +916,14 @@ export default function AdminPhotosClient() {
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
-
-
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
-
                       onAiFillGroup={handleAiFillGroup}
+                      onSaveMetadata={handleSaveMetadata}
+                      isDirty={dirtyGroups.has(group.watchId)}
+                      isSavingMeta={savingMetaGroup === group.watchId}
+                      savedMetaOk={savedMetaGroupOk === group.watchId}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       isApproved={true}
                     />
