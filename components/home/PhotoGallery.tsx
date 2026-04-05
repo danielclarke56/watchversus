@@ -561,14 +561,36 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       {lightbox !== null && activeLightboxGroup && activeLightboxPhoto && (
         <div
           ref={lightboxContainerRef}
-          className="fixed inset-0 z-50 bg-white overflow-hidden"
+          className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center"
           onClick={closeLightbox}
           style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
         >
-          <div className="flex flex-col md:flex-row w-full h-screen" onClick={(e) => e.stopPropagation()}>
-            {/* Left column: Main image + watch info (desktop: 70% width, mobile: full width) */}
-            <div className={`flex flex-col w-full ${sameWatchExtras.length > 0 || otherWatchRelated.length > 0 ? 'md:w-[70%]' : ''} h-auto md:h-screen overflow-y-auto md:overflow-hidden`}>
-              {/* Close button (top-right only) */}
+          {/* Gallery arrows — fixed at viewport edges, visually distinct from carousel arrows */}
+          {lightbox.groupIdx > 0 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
+              className="hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-gray-800/60 hover:bg-gray-800/90 backdrop-blur-sm rounded-full w-14 h-14 items-center justify-center transition-all z-50 shadow-xl"
+              aria-label="Previous watch"
+            >
+              ‹
+            </button>
+          )}
+          {lightbox.groupIdx < groups.length - 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
+              className="hidden md:flex fixed right-4 top-1/2 -translate-y-1/2 text-white text-2xl bg-gray-800/60 hover:bg-gray-800/90 backdrop-blur-sm rounded-full w-14 h-14 items-center justify-center transition-all z-50 shadow-xl"
+              aria-label="Next watch"
+            >
+              ›
+            </button>
+          )}
+
+          <div className="flex flex-col md:flex-row w-full max-w-[1400px] mx-4 md:mx-20 h-full md:h-[90vh] rounded-2xl overflow-hidden bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Left column: Main image + watch info */}
+            <div className={`flex flex-col ${otherWatchRelated.length > 0 ? 'md:w-[65%]' : 'w-full'} h-auto md:h-full overflow-y-auto md:overflow-hidden`}>
+              {/* Close button */}
               <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                 <button
                   type="button"
@@ -579,30 +601,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   ✕
                 </button>
               </div>
-
-              {/* Left arrow — previous watch (hidden on mobile) */}
-              {lightbox.groupIdx > 0 && (
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx - 1, 0) }}
-                  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 text-2xl bg-white border border-gray-200 shadow-sm opacity-80 hover:opacity-100 hover:bg-gray-50 rounded-full w-12 h-12 items-center justify-center transition-all z-10"
-                  aria-label="Previous watch"
-                >
-                  ←
-                </button>
-              )}
-
-              {/* Right arrow — next watch (hidden on mobile) */}
-              {lightbox.groupIdx < groups.length - 1 && (
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx + 1, 0) }}
-                  className={`hidden md:flex absolute ${sameWatchExtras.length > 0 || otherWatchRelated.length > 0 ? 'right-8 md:right-[30%]' : 'right-4'} top-1/2 -translate-y-1/2 text-gray-700 text-2xl bg-white border border-gray-200 shadow-sm opacity-80 hover:opacity-100 hover:bg-gray-50 rounded-full w-12 h-12 items-center justify-center transition-all z-10`}
-                  aria-label="Next watch"
-                >
-                  →
-                </button>
-              )}
 
               {/* Main image area — fixed height on mobile, full height on desktop */}
               <div
@@ -647,25 +645,24 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     onLoad={() => setLightboxImageLoading(false)}
                   />
 
-                  {/* Within-watch: Previous photo arrow */}
+                  {/* Within-watch carousel arrows — smaller, white/transparent, clearly different from gallery arrows */}
                   {activeLightboxPhotos.length > 1 && lightbox.photoIdx > 0 && (
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, lightbox.photoIdx - 1) }}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all z-10 text-lg"
-                      aria-label="Previous photo"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 text-white text-base bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center transition-all z-10 border border-white/30"
+                      aria-label="Previous photo of this watch"
                     >
                       ‹
                     </button>
                   )}
 
-                  {/* Within-watch: Next photo arrow */}
                   {activeLightboxPhotos.length > 1 && lightbox.photoIdx < activeLightboxPhotos.length - 1 && (
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, lightbox.photoIdx + 1) }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition-all z-10 text-lg"
-                      aria-label="Next photo"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-white text-base bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center transition-all z-10 border border-white/30"
+                      aria-label="Next photo of this watch"
                     >
                       ›
                     </button>
@@ -874,7 +871,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
             {/* DESKTOP ONLY: Right column (30%) — More like this (different watches only) */}
             {otherWatchRelated.length > 0 && (
-              <div className="hidden md:flex flex-col w-[30%] h-screen bg-gray-50 border-l border-gray-200 overflow-hidden">
+              <div className="hidden md:flex flex-col md:w-[35%] h-full bg-gray-50 border-l border-gray-200 overflow-hidden">
 
                 {/* More like this — different watches only */}
                 {otherWatchRelated.length > 0 && (
