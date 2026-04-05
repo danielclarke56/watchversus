@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { checkAdmin } from '@/lib/admin'
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 interface AiFillRequest {
   brandName: string
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
-    console.error('ANTHROPIC_API_KEY not configured')
+    console.error('GEMINI_API_KEY not configured')
     return NextResponse.json(
       { error: 'AI service not configured' },
       { status: 500 }
@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const client = new Anthropic({ apiKey })
+    const client = new GoogleGenerativeAI(apiKey)
+    const model = client.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const prompt = `You are a watch specification database. Given a watch's brand, model name, and reference number, return its known technical specifications as JSON.
 
@@ -65,33 +66,16 @@ Return ONLY a JSON object with these exact keys (use empty string "" if unknown)
 
 For caseSize, lugToLug, betweenLugs, thickness: return numeric value only (no "mm" unit).
 For waterResistance: return numeric value only (no "m" unit).
-For estimatedPrice: return numeric value only in USD (no "$" or "USD").`
+For estimatedPrice: return numeric value only in USD (no "$" or "USD").
+No markdown, no explanation — JSON only.`
 
-    const message = await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 256,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    })
-
-    // Extract text content from response
-    const textContent = message.content.find((block) => block.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      console.error('No text content in Claude response')
-      return NextResponse.json(
-        { error: 'Invalid response from AI service' },
-        { status: 500 }
-      )
-    }
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
 
     // Parse the JSON response
-    const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
-      console.error('Could not extract JSON from Claude response:', textContent.text)
+      console.error('Could not extract JSON from Gemini response:', text)
       return NextResponse.json(
         { error: 'Could not parse AI response' },
         { status: 500 }
@@ -101,7 +85,7 @@ For estimatedPrice: return numeric value only in USD (no "$" or "USD").`
     const specs = JSON.parse(jsonMatch[0]) as AiFillResponse
 
     // Ensure all required fields exist and are strings
-    const result: AiFillResponse = {
+    const result2: AiFillResponse = {
       movement: specs.movement ?? '',
       caseSize: specs.caseSize ?? '',
       lugToLug: specs.lugToLug ?? '',
@@ -111,9 +95,9 @@ For estimatedPrice: return numeric value only in USD (no "$" or "USD").`
       estimatedPrice: specs.estimatedPrice ?? '',
     }
 
-    return NextResponse.json(result)
+    return NextResponse.json(result2)
   } catch (error) {
-    console.error('Error calling Anthropic API:', error)
+    console.error('Error calling Gemini API:', error)
     if (error instanceof SyntaxError) {
       return NextResponse.json(
         { error: 'Failed to parse AI response' },
