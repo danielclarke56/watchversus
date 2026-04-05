@@ -353,15 +353,19 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   }, [lightbox])
 
 
-  // Open lightbox — use router.push() for proper Next.js app router integration
+  // Open lightbox — update URL with pushState (back button support) without page navigation
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
     if (photo) {
-      // Use router.push() instead of pushState() for proper Next.js navigation
-      // The /photo/[id] page will initialize and open the lightbox automatically
-      router.push(`/photo/${photo.id}`)
+      lightboxOpenRef.current = true
+      window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
+      setPhotoOverride(null)
+      setLightboxImageLoading(true)
+      setCopied(false)
+      setLinkCopied(false)
+      setLightbox({ groupIdx, photoIdx })
     }
-  }, [groups, router])
+  }, [groups])
 
   const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
