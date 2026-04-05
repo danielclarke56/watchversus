@@ -625,7 +625,10 @@ export default function AdminPhotosClient() {
 
       setAiFilledGroupOk(watchId)
       setTimeout(() => setAiFilledGroupOk(null), 2500)
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('AI fill failed:', err)
+      alert('AI fill failed — check that brand and model are filled in.')
+    }
 
     setAiFillingGroup(null)
   }

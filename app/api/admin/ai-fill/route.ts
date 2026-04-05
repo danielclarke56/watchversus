@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as AiFillRequest
   const { brandName, modelName, referenceNumber } = body
 
-  if (!brandName || !modelName || !referenceNumber) {
+  if (!brandName || !modelName) {
     return NextResponse.json(
-      { error: 'Missing required fields: brandName, modelName, referenceNumber' },
+      { error: 'Missing required fields: brandName, modelName' },
       { status: 400 }
     )
   }
@@ -49,9 +49,10 @@ export async function POST(req: NextRequest) {
     const client = new GoogleGenerativeAI(apiKey)
     const model = client.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-    const prompt = `You are a watch specification database. Given a watch's brand, model name, and reference number, return its known technical specifications as JSON.
+    const watchDescription = [brandName, modelName, referenceNumber].filter(Boolean).join(' ')
+    const prompt = `You are a watch specification database. Given a watch's brand, model name, and optionally reference number, return its known technical specifications as JSON.
 
-Watch: ${brandName} ${modelName} ${referenceNumber}
+Watch: ${watchDescription}
 
 Return ONLY a JSON object with these exact keys (use empty string "" if unknown):
 {
