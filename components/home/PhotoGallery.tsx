@@ -149,17 +149,27 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
         for (const p of sameModel) seenIds.add(p.id)
       }
 
-      // 3. Fetch by brand to fill remaining slots
+      // 3. Always fetch by brand (different watch instances from same brand)
       let brandPhotos: PhotoItem[] = []
-      if (brand && (sameWatch.length + sameModel.length) < 8) {
+      if (brand) {
         const brandParams = new URLSearchParams({ q: brand, limit: '20' })
         const brandRes = await fetch(`/api/photos/all?${brandParams.toString()}`)
         const brandData: PhotosResponse = await brandRes.json()
         brandPhotos = brandData.photos.filter((p) => !seenIds.has(p.id))
+        for (const p of brandPhotos) seenIds.add(p.id)
       }
 
-      // Combine: same-watch first, then same-model, then brand/other
-      const relatedList = [...sameWatch, ...sameModel, ...brandPhotos]
+      // 4. Fallback: if no other-watch results yet, fetch recent photos from the gallery
+      let fallbackPhotos: PhotoItem[] = []
+      const hasDifferentWatch = [...sameModel, ...brandPhotos].some((p) => p.watchId !== watchId)
+      if (!hasDifferentWatch) {
+        const fallbackRes = await fetch(`/api/photos/all?limit=24`)
+        const fallbackData: PhotosResponse = await fallbackRes.json()
+        fallbackPhotos = fallbackData.photos.filter((p) => !seenIds.has(p.id))
+      }
+
+      // Combine: same-watch first, then same-model, then brand/other, then fallback
+      const relatedList = [...sameWatch, ...sameModel, ...brandPhotos, ...fallbackPhotos]
 
       // Cache the results
       relatedPhotosCacheRef.current.set(watchId, relatedList)
