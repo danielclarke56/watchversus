@@ -515,9 +515,6 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
 
   const carouselPhotoIdx = carouselPhotos.findIndex((p) => p.id === activeLightboxPhoto?.id)
 
-  // Same-watch extras: other carousel photos (for thumbnail strips)
-  const sameWatchExtras = carouselPhotos.filter((p) => p.id !== activeLightboxPhoto?.id)
-
   // Fetch related photos when lightbox photo changes
   useEffect(() => {
     if (!activeLightboxPhoto) return
@@ -889,124 +886,123 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                 </div>
               )}
 
-              {/* Mobile: Related photos as horizontal thumbnail strip */}
-              {(sameWatchExtras.length > 0 || otherWatchRelated.length > 0) && (
-                <div className="md:hidden w-full px-4 py-4 bg-gray-100 flex-shrink-0">
-                  <h3 className="text-gray-900 font-semibold text-sm mb-3">More like this</h3>
-                  {relatedPhotosLoading ? (
-                    <div className="flex gap-3 overflow-x-auto pb-2">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="shrink-0 w-20 h-20 rounded-2xl bg-gray-200 animate-pulse"
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex gap-3 overflow-x-auto pb-2">
-                      {relatedPhotos.slice(0, 12).map((relatedPhoto) => {
-                        const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
-                        const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
-                        const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
-                        return (
-                          <button
-                            key={relatedPhoto.id}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              openRelatedPhoto(relatedPhoto)
-                            }}
-                            className="shrink-0 group relative rounded-2xl overflow-hidden bg-gray-200 w-20 h-20"
-                            aria-label={relatedLabel || 'Related photo'}
-                          >
-                            <Image
-                              src={relatedPhoto.url}
-                              alt={buildPhotoAltText(relatedPhoto)}
-                              fill
-                              className="object-cover transition-transform duration-200 group-hover:scale-105"
-                              sizes="80px"
-                            />
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Mobile: Related photos as horizontal thumbnail strip (always show with fallback) */}
+              <div className="md:hidden w-full px-4 py-4 bg-gray-100 flex-shrink-0">
+                <h3 className="text-gray-900 font-semibold text-sm mb-3">More like this</h3>
+                {relatedPhotosLoading ? (
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="shrink-0 w-20 h-20 rounded-2xl bg-gray-200 animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : relatedPhotos.length > 0 ? (
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {relatedPhotos.slice(0, 12).map((relatedPhoto) => {
+                      const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                      const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                      const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                      return (
+                        <button
+                          key={relatedPhoto.id}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openRelatedPhoto(relatedPhoto)
+                          }}
+                          className="shrink-0 group relative rounded-2xl overflow-hidden bg-gray-200 w-20 h-20"
+                          aria-label={relatedLabel || 'Related photo'}
+                        >
+                          <Image
+                            src={relatedPhoto.url}
+                            alt={buildPhotoAltText(relatedPhoto)}
+                            fill
+                            className="object-cover transition-transform duration-200 group-hover:scale-105"
+                            sizes="80px"
+                          />
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-xs">Loading related watches...</p>
+                )}
+              </div>
             </div>
 
-            {/* DESKTOP ONLY: Right column (35%) — same model first, then other watches */}
-            {otherWatchRelated.length > 0 && (
-              <div className="hidden md:flex flex-col md:w-[35%] h-full bg-gray-50 border-l border-gray-200 overflow-hidden">
-                <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-                  {relatedPhotosLoading ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="aspect-square rounded-2xl bg-gray-200 animate-pulse" />
-                      ))}
-                    </div>
-                  ) : (
-                    <>
-                      {/* Section 1: Same model */}
-                      {sameModelRelated.length > 0 && (
-                        <div>
-                          <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide px-1 mb-3">
-                            More {currentModelName ?? 'like this'}
-                          </p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {sameModelRelated.slice(0, 12).map((relatedPhoto) => {
-                              const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
-                              const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
-                              const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
-                              return (
-                                <button
-                                  key={relatedPhoto.id}
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); openRelatedPhoto(relatedPhoto) }}
-                                  className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
-                                  aria-label={relatedLabel || 'Related photo'}
-                                >
-                                  <Image
-                                    src={relatedPhoto.url}
-                                    alt={buildPhotoAltText(relatedPhoto)}
-                                    fill
-                                    className="object-cover transition-transform duration-200 group-hover:scale-105"
-                                    sizes="15vw"
-                                  />
-                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                                    <p className="text-white text-xs font-medium line-clamp-2">{relatedLabel}</p>
-                                    <p className="text-white/60 text-xs text-left mt-1">by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}</p>
-                                  </div>
-                                </button>
-                              )
-                            })}
-                          </div>
+            {/* DESKTOP ONLY: Right column (35%) — same model first, then other watches. Always show panel (with fallback) */}
+            <div className="hidden md:flex flex-col md:w-[35%] h-full bg-gray-50 border-l border-gray-200 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+                {relatedPhotosLoading ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="aspect-square rounded-2xl bg-gray-200 animate-pulse" />
+                    ))}
+                  </div>
+                ) : otherWatchRelated.length > 0 ? (
+                  <>
+                    {/* Section 1: Same model */}
+                    {sameModelRelated.length > 0 && (
+                      <div>
+                        <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide px-1 mb-3">
+                          More {currentModelName ?? 'like this'}
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {sameModelRelated.slice(0, 12).map((relatedPhoto) => {
+                            const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                            const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                            const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                            return (
+                              <button
+                                key={relatedPhoto.id}
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(relatedPhoto) }}
+                                className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
+                                aria-label={relatedLabel || 'Related photo'}
+                              >
+                                <Image
+                                  src={relatedPhoto.url}
+                                  alt={buildPhotoAltText(relatedPhoto)}
+                                  fill
+                                  className="object-cover transition-transform duration-200 group-hover:scale-105"
+                                  sizes="15vw"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                                  <p className="text-white text-xs font-medium line-clamp-2">{relatedLabel}</p>
+                                  <p className="text-white/60 text-xs text-left mt-1">by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}</p>
+                                </div>
+                              </button>
+                            )
+                          })}
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {/* Section 2: Other watches */}
-                      {otherModelRelated.length > 0 && (
-                        <div>
-                          {sameModelRelated.length > 0 && (
-                            <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide px-1 mb-3">Other watches</p>
-                          )}
-                          <div className="grid grid-cols-2 gap-2">
-                            {otherModelRelated.slice(0, 20).map((relatedPhoto) => {
-                              const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
-                              const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
-                              const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
-                              return (
-                                <button
-                                  key={relatedPhoto.id}
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); openRelatedPhoto(relatedPhoto) }}
-                                  className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
-                                  aria-label={relatedLabel || 'Related photo'}
-                                >
-                                  <Image
-                                    src={relatedPhoto.url}
-                                    alt={buildPhotoAltText(relatedPhoto)}
-                                    fill
+                    {/* Section 2: Other watches */}
+                    {otherModelRelated.length > 0 && (
+                      <div>
+                        {sameModelRelated.length > 0 && (
+                          <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide px-1 mb-3">Other watches</p>
+                        )}
+                        <div className="grid grid-cols-2 gap-2">
+                          {otherModelRelated.slice(0, 20).map((relatedPhoto) => {
+                            const relatedBrand = relatedPhoto.brandName || relatedPhoto.watchBrand || null
+                            const relatedModel = relatedPhoto.modelName || relatedPhoto.watchName || null
+                            const relatedLabel = [relatedBrand, relatedModel].filter(Boolean).join(' ')
+                            return (
+                              <button
+                                key={relatedPhoto.id}
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(relatedPhoto) }}
+                                className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 hover:bg-gray-300 transition-colors"
+                                aria-label={relatedLabel || 'Related photo'}
+                              >
+                                <Image
+                                  src={relatedPhoto.url}
+                                  alt={buildPhotoAltText(relatedPhoto)}
+                                  fill
                                     className="object-cover transition-transform duration-200 group-hover:scale-105"
                                     sizes="15vw"
                                   />
@@ -1021,10 +1017,18 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                         </div>
                       )}
                     </>
-                  )}
-                </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center py-8 px-4">
+                    <p className="text-gray-500 text-sm font-medium mb-3">
+                      Explore other watches
+                    </p>
+                    <p className="text-gray-400 text-xs">
+                      Discover watches from the gallery
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
 
           </div>
