@@ -73,6 +73,7 @@ export default function UploadClient() {
   const [isWatch, setIsWatch] = useState<boolean | null>(null)
   const [aiGenerated, setAiGenerated] = useState<boolean | null>(null)
   const [aiIdentified, setAiIdentified] = useState(false)
+  const [aiConfirmed, setAiConfirmed] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
 
@@ -301,6 +302,7 @@ export default function UploadClient() {
     setBetweenLugs(candidate.betweenLugs || '')
     setThickness(candidate.thickness || '')
     setWaterResistance(candidate.waterResistance || '')
+    setAiConfirmed(false)
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -394,7 +396,7 @@ export default function UploadClient() {
     }
   }
 
-  const isFormValid = files.length > 0 && brandName.trim().length > 0 && isWatch !== false
+  const isFormValid = files.length > 0 && brandName.trim().length > 0 && isWatch !== false && (!aiIdentified || aiConfirmed)
 
   if (!isLoaded) {
     return (
@@ -627,12 +629,35 @@ export default function UploadClient() {
 
                   {/* AI auto-fill notice */}
                   {aiIdentified && !identifying && (
-                    <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-                      <span className="text-base leading-none mt-0.5">✨</span>
-                      <p className="text-xs text-blue-800 dark:text-blue-200">
-                        Details filled in by AI — please review and correct before submitting.
-                      </p>
-                    </div>
+                    aiConfirmed ? (
+                      <div className="flex items-center justify-between gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base leading-none">✅</span>
+                          <p className="text-xs text-green-800 dark:text-green-200">AI info confirmed — you&apos;re good to submit.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setAiConfirmed(false)}
+                          className="text-xs text-green-600 dark:text-green-400 underline hover:no-underline flex-shrink-0"
+                        >
+                          Undo
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base leading-none">✨</span>
+                          <p className="text-xs text-blue-800 dark:text-blue-200">Details filled by AI — review and confirm before submitting.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setAiConfirmed(true)}
+                          className="flex items-center gap-1 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
+                        >
+                          <span>✓</span> Confirm
+                        </button>
+                      </div>
+                    )
                   )}
                 </>
               )}
