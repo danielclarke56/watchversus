@@ -219,6 +219,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onRejectGroup,
   onRestoreGroup,
   onDelete,
+  onReorder,
   isApproved,
   isRejected,
 }: {
@@ -237,6 +238,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
+  onReorder?: (watchId: string, photos: ApprovedPhoto[], currentIdx: number, direction: 'up' | 'down') => void
   isApproved: boolean
   isRejected?: boolean
 }) {
@@ -252,6 +254,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   const isApprovingGroup = acting === `group-${group.watchId}`
   const isRejectingGroup = acting === `reject-${group.watchId}`
   const isRestoringGroup = acting === `restore-${group.watchId}`
+  const isPending = !isApproved && !isRejected
 
   const openLightbox = useCallback((index: number) => {
     setLightbox({ isOpen: true, currentIndex: index, watchId: group.watchId })
@@ -346,18 +349,50 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           </div>
         </div>
 
-        {/* Per-photo delete buttons */}
-        {(isApproved || isRejected) && onDelete && (
+        {/* Per-photo actions (delete + reorder) */}
+        {(isPending || isApproved || isRejected) && onDelete && (
           <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
-            <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Photos</p>
+            <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">
+              {isApproved ? 'Photo Order & Actions' : 'Photo Actions'}
+            </p>
             <div className="space-y-1.5">
-              {group.photos.map((photo) => {
+              {group.photos.map((photo, idx) => {
                 const isActing = acting === photo.id
                 const isLastPhoto = group.photos.length === 1
-                const canDelete = isRejected ? true : !isLastPhoto
+                const canDelete = isRejected || isPending ? true : !isLastPhoto
+                const canMoveUp = isApproved && idx > 0
+                const canMoveDown = isApproved && idx < group.photos.length - 1
 
                 return (
-                  <div key={photo.id} className="flex items-center gap-2">
+                  <div key={photo.id} className="flex items-center gap-1.5">
+                    {isApproved && (
+                      <>
+                        <button
+                          onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'up')}
+                          disabled={isActing || !canMoveUp}
+                          className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
+                            canMoveUp
+                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
+                          title="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'down')}
+                          disabled={isActing || !canMoveDown}
+                          className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
+                            canMoveDown
+                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
+                          title="Move down"
+                        >
+                          ↓
+                        </button>
+                      </>
+                    )}
                     <button
                       onClick={() => onDelete(photo)}
                       disabled={isActing || !canDelete}
@@ -366,9 +401,9 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                           ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
-                      title={isLastPhoto && !isRejected ? 'Cannot delete the last photo' : ''}
+                      title={isLastPhoto && !isRejected && !isPending ? 'Cannot delete the last photo' : ''}
                     >
-                      {isActing ? '...' : isRejected ? 'Delete Permanently' : 'Del'}
+                      {isActing ? '...' : isRejected ? 'Delete' : isPending ? 'Delete' : 'Del'}
                     </button>
                   </div>
                 )
@@ -698,6 +733,37 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
+  async function handleReorder(
+    watchId: string,
+    photos: ApprovedPhoto[],
+    currentIdx: number,
+    direction: 'up' | 'down'
+  ) {
+    const newIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1
+    if (newIdx < 0 || newIdx >= photos.length) return
+
+    const reorderedPhotos = [...photos]
+    ;[reorderedPhotos[currentIdx], reorderedPhotos[newIdx]] = [reorderedPhotos[newIdx], reorderedPhotos[currentIdx]]
+
+    setActing(`reorder-${watchId}`)
+    try {
+      const res = await fetch('/api/admin/photos', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ watchId, photoIds: reorderedPhotos.map((p) => p.id) }),
+      })
+      if (res.ok) {
+        setApprovedPhotos((prev) =>
+          prev.map((p) => ({
+            ...p,
+            sortOrder: reorderedPhotos.findIndex((rp) => rp.id === p.id),
+          }))
+        )
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
   async function handleDeleteApproved(photo: ApprovedPhoto) {
     setActing(photo.id)
     try {
@@ -752,6 +818,22 @@ export default function AdminPhotosClient() {
         const photosToRestore = rejectedPhotos.filter((p) => photoIds.includes(p.id))
         setRejectedPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))
         setPendingPhotos((prev) => [...photosToRestore, ...prev])
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
+  async function handleDeletePending(photo: PendingPhoto) {
+    if (!confirm('Delete this pending photo? This cannot be undone.')) return
+    setActing(photo.id)
+    try {
+      const res = await fetch('/api/admin/photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete-pending', watchId: photo.watchId, photoId: photo.id }),
+      })
+      if (res.ok) {
+        setPendingPhotos((prev) => prev.filter((p) => p.id !== photo.id))
       }
     } catch { /* ignore */ }
     setActing(null)
@@ -889,6 +971,7 @@ export default function AdminPhotosClient() {
                       onAiFillGroup={handleAiFillGroup}
                       onApproveGroup={handleApproveGroup}
                       onRejectGroup={handleRejectGroup}
+                      onDelete={(photo) => handleDeletePending(photo)}
                       isApproved={false}
                     />
                   ))}
@@ -925,6 +1008,7 @@ export default function AdminPhotosClient() {
                       isSavingMeta={savingMetaGroup === group.watchId}
                       savedMetaOk={savedMetaGroupOk === group.watchId}
                       onDelete={(photo) => handleDeleteApproved(photo)}
+                      onReorder={handleReorder}
                       isApproved={true}
                     />
                   ))}

@@ -6,7 +6,7 @@ import { isValidSlug } from '@/lib/validation'
 import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and, sql } from 'drizzle-orm'
+import { eq, and, sql, inArray } from 'drizzle-orm'
 
 /** GET /api/admin/photos - list pending or approved photos (?status=pending|approved) */
 export async function GET(req: NextRequest) {
@@ -44,12 +44,16 @@ export async function GET(req: NextRequest) {
       betweenLugs: p.betweenLugs,
       thickness: p.thickness,
       waterResistance: p.waterResistance,
+      sortOrder: p.sortOrder,
       createdAt: p.createdAt.toISOString(),
       approved: status === 'approved',
     }))
 
-    // Sort by createdAt descending
-    result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    // Sort by sortOrder asc, then createdAt descending
+    result.sort((a, b) => {
+      if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
 
     return NextResponse.json(result)
   } catch (error) {
@@ -64,13 +68,13 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject' | 'delete-approved' | 'restore'; watchId: string; photoId: string }
+  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string }
   const { action, watchId, photoId } = body
 
   if (!action || !watchId || !photoId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
-  if (!['approve', 'delete', 'reject', 'delete-approved', 'restore'].includes(action)) {
+  if (!['approve', 'delete', 'reject', 'delete-approved', 'restore', 'delete-pending'].includes(action)) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
   if (!isValidSlug(watchId)) {
@@ -83,6 +87,7 @@ export async function POST(req: NextRequest) {
       action === 'delete-approved' ? 'approved' :
       action === 'restore' ? 'rejected' :
       action === 'delete' ? 'rejected' :
+      action === 'delete-pending' ? 'pending' :
       'pending'
     const photo = await db
       .select()
@@ -107,6 +112,9 @@ export async function POST(req: NextRequest) {
       await db.update(photos).set({ status: 'pending' }).where(eq(photos.id, photoId))
     } else if (action === 'delete') {
       // Delete rejected photo entry only — do NOT remove images from R2
+      await db.delete(photos).where(eq(photos.id, photoId))
+    } else if (action === 'delete-pending') {
+      // Delete pending photo entry — do NOT remove images from R2
       await db.delete(photos).where(eq(photos.id, photoId))
     } else if (action === 'delete-approved') {
       // For approved photos, check if this is the last photo
@@ -212,5 +220,39 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     console.error('Error updating photo metadata:', error)
     return NextResponse.json({ error: 'Failed to update photo' }, { status: 500 })
+  }
+}
+
+/** PUT /api/admin/photos - reorder approved photos for a watch */
+export async function PUT(req: NextRequest) {
+  const { userId } = await auth()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!checkAdmin(userId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const body = (await req.json()) as { watchId: string; photoIds: string[] }
+  const { watchId, photoIds } = body
+
+  if (!watchId || !Array.isArray(photoIds) || photoIds.length === 0) {
+    return NextResponse.json({ error: 'Missing or invalid watchId/photoIds' }, { status: 400 })
+  }
+
+  try {
+    // Verify all photos exist and belong to the watch
+    const existing = await db.select({ id: photos.id }).from(photos).where(and(eq(photos.watchId, watchId), inArray(photos.id, photoIds)))
+    if (existing.length !== photoIds.length) {
+      return NextResponse.json({ error: 'Not all photos found or do not belong to this watch' }, { status: 400 })
+    }
+
+    // Update sortOrder for each photo in the provided order
+    for (let i = 0; i < photoIds.length; i++) {
+      await db.update(photos).set({ sortOrder: i }).where(eq(photos.id, photoIds[i]))
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error reordering photos:', error)
+    return NextResponse.json({ error: 'Failed to reorder photos' }, { status: 500 })
   }
 }
