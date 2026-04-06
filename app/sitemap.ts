@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, sql, and, desc } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = 'https://watchems.com'
@@ -73,21 +73,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  // All brands (distinct brands from approved photos)
-  const allBrands = await db
-    .selectDistinct({
-      brand: sql<string>`LOWER(TRIM(${photos.brandName}))`,
-    })
-    .from(photos)
-    .where(and(eq(photos.status, 'approved'), sql`${photos.brandName} IS NOT NULL`))
-
-  const brandPages: MetadataRoute.Sitemap = allBrands.map((row) => ({
-    url: `${base}/brand/${encodeURIComponent(row.brand)}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }))
-
   // All profile pages (distinct userIds from approved photos)
   const userIds = await db
     .selectDistinct({ userId: photos.userId })
@@ -101,5 +86,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...staticPages, ...photoPages, ...watchPages, ...brandPages, ...profilePages]
+  return [...staticPages, ...photoPages, ...watchPages, ...profilePages]
 }
