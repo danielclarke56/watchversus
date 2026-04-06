@@ -708,27 +708,26 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     onLoad={() => setLightboxImageLoading(false)}
                   />
 
-                  {/* Within-watch carousel arrows — darker background for visibility, clearly different from gallery arrows */}
-                  {carouselPhotos.length > 1 && carouselPhotoIdx > 0 && (
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); console.log('[carousel prev] idx', carouselPhotoIdx, 'target', carouselPhotos[carouselPhotoIdx - 1]?.id); navigateCarousel(carouselPhotos[carouselPhotoIdx - 1]) }}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all z-20 border border-white/60 cursor-pointer"
-                      aria-label="Previous photo of this watch"
-                    >
-                      ‹
-                    </button>
-                  )}
-
-                  {carouselPhotos.length > 1 && carouselPhotoIdx < carouselPhotos.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); console.log('[carousel next] idx', carouselPhotoIdx, 'target', carouselPhotos[carouselPhotoIdx + 1]?.id); navigateCarousel(carouselPhotos[carouselPhotoIdx + 1]) }}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-lg bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all z-20 border border-white/60 cursor-pointer"
-                      aria-label="Next photo of this watch"
-                    >
-                      ›
-                    </button>
+                  {/* Within-watch carousel arrows — infinite loop (wraps around) */}
+                  {carouselPhotos.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); const prevIdx = (carouselPhotoIdx - 1 + carouselPhotos.length) % carouselPhotos.length; navigateCarousel(carouselPhotos[prevIdx]) }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all z-20 border border-white/60 cursor-pointer"
+                        aria-label="Previous photo of this watch"
+                      >
+                        ‹
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); const nextIdx = (carouselPhotoIdx + 1) % carouselPhotos.length; navigateCarousel(carouselPhotos[nextIdx]) }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-lg bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all z-20 border border-white/60 cursor-pointer"
+                        aria-label="Next photo of this watch"
+                      >
+                        ›
+                      </button>
+                    </>
                   )}
 
                   {/* Dot indicators — only when multiple photos for this watch */}
