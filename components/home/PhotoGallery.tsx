@@ -159,10 +159,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
         for (const p of brandPhotos) seenIds.add(p.id)
       }
 
-      // 4. Fallback: if no other-watch results yet, fetch recent photos from the gallery
+      // 4. Fallback: always pad with recent gallery photos if we have fewer than 8 other-watch results
       let fallbackPhotos: PhotoItem[] = []
-      const hasDifferentWatch = [...sameModel, ...brandPhotos].some((p) => p.watchId !== watchId)
-      if (!hasDifferentWatch) {
+      const differentWatchCount = [...sameModel, ...brandPhotos].filter((p) => p.watchId !== watchId).length
+      if (differentWatchCount < 8) {
         const fallbackRes = await fetch(`/api/photos/all?limit=24`)
         const fallbackData: PhotosResponse = await fallbackRes.json()
         fallbackPhotos = fallbackData.photos.filter((p) => !seenIds.has(p.id))
