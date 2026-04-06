@@ -577,7 +577,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {groups.map((group, groupIdx) => {
             const primary = group.photos[0]
-            const { ref } = getWatchLabel(group)
+            const { brand, model, ref } = getWatchLabel(group)
+            const watchDisplayName = [brand, model].filter(Boolean).join(' ') || ref || null
             const count = group.photos.length
             return (
               <button
@@ -601,10 +602,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     <span>{count}</span>
                   </div>
                 )}
-                {/* Hover ref overlay */}
-                {ref && (
+                {/* Hover name overlay */}
+                {watchDisplayName && (
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <p className="text-white/70 text-xs truncate">Ref. {ref}</p>
+                    <p className="text-white text-xs font-medium truncate">{watchDisplayName}</p>
                   </div>
                 )}
               </button>
@@ -921,6 +922,11 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                             className="object-cover transition-transform duration-200 group-hover:scale-105"
                             sizes="80px"
                           />
+                          {relatedLabel && (
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <p className="text-white text-[10px] font-medium truncate">{relatedLabel}</p>
+                            </div>
+                          )}
                         </button>
                       )
                     })}
@@ -968,10 +974,11 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                                   className="object-cover transition-transform duration-200 group-hover:scale-105"
                                   sizes="15vw"
                                 />
-                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                                  <p className="text-white text-xs font-medium line-clamp-2">{relatedLabel}</p>
-                                  <p className="text-white/60 text-xs text-left mt-1">by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}</p>
-                                </div>
+                                {relatedLabel && (
+                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <p className="text-white text-xs font-medium truncate">{relatedLabel}</p>
+                                  </div>
+                                )}
                               </button>
                             )
                           })}
@@ -1002,16 +1009,17 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                                   src={relatedPhoto.url}
                                   alt={buildPhotoAltText(relatedPhoto)}
                                   fill
-                                    className="object-cover transition-transform duration-200 group-hover:scale-105"
-                                    sizes="15vw"
-                                  />
-                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                                    <p className="text-white text-xs font-medium line-clamp-2">{relatedLabel}</p>
-                                    <p className="text-white/60 text-xs text-left mt-1">by {relatedPhoto.isOfficial ? 'Watchems' : relatedPhoto.userName}</p>
+                                  className="object-cover transition-transform duration-200 group-hover:scale-105"
+                                  sizes="15vw"
+                                />
+                                {relatedLabel && (
+                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <p className="text-white text-xs font-medium truncate">{relatedLabel}</p>
                                   </div>
-                                </button>
-                              )
-                            })}
+                                )}
+                              </button>
+                            )
+                          })}
                           </div>
                         </div>
                       )}
