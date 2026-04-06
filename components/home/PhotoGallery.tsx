@@ -419,6 +419,20 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     setLinkCopied(false)
   }, [groups, navigateLightbox])
 
+  // Navigate within carousel (same-watch photos from both gallery and API fetches)
+  const navigateCarousel = useCallback((targetPhoto: PhotoItem) => {
+    // First, try to find it in the groups (existing gallery structure)
+    for (let gi = 0; gi < groups.length; gi++) {
+      const pi = groups[gi].photos.findIndex((p) => p.id === targetPhoto.id)
+      if (pi !== -1) {
+        navigateLightbox(gi, pi)
+        return
+      }
+    }
+    // Not in gallery groups — show via override (photo from relatedPhotos API)
+    setPhotoOverride(targetPhoto)
+  }, [groups, navigateLightbox])
+
   const closeLightbox = useCallback(() => {
     setLightbox(null)
     // Navigation back is handled by the photo page's back button or browser back
@@ -479,8 +493,27 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // photoOverride lets related-photo clicks stay in the lightbox without a page nav
   const activeLightboxPhoto = photoOverride ?? (activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null)
 
-  // Same-watch extras: other approved photos of this exact watch (for carousel)
-  const sameWatchExtras = activeLightboxPhotos.filter((p) => p.id !== activeLightboxPhoto?.id)
+  // Combined carousel pool: gallery group photos + same-watch photos fetched by relatedPhotos API.
+  // This ensures the carousel works even when the second photo of a watch wasn't in the paginated gallery fetch.
+  const carouselPhotos = useMemo(() => {
+    if (!activeLightboxPhoto) return []
+    const seenIds = new Set<string>()
+    const combined: PhotoItem[] = []
+    for (const p of activeLightboxPhotos) {
+      if (!seenIds.has(p.id)) { seenIds.add(p.id); combined.push(p) }
+    }
+    for (const p of relatedPhotos) {
+      if (p.watchId === activeLightboxPhoto.watchId && !seenIds.has(p.id)) {
+        seenIds.add(p.id); combined.push(p)
+      }
+    }
+    return combined
+  }, [activeLightboxPhoto, activeLightboxPhotos, relatedPhotos])
+
+  const carouselPhotoIdx = carouselPhotos.findIndex((p) => p.id === activeLightboxPhoto?.id)
+
+  // Same-watch extras: other carousel photos (for thumbnail strips)
+  const sameWatchExtras = carouselPhotos.filter((p) => p.id !== activeLightboxPhoto?.id)
 
   // Fetch related photos when lightbox photo changes
   useEffect(() => {
@@ -676,10 +709,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   />
 
                   {/* Within-watch carousel arrows — smaller, white/transparent, clearly different from gallery arrows */}
-                  {activeLightboxPhotos.length > 1 && lightbox.photoIdx > 0 && (
+                  {carouselPhotos.length > 1 && carouselPhotoIdx > 0 && (
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, lightbox.photoIdx - 1) }}
+                      onClick={(e) => { e.stopPropagation(); navigateCarousel(carouselPhotos[carouselPhotoIdx - 1]) }}
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all z-20 border border-white/40 cursor-pointer"
                       aria-label="Previous photo of this watch"
                     >
@@ -687,10 +720,10 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                     </button>
                   )}
 
-                  {activeLightboxPhotos.length > 1 && lightbox.photoIdx < activeLightboxPhotos.length - 1 && (
+                  {carouselPhotos.length > 1 && carouselPhotoIdx < carouselPhotos.length - 1 && (
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); navigateLightbox(lightbox.groupIdx, lightbox.photoIdx + 1) }}
+                      onClick={(e) => { e.stopPropagation(); navigateCarousel(carouselPhotos[carouselPhotoIdx + 1]) }}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-lg bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all z-20 border border-white/40 cursor-pointer"
                       aria-label="Next photo of this watch"
                     >
@@ -699,12 +732,12 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                   )}
 
                   {/* Dot indicators — only when multiple photos for this watch */}
-                  {activeLightboxPhotos.length > 1 && (
+                  {carouselPhotos.length > 1 && (
                     <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
-                      {activeLightboxPhotos.map((_, i) => (
+                      {carouselPhotos.map((_, i) => (
                         <div
                           key={i}
-                          className={`w-1.5 h-1.5 rounded-full transition-all ${i === lightbox.photoIdx ? 'bg-white scale-125' : 'bg-white/50'}`}
+                          className={`w-1.5 h-1.5 rounded-full transition-all ${i === carouselPhotoIdx ? 'bg-white scale-125' : 'bg-white/50'}`}
                         />
                       ))}
                     </div>
