@@ -12,7 +12,6 @@ function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-const MOVEMENT_OPTIONS = ['Automatic', 'Mechanical', 'Quartz', 'Digital']
 const WRIST_SIZE_OPTIONS = ['Under 6"', '6"', '6.5"', '7"', '7.5"', '8"', 'Over 8"']
 const ESTIMATED_PRICE_OPTIONS = [
   'Under $500',
@@ -709,18 +708,16 @@ export default function UploadClient() {
                       Movement <span className="text-textMuted">(optional)</span>
                     </label>
                     <div className="relative">
-                      <select
+                      <input
+                        type="text"
                         value={movement}
                         onChange={(e) => setMovement(e.target.value)}
-                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                      >
-                        <option value="">Select movement</option>
-                        {MOVEMENT_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
+                        placeholder="e.g. Automatic, Manual, Quartz"
+                        maxLength={60}
+                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && movement ? ' pr-8' : ''}`}
+                      />
                       {aiIdentified && movement && (
-                        <button type="button" onClick={() => setMovement('')} className="absolute right-8 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                        <button type="button" onClick={() => setMovement('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
                       )}
                     </div>
                   </div>
