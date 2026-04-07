@@ -34,6 +34,7 @@ interface PhotoItem {
   betweenLugs?: string | null
   thickness?: string | null
   waterResistance?: string | null
+  sortOrder?: number
 }
 
 interface PhotosResponse {
@@ -56,9 +57,11 @@ function groupByWatch(photos: PhotoItem[]): WatchGroup[] {
   }
   return Array.from(map.entries()).map(([watchId, photos]) => ({
     watchId,
-    photos: [...photos].sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    ),
+    photos: [...photos].sort((a, b) => {
+      const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+      if (orderDiff !== 0) return orderDiff
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    }),
   }))
 }
 

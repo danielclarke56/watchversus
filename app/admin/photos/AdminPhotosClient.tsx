@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 
 type Tab = 'pending' | 'approved' | 'rejected'
@@ -191,6 +191,7 @@ function PhotoLightbox({
           ❯
         </button>
       )}
+
     </div>
   )
 }
@@ -249,6 +250,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   })
   const [dragState, setDragState] = useState<{ watchId: string; index: number } | null>(null)
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
+  const touchDragIndexRef = useRef<number | null>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
 
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
   const isAiFillingGroup = aiFillingGroup === group.watchId
@@ -332,7 +335,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
 
         {/* Compact thumbnail grid */}
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+          <div ref={gridRef} className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
             {group.photos.map((photo, idx) => {
               const isActing = acting === photo.id
               const isLastPhoto = group.photos.length === 1
@@ -383,15 +386,54 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                 setDropTargetIndex(null)
               }
 
+              const handleTouchStart = (e: React.TouchEvent) => {
+                if (!canDrag) return
+                touchDragIndexRef.current = idx
+                setDragState({ watchId: group.watchId, index: idx })
+                e.stopPropagation()
+              }
+
+              const handleTouchMove = (e: React.TouchEvent) => {
+                if (touchDragIndexRef.current === null || !canDrag) return
+                e.preventDefault()
+                const touch = e.touches[0]
+                const el = document.elementFromPoint(touch.clientX, touch.clientY)
+                const card = el?.closest('[data-photo-idx]')
+                if (card) {
+                  const targetIdx = parseInt((card as HTMLElement).dataset.photoIdx ?? '-1', 10)
+                  if (targetIdx >= 0 && targetIdx !== touchDragIndexRef.current) {
+                    setDropTargetIndex(targetIdx)
+                  }
+                }
+              }
+
+              const handleTouchEnd = () => {
+                if (touchDragIndexRef.current === null) return
+                const fromIdx = touchDragIndexRef.current
+                if (dropTargetIndex !== null && dropTargetIndex !== fromIdx) {
+                  const reorderedPhotos = [...(group.photos as ApprovedPhoto[])]
+                  const [movedPhoto] = reorderedPhotos.splice(fromIdx, 1)
+                  reorderedPhotos.splice(dropTargetIndex, 0, movedPhoto)
+                  onReorder?.(group.watchId, reorderedPhotos)
+                }
+                touchDragIndexRef.current = null
+                setDragState(null)
+                setDropTargetIndex(null)
+              }
+
               return (
                 <div
                   key={photo.id}
+                  data-photo-idx={idx}
                   draggable={canDrag}
                   onDragStart={handleDragStart}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onDragEnd={handleDragEnd}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                   className={`relative aspect-square rounded overflow-hidden border border-border transition-all group cursor-grab active:cursor-grabbing ${
                     isDragging ? 'opacity-50' : ''
                   } ${
@@ -525,6 +567,11 @@ export default function AdminPhotosClient() {
   const [dirtyGroups, setDirtyGroups] = useState<Set<string>>(new Set())
   const [savingMetaGroup, setSavingMetaGroup] = useState<string | null>(null)
   const [savedMetaGroupOk, setSavedMetaGroupOk] = useState<string | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
+  const showToast = useCallback((message: string) => {
+    setToast(message)
+    setTimeout(() => setToast(null), 2500)
+  }, [])
 
   // Grouped photos for display
   const pendingGroups = useMemo(() => groupPhotosByWatch(pendingPhotos), [pendingPhotos])
@@ -782,6 +829,7 @@ export default function AdminPhotosClient() {
             sortOrder: reorderedPhotos.findIndex((rp) => rp.id === p.id),
           }))
         )
+        showToast('Order saved')
       }
     } catch { /* ignore */ }
     setActing(null)
@@ -1077,6 +1125,13 @@ export default function AdminPhotosClient() {
             </>
           )}
         </>
+      )}
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2 rounded-full shadow-lg z-50 pointer-events-none">
+          {toast}
+        </div>
       )}
     </div>
   )

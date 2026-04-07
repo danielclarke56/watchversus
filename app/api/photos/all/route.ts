@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and, desc, or, ilike, inArray } from 'drizzle-orm'
+import { eq, lt, and, asc, desc, or, ilike, inArray } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 
 /**
@@ -79,11 +79,12 @@ export async function GET(req: NextRequest) {
         betweenLugs: photos.betweenLugs,
         thickness: photos.thickness,
         waterResistance: photos.waterResistance,
+        sortOrder: photos.sortOrder,
         slug: photos.slug,
       })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
-      .orderBy(desc(photos.createdAt))
+      .orderBy(asc(photos.sortOrder), desc(photos.createdAt))
       .limit(limit + 1)
 
     // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
@@ -118,6 +119,7 @@ export async function GET(req: NextRequest) {
         betweenLugs: p.betweenLugs ?? null,
         thickness: p.thickness ?? null,
         waterResistance: p.waterResistance ?? null,
+        sortOrder: p.sortOrder,
         slug: p.slug ?? null,
       }
     })

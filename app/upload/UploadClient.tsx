@@ -153,8 +153,10 @@ function PhotoCard({ item, onRemove, onUpdate, onRetryIdentify, onRetryUpload, o
     return item.aiIdentified && item.aiFilledFields.has(field) ? 'pr-8' : ''
   }
 
-  const brandConfirmed = !item.aiIdentified || !item.aiFilledFields.has('brand') || !!item.aiConfirmedFields['brand']
-  const modelConfirmed = !item.aiIdentified || !item.aiFilledFields.has('model') || !!item.aiConfirmedFields['model']
+  const allAiFieldsConfirmed =
+    !item.aiIdentified ||
+    item.aiFilledFields.size === 0 ||
+    Array.from(item.aiFilledFields).every((f) => !!item.aiConfirmedFields[f])
 
   const aiFilledCount = item.aiFilledFields.size
   const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
@@ -174,7 +176,7 @@ function PhotoCard({ item, onRemove, onUpdate, onRetryIdentify, onRetryUpload, o
         )
       case 'ready':
         if (item.isWatch === false) return <span className="text-xs text-yellow-600">⚠️ Not a watch?</span>
-        if (!brandConfirmed || !modelConfirmed) return <span className="text-xs text-amber-600">Needs review</span>
+        if (!allAiFieldsConfirmed) return <span className="text-xs text-amber-600">Needs review</span>
         if (item.aiGenerated) return <span className="text-xs text-amber-600">⚠️ May be AI-generated</span>
         return <span className="text-xs text-green-600">✓ Ready</span>
       case 'uploading':
@@ -315,9 +317,9 @@ function PhotoCard({ item, onRemove, onUpdate, onRetryIdentify, onRetryUpload, o
                   style={{ width: `${(aiConfirmedCount / aiFilledCount) * 100}%` }}
                 />
               </div>
-              {(!brandConfirmed || !modelConfirmed) && (
+              {!allAiFieldsConfirmed && (
                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                  Accept or edit Brand &amp; Model to enable submit.
+                  Confirm all AI-filled fields above to submit.
                 </p>
               )}
             </div>
@@ -805,9 +807,11 @@ export default function UploadClient() {
     if (item.status !== 'ready' && item.status !== 'error') return false
     if (!item.brandName.trim()) return false
     if (item.isWatch === false) return false
-    const brandConfirmed = !item.aiIdentified || !item.aiFilledFields.has('brand') || !!item.aiConfirmedFields['brand']
-    const modelConfirmed = !item.aiIdentified || !item.aiFilledFields.has('model') || !!item.aiConfirmedFields['model']
-    return brandConfirmed && modelConfirmed
+    const allAiFieldsConfirmed =
+      !item.aiIdentified ||
+      item.aiFilledFields.size === 0 ||
+      Array.from(item.aiFilledFields).every((f) => !!item.aiConfirmedFields[f])
+    return allAiFieldsConfirmed
   }
 
   async function uploadItem(item: PhotoItem): Promise<void> {
@@ -1074,7 +1078,7 @@ export default function UploadClient() {
                         <span className="text-textMuted">
                           {totalActive === 0
                             ? 'All photos uploaded'
-                            : 'Fill in Brand & Model to enable submit'}
+                            : 'Confirm all AI-filled fields above to submit'}
                         </span>
                       ) : (
                         <span>
