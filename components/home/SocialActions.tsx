@@ -95,19 +95,23 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
       <button
         type="button"
         onClick={handleLike}
-        className={`backdrop-blur-sm rounded-full flex items-center justify-center transition-all ${
-          variant === 'card' ? 'w-8 h-8' : 'w-9 h-9'
+        className={`rounded-full flex items-center justify-center transition-all ${
+          variant === 'card' ? 'w-8 h-8 backdrop-blur-sm' : 'w-9 h-9'
         } ${
-          liked
-            ? 'text-red-500 bg-black/50 hover:bg-black/70'
-            : 'text-white bg-black/50 hover:bg-black/70'
+          variant === 'card'
+            ? liked
+              ? 'text-red-500 bg-black/50 hover:bg-black/70'
+              : 'text-white bg-black/50 hover:bg-black/70'
+            : liked
+              ? 'text-red-500 bg-gray-100 hover:bg-gray-200'
+              : 'text-gray-500 bg-gray-100 hover:bg-gray-200'
         } ${animating ? 'scale-125' : 'scale-100'}`}
         aria-label={liked ? 'Unlike' : 'Like'}
       >
         <Heart size={iconSize} fill={liked ? 'currentColor' : 'none'} />
       </button>
       {likeCount > 0 && (
-        <span className={`text-white text-xs font-medium drop-shadow-sm ${variant === 'card' ? '-ml-0.5 mr-0.5' : '-ml-1 mr-0.5'}`}>
+        <span className={`text-xs font-medium ${variant === 'card' ? 'text-white drop-shadow-sm -ml-0.5 mr-0.5' : 'text-gray-600 -ml-1 mr-0.5'}`}>
           {likeCount}
         </span>
       )}
@@ -116,7 +120,7 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
       <ShareDropdown
         photoSlug={photoSlug ?? photoId}
         iconSize={iconSize}
-        className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : ''}
+        className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : '[&>button]:bg-gray-100 [&>button]:hover:bg-gray-200 [&>button]:text-gray-500 [&>button]:hover:text-gray-700'}
       />
 
       {/* Save */}
@@ -125,7 +129,7 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
         iconSize={iconSize}
         isSaved={saved}
         onSavedChange={handleSavedChange}
-        className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : ''}
+        className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : '[&>button]:bg-gray-100 [&>button]:hover:bg-gray-200 [&>button]:text-gray-500 [&>button]:hover:text-gray-700'}
       />
     </div>
   )
