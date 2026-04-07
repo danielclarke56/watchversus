@@ -6,6 +6,10 @@ import QuizClient from './QuizClient'
 export const metadata: Metadata = {
   title: 'What Watch Should I Buy? — Free Quiz',
   description: 'Not sure which watch is right for you? Answer 5 quick questions and get personalized recommendations from 57 watches.',
+  robots: {
+    index: false,
+    follow: true,
+  },
   alternates: {
     canonical: 'https://watchems.com/quiz',
   },
