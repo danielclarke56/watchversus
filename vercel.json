@@ -4,15 +4,5 @@
   "installCommand": "npm ci",
   "env": {
     "NODE_VERSION": "20.18.1"
-  },
-  "crons": [
-    {
-      "path": "/api/cron/core-web-vitals",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/gsc-metrics",
-      "schedule": "0 3 * * 1"
-    }
-  ]
+  }
 }
