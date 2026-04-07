@@ -26,8 +26,7 @@ const ESTIMATED_PRICE_OPTIONS = [
 const MAX_PHOTOS = 3
 
 // Fields tracked for per-field AI confirmation
-const AI_CONFIRM_FIELDS = ['brand', 'model', 'reference', 'movement', 'caseSize'] as const
-type AiConfirmField = (typeof AI_CONFIRM_FIELDS)[number]
+type AiConfirmField = 'brand' | 'model' | 'reference' | 'movement' | 'caseSize' | 'lugToLug' | 'betweenLugs' | 'thickness' | 'waterResistance' | 'wristSize' | 'estimatedPrice'
 
 interface AiCandidate {
   brand: string
@@ -324,6 +323,12 @@ export default function UploadClient() {
     if (candidate.reference) filled.add('reference')
     if (candidate.movement) filled.add('movement')
     if (candidate.caseSize) filled.add('caseSize')
+    if (candidate.lugToLug) filled.add('lugToLug')
+    if (candidate.betweenLugs) filled.add('betweenLugs')
+    if (candidate.thickness) filled.add('thickness')
+    if (candidate.waterResistance) filled.add('waterResistance')
+    if (candidate.wristSize) filled.add('wristSize')
+    if (candidate.estimatedPrice) filled.add('estimatedPrice')
     setAiFilledFields(filled)
     setAiConfirmedFields({})
   }
@@ -427,12 +432,6 @@ export default function UploadClient() {
   function confirmField(field: AiConfirmField) {
     setAiConfirmedFields((prev) => ({ ...prev, [field]: true }))
   }
-
-  // Progress counts: only fields that were actually AI-filled
-  const aiFilledCount = aiFilledFields.size
-  const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
-    (f) => aiFilledFields.has(f) && aiConfirmedFields[f]
-  ).length
 
   // Form is valid when: has files, has brand, not rejected as non-watch,
   // and if AI ran: brand and model must both be confirmed (either accepted or manually edited)
@@ -675,37 +674,11 @@ export default function UploadClient() {
                     </div>
                   )}
 
-                  {/* AI progress banner */}
-                  {aiIdentified && !identifying && aiFilledCount > 0 && (
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm leading-none">✨</span>
-                          <p className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                            AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''} — review each one below
-                          </p>
-                        </div>
-                        <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 tabular-nums flex-shrink-0">
-                          {aiConfirmedCount}/{aiFilledCount} confirmed
-                        </span>
-                      </div>
-                      {/* Progress bar */}
-                      <div className="h-1 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
-                          style={{ width: aiFilledCount > 0 ? `${(aiConfirmedCount / aiFilledCount) * 100}%` : '0%' }}
-                        />
-                      </div>
-                      {!brandConfirmed || !modelConfirmed ? (
-                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5">
-                          Accept or edit Brand and Model to enable submit.
-                        </p>
-                      ) : aiConfirmedCount === aiFilledCount ? (
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-1.5">
-                          All fields confirmed — you&apos;re good to submit.
-                        </p>
-                      ) : null}
-                    </div>
+                  {/* AI hint */}
+                  {aiIdentified && !identifying && aiFilledFields.size > 0 && (
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      ✨ AI filled the fields below — tap ✓ to accept, or edit to correct.
+                    </p>
                   )}
                 </>
               )}
@@ -720,7 +693,7 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Brand <span className="text-red-400">*</span>
                     </label>
-                    <div className="flex gap-2 items-center">
+                    <div className="relative">
                       <input
                         type="text"
                         value={brandName}
@@ -730,26 +703,29 @@ export default function UploadClient() {
                         }}
                         placeholder="e.g. Rolex, Omega, Seiko"
                         maxLength={80}
-                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          aiIdentified && aiFilledFields.has('brand') ? 'pr-10' : ''
+                        } ${
                           isAiUnconfirmed('brand')
-                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
                             : aiIdentified && aiFilledFields.has('brand') && aiConfirmedFields['brand']
-                            ? 'border-green-400'
+                            ? 'border-green-400 dark:border-green-600'
                             : 'border-borderStrong focus:border-accent'
                         }`}
                       />
-                      {isAiUnconfirmed('brand') && (
-                        <button
-                          type="button"
-                          onClick={() => confirmField('brand')}
-                          aria-label="Accept AI suggestion for brand"
-                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
-                        >
-                          ✓
-                        </button>
-                      )}
-                      {aiIdentified && aiFilledFields.has('brand') && aiConfirmedFields['brand'] && (
-                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
+                      {aiIdentified && aiFilledFields.has('brand') && (
+                        isAiUnconfirmed('brand') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('brand')}
+                            aria-label="Accept AI suggestion for brand"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
                       )}
                     </div>
                   </div>
@@ -759,7 +735,7 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Model <span className="text-red-400">*</span>
                     </label>
-                    <div className="flex gap-2 items-center">
+                    <div className="relative">
                       <input
                         type="text"
                         value={modelName}
@@ -769,26 +745,29 @@ export default function UploadClient() {
                         }}
                         placeholder="e.g. Submariner, Speedmaster, SKX007"
                         maxLength={100}
-                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          aiIdentified && aiFilledFields.has('model') ? 'pr-10' : ''
+                        } ${
                           isAiUnconfirmed('model')
-                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
                             : aiIdentified && aiFilledFields.has('model') && aiConfirmedFields['model']
-                            ? 'border-green-400'
+                            ? 'border-green-400 dark:border-green-600'
                             : 'border-borderStrong focus:border-accent'
                         }`}
                       />
-                      {isAiUnconfirmed('model') && (
-                        <button
-                          type="button"
-                          onClick={() => confirmField('model')}
-                          aria-label="Accept AI suggestion for model"
-                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
-                        >
-                          ✓
-                        </button>
-                      )}
-                      {aiIdentified && aiFilledFields.has('model') && aiConfirmedFields['model'] && (
-                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
+                      {aiIdentified && aiFilledFields.has('model') && (
+                        isAiUnconfirmed('model') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('model')}
+                            aria-label="Accept AI suggestion for model"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
                       )}
                     </div>
                   </div>
@@ -798,7 +777,7 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Reference number <span className="text-textMuted">(optional)</span>
                     </label>
-                    <div className="flex gap-2 items-center">
+                    <div className="relative">
                       <input
                         type="text"
                         value={referenceNumber}
@@ -808,26 +787,29 @@ export default function UploadClient() {
                         }}
                         placeholder="e.g. 126610LN, 311.30.42.30.01.005"
                         maxLength={60}
-                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          aiIdentified && aiFilledFields.has('reference') ? 'pr-10' : ''
+                        } ${
                           isAiUnconfirmed('reference')
-                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
                             : aiIdentified && aiFilledFields.has('reference') && aiConfirmedFields['reference']
-                            ? 'border-green-400'
+                            ? 'border-green-400 dark:border-green-600'
                             : 'border-borderStrong focus:border-accent'
                         }`}
                       />
-                      {isAiUnconfirmed('reference') && (
-                        <button
-                          type="button"
-                          onClick={() => confirmField('reference')}
-                          aria-label="Accept AI suggestion for reference number"
-                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
-                        >
-                          ✓
-                        </button>
-                      )}
-                      {aiIdentified && aiFilledFields.has('reference') && aiConfirmedFields['reference'] && (
-                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
+                      {aiIdentified && aiFilledFields.has('reference') && (
+                        isAiUnconfirmed('reference') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('reference')}
+                            aria-label="Accept AI suggestion for reference number"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
                       )}
                     </div>
                   </div>
@@ -837,7 +819,7 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Movement <span className="text-textMuted">(optional)</span>
                     </label>
-                    <div className="flex gap-2 items-center">
+                    <div className="relative">
                       <input
                         type="text"
                         value={movement}
@@ -847,26 +829,29 @@ export default function UploadClient() {
                         }}
                         placeholder="e.g. Automatic, Manual, Quartz"
                         maxLength={60}
-                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          aiIdentified && aiFilledFields.has('movement') ? 'pr-10' : ''
+                        } ${
                           isAiUnconfirmed('movement')
-                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
                             : aiIdentified && aiFilledFields.has('movement') && aiConfirmedFields['movement']
-                            ? 'border-green-400'
+                            ? 'border-green-400 dark:border-green-600'
                             : 'border-borderStrong focus:border-accent'
                         }`}
                       />
-                      {isAiUnconfirmed('movement') && (
-                        <button
-                          type="button"
-                          onClick={() => confirmField('movement')}
-                          aria-label="Accept AI suggestion for movement"
-                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
-                        >
-                          ✓
-                        </button>
-                      )}
-                      {aiIdentified && aiFilledFields.has('movement') && aiConfirmedFields['movement'] && (
-                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
+                      {aiIdentified && aiFilledFields.has('movement') && (
+                        isAiUnconfirmed('movement') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('movement')}
+                            aria-label="Accept AI suggestion for movement"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
                       )}
                     </div>
                   </div>
@@ -877,7 +862,7 @@ export default function UploadClient() {
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Case size <span className="text-textMuted">(optional)</span>
                       </label>
-                      <div className="flex gap-2 items-center">
+                      <div className="relative">
                         <input
                           type="text"
                           value={caseSize}
@@ -887,26 +872,29 @@ export default function UploadClient() {
                           }}
                           placeholder="e.g. 40mm"
                           maxLength={20}
-                          className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                            aiIdentified && aiFilledFields.has('caseSize') ? 'pr-10' : ''
+                          } ${
                             isAiUnconfirmed('caseSize')
-                              ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
                               : aiIdentified && aiFilledFields.has('caseSize') && aiConfirmedFields['caseSize']
-                              ? 'border-green-400'
+                              ? 'border-green-400 dark:border-green-600'
                               : 'border-borderStrong focus:border-accent'
                           }`}
                         />
-                        {isAiUnconfirmed('caseSize') && (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('caseSize')}
-                            aria-label="Accept AI suggestion for case size"
-                            className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
-                          >
-                            ✓
-                          </button>
-                        )}
-                        {aiIdentified && aiFilledFields.has('caseSize') && aiConfirmedFields['caseSize'] && (
-                          <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
+                        {aiIdentified && aiFilledFields.has('caseSize') && (
+                          isAiUnconfirmed('caseSize') ? (
+                            <button
+                              type="button"
+                              onClick={() => confirmField('caseSize')}
+                              aria-label="Accept AI suggestion for case size"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                            >
+                              ✓
+                            </button>
+                          ) : (
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                          )
                         )}
                       </div>
                     </div>
@@ -914,40 +902,121 @@ export default function UploadClient() {
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Lug-to-lug <span className="text-textMuted">(optional)</span>
                       </label>
-                      <input
-                        type="text"
-                        value={lugToLug}
-                        onChange={(e) => setLugToLug(e.target.value)}
-                        placeholder="e.g. 47mm"
-                        maxLength={20}
-                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={lugToLug}
+                          onChange={(e) => {
+                            setLugToLug(e.target.value)
+                            if (aiFilledFields.has('lugToLug')) confirmField('lugToLug')
+                          }}
+                          placeholder="e.g. 47mm"
+                          maxLength={20}
+                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                            aiIdentified && aiFilledFields.has('lugToLug') ? 'pr-10' : ''
+                          } ${
+                            isAiUnconfirmed('lugToLug')
+                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
+                              : aiIdentified && aiFilledFields.has('lugToLug') && aiConfirmedFields['lugToLug']
+                              ? 'border-green-400 dark:border-green-600'
+                              : 'border-borderStrong focus:border-accent'
+                          }`}
+                        />
+                        {aiIdentified && aiFilledFields.has('lugToLug') && (
+                          isAiUnconfirmed('lugToLug') ? (
+                            <button
+                              type="button"
+                              onClick={() => confirmField('lugToLug')}
+                              aria-label="Accept AI suggestion for lug-to-lug"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                            >
+                              ✓
+                            </button>
+                          ) : (
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                          )
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Lug width <span className="text-textMuted">(optional)</span>
                       </label>
-                      <input
-                        type="text"
-                        value={betweenLugs}
-                        onChange={(e) => setBetweenLugs(e.target.value)}
-                        placeholder="e.g. 20mm"
-                        maxLength={20}
-                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={betweenLugs}
+                          onChange={(e) => {
+                            setBetweenLugs(e.target.value)
+                            if (aiFilledFields.has('betweenLugs')) confirmField('betweenLugs')
+                          }}
+                          placeholder="e.g. 20mm"
+                          maxLength={20}
+                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                            aiIdentified && aiFilledFields.has('betweenLugs') ? 'pr-10' : ''
+                          } ${
+                            isAiUnconfirmed('betweenLugs')
+                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
+                              : aiIdentified && aiFilledFields.has('betweenLugs') && aiConfirmedFields['betweenLugs']
+                              ? 'border-green-400 dark:border-green-600'
+                              : 'border-borderStrong focus:border-accent'
+                          }`}
+                        />
+                        {aiIdentified && aiFilledFields.has('betweenLugs') && (
+                          isAiUnconfirmed('betweenLugs') ? (
+                            <button
+                              type="button"
+                              onClick={() => confirmField('betweenLugs')}
+                              aria-label="Accept AI suggestion for lug width"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                            >
+                              ✓
+                            </button>
+                          ) : (
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                          )
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Thickness <span className="text-textMuted">(optional)</span>
                       </label>
-                      <input
-                        type="text"
-                        value={thickness}
-                        onChange={(e) => setThickness(e.target.value)}
-                        placeholder="e.g. 12.5mm"
-                        maxLength={20}
-                        className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={thickness}
+                          onChange={(e) => {
+                            setThickness(e.target.value)
+                            if (aiFilledFields.has('thickness')) confirmField('thickness')
+                          }}
+                          placeholder="e.g. 12.5mm"
+                          maxLength={20}
+                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                            aiIdentified && aiFilledFields.has('thickness') ? 'pr-10' : ''
+                          } ${
+                            isAiUnconfirmed('thickness')
+                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
+                              : aiIdentified && aiFilledFields.has('thickness') && aiConfirmedFields['thickness']
+                              ? 'border-green-400 dark:border-green-600'
+                              : 'border-borderStrong focus:border-accent'
+                          }`}
+                        />
+                        {aiIdentified && aiFilledFields.has('thickness') && (
+                          isAiUnconfirmed('thickness') ? (
+                            <button
+                              type="button"
+                              onClick={() => confirmField('thickness')}
+                              aria-label="Accept AI suggestion for thickness"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                            >
+                              ✓
+                            </button>
+                          ) : (
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -956,14 +1025,41 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Water resistance <span className="text-textMuted">(optional)</span>
                     </label>
-                    <input
-                      type="text"
-                      value={waterResistance}
-                      onChange={(e) => setWaterResistance(e.target.value)}
-                      placeholder="e.g. 300m / 1000ft"
-                      maxLength={40}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={waterResistance}
+                        onChange={(e) => {
+                          setWaterResistance(e.target.value)
+                          if (aiFilledFields.has('waterResistance')) confirmField('waterResistance')
+                        }}
+                        placeholder="e.g. 300m / 1000ft"
+                        maxLength={40}
+                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          aiIdentified && aiFilledFields.has('waterResistance') ? 'pr-10' : ''
+                        } ${
+                          isAiUnconfirmed('waterResistance')
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
+                            : aiIdentified && aiFilledFields.has('waterResistance') && aiConfirmedFields['waterResistance']
+                            ? 'border-green-400 dark:border-green-600'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
+                      />
+                      {aiIdentified && aiFilledFields.has('waterResistance') && (
+                        isAiUnconfirmed('waterResistance') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('waterResistance')}
+                            aria-label="Accept AI suggestion for water resistance"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
+                      )}
+                    </div>
                   </div>
 
                   {/* Personal fields — user-only */}
@@ -974,16 +1070,41 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Wrist size <span className="text-textMuted">(optional)</span>
                     </label>
-                    <select
-                      value={wristSize}
-                      onChange={(e) => setWristSize(e.target.value)}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                    >
-                      <option value="">Select wrist size</option>
-                      {WRIST_SIZE_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="flex gap-2 items-center">
+                      <select
+                        value={wristSize}
+                        onChange={(e) => {
+                          setWristSize(e.target.value)
+                          if (aiFilledFields.has('wristSize')) confirmField('wristSize')
+                        }}
+                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary focus:outline-none shadow-sm transition-colors border ${
+                          isAiUnconfirmed('wristSize')
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
+                            : aiIdentified && aiFilledFields.has('wristSize') && aiConfirmedFields['wristSize']
+                            ? 'border-green-400 dark:border-green-600'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
+                      >
+                        <option value="">Select wrist size</option>
+                        {WRIST_SIZE_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      {aiIdentified && aiFilledFields.has('wristSize') && (
+                        isAiUnconfirmed('wristSize') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('wristSize')}
+                            aria-label="Accept AI suggestion for wrist size"
+                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="flex-shrink-0 w-7 text-center text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
+                      )}
+                    </div>
                   </div>
 
                   {/* Estimated price */}
@@ -991,16 +1112,41 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Estimated value <span className="text-textMuted">(optional)</span>
                     </label>
-                    <select
-                      value={estimatedPrice}
-                      onChange={(e) => setEstimatedPrice(e.target.value)}
-                      className="w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accent shadow-sm"
-                    >
-                      <option value="">Select estimated value</option>
-                      {ESTIMATED_PRICE_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="flex gap-2 items-center">
+                      <select
+                        value={estimatedPrice}
+                        onChange={(e) => {
+                          setEstimatedPrice(e.target.value)
+                          if (aiFilledFields.has('estimatedPrice')) confirmField('estimatedPrice')
+                        }}
+                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary focus:outline-none shadow-sm transition-colors border ${
+                          isAiUnconfirmed('estimatedPrice')
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
+                            : aiIdentified && aiFilledFields.has('estimatedPrice') && aiConfirmedFields['estimatedPrice']
+                            ? 'border-green-400 dark:border-green-600'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
+                      >
+                        <option value="">Select estimated value</option>
+                        {ESTIMATED_PRICE_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      {aiIdentified && aiFilledFields.has('estimatedPrice') && (
+                        isAiUnconfirmed('estimatedPrice') ? (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('estimatedPrice')}
+                            aria-label="Accept AI suggestion for estimated price"
+                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+                          >
+                            ✓
+                          </button>
+                        ) : (
+                          <span className="flex-shrink-0 w-7 text-center text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
