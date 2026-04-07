@@ -50,18 +50,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // All watches (distinct watchIds from approved photos)
-  const watchIds = await db
-    .selectDistinct({ watchId: photos.watchId })
-    .from(photos)
-    .where(eq(photos.status, 'approved'))
-
-  const watchPages: MetadataRoute.Sitemap = watchIds.map((row) => ({
-    url: `${base}/w/${row.watchId}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
-
-  return [...staticPages, ...photoPages, ...watchPages]
+  return [...staticPages, ...photoPages]
 }
