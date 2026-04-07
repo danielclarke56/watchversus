@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from 'next/server'
 import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'

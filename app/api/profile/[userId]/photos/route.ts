@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import type { ApprovedPhoto } from '@/lib/photos'
 import { db } from '@/lib/db'
