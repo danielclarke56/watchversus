@@ -1,4 +1,10 @@
 {
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm ci",
+  "env": {
+    "NODE_VERSION": "20.18.1"
+  },
   "crons": [
     {
       "path": "/api/cron/core-web-vitals",
