@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import imageCompression from 'browser-image-compression'
-import { watches } from '@/lib/watches'
-import type { Watch } from '@/lib/types'
 import CropModal from './CropModal'
 
 function toSlug(str: string) {
@@ -23,10 +21,14 @@ const ESTIMATED_PRICE_OPTIONS = [
   'Prefer not to say',
 ]
 
-const MAX_PHOTOS = 3
+const AI_CONFIRM_FIELDS = [
+  'brand', 'model', 'reference', 'movement', 'caseSize',
+  'lugToLug', 'betweenLugs', 'thickness', 'waterResistance',
+  'wristSize', 'estimatedPrice',
+] as const
+type AiConfirmField = (typeof AI_CONFIRM_FIELDS)[number]
 
-// Fields tracked for per-field AI confirmation
-type AiConfirmField = 'brand' | 'model' | 'reference' | 'movement' | 'caseSize' | 'lugToLug' | 'betweenLugs' | 'thickness' | 'waterResistance' | 'wristSize' | 'estimatedPrice'
+type PhotoStatus = 'compressing' | 'identifying' | 'ready' | 'uploading' | 'done' | 'error'
 
 interface AiCandidate {
   brand: string
@@ -44,216 +46,752 @@ interface AiCandidate {
   reasoning: string
 }
 
+interface PhotoItem {
+  id: string
+  file: File
+  preview: string
+  status: PhotoStatus
+  errorMessage: string
+  isWatch: boolean | null
+  aiGenerated: boolean | null
+  aiIdentified: boolean
+  aiFilledFields: Set<AiConfirmField>
+  aiConfirmedFields: Partial<Record<AiConfirmField, boolean>>
+  brandName: string
+  modelName: string
+  referenceNumber: string
+  movement: string
+  caseSize: string
+  wristSize: string
+  estimatedPrice: string
+  lugToLug: string
+  betweenLugs: string
+  thickness: string
+  waterResistance: string
+}
+
+function createItem(file: File): PhotoItem {
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    file,
+    preview: '',
+    status: 'compressing',
+    errorMessage: '',
+    isWatch: null,
+    aiGenerated: null,
+    aiIdentified: false,
+    aiFilledFields: new Set(),
+    aiConfirmedFields: {},
+    brandName: '',
+    modelName: '',
+    referenceNumber: '',
+    movement: '',
+    caseSize: '',
+    wristSize: '',
+    estimatedPrice: '',
+    lugToLug: '',
+    betweenLugs: '',
+    thickness: '',
+    waterResistance: '',
+  }
+}
+
+const MAX_CONCURRENT_IDENTIFY = 3
+const MAX_PHOTOS = 20
+
+// ─── PhotoCard ────────────────────────────────────────────────────────────────
+
+interface PhotoCardProps {
+  item: PhotoItem
+  onRemove: () => void
+  onUpdate: (patch: Partial<PhotoItem>) => void
+  onRetryIdentify: () => void
+  onRetryUpload: () => void
+  onCropRequest: (src: string, file: File) => void
+}
+
+function PhotoCard({ item, onRemove, onUpdate, onRetryIdentify, onRetryUpload, onCropRequest }: PhotoCardProps) {
+  const [showMore, setShowMore] = useState(false)
+
+  function isAiUnconfirmed(field: AiConfirmField) {
+    return item.aiIdentified && item.aiFilledFields.has(field) && !item.aiConfirmedFields[field]
+  }
+
+  function confirmField(field: AiConfirmField) {
+    onUpdate({ aiConfirmedFields: { ...item.aiConfirmedFields, [field]: true } })
+  }
+
+  function fieldBorderClass(field: AiConfirmField) {
+    if (isAiUnconfirmed(field)) return 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+    if (item.aiIdentified && item.aiFilledFields.has(field) && item.aiConfirmedFields[field]) return 'border-green-400'
+    return 'border-borderStrong focus:border-accent'
+  }
+
+  // Inline confirm icon: rendered absolutely inside a relative-positioned input wrapper
+  function InlineConfirm({ field }: { field: AiConfirmField }) {
+    if (isAiUnconfirmed(field)) {
+      return (
+        <button
+          type="button"
+          onClick={() => confirmField(field)}
+          aria-label={`Accept AI suggestion for ${field}`}
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+        >
+          ✓
+        </button>
+      )
+    }
+    if (item.aiIdentified && item.aiFilledFields.has(field) && item.aiConfirmedFields[field]) {
+      return (
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
+      )
+    }
+    return null
+  }
+
+  function inputPrClass(field: AiConfirmField) {
+    return item.aiIdentified && item.aiFilledFields.has(field) ? 'pr-8' : ''
+  }
+
+  const brandConfirmed = !item.aiIdentified || !item.aiFilledFields.has('brand') || !!item.aiConfirmedFields['brand']
+  const modelConfirmed = !item.aiIdentified || !item.aiFilledFields.has('model') || !!item.aiConfirmedFields['model']
+
+  const aiFilledCount = item.aiFilledFields.size
+  const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
+    (f) => item.aiFilledFields.has(f) && item.aiConfirmedFields[f]
+  ).length
+
+  function StatusBadge() {
+    switch (item.status) {
+      case 'compressing':
+        return <span className="text-xs text-textMuted">Optimising...</span>
+      case 'identifying':
+        return (
+          <span className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400">
+            <span className="animate-spin inline-block w-3 h-3 border border-blue-500 border-t-transparent rounded-full" />
+            Identifying...
+          </span>
+        )
+      case 'ready':
+        if (item.isWatch === false) return <span className="text-xs text-yellow-600">⚠️ Not a watch?</span>
+        if (!brandConfirmed || !modelConfirmed) return <span className="text-xs text-amber-600">Needs review</span>
+        if (item.aiGenerated) return <span className="text-xs text-amber-600">⚠️ May be AI-generated</span>
+        return <span className="text-xs text-green-600">✓ Ready</span>
+      case 'uploading':
+        return (
+          <span className="flex items-center gap-1.5 text-xs text-blue-600">
+            <span className="animate-spin inline-block w-3 h-3 border border-blue-500 border-t-transparent rounded-full" />
+            Uploading...
+          </span>
+        )
+      case 'done':
+        return <span className="text-xs text-green-600 font-medium">✓ Uploaded</span>
+      case 'error':
+        return <span className="text-xs text-red-500 truncate max-w-[160px]">{item.errorMessage || 'Error'}</span>
+    }
+  }
+
+  const canInteract = item.status !== 'uploading' && item.status !== 'done' && item.status !== 'compressing'
+
+  return (
+    <div
+      className={`bg-surface border rounded-xl overflow-hidden flex flex-col ${
+        item.status === 'done'
+          ? 'border-green-400'
+          : item.status === 'error'
+          ? 'border-red-300'
+          : 'border-borderStrong'
+      }`}
+    >
+      {/* Thumbnail */}
+      <div className="relative">
+        {item.preview ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.preview} alt="Preview" className="w-full h-48 object-cover" />
+        ) : (
+          <div className="w-full h-48 bg-neutral flex items-center justify-center">
+            <div className="animate-pulse text-textMuted text-sm">Processing...</div>
+          </div>
+        )}
+
+        {/* Done overlay */}
+        {item.status === 'done' && (
+          <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+            <span className="text-5xl">✓</span>
+          </div>
+        )}
+
+        {/* Remove */}
+        {item.status !== 'uploading' && item.status !== 'done' && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shadow"
+            aria-label="Remove photo"
+          >
+            &times;
+          </button>
+        )}
+
+        {/* Crop */}
+        {item.preview && canInteract && (
+          <button
+            type="button"
+            onClick={() => onCropRequest(item.preview, item.file)}
+            className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
+          >
+            ✂️ Crop
+          </button>
+        )}
+      </div>
+
+      {/* Status bar */}
+      <div className="px-3 py-2 border-b border-borderStrong flex items-center justify-between gap-2 min-h-[34px]">
+        <StatusBadge />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {item.status === 'ready' && (
+            <button
+              type="button"
+              onClick={onRetryIdentify}
+              className="text-xs text-textMuted hover:text-textPrimary underline"
+            >
+              Re-identify
+            </button>
+          )}
+          {item.status === 'error' && (
+            <>
+              <button
+                type="button"
+                onClick={onRetryIdentify}
+                className="text-xs text-blue-500 hover:text-blue-700 underline"
+              >
+                Re-identify
+              </button>
+              <button
+                type="button"
+                onClick={onRetryUpload}
+                className="text-xs text-blue-500 hover:text-blue-700 underline"
+              >
+                Retry upload
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Form — only when actionable */}
+      {(item.status === 'ready' || item.status === 'error') && (
+        <div className="p-3 space-y-3 flex-1">
+          {/* Warnings */}
+          {item.isWatch === false && (
+            <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+              <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                ⚠️ This doesn&apos;t look like a watch photo. You can still submit if incorrect.
+              </p>
+            </div>
+          )}
+          {item.aiGenerated === true && (
+            <div className="p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
+              <p className="text-xs text-amber-800 dark:text-amber-200">
+                ⚠️ Photo may be AI-generated. AI images won&apos;t be approved.
+              </p>
+            </div>
+          )}
+
+          {/* AI confirmation progress */}
+          {item.aiIdentified && aiFilledCount > 0 && (
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                  ✨ AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''}
+                </span>
+                <span className="text-xs text-blue-700 dark:text-blue-300 tabular-nums">
+                  {aiConfirmedCount}/{aiFilledCount}
+                </span>
+              </div>
+              <div className="h-1 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                  style={{ width: `${(aiConfirmedCount / aiFilledCount) * 100}%` }}
+                />
+              </div>
+              {(!brandConfirmed || !modelConfirmed) && (
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  Accept or edit Brand &amp; Model to enable submit.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Brand */}
+          <div>
+            <label className="block text-xs font-medium text-textSecond mb-1">
+              Brand <span className="text-red-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={item.brandName}
+                onChange={(e) => {
+                  const patch: Partial<PhotoItem> = { brandName: e.target.value }
+                  if (item.aiFilledFields.has('brand'))
+                    patch.aiConfirmedFields = { ...item.aiConfirmedFields, brand: true }
+                  onUpdate(patch)
+                }}
+                placeholder="e.g. Rolex"
+                maxLength={80}
+                className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('brand')} ${inputPrClass('brand')}`}
+              />
+              <InlineConfirm field="brand" />
+            </div>
+          </div>
+
+          {/* Model */}
+          <div>
+            <label className="block text-xs font-medium text-textSecond mb-1">
+              Model <span className="text-red-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={item.modelName}
+                onChange={(e) => {
+                  const patch: Partial<PhotoItem> = { modelName: e.target.value }
+                  if (item.aiFilledFields.has('model'))
+                    patch.aiConfirmedFields = { ...item.aiConfirmedFields, model: true }
+                  onUpdate(patch)
+                }}
+                placeholder="e.g. Submariner"
+                maxLength={100}
+                className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('model')} ${inputPrClass('model')}`}
+              />
+              <InlineConfirm field="model" />
+            </div>
+          </div>
+
+          {/* Optional details toggle */}
+          <button
+            type="button"
+            onClick={() => setShowMore((v) => !v)}
+            className="text-xs text-textMuted hover:text-textPrimary underline text-left"
+          >
+            {showMore ? 'Hide optional details' : '+ Add optional details'}
+          </button>
+
+          {showMore && (
+            <div className="space-y-3">
+              {/* Reference */}
+              <div>
+                <label className="block text-xs font-medium text-textSecond mb-1">Reference</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={item.referenceNumber}
+                    onChange={(e) => {
+                      const patch: Partial<PhotoItem> = { referenceNumber: e.target.value }
+                      if (item.aiFilledFields.has('reference'))
+                        patch.aiConfirmedFields = { ...item.aiConfirmedFields, reference: true }
+                      onUpdate(patch)
+                    }}
+                    placeholder="e.g. 126610LN"
+                    maxLength={60}
+                    className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('reference')} ${inputPrClass('reference')}`}
+                  />
+                  <InlineConfirm field="reference" />
+                </div>
+              </div>
+
+              {/* Movement */}
+              <div>
+                <label className="block text-xs font-medium text-textSecond mb-1">Movement</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={item.movement}
+                    onChange={(e) => {
+                      const patch: Partial<PhotoItem> = { movement: e.target.value }
+                      if (item.aiFilledFields.has('movement'))
+                        patch.aiConfirmedFields = { ...item.aiConfirmedFields, movement: true }
+                      onUpdate(patch)
+                    }}
+                    placeholder="e.g. Automatic"
+                    maxLength={60}
+                    className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('movement')} ${inputPrClass('movement')}`}
+                  />
+                  <InlineConfirm field="movement" />
+                </div>
+              </div>
+
+              {/* Case dimensions */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-textSecond mb-1">Case size</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={item.caseSize}
+                      onChange={(e) => {
+                        const patch: Partial<PhotoItem> = { caseSize: e.target.value }
+                        if (item.aiFilledFields.has('caseSize'))
+                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, caseSize: true }
+                        onUpdate(patch)
+                      }}
+                      placeholder="e.g. 40mm"
+                      maxLength={20}
+                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
+                    />
+                    <InlineConfirm field="caseSize" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-textSecond mb-1">Lug-to-lug</label>
+                  <div className="relative">
+                    <input type="text" value={item.lugToLug}
+                      onChange={(e) => {
+                        const patch: Partial<PhotoItem> = { lugToLug: e.target.value }
+                        if (item.aiFilledFields.has('lugToLug'))
+                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, lugToLug: true }
+                        onUpdate(patch)
+                      }}
+                      placeholder="e.g. 47mm" maxLength={20}
+                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
+                    />
+                    <InlineConfirm field="lugToLug" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-textSecond mb-1">Lug width</label>
+                  <div className="relative">
+                    <input type="text" value={item.betweenLugs}
+                      onChange={(e) => {
+                        const patch: Partial<PhotoItem> = { betweenLugs: e.target.value }
+                        if (item.aiFilledFields.has('betweenLugs'))
+                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, betweenLugs: true }
+                        onUpdate(patch)
+                      }}
+                      placeholder="e.g. 20mm" maxLength={20}
+                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
+                    />
+                    <InlineConfirm field="betweenLugs" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-textSecond mb-1">Thickness</label>
+                  <div className="relative">
+                    <input type="text" value={item.thickness}
+                      onChange={(e) => {
+                        const patch: Partial<PhotoItem> = { thickness: e.target.value }
+                        if (item.aiFilledFields.has('thickness'))
+                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, thickness: true }
+                        onUpdate(patch)
+                      }}
+                      placeholder="e.g. 12.5mm" maxLength={20}
+                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
+                    />
+                    <InlineConfirm field="thickness" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-textSecond mb-1">Water resistance</label>
+                <div className="relative">
+                  <input type="text" value={item.waterResistance}
+                    onChange={(e) => {
+                      const patch: Partial<PhotoItem> = { waterResistance: e.target.value }
+                      if (item.aiFilledFields.has('waterResistance'))
+                        patch.aiConfirmedFields = { ...item.aiConfirmedFields, waterResistance: true }
+                      onUpdate(patch)
+                    }}
+                    placeholder="e.g. 300m / 1000ft" maxLength={40}
+                    className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('waterResistance')} ${inputPrClass('waterResistance')}`}
+                  />
+                  <InlineConfirm field="waterResistance" />
+                </div>
+              </div>
+
+              {/* Wrist size & price — selects get a side confirm button */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-textSecond mb-1">Wrist size</label>
+                  <div className="flex gap-1 items-center">
+                    <select value={item.wristSize}
+                      onChange={(e) => {
+                        const patch: Partial<PhotoItem> = { wristSize: e.target.value }
+                        if (item.aiFilledFields.has('wristSize'))
+                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, wristSize: true }
+                        onUpdate(patch)
+                      }}
+                      className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('wristSize')}`}
+                    >
+                      <option value="">Select...</option>
+                      {WRIST_SIZE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                    {isAiUnconfirmed('wristSize') && (
+                      <button type="button" onClick={() => confirmField('wristSize')} aria-label="Accept wrist size"
+                        className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                    )}
+                    {item.aiIdentified && item.aiFilledFields.has('wristSize') && item.aiConfirmedFields['wristSize'] && (
+                      <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm font-bold">✓</span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-textSecond mb-1">Est. value</label>
+                  <div className="flex gap-1 items-center">
+                    <select value={item.estimatedPrice}
+                      onChange={(e) => {
+                        const patch: Partial<PhotoItem> = { estimatedPrice: e.target.value }
+                        if (item.aiFilledFields.has('estimatedPrice'))
+                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, estimatedPrice: true }
+                        onUpdate(patch)
+                      }}
+                      className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('estimatedPrice')}`}
+                    >
+                      <option value="">Select...</option>
+                      {ESTIMATED_PRICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                    {isAiUnconfirmed('estimatedPrice') && (
+                      <button type="button" onClick={() => confirmField('estimatedPrice')} aria-label="Accept estimated price"
+                        className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                    )}
+                    {item.aiIdentified && item.aiFilledFields.has('estimatedPrice') && item.aiConfirmedFields['estimatedPrice'] && (
+                      <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm font-bold">✓</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── UploadClient ─────────────────────────────────────────────────────────────
+
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
-  const [success, setSuccess] = useState(false)
-  const [search, setSearch] = useState('')
-  const [selectedWatch, setSelectedWatch] = useState<Watch | null>(null)
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [files, setFiles] = useState<File[]>([])
-  const [previews, setPreviews] = useState<string[]>([])
-  const [brandName, setBrandName] = useState('')
-  const [modelName, setModelName] = useState('')
-  const [referenceNumber, setReferenceNumber] = useState('')
-  const [movement, setMovement] = useState('')
-  const [caseSize, setCaseSize] = useState('')
-  const [wristSize, setWristSize] = useState('')
-  const [estimatedPrice, setEstimatedPrice] = useState('')
-  const [lugToLug, setLugToLug] = useState('')
-  const [betweenLugs, setBetweenLugs] = useState('')
-  const [thickness, setThickness] = useState('')
-  const [waterResistance, setWaterResistance] = useState('')
-  const [uploading, setUploading] = useState(false)
-  const [compressing, setCompressing] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState('')
-  const [error, setError] = useState('')
-  const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const [items, setItems] = useState<PhotoItem[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [globalError, setGlobalError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
-  const [editingSlotIndex, setEditingSlotIndex] = useState<number>(-1)
-  const [pendingCrop, setPendingCrop] = useState<{ src: string; file: File; slotIndex: number } | null>(null)
-  const [identifying, setIdentifying] = useState(false)
-  const [isWatch, setIsWatch] = useState<boolean | null>(null)
-  const [aiGenerated, setAiGenerated] = useState<boolean | null>(null)
-  const [aiIdentified, setAiIdentified] = useState(false)
-  // Per-field AI confirmation state
-  const [aiFilledFields, setAiFilledFields] = useState<Set<AiConfirmField>>(new Set())
-  const [aiConfirmedFields, setAiConfirmedFields] = useState<Partial<Record<AiConfirmField, boolean>>>({})
+  const [partialSuccess, setPartialSuccess] = useState('')
+  const [pendingCrop, setPendingCrop] = useState<{ src: string; file: File; id: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
-  const dropdownRef = useRef<HTMLUListElement>(null)
 
-  const filtered = useMemo(() => {
-    if (!search.trim() || search.trim().length < 2) return []
-    const q = search.toLowerCase()
-    return watches
-      .filter(
-        (w) =>
-          w.brand.toLowerCase().includes(q) ||
-          w.name.toLowerCase().includes(q) ||
-          `${w.brand} ${w.name}`.toLowerCase().includes(q)
-      )
-      .slice(0, 20)
-  }, [search])
+  // Rate-limiting refs for identify
+  const identifyQueueRef = useRef<string[]>([])
+  const activeCountRef = useRef(0)
+  // Store compressed files by id so identify/upload can read them without stale closures
+  const filesById = useRef<Map<string, File>>(new Map())
 
-  // Compress image to target max 2400px on longest side, 85% quality, max output 3MB
-  const compressImage = async (file: File): Promise<File> => {
+  function patchItem(id: string, patch: Partial<PhotoItem>) {
+    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)))
+  }
+
+  async function compressImage(file: File): Promise<File> {
     try {
-      const options = {
+      const blob = await imageCompression(file, {
         maxSizeMB: 3,
         maxWidthOrHeight: 2400,
         useWebWorker: true,
         fileType: 'image/webp',
         initialQuality: 0.85,
-      }
-      const compressedBlob = await imageCompression(file, options)
-      return new File([compressedBlob], file.name, { type: 'image/webp' })
-    } catch (err) {
-      console.error('Compression failed:', err)
+      })
+      return new File([blob], file.name, { type: 'image/webp' })
+    } catch {
       return file
     }
   }
 
-  // Keyboard navigation for dropdown
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (!showDropdown) return
-      const totalItems = filtered.length
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setHighlightedIndex((prev) => (prev < totalItems - 1 ? prev + 1 : 0))
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : totalItems - 1))
-      } else if (e.key === 'Enter') {
-        e.preventDefault()
-        if (highlightedIndex >= 0 && highlightedIndex < totalItems) {
-          selectWatch(filtered[highlightedIndex])
-        } else {
-          setShowDropdown(false)
-          setHighlightedIndex(-1)
-        }
-      } else if (e.key === 'Escape') {
-        e.preventDefault()
-        setShowDropdown(false)
-        setHighlightedIndex(-1)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [showDropdown, filtered, highlightedIndex])
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node) &&
-        e.target instanceof HTMLElement &&
-        !e.target.closest('input')
-      ) {
-        setShowDropdown(false)
-        setHighlightedIndex(-1)
-      }
-    }
-    if (showDropdown) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showDropdown])
-
-  function selectWatch(w: Watch) {
-    setSelectedWatch(w)
-    setSearch(`${w.brand} ${w.name}`)
-    setShowDropdown(false)
-    setHighlightedIndex(-1)
+  function fileToDataUrl(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.readAsDataURL(file)
+    })
   }
 
-  async function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0]
-    if (!f) return
+  // ── Rate-limited identify ──────────────────────────────────────────────────
 
-    // Validation
-    if (f.size > 20 * 1024 * 1024) {
-      setError('File must be under 20MB')
-      return
-    }
-    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
-      setError('Only JPEG, PNG, WebP, or AVIF images are allowed')
-      return
-    }
-    setError('')
-
-    const slotIndex = editingSlotIndex >= 0 && editingSlotIndex < files.length ? editingSlotIndex : -1
-    setEditingSlotIndex(-1)
-    if (fileRef.current) fileRef.current.value = ''
-
-    // Compress image before processing
-    setCompressing(true)
-    const compressedFile = await compressImage(f)
-    setCompressing(false)
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result as string
-      if (slotIndex >= 0) {
-        // Replace existing slot
-        setFiles((prev) => {
-          const next = [...prev]
-          next[slotIndex] = compressedFile
-          return next
-        })
-        setPreviews((prev) => {
-          const next = [...prev]
-          next[slotIndex] = dataUrl
-          return next
-        })
-        // Reset AI state when photo is replaced
-        if (slotIndex === 0) {
-          setIsWatch(null)
-          setAiGenerated(null)
-          setAiIdentified(false)
-          setAiFilledFields(new Set())
-          setAiConfirmedFields({})
-        }
-      } else {
-        // Add new
-        if (files.length < MAX_PHOTOS) {
-          setFiles((prev) => [...prev, compressedFile])
-          setPreviews((prev) => [...prev, dataUrl])
-        }
-      }
-    }
-    reader.readAsDataURL(compressedFile)
+  function queueIdentify(id: string) {
+    identifyQueueRef.current.push(id)
+    drainQueue()
   }
+
+  function drainQueue() {
+    while (
+      activeCountRef.current < MAX_CONCURRENT_IDENTIFY &&
+      identifyQueueRef.current.length > 0
+    ) {
+      const id = identifyQueueRef.current.shift()!
+      activeCountRef.current++
+      identifyOne(id).finally(() => {
+        activeCountRef.current--
+        drainQueue()
+      })
+    }
+  }
+
+  async function identifyOne(id: string) {
+    const file = filesById.current.get(id)
+    if (!file) return
+
+    patchItem(id, { status: 'identifying' })
+
+    try {
+      const formData = new FormData()
+      formData.append('photo', file)
+      const res = await fetch('/api/photos/identify', { method: 'POST', body: formData })
+      if (!res.ok) throw new Error('Identification failed')
+      const data = await res.json()
+
+      setItems((prev) =>
+        prev.map((item) => {
+          if (item.id !== id) return item
+
+          const patch: Partial<PhotoItem> = {
+            isWatch: data.isWatch,
+            aiGenerated: data.isAiGenerated ?? null,
+            status: 'ready',
+          }
+
+          if (data.candidates?.[0]) {
+            const c = data.candidates[0] as AiCandidate
+            const filled = new Set<AiConfirmField>()
+            if (c.brand) filled.add('brand')
+            if (c.model) filled.add('model')
+            if (c.reference) filled.add('reference')
+            if (c.movement) filled.add('movement')
+            if (c.caseSize) filled.add('caseSize')
+            if (c.lugToLug) filled.add('lugToLug')
+            if (c.betweenLugs) filled.add('betweenLugs')
+            if (c.thickness) filled.add('thickness')
+            if (c.waterResistance) filled.add('waterResistance')
+            if (c.wristSize) filled.add('wristSize')
+            if (c.estimatedPrice) filled.add('estimatedPrice')
+
+            Object.assign(patch, {
+              brandName: c.brand || '',
+              modelName: c.model || '',
+              referenceNumber: c.reference || '',
+              movement: c.movement || '',
+              caseSize: c.caseSize || '',
+              wristSize: c.wristSize || '',
+              estimatedPrice: c.estimatedPrice || '',
+              lugToLug: c.lugToLug || '',
+              betweenLugs: c.betweenLugs || '',
+              thickness: c.thickness || '',
+              waterResistance: c.waterResistance || '',
+              aiIdentified: true,
+              aiFilledFields: filled,
+              aiConfirmedFields: {},
+            })
+          }
+
+          return { ...item, ...patch }
+        })
+      )
+    } catch {
+      // Assume watch if API fails; user can still manually fill
+      patchItem(id, { status: 'ready', isWatch: true })
+    }
+  }
+
+  // ── File intake ────────────────────────────────────────────────────────────
+
+  async function processFiles(rawFiles: FileList | File[]) {
+    setGlobalError('')
+    const arr = Array.from(rawFiles)
+    const valid: File[] = []
+    const errs: string[] = []
+
+    for (const f of arr) {
+      if (f.size > 20 * 1024 * 1024) {
+        errs.push(`${f.name}: exceeds 20MB`)
+        continue
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
+        errs.push(`${f.name}: unsupported format`)
+        continue
+      }
+      valid.push(f)
+    }
+
+    if (errs.length) setGlobalError(errs.join(' · '))
+    if (!valid.length) return
+
+    // Create placeholder items (shown immediately)
+    const placeholders = valid.map((f) => createItem(f))
+
+    setItems((prev) => {
+      const slots = MAX_PHOTOS - prev.length
+      if (slots <= 0) return prev
+      return [...prev, ...placeholders.slice(0, slots)]
+    })
+
+    // Compress + preview each in parallel, then queue identify
+    await Promise.all(
+      placeholders.map(async (placeholder) => {
+        try {
+          const compressed = await compressImage(placeholder.file)
+          const preview = await fileToDataUrl(compressed)
+          filesById.current.set(placeholder.id, compressed)
+          patchItem(placeholder.id, { file: compressed, preview, status: 'identifying' })
+          queueIdentify(placeholder.id)
+        } catch {
+          patchItem(placeholder.id, { status: 'error', errorMessage: 'Failed to process image' })
+        }
+      })
+    )
+  }
+
+  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files?.length) {
+      processFiles(e.target.files)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    if (e.dataTransfer.files?.length) processFiles(e.dataTransfer.files)
+  }
+
+  // ── Crop ───────────────────────────────────────────────────────────────────
 
   function handleCropConfirm(croppedFile: File, croppedDataUrl: string) {
     if (!pendingCrop) return
-    if (pendingCrop.slotIndex >= 0) {
-      // Replace existing slot
-      setFiles((prev) => {
-        const next = [...prev]
-        next[pendingCrop.slotIndex] = croppedFile
-        return next
-      })
-      setPreviews((prev) => {
-        const next = [...prev]
-        next[pendingCrop.slotIndex] = croppedDataUrl
-        return next
-      })
-      // Reset AI state when slot 0 is cropped/replaced
-      if (pendingCrop.slotIndex === 0) {
-        setIsWatch(null)
-        setAiGenerated(null)
-        setAiIdentified(false)
-        setAiFilledFields(new Set())
-        setAiConfirmedFields({})
-      }
-    } else {
-      // Add new
-      if (files.length >= MAX_PHOTOS) return
-      setFiles((prev) => [...prev, croppedFile])
-      setPreviews((prev) => [...prev, croppedDataUrl])
-    }
+    const { id } = pendingCrop
+    filesById.current.set(id, croppedFile)
+    patchItem(id, {
+      file: croppedFile,
+      preview: croppedDataUrl,
+      isWatch: null,
+      aiGenerated: null,
+      aiIdentified: false,
+      aiFilledFields: new Set(),
+      aiConfirmedFields: {},
+      status: 'identifying',
+    })
+    queueIdentify(id)
     setPendingCrop(null)
   }
 
@@ -261,188 +799,102 @@ export default function UploadClient() {
     setPendingCrop(null)
   }
 
-  function removeFile(index: number) {
-    setFiles((prev) => prev.filter((_, i) => i !== index))
-    setPreviews((prev) => prev.filter((_, i) => i !== index))
-    // Clear identification if slot 0 is removed
-    if (index === 0) {
-      setIsWatch(null)
-      setAiGenerated(null)
-      setAiFilledFields(new Set())
-      setAiConfirmedFields({})
-    }
+  // ── Submit ─────────────────────────────────────────────────────────────────
+
+  function isItemReady(item: PhotoItem) {
+    if (item.status !== 'ready' && item.status !== 'error') return false
+    if (!item.brandName.trim()) return false
+    if (item.isWatch === false) return false
+    const brandConfirmed = !item.aiIdentified || !item.aiFilledFields.has('brand') || !!item.aiConfirmedFields['brand']
+    const modelConfirmed = !item.aiIdentified || !item.aiFilledFields.has('model') || !!item.aiConfirmedFields['model']
+    return brandConfirmed && modelConfirmed
   }
 
-  async function identify(file: File) {
-    setIdentifying(true)
-    setIsWatch(null)
-    setAiGenerated(null)
-    setAiFilledFields(new Set())
-    setAiConfirmedFields({})
-    try {
-      const formData = new FormData()
-      formData.append('photo', file)
-      const res = await fetch('/api/photos/identify', {
-        method: 'POST',
-        body: formData,
-      })
-      if (!res.ok) throw new Error('Identification failed')
-      const data = await res.json()
-      setIsWatch(data.isWatch)
-      setAiGenerated(data.isAiGenerated)
-      // Auto-apply top candidate
-      if (data.candidates && Array.isArray(data.candidates) && data.candidates.length > 0) {
-        applyCandidate(data.candidates[0])
-        setAiIdentified(true)
-      }
-    } catch (err: unknown) {
-      console.error('Identification error:', err)
-      setIsWatch(true) // assume it's a watch if API fails
-    } finally {
-      setIdentifying(false)
+  async function uploadItem(item: PhotoItem): Promise<void> {
+    patchItem(item.id, { status: 'uploading', errorMessage: '' })
+    const file = filesById.current.get(item.id) || item.file
+    const watchId = toSlug(`${item.brandName} ${item.modelName}`)
+    const formData = new FormData()
+    formData.append('photo', file)
+    if (item.brandName.trim()) formData.append('brandName', item.brandName.trim())
+    if (item.modelName.trim()) formData.append('modelName', item.modelName.trim())
+    if (item.referenceNumber.trim()) formData.append('referenceNumber', item.referenceNumber.trim())
+    if (item.movement) formData.append('movement', item.movement)
+    if (item.caseSize.trim()) formData.append('caseSize', item.caseSize.trim())
+    if (item.wristSize) formData.append('wristSize', item.wristSize)
+    if (item.estimatedPrice) formData.append('estimatedPrice', item.estimatedPrice)
+    if (item.lugToLug.trim()) formData.append('lugToLug', item.lugToLug.trim())
+    if (item.betweenLugs.trim()) formData.append('betweenLugs', item.betweenLugs.trim())
+    if (item.thickness.trim()) formData.append('thickness', item.thickness.trim())
+    if (item.waterResistance.trim()) formData.append('waterResistance', item.waterResistance.trim())
+
+    const res = await fetch(`/api/photos/${watchId}`, { method: 'POST', body: formData })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.error || 'Upload failed')
     }
-  }
-
-  function applyCandidate(candidate: AiCandidate) {
-    setBrandName(candidate.brand || '')
-    setModelName(candidate.model || '')
-    setReferenceNumber(candidate.reference || '')
-    setMovement(candidate.movement || '')
-    setCaseSize(candidate.caseSize || '')
-    setWristSize(candidate.wristSize || '')
-    setEstimatedPrice(candidate.estimatedPrice || '')
-    setLugToLug(candidate.lugToLug || '')
-    setBetweenLugs(candidate.betweenLugs || '')
-    setThickness(candidate.thickness || '')
-    setWaterResistance(candidate.waterResistance || '')
-
-    // Track which confirmation fields were actually filled by AI
-    const filled = new Set<AiConfirmField>()
-    if (candidate.brand) filled.add('brand')
-    if (candidate.model) filled.add('model')
-    if (candidate.reference) filled.add('reference')
-    if (candidate.movement) filled.add('movement')
-    if (candidate.caseSize) filled.add('caseSize')
-    if (candidate.lugToLug) filled.add('lugToLug')
-    if (candidate.betweenLugs) filled.add('betweenLugs')
-    if (candidate.thickness) filled.add('thickness')
-    if (candidate.waterResistance) filled.add('waterResistance')
-    if (candidate.wristSize) filled.add('wristSize')
-    if (candidate.estimatedPrice) filled.add('estimatedPrice')
-    setAiFilledFields(filled)
-    setAiConfirmedFields({})
-  }
-
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }
-
-  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-  }
-
-  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-    const f = e.dataTransfer.files?.[0]
-    if (!f) return
-
-    // Validation
-    if (f.size > 20 * 1024 * 1024) {
-      setError('File must be under 20MB')
-      return
-    }
-    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(f.type)) {
-      setError('Only JPEG, PNG, WebP, or AVIF images are allowed')
-      return
-    }
-    setError('')
-
-    // Compress image before processing
-    setCompressing(true)
-    const compressedFile = await compressImage(f)
-    setCompressing(false)
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result as string
-      if (files.length < MAX_PHOTOS) {
-        setFiles((prev) => [...prev, compressedFile])
-        setPreviews((prev) => [...prev, dataUrl])
-      }
-    }
-    reader.readAsDataURL(compressedFile)
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const resolvedWatchId = selectedWatch?.slug || toSlug(`${brandName} ${modelName}`)
-    if (!resolvedWatchId || files.length === 0) return
-    setUploading(true)
-    setError('')
+    setPartialSuccess('')
 
-    try {
-      for (let i = 0; i < files.length; i++) {
-        setUploadProgress(`Uploading ${i + 1} of ${files.length}...`)
-        const formData = new FormData()
-        formData.append('photo', files[i])
-        if (brandName.trim()) formData.append('brandName', brandName.trim())
-        if (modelName.trim()) formData.append('modelName', modelName.trim())
-        if (referenceNumber.trim()) formData.append('referenceNumber', referenceNumber.trim())
-        if (movement) formData.append('movement', movement)
-        if (caseSize.trim()) formData.append('caseSize', caseSize.trim())
-        if (wristSize) formData.append('wristSize', wristSize)
-        if (estimatedPrice) formData.append('estimatedPrice', estimatedPrice)
-        if (lugToLug.trim()) formData.append('lugToLug', lugToLug.trim())
-        if (betweenLugs.trim()) formData.append('betweenLugs', betweenLugs.trim())
-        if (thickness.trim()) formData.append('thickness', thickness.trim())
-        if (waterResistance.trim()) formData.append('waterResistance', waterResistance.trim())
+    const readyItems = items.filter(isItemReady)
+    if (!readyItems.length) return
 
-        const res = await fetch(`/api/photos/${resolvedWatchId}`, {
-          method: 'POST',
-          body: formData,
+    let successCount = 0
+    let failCount = 0
+
+    for (let i = 0; i < readyItems.length; i++) {
+      const item = readyItems[i]
+      try {
+        await uploadItem(item)
+        patchItem(item.id, { status: 'done' })
+        successCount++
+      } catch (err) {
+        patchItem(item.id, {
+          status: 'error',
+          errorMessage: err instanceof Error ? err.message : 'Upload failed',
         })
-
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}))
-          throw new Error(data.error || `Upload failed for photo ${i + 1}`)
-        }
+        failCount++
       }
+    }
 
-      setSuccessPreviews([...previews])
+    if (successCount > 0 && failCount === 0) {
+      // All succeeded
+      const donePreviews = readyItems.map((i) => i.preview)
+      setSuccessPreviews(donePreviews)
       setSuccess(true)
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
-    } finally {
-      setUploading(false)
-      setUploadProgress('')
+    } else if (successCount > 0 && failCount > 0) {
+      setPartialSuccess(
+        `${successCount} photo${successCount !== 1 ? 's' : ''} uploaded. ${failCount} failed — fix errors and retry.`
+      )
     }
   }
 
-  // Per-field confirmation helpers
-  function isAiUnconfirmed(field: AiConfirmField) {
-    return aiIdentified && aiFilledFields.has(field) && !aiConfirmedFields[field]
+  async function retryUpload(id: string) {
+    const item = items.find((i) => i.id === id)
+    if (!item || !isItemReady({ ...item, status: 'ready' })) return
+    try {
+      await uploadItem({ ...item, status: 'ready' })
+      patchItem(id, { status: 'done' })
+    } catch (err) {
+      patchItem(id, {
+        status: 'error',
+        errorMessage: err instanceof Error ? err.message : 'Upload failed',
+      })
+    }
   }
 
-  function confirmField(field: AiConfirmField) {
-    setAiConfirmedFields((prev) => ({ ...prev, [field]: true }))
-  }
+  // ── Derived state ──────────────────────────────────────────────────────────
 
-  // Form is valid when: has files, has brand, not rejected as non-watch,
-  // and if AI ran: brand and model must both be confirmed (either accepted or manually edited)
-  const brandConfirmed = !aiIdentified || !aiFilledFields.has('brand') || !!aiConfirmedFields['brand']
-  const modelConfirmed = !aiIdentified || !aiFilledFields.has('model') || !!aiConfirmedFields['model']
-  const isFormValid =
-    files.length > 0 &&
-    brandName.trim().length > 0 &&
-    isWatch !== false &&
-    brandConfirmed &&
-    modelConfirmed
+  const readyCount = items.filter(isItemReady).length
+  const totalActive = items.filter((i) => i.status !== 'done').length
+  const isUploading = items.some((i) => i.status === 'uploading')
+  const hasItems = items.length > 0
+  const atMax = items.length >= MAX_PHOTOS
+
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   if (!isLoaded) {
     return (
@@ -459,9 +911,9 @@ export default function UploadClient() {
           &larr; Back to home
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Upload Your Watch Photo</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Upload Your Watch Photos</h1>
         <p className="text-textMuted mb-8 text-sm sm:text-base">
-          Share a real wrist shot. Help others see how this watch looks in real life.
+          Share real wrist shots. Help others see how watches look in real life.
         </p>
 
         {!isSignedIn ? (
@@ -475,7 +927,6 @@ export default function UploadClient() {
           </div>
         ) : success ? (
           <div className="bg-surface border border-borderStrong rounded-xl p-6 sm:p-8 text-center shadow-sm">
-            {/* Success thumbnails */}
             {successPreviews.length > 0 && (
               <div className="flex justify-center gap-2 sm:gap-3 mb-4 flex-wrap">
                 {successPreviews.map((src, i) => (
@@ -484,7 +935,7 @@ export default function UploadClient() {
                     key={i}
                     src={src}
                     className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-xl"
-                    alt={`Your submitted photo ${i + 1}`}
+                    alt={`Submitted photo ${i + 1}`}
                   />
                 ))}
               </div>
@@ -494,8 +945,9 @@ export default function UploadClient() {
             </h2>
             <p className="text-textMuted mb-8 text-sm sm:text-base">
               {successPreviews.length > 1
-                ? 'Your images are being reviewed and will be approved soon. Thanks for contributing to the community.'
-                : 'Your image is being reviewed and will be approved soon. Thanks for contributing to the community.'}
+                ? 'Your images are being reviewed and will be approved soon.'
+                : 'Your image is being reviewed and will be approved soon.'}
+              {' '}Thanks for contributing to the community.
             </p>
             <div className="flex flex-col gap-3">
               <Link
@@ -507,679 +959,154 @@ export default function UploadClient() {
               <button
                 onClick={() => {
                   setSuccess(false)
-                  setFiles([])
-                  setPreviews([])
-                  setSearch('')
-                  setSelectedWatch(null)
-                  setBrandName('')
-                  setModelName('')
-                  setReferenceNumber('')
-                  setMovement('')
-                  setCaseSize('')
-                  setWristSize('')
-                  setEstimatedPrice('')
-                  setLugToLug('')
-                  setBetweenLugs('')
-                  setThickness('')
-                  setWaterResistance('')
-                  setError('')
+                  setItems([])
+                  setGlobalError('')
                   setSuccessPreviews([])
-                  setAiIdentified(false)
-                  setAiFilledFields(new Set())
-                  setAiConfirmedFields({})
+                  setPartialSuccess('')
+                  filesById.current.clear()
                 }}
                 className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
               >
-                Upload another
+                Upload more
               </button>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {/* LEFT COLUMN: Photo Upload */}
-            <div className="space-y-6 min-h-[480px] flex flex-col">
-              <div className="flex-1 flex flex-col">
-                <label className="block text-sm font-medium text-textSecond mb-2">
-                  Photo{files.length > 0 && ` (${files.length}/${MAX_PHOTOS})`}
-                </label>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Global error */}
+            {globalError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800">{globalError}</p>
+              </div>
+            )}
 
-                {/* Existing photo previews */}
-                {previews.map((src, i) => (
-                  <div key={i} className="relative mb-3">
-                    <div className="border-2 border-borderStrong rounded-lg p-2 relative">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={src}
-                        alt={`Preview ${i + 1}`}
-                        className="max-h-80 mx-auto rounded-lg"
-                      />
-                      {/* Remove button */}
-                      <button
-                        type="button"
-                        onClick={() => removeFile(i)}
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shadow"
-                        aria-label={`Remove photo ${i + 1}`}
-                      >
-                        &times;
-                      </button>
-                      {/* Crop button */}
-                      <button
-                        type="button"
-                        onClick={() => setPendingCrop({ src, file: files[i], slotIndex: i })}
-                        className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
-                      >
-                        ✂️ Crop
-                      </button>
-                      {/* Change photo button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditingSlotIndex(i)
-                          fileRef.current?.click()
-                        }}
-                        className="absolute bottom-2 right-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
-                      >
-                        Change photo
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            {/* Partial success banner */}
+            {partialSuccess && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <p className="text-sm text-green-800">{partialSuccess}</p>
+              </div>
+            )}
 
-                {/* Dropzone for adding a new photo (shown if under max) */}
-                {files.length === 0 ? (
-                  <div
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => {
-                      setEditingSlotIndex(-1)
-                      fileRef.current?.click()
-                    }}
-                    className={`border-2 border-dashed rounded-lg p-6 sm:p-12 text-center cursor-pointer transition-all flex-1 flex flex-col items-center justify-center ${
-                      isDragging
-                        ? 'border-accent bg-accent/5'
-                        : 'border-borderStrong hover:border-accent'
-                    }`}
-                  >
+            {/* Drop zone — shown when empty or as "add more" */}
+            {!atMax && (
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl text-center cursor-pointer transition-all ${
+                  hasItems ? 'py-4 px-6' : 'py-12 px-6'
+                } ${
+                  isDragging
+                    ? 'border-accent bg-accent/5'
+                    : 'border-borderStrong hover:border-accent'
+                }`}
+              >
+                {hasItems ? (
+                  <p className="text-textMuted text-sm">
+                    + Drop more photos or click to add ({items.length}/{MAX_PHOTOS})
+                  </p>
+                ) : (
+                  <>
                     <div className="text-4xl sm:text-5xl mb-3">{'\uD83D\uDCF7'}</div>
-                    <p className="text-textMuted mb-1 text-xs sm:text-sm">
-                      {compressing ? 'Optimising image...' : isDragging ? 'Drop your photo here' : 'Drag & drop or click to select'}
+                    <p className="text-textMuted mb-1 text-sm">
+                      {isDragging
+                        ? 'Drop your photos here'
+                        : 'Drag & drop photos or click to select'}
                     </p>
-                    <p className="text-textMuted text-xs sm:text-sm">JPEG, PNG, WebP, or AVIF &middot; Up to 20MB</p>
-                  </div>
-                ) : files.length < MAX_PHOTOS ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingSlotIndex(-1)
-                      fileRef.current?.click()
-                    }}
-                    className="w-full border-2 border-dashed border-borderStrong hover:border-accent rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all text-textMuted hover:text-textPrimary text-xs sm:text-sm"
-                  >
-                    + Add another photo
-                  </button>
-                ) : null}
-
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif"
-                  onChange={handleFileInput}
-                  className="hidden"
-                />
+                    <p className="text-textMuted text-xs">
+                      Select multiple files at once · JPEG, PNG, WebP, AVIF · Up to 20MB each
+                    </p>
+                  </>
+                )}
               </div>
-            </div>
+            )}
 
-            {/* RIGHT COLUMN: Form Fields + Submit */}
-            <div className="space-y-6">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              multiple
+              onChange={handleFileInput}
+              className="hidden"
+            />
 
-              {/* AI Identification */}
-              {files.length > 0 && (
-                <>
-                  {/* Opt-in AI auto-fill button */}
-                  {!identifying && !aiIdentified && (
+            {/* Photo grid */}
+            {hasItems && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {items.map((item) => (
+                    <PhotoCard
+                      key={item.id}
+                      item={item}
+                      onRemove={() => {
+                        setItems((prev) => prev.filter((i) => i.id !== item.id))
+                        filesById.current.delete(item.id)
+                        // Remove from identify queue if pending
+                        identifyQueueRef.current = identifyQueueRef.current.filter(
+                          (qid) => qid !== item.id
+                        )
+                      }}
+                      onUpdate={(patch) => patchItem(item.id, patch)}
+                      onRetryIdentify={() => {
+                        patchItem(item.id, {
+                          aiIdentified: false,
+                          aiFilledFields: new Set(),
+                          aiConfirmedFields: {},
+                          isWatch: null,
+                          aiGenerated: null,
+                        })
+                        queueIdentify(item.id)
+                      }}
+                      onRetryUpload={() => retryUpload(item.id)}
+                      onCropRequest={(src, file) =>
+                        setPendingCrop({ src, file, id: item.id })
+                      }
+                    />
+                  ))}
+                </div>
+
+                {/* Submit bar */}
+                <div className="sticky bottom-4 z-10">
+                  <div className="bg-surface border border-borderStrong rounded-xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="text-sm text-textSecond text-center sm:text-left">
+                      {readyCount === 0 ? (
+                        <span className="text-textMuted">
+                          {totalActive === 0
+                            ? 'All photos uploaded'
+                            : 'Fill in Brand & Model to enable submit'}
+                        </span>
+                      ) : (
+                        <span>
+                          <span className="font-semibold text-textPrimary">{readyCount}</span> of{' '}
+                          {totalActive} photo{totalActive !== 1 ? 's' : ''} ready to submit
+                          {totalActive - readyCount > 0 && (
+                            <span className="text-textMuted">
+                              {' '}({totalActive - readyCount} need{totalActive - readyCount === 1 ? 's' : ''} review)
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </div>
                     <button
-                      type="button"
-                      onClick={() => identify(files[0])}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-surface border border-borderStrong hover:border-accent rounded-lg text-sm font-medium text-textSecond hover:text-textPrimary transition-colors"
+                      type="submit"
+                      disabled={readyCount === 0 || isUploading}
+                      className={`w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-colors text-sm ${
+                        readyCount > 0 && !isUploading
+                          ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
+                          : 'bg-neutral text-textMuted cursor-not-allowed'
+                      }`}
                     >
-                      <span>✨</span>
-                      <span>Auto-fill details with AI</span>
+                      {isUploading
+                        ? 'Uploading...'
+                        : readyCount === 1
+                        ? 'Submit 1 photo'
+                        : `Submit ${readyCount} photos`}
                     </button>
-                  )}
-
-                  {/* Loading spinner */}
-                  {identifying && (
-                    <div className="flex items-center justify-center gap-2 p-4 bg-surface border border-borderStrong rounded-lg">
-                      <div className="animate-spin w-4 h-4 border-2 border-accent border-t-transparent rounded-full" />
-                      <span className="text-textMuted text-sm">🔍 Identifying watch...</span>
-                    </div>
-                  )}
-
-                  {/* Warning: Not a watch */}
-                  {isWatch === false && (
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                        ⚠️ This doesn&apos;t look like a watch photo. Please verify the image and try again.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Warning: AI-Generated */}
-                  {aiGenerated === true && (
-                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
-                      <p className="text-sm text-amber-800 dark:text-amber-200">
-                        ⚠️ This photo may be AI-generated. AI-generated images won&apos;t be approved — please upload a real photo of your watch. You can still submit if you believe this is incorrect.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* AI hint */}
-                  {aiIdentified && !identifying && aiFilledFields.size > 0 && (
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
-                      ✨ AI filled the fields below — tap ✓ to accept, or edit to correct.
-                    </p>
-                  )}
-                </>
-              )}
-
-              {/* Section 2: Watch Details - with disabled state when no files */}
-              <div className={files.length === 0 ? 'opacity-40 pointer-events-none select-none' : ''}>
-                <div className="space-y-4">
-                  <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide">Watch Details</h3>
-
-                  {/* Brand name */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Brand <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={brandName}
-                        onChange={(e) => {
-                          setBrandName(e.target.value)
-                          if (aiFilledFields.has('brand')) confirmField('brand')
-                        }}
-                        placeholder="e.g. Rolex, Omega, Seiko"
-                        maxLength={80}
-                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                          aiIdentified && aiFilledFields.has('brand') ? 'pr-10' : ''
-                        } ${
-                          isAiUnconfirmed('brand')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('brand') && aiConfirmedFields['brand']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      />
-                      {aiIdentified && aiFilledFields.has('brand') && (
-                        isAiUnconfirmed('brand') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('brand')}
-                            aria-label="Accept AI suggestion for brand"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Model name */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Model <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={modelName}
-                        onChange={(e) => {
-                          setModelName(e.target.value)
-                          if (aiFilledFields.has('model')) confirmField('model')
-                        }}
-                        placeholder="e.g. Submariner, Speedmaster, SKX007"
-                        maxLength={100}
-                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                          aiIdentified && aiFilledFields.has('model') ? 'pr-10' : ''
-                        } ${
-                          isAiUnconfirmed('model')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('model') && aiConfirmedFields['model']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      />
-                      {aiIdentified && aiFilledFields.has('model') && (
-                        isAiUnconfirmed('model') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('model')}
-                            aria-label="Accept AI suggestion for model"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Reference number */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Reference number <span className="text-textMuted">(optional)</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={referenceNumber}
-                        onChange={(e) => {
-                          setReferenceNumber(e.target.value)
-                          if (aiFilledFields.has('reference')) confirmField('reference')
-                        }}
-                        placeholder="e.g. 126610LN, 311.30.42.30.01.005"
-                        maxLength={60}
-                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                          aiIdentified && aiFilledFields.has('reference') ? 'pr-10' : ''
-                        } ${
-                          isAiUnconfirmed('reference')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('reference') && aiConfirmedFields['reference']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      />
-                      {aiIdentified && aiFilledFields.has('reference') && (
-                        isAiUnconfirmed('reference') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('reference')}
-                            aria-label="Accept AI suggestion for reference number"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Movement */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Movement <span className="text-textMuted">(optional)</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={movement}
-                        onChange={(e) => {
-                          setMovement(e.target.value)
-                          if (aiFilledFields.has('movement')) confirmField('movement')
-                        }}
-                        placeholder="e.g. Automatic, Manual, Quartz"
-                        maxLength={60}
-                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                          aiIdentified && aiFilledFields.has('movement') ? 'pr-10' : ''
-                        } ${
-                          isAiUnconfirmed('movement')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('movement') && aiConfirmedFields['movement']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      />
-                      {aiIdentified && aiFilledFields.has('movement') && (
-                        isAiUnconfirmed('movement') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('movement')}
-                            aria-label="Accept AI suggestion for movement"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Case dimensions — 2-column grid (responsive on mobile) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-textSecond mb-2">
-                        Case size <span className="text-textMuted">(optional)</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={caseSize}
-                          onChange={(e) => {
-                            setCaseSize(e.target.value)
-                            if (aiFilledFields.has('caseSize')) confirmField('caseSize')
-                          }}
-                          placeholder="e.g. 40mm"
-                          maxLength={20}
-                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                            aiIdentified && aiFilledFields.has('caseSize') ? 'pr-10' : ''
-                          } ${
-                            isAiUnconfirmed('caseSize')
-                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                              : aiIdentified && aiFilledFields.has('caseSize') && aiConfirmedFields['caseSize']
-                              ? 'border-green-400 dark:border-green-600'
-                              : 'border-borderStrong focus:border-accent'
-                          }`}
-                        />
-                        {aiIdentified && aiFilledFields.has('caseSize') && (
-                          isAiUnconfirmed('caseSize') ? (
-                            <button
-                              type="button"
-                              onClick={() => confirmField('caseSize')}
-                              aria-label="Accept AI suggestion for case size"
-                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                            >
-                              ✓
-                            </button>
-                          ) : (
-                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                          )
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-textSecond mb-2">
-                        Lug-to-lug <span className="text-textMuted">(optional)</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={lugToLug}
-                          onChange={(e) => {
-                            setLugToLug(e.target.value)
-                            if (aiFilledFields.has('lugToLug')) confirmField('lugToLug')
-                          }}
-                          placeholder="e.g. 47mm"
-                          maxLength={20}
-                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                            aiIdentified && aiFilledFields.has('lugToLug') ? 'pr-10' : ''
-                          } ${
-                            isAiUnconfirmed('lugToLug')
-                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                              : aiIdentified && aiFilledFields.has('lugToLug') && aiConfirmedFields['lugToLug']
-                              ? 'border-green-400 dark:border-green-600'
-                              : 'border-borderStrong focus:border-accent'
-                          }`}
-                        />
-                        {aiIdentified && aiFilledFields.has('lugToLug') && (
-                          isAiUnconfirmed('lugToLug') ? (
-                            <button
-                              type="button"
-                              onClick={() => confirmField('lugToLug')}
-                              aria-label="Accept AI suggestion for lug-to-lug"
-                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                            >
-                              ✓
-                            </button>
-                          ) : (
-                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                          )
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-textSecond mb-2">
-                        Lug width <span className="text-textMuted">(optional)</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={betweenLugs}
-                          onChange={(e) => {
-                            setBetweenLugs(e.target.value)
-                            if (aiFilledFields.has('betweenLugs')) confirmField('betweenLugs')
-                          }}
-                          placeholder="e.g. 20mm"
-                          maxLength={20}
-                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                            aiIdentified && aiFilledFields.has('betweenLugs') ? 'pr-10' : ''
-                          } ${
-                            isAiUnconfirmed('betweenLugs')
-                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                              : aiIdentified && aiFilledFields.has('betweenLugs') && aiConfirmedFields['betweenLugs']
-                              ? 'border-green-400 dark:border-green-600'
-                              : 'border-borderStrong focus:border-accent'
-                          }`}
-                        />
-                        {aiIdentified && aiFilledFields.has('betweenLugs') && (
-                          isAiUnconfirmed('betweenLugs') ? (
-                            <button
-                              type="button"
-                              onClick={() => confirmField('betweenLugs')}
-                              aria-label="Accept AI suggestion for lug width"
-                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                            >
-                              ✓
-                            </button>
-                          ) : (
-                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                          )
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-textSecond mb-2">
-                        Thickness <span className="text-textMuted">(optional)</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={thickness}
-                          onChange={(e) => {
-                            setThickness(e.target.value)
-                            if (aiFilledFields.has('thickness')) confirmField('thickness')
-                          }}
-                          placeholder="e.g. 12.5mm"
-                          maxLength={20}
-                          className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                            aiIdentified && aiFilledFields.has('thickness') ? 'pr-10' : ''
-                          } ${
-                            isAiUnconfirmed('thickness')
-                              ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                              : aiIdentified && aiFilledFields.has('thickness') && aiConfirmedFields['thickness']
-                              ? 'border-green-400 dark:border-green-600'
-                              : 'border-borderStrong focus:border-accent'
-                          }`}
-                        />
-                        {aiIdentified && aiFilledFields.has('thickness') && (
-                          isAiUnconfirmed('thickness') ? (
-                            <button
-                              type="button"
-                              onClick={() => confirmField('thickness')}
-                              aria-label="Accept AI suggestion for thickness"
-                              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                            >
-                              ✓
-                            </button>
-                          ) : (
-                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Water resistance */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Water resistance <span className="text-textMuted">(optional)</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={waterResistance}
-                        onChange={(e) => {
-                          setWaterResistance(e.target.value)
-                          if (aiFilledFields.has('waterResistance')) confirmField('waterResistance')
-                        }}
-                        placeholder="e.g. 300m / 1000ft"
-                        maxLength={40}
-                        className={`w-full bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
-                          aiIdentified && aiFilledFields.has('waterResistance') ? 'pr-10' : ''
-                        } ${
-                          isAiUnconfirmed('waterResistance')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('waterResistance') && aiConfirmedFields['waterResistance']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      />
-                      {aiIdentified && aiFilledFields.has('waterResistance') && (
-                        isAiUnconfirmed('waterResistance') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('waterResistance')}
-                            aria-label="Accept AI suggestion for water resistance"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Personal fields — user-only */}
-                  <h3 className="text-sm font-semibold text-textSecond uppercase tracking-wide pt-2">Your Details</h3>
-
-                  {/* Wrist size */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Wrist size <span className="text-textMuted">(optional)</span>
-                    </label>
-                    <div className="flex gap-2 items-center">
-                      <select
-                        value={wristSize}
-                        onChange={(e) => {
-                          setWristSize(e.target.value)
-                          if (aiFilledFields.has('wristSize')) confirmField('wristSize')
-                        }}
-                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary focus:outline-none shadow-sm transition-colors border ${
-                          isAiUnconfirmed('wristSize')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('wristSize') && aiConfirmedFields['wristSize']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      >
-                        <option value="">Select wrist size</option>
-                        {WRIST_SIZE_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                      {aiIdentified && aiFilledFields.has('wristSize') && (
-                        isAiUnconfirmed('wristSize') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('wristSize')}
-                            aria-label="Accept AI suggestion for wrist size"
-                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="flex-shrink-0 w-7 text-center text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Estimated price */}
-                  <div>
-                    <label className="block text-sm font-medium text-textSecond mb-2">
-                      Estimated value <span className="text-textMuted">(optional)</span>
-                    </label>
-                    <div className="flex gap-2 items-center">
-                      <select
-                        value={estimatedPrice}
-                        onChange={(e) => {
-                          setEstimatedPrice(e.target.value)
-                          if (aiFilledFields.has('estimatedPrice')) confirmField('estimatedPrice')
-                        }}
-                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary focus:outline-none shadow-sm transition-colors border ${
-                          isAiUnconfirmed('estimatedPrice')
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/20'
-                            : aiIdentified && aiFilledFields.has('estimatedPrice') && aiConfirmedFields['estimatedPrice']
-                            ? 'border-green-400 dark:border-green-600'
-                            : 'border-borderStrong focus:border-accent'
-                        }`}
-                      >
-                        <option value="">Select estimated value</option>
-                        {ESTIMATED_PRICE_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                      {aiIdentified && aiFilledFields.has('estimatedPrice') && (
-                        isAiUnconfirmed('estimatedPrice') ? (
-                          <button
-                            type="button"
-                            onClick={() => confirmField('estimatedPrice')}
-                            aria-label="Accept AI suggestion for estimated price"
-                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-                          >
-                            ✓
-                          </button>
-                        ) : (
-                          <span className="flex-shrink-0 w-7 text-center text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-                        )
-                      )}
-                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Error message */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
-              )}
-
-              {/* Upload progress */}
-              {uploadProgress && (
-                <div className="text-sm text-textMuted">
-                  {uploadProgress}
-                </div>
-              )}
-
-              {/* Submit button */}
-              {files.length > 0 && (
-                <button
-                  type="submit"
-                  disabled={!isFormValid || uploading}
-                  className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                    isFormValid && !uploading
-                      ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
-                      : 'bg-neutral text-textMuted cursor-not-allowed'
-                  }`}
-                >
-                  {uploading ? 'Uploading...' : 'Submit photo'}
-                </button>
-              )}
-            </div>
+              </>
+            )}
           </form>
         )}
 
