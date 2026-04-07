@@ -14,12 +14,16 @@ interface PhotoPageProps {
 
 // Generate static params for all approved photo IDs
 export async function generateStaticParams(): Promise<{ id: string }[]> {
-  const photoIds = await db
-    .select({ id: photos.id })
-    .from(photos)
-    .where(eq(photos.status, 'approved'))
+  try {
+    const photoIds = await db
+      .select({ id: photos.id })
+      .from(photos)
+      .where(eq(photos.status, 'approved'))
 
-  return photoIds.map((row) => ({ id: row.id }))
+    return photoIds.map((row) => ({ id: row.id }))
+  } catch {
+    return []
+  }
 }
 
 // Generate dynamic metadata

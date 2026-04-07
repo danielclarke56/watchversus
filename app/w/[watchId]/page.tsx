@@ -25,12 +25,16 @@ function unslugify(slug: string): string {
 
 // Generate static params for all watchIds with approved photos
 export async function generateStaticParams(): Promise<{ watchId: string }[]> {
-  const watchIds = await db
-    .selectDistinct({ watchId: photos.watchId })
-    .from(photos)
-    .where(eq(photos.status, 'approved'))
+  try {
+    const watchIds = await db
+      .selectDistinct({ watchId: photos.watchId })
+      .from(photos)
+      .where(eq(photos.status, 'approved'))
 
-  return watchIds.map((row) => ({ watchId: row.watchId }))
+    return watchIds.map((row) => ({ watchId: row.watchId }))
+  } catch {
+    return []
+  }
 }
 
 // Generate dynamic metadata

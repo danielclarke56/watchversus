@@ -3,6 +3,8 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = 'https://watchems.com'
 
