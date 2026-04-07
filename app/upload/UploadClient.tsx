@@ -25,6 +25,10 @@ const ESTIMATED_PRICE_OPTIONS = [
 
 const MAX_PHOTOS = 3
 
+// Fields tracked for per-field AI confirmation
+const AI_CONFIRM_FIELDS = ['brand', 'model', 'reference', 'movement', 'caseSize'] as const
+type AiConfirmField = (typeof AI_CONFIRM_FIELDS)[number]
+
 interface AiCandidate {
   brand: string
   model: string
@@ -73,7 +77,9 @@ export default function UploadClient() {
   const [isWatch, setIsWatch] = useState<boolean | null>(null)
   const [aiGenerated, setAiGenerated] = useState<boolean | null>(null)
   const [aiIdentified, setAiIdentified] = useState(false)
-  const [aiConfirmed, setAiConfirmed] = useState(false)
+  // Per-field AI confirmation state
+  const [aiFilledFields, setAiFilledFields] = useState<Set<AiConfirmField>>(new Set())
+  const [aiConfirmedFields, setAiConfirmedFields] = useState<Partial<Record<AiConfirmField, boolean>>>({})
   const fileRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
 
@@ -207,6 +213,8 @@ export default function UploadClient() {
           setIsWatch(null)
           setAiGenerated(null)
           setAiIdentified(false)
+          setAiFilledFields(new Set())
+          setAiConfirmedFields({})
         }
       } else {
         // Add new
@@ -238,6 +246,8 @@ export default function UploadClient() {
         setIsWatch(null)
         setAiGenerated(null)
         setAiIdentified(false)
+        setAiFilledFields(new Set())
+        setAiConfirmedFields({})
       }
     } else {
       // Add new
@@ -259,6 +269,8 @@ export default function UploadClient() {
     if (index === 0) {
       setIsWatch(null)
       setAiGenerated(null)
+      setAiFilledFields(new Set())
+      setAiConfirmedFields({})
     }
   }
 
@@ -266,6 +278,8 @@ export default function UploadClient() {
     setIdentifying(true)
     setIsWatch(null)
     setAiGenerated(null)
+    setAiFilledFields(new Set())
+    setAiConfirmedFields({})
     try {
       const formData = new FormData()
       formData.append('photo', file)
@@ -302,7 +316,16 @@ export default function UploadClient() {
     setBetweenLugs(candidate.betweenLugs || '')
     setThickness(candidate.thickness || '')
     setWaterResistance(candidate.waterResistance || '')
-    setAiConfirmed(false)
+
+    // Track which confirmation fields were actually filled by AI
+    const filled = new Set<AiConfirmField>()
+    if (candidate.brand) filled.add('brand')
+    if (candidate.model) filled.add('model')
+    if (candidate.reference) filled.add('reference')
+    if (candidate.movement) filled.add('movement')
+    if (candidate.caseSize) filled.add('caseSize')
+    setAiFilledFields(filled)
+    setAiConfirmedFields({})
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -396,7 +419,31 @@ export default function UploadClient() {
     }
   }
 
-  const isFormValid = files.length > 0 && brandName.trim().length > 0 && isWatch !== false && (!aiIdentified || aiConfirmed)
+  // Per-field confirmation helpers
+  function isAiUnconfirmed(field: AiConfirmField) {
+    return aiIdentified && aiFilledFields.has(field) && !aiConfirmedFields[field]
+  }
+
+  function confirmField(field: AiConfirmField) {
+    setAiConfirmedFields((prev) => ({ ...prev, [field]: true }))
+  }
+
+  // Progress counts: only fields that were actually AI-filled
+  const aiFilledCount = aiFilledFields.size
+  const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
+    (f) => aiFilledFields.has(f) && aiConfirmedFields[f]
+  ).length
+
+  // Form is valid when: has files, has brand, not rejected as non-watch,
+  // and if AI ran: brand and model must both be confirmed (either accepted or manually edited)
+  const brandConfirmed = !aiIdentified || !aiFilledFields.has('brand') || !!aiConfirmedFields['brand']
+  const modelConfirmed = !aiIdentified || !aiFilledFields.has('model') || !!aiConfirmedFields['model']
+  const isFormValid =
+    files.length > 0 &&
+    brandName.trim().length > 0 &&
+    isWatch !== false &&
+    brandConfirmed &&
+    modelConfirmed
 
   if (!isLoaded) {
     return (
@@ -479,6 +526,8 @@ export default function UploadClient() {
                   setError('')
                   setSuccessPreviews([])
                   setAiIdentified(false)
+                  setAiFilledFields(new Set())
+                  setAiConfirmedFields({})
                 }}
                 className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
               >
@@ -585,7 +634,6 @@ export default function UploadClient() {
             {/* RIGHT COLUMN: Form Fields + Submit */}
             <div className="space-y-6">
 
-
               {/* AI Identification */}
               {files.length > 0 && (
                 <>
@@ -627,37 +675,37 @@ export default function UploadClient() {
                     </div>
                   )}
 
-                  {/* AI auto-fill notice */}
-                  {aiIdentified && !identifying && (
-                    aiConfirmed ? (
-                      <div className="flex items-center justify-between gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <span className="text-base leading-none">✅</span>
-                          <p className="text-xs text-green-800 dark:text-green-200">AI info confirmed — you&apos;re good to submit.</p>
+                  {/* AI progress banner */}
+                  {aiIdentified && !identifying && aiFilledCount > 0 && (
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm leading-none">✨</span>
+                          <p className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                            AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''} — review each one below
+                          </p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => setAiConfirmed(false)}
-                          className="text-xs text-green-600 dark:text-green-400 underline hover:no-underline flex-shrink-0"
-                        >
-                          Undo
-                        </button>
+                        <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 tabular-nums flex-shrink-0">
+                          {aiConfirmedCount}/{aiFilledCount} confirmed
+                        </span>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <span className="text-base leading-none">✨</span>
-                          <p className="text-xs text-blue-800 dark:text-blue-200">Details filled by AI — review and confirm before submitting.</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setAiConfirmed(true)}
-                          className="flex items-center gap-1 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
-                        >
-                          <span>✓</span> Confirm
-                        </button>
+                      {/* Progress bar */}
+                      <div className="h-1 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
+                          style={{ width: aiFilledCount > 0 ? `${(aiConfirmedCount / aiFilledCount) * 100}%` : '0%' }}
+                        />
                       </div>
-                    )
+                      {!brandConfirmed || !modelConfirmed ? (
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5">
+                          Accept or edit Brand and Model to enable submit.
+                        </p>
+                      ) : aiConfirmedCount === aiFilledCount ? (
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1.5">
+                          All fields confirmed — you&apos;re good to submit.
+                        </p>
+                      ) : null}
+                    </div>
                   )}
                 </>
               )}
@@ -672,17 +720,36 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Brand <span className="text-red-400">*</span>
                     </label>
-                    <div className="relative">
+                    <div className="flex gap-2 items-center">
                       <input
                         type="text"
                         value={brandName}
-                        onChange={(e) => setBrandName(e.target.value)}
+                        onChange={(e) => {
+                          setBrandName(e.target.value)
+                          if (aiFilledFields.has('brand')) confirmField('brand')
+                        }}
                         placeholder="e.g. Rolex, Omega, Seiko"
                         maxLength={80}
-                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && brandName ? ' pr-8' : ''}`}
+                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          isAiUnconfirmed('brand')
+                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            : aiIdentified && aiFilledFields.has('brand') && aiConfirmedFields['brand']
+                            ? 'border-green-400'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
                       />
-                      {aiIdentified && brandName && (
-                        <button type="button" onClick={() => setBrandName('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      {isAiUnconfirmed('brand') && (
+                        <button
+                          type="button"
+                          onClick={() => confirmField('brand')}
+                          aria-label="Accept AI suggestion for brand"
+                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
+                        >
+                          ✓
+                        </button>
+                      )}
+                      {aiIdentified && aiFilledFields.has('brand') && aiConfirmedFields['brand'] && (
+                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
                       )}
                     </div>
                   </div>
@@ -692,17 +759,36 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Model <span className="text-red-400">*</span>
                     </label>
-                    <div className="relative">
+                    <div className="flex gap-2 items-center">
                       <input
                         type="text"
                         value={modelName}
-                        onChange={(e) => setModelName(e.target.value)}
+                        onChange={(e) => {
+                          setModelName(e.target.value)
+                          if (aiFilledFields.has('model')) confirmField('model')
+                        }}
                         placeholder="e.g. Submariner, Speedmaster, SKX007"
                         maxLength={100}
-                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && modelName ? ' pr-8' : ''}`}
+                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          isAiUnconfirmed('model')
+                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            : aiIdentified && aiFilledFields.has('model') && aiConfirmedFields['model']
+                            ? 'border-green-400'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
                       />
-                      {aiIdentified && modelName && (
-                        <button type="button" onClick={() => setModelName('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      {isAiUnconfirmed('model') && (
+                        <button
+                          type="button"
+                          onClick={() => confirmField('model')}
+                          aria-label="Accept AI suggestion for model"
+                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
+                        >
+                          ✓
+                        </button>
+                      )}
+                      {aiIdentified && aiFilledFields.has('model') && aiConfirmedFields['model'] && (
+                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
                       )}
                     </div>
                   </div>
@@ -712,17 +798,36 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Reference number <span className="text-textMuted">(optional)</span>
                     </label>
-                    <div className="relative">
+                    <div className="flex gap-2 items-center">
                       <input
                         type="text"
                         value={referenceNumber}
-                        onChange={(e) => setReferenceNumber(e.target.value)}
+                        onChange={(e) => {
+                          setReferenceNumber(e.target.value)
+                          if (aiFilledFields.has('reference')) confirmField('reference')
+                        }}
                         placeholder="e.g. 126610LN, 311.30.42.30.01.005"
                         maxLength={60}
-                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && referenceNumber ? ' pr-8' : ''}`}
+                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          isAiUnconfirmed('reference')
+                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            : aiIdentified && aiFilledFields.has('reference') && aiConfirmedFields['reference']
+                            ? 'border-green-400'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
                       />
-                      {aiIdentified && referenceNumber && (
-                        <button type="button" onClick={() => setReferenceNumber('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      {isAiUnconfirmed('reference') && (
+                        <button
+                          type="button"
+                          onClick={() => confirmField('reference')}
+                          aria-label="Accept AI suggestion for reference number"
+                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
+                        >
+                          ✓
+                        </button>
+                      )}
+                      {aiIdentified && aiFilledFields.has('reference') && aiConfirmedFields['reference'] && (
+                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
                       )}
                     </div>
                   </div>
@@ -732,17 +837,36 @@ export default function UploadClient() {
                     <label className="block text-sm font-medium text-textSecond mb-2">
                       Movement <span className="text-textMuted">(optional)</span>
                     </label>
-                    <div className="relative">
+                    <div className="flex gap-2 items-center">
                       <input
                         type="text"
                         value={movement}
-                        onChange={(e) => setMovement(e.target.value)}
+                        onChange={(e) => {
+                          setMovement(e.target.value)
+                          if (aiFilledFields.has('movement')) confirmField('movement')
+                        }}
                         placeholder="e.g. Automatic, Manual, Quartz"
                         maxLength={60}
-                        className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && movement ? ' pr-8' : ''}`}
+                        className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                          isAiUnconfirmed('movement')
+                            ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                            : aiIdentified && aiFilledFields.has('movement') && aiConfirmedFields['movement']
+                            ? 'border-green-400'
+                            : 'border-borderStrong focus:border-accent'
+                        }`}
                       />
-                      {aiIdentified && movement && (
-                        <button type="button" onClick={() => setMovement('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                      {isAiUnconfirmed('movement') && (
+                        <button
+                          type="button"
+                          onClick={() => confirmField('movement')}
+                          aria-label="Accept AI suggestion for movement"
+                          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
+                        >
+                          ✓
+                        </button>
+                      )}
+                      {aiIdentified && aiFilledFields.has('movement') && aiConfirmedFields['movement'] && (
+                        <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
                       )}
                     </div>
                   </div>
@@ -753,17 +877,36 @@ export default function UploadClient() {
                       <label className="block text-sm font-medium text-textSecond mb-2">
                         Case size <span className="text-textMuted">(optional)</span>
                       </label>
-                      <div className="relative">
+                      <div className="flex gap-2 items-center">
                         <input
                           type="text"
                           value={caseSize}
-                          onChange={(e) => setCaseSize(e.target.value)}
+                          onChange={(e) => {
+                            setCaseSize(e.target.value)
+                            if (aiFilledFields.has('caseSize')) confirmField('caseSize')
+                          }}
                           placeholder="e.g. 40mm"
                           maxLength={20}
-                          className={`w-full bg-surface border border-borderStrong rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none focus:border-accent shadow-sm${aiIdentified && caseSize ? ' pr-8' : ''}`}
+                          className={`flex-1 bg-surface rounded-lg px-4 py-3 text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${
+                            isAiUnconfirmed('caseSize')
+                              ? 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+                              : aiIdentified && aiFilledFields.has('caseSize') && aiConfirmedFields['caseSize']
+                              ? 'border-green-400'
+                              : 'border-borderStrong focus:border-accent'
+                          }`}
                         />
-                        {aiIdentified && caseSize && (
-                          <button type="button" onClick={() => setCaseSize('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-textMuted hover:text-textPrimary text-base leading-none">×</button>
+                        {isAiUnconfirmed('caseSize') && (
+                          <button
+                            type="button"
+                            onClick={() => confirmField('caseSize')}
+                            aria-label="Accept AI suggestion for case size"
+                            className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-bold"
+                          >
+                            ✓
+                          </button>
+                        )}
+                        {aiIdentified && aiFilledFields.has('caseSize') && aiConfirmedFields['caseSize'] && (
+                          <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-green-500 text-lg" aria-label="Confirmed">✓</span>
                         )}
                       </div>
                     </div>
