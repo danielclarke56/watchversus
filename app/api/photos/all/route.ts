@@ -132,9 +132,15 @@ export async function GET(req: NextRequest) {
     const result = filtered.slice(0, limit)
     const nextCursor = filtered.length > limit ? result[result.length - 1]?.createdAt ?? null : null
 
+    // Short-lived cache for unfiltered requests; no caching for filtered/paginated queries
+    const isFiltered = !!(watchId || q || brand || cursor)
+    const cacheHeader = isFiltered
+      ? 'no-store'
+      : 'public, s-maxage=30, stale-while-revalidate=120'
+
     return NextResponse.json(
       { photos: result, nextCursor },
-      { headers: { 'Cache-Control': 'no-store' } }
+      { headers: { 'Cache-Control': cacheHeader } }
     )
   } catch (error) {
     console.error('[/api/photos/all] Query failed:', error)

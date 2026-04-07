@@ -56,14 +56,18 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={dmSans.variable}>
       <head>
-        <link rel="preconnect" href="https://api.fontshare.com" />
-        <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" />
+        <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.fontshare.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
       <body className="bg-surfaceAlt text-textPrimary antialiased min-h-screen flex flex-col">
+        {/* Load Satoshi font non-blocking — was render-blocking in <head> */}
+        <Script id="satoshi-font" strategy="afterInteractive">
+          {`(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap';document.head.appendChild(l);})()`}
+        </Script>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
           strategy="afterInteractive"

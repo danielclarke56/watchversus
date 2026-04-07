@@ -73,15 +73,24 @@ function getWatchLabel(group: WatchGroup) {
   return { brand, model, ref }
 }
 
-function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
+interface InitialData {
+  photos: PhotoItem[]
+  nextCursor: string | null
+}
+
+function PhotoGalleryContent({ initialPhotoSlug, initialData }: { initialPhotoSlug?: string; initialData?: InitialData }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')
 
-  const [photos, setPhotos] = useState<PhotoItem[]>([])
-  const [nextCursor, setNextCursor] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const hasServerData = !!(initialData?.photos.length && !activeWatchId && !activeQuery)
+  // Skip the initial client-side fetch when server-rendered data is present
+  const skipInitialFetchRef = useRef(hasServerData)
+
+  const [photos, setPhotos] = useState<PhotoItem[]>(initialData?.photos ?? [])
+  const [nextCursor, setNextCursor] = useState<string | null>(initialData?.nextCursor ?? null)
+  const [loading, setLoading] = useState(!hasServerData)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -220,6 +229,11 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   }, [initialPhotoSlug, groups, loading, nextCursor, loadingMore, fetchPhotos])
 
   useEffect(() => {
+    // Skip the very first fetch when server-rendered initial data was provided
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false
+      return
+    }
     let cancelled = false
     setLoading(true)
     setPhotos([])
@@ -258,29 +272,6 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     return () => observer.disconnect()
   }, [nextCursor, loadingMore, fetchPhotos])
 
-  // Keyboard navigation — arrows move between watches, not photos within a watch
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!lightbox) return
-      if (e.key === 'Escape') {
-        closeLightbox()
-      } else if (e.key === 'ArrowLeft') {
-        if (lightbox.groupIdx > 0) {
-          navigateLightbox(lightbox.groupIdx - 1, 0)
-        }
-      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        if (lightbox.groupIdx < groups.length - 1) {
-          navigateLightbox(lightbox.groupIdx + 1, 0)
-        }
-      } else if (e.key === 'ArrowUp') {
-        if (lightbox.groupIdx > 0) {
-          navigateLightbox(lightbox.groupIdx - 1, 0)
-        }
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [lightbox, groups, closeLightbox, navigateLightbox])
 
   // Preload adjacent lightbox images when lightbox group changes
   useEffect(() => {
@@ -445,6 +436,31 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     setLightbox(null)
     window.history.pushState({}, '', galleryUrlRef.current)
   }, [])
+
+  // Keyboard navigation — arrows move between watches, not photos within a watch
+  // Placed after closeLightbox + navigateLightbox declarations to avoid forward reference
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightbox) return
+      if (e.key === 'Escape') {
+        closeLightbox()
+      } else if (e.key === 'ArrowLeft') {
+        if (lightbox.groupIdx > 0) {
+          navigateLightbox(lightbox.groupIdx - 1, 0)
+        }
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        if (lightbox.groupIdx < groups.length - 1) {
+          navigateLightbox(lightbox.groupIdx + 1, 0)
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (lightbox.groupIdx > 0) {
+          navigateLightbox(lightbox.groupIdx - 1, 0)
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightbox, groups, closeLightbox, navigateLightbox])
 
   const handleShare = useCallback(async (photoSlug: string) => {
     const shareUrl = `https://watchems.com/photo/${photoSlug}`
@@ -1053,7 +1069,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   )
 }
 
-export default function PhotoGallery({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
+export default function PhotoGallery({ initialPhotoSlug, initialData }: { initialPhotoSlug?: string; initialData?: InitialData }) {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -1064,7 +1080,7 @@ export default function PhotoGallery({ initialPhotoSlug }: { initialPhotoSlug?: 
         </div>
       </div>
     }>
-      <PhotoGalleryContent initialPhotoSlug={initialPhotoSlug} />
+      <PhotoGalleryContent initialPhotoSlug={initialPhotoSlug} initialData={initialData} />
     </Suspense>
   )
 }
