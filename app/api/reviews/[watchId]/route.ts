@@ -4,6 +4,8 @@ import { isValidSlug, sanitizeText } from '@/lib/validation'
 import { getRedis } from '@/lib/redis'
 import { checkRateLimit } from '@/lib/ratelimit'
 
+export const dynamic = 'force-dynamic'
+
 export interface PendingReview {
   id: string
   watchId: string

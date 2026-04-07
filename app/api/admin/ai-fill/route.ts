@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { checkAdmin } from '@/lib/admin'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
+export const dynamic = 'force-dynamic'
+
 interface AiFillRequest {
   brandName: string
   modelName: string

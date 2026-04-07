@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { approveReview, rejectReview } from '@/lib/reviews'
 import { checkAdmin } from '@/lib/admin'
 
+export const dynamic = 'force-dynamic'
+
 interface ApproveRejectBody {
   action: 'approve' | 'reject'
   watchSlug: string

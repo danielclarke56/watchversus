@@ -4,6 +4,8 @@ import { db } from '@/lib/db'
 import { collectionItems, collections } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 /** GET /api/photos/[id]/saved — returns { savedIn: string[] } (collection IDs containing this photo) */
 export async function GET(
   _req: NextRequest,

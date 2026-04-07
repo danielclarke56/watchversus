@@ -4,6 +4,8 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { and, eq } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 /** DELETE /api/user/photos/[photoId] — delete the user's own photo */
 export async function DELETE(
   _req: NextRequest,

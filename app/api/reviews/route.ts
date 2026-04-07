@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { submitReview } from '@/lib/reviews'
 
+export const dynamic = 'force-dynamic'
+
 interface SubmitReviewBody {
   watchSlug: string
   rating: number

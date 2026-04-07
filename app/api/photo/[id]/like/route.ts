@@ -5,6 +5,8 @@ import { db } from '@/lib/db'
 import { photoLikes } from '@/lib/db/schema'
 import { eq, and, sql } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 /** GET /api/photos/[id]/like — returns { liked: boolean, count: number } */
 export async function GET(
   _req: NextRequest,

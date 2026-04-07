@@ -8,6 +8,8 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 /** GET /api/admin/photos - list pending or approved photos (?status=pending|approved) */
 export async function GET(req: NextRequest) {
   const { userId } = await auth()

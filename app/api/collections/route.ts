@@ -5,6 +5,8 @@ import { db } from '@/lib/db'
 import { collections } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 /** GET /api/collections — list current user's collections */
 export async function GET() {
   const { userId } = await auth()

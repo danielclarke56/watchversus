@@ -5,6 +5,8 @@ import { db } from '@/lib/db'
 import { collectionItems, collections } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 /** POST /api/collections/[id]/items — add a photo to a collection */
 export async function POST(
   req: NextRequest,

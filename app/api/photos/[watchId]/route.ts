@@ -6,6 +6,8 @@ import fs from 'fs'
 import path from 'path'
 import type { ApprovedPhoto } from '@/lib/photos'
 import { ACCEPTED_TYPES } from '@/lib/photos'
+
+export const dynamic = 'force-dynamic'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
 import { checkRateLimit } from '@/lib/ratelimit'
 import { db } from '@/lib/db'

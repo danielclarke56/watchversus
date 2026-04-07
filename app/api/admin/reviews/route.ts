@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { getPendingReviews } from '@/lib/reviews'
 import { checkAdmin } from '@/lib/admin'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/admin/reviews
  * Get all pending reviews (admin only)
