@@ -381,6 +381,8 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
     if (photo) {
+      // Save current gallery URL so closeLightbox can restore it
+      galleryUrlRef.current = window.location.pathname + window.location.search
       lightboxOpenRef.current = true
       window.history.pushState({ lightbox: true }, '', `/photo/${photo.slug ?? photo.id}`)
       setPhotoOverride(null)
@@ -441,7 +443,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
 
   const closeLightbox = useCallback(() => {
     setLightbox(null)
-    // Navigation back is handled by the photo page's back button or browser back
+    window.history.pushState({}, '', galleryUrlRef.current)
   }, [])
 
   const handleShare = useCallback(async (photoSlug: string) => {
