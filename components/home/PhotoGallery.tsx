@@ -280,7 +280,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [lightbox, groups])
+  }, [lightbox, groups, closeLightbox, navigateLightbox])
 
   // Preload adjacent lightbox images when lightbox group changes
   useEffect(() => {
@@ -325,7 +325,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
         setLoadingMore(false)
       }).catch(() => setLoadingMore(false))
     }
-  }, [lightbox?.groupIdx, groups.length, nextCursor, loadingMore, fetchPhotos])
+  }, [lightbox, groups.length, nextCursor, loadingMore, fetchPhotos])
 
   // Show loading state when lightbox photo changes
   useEffect(() => {
@@ -497,7 +497,10 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   const activeLightboxGroup = lightbox !== null ? groups[lightbox.groupIdx] : null
   // Photos in ascending order (oldest = index 0 = primary card image)
   // Thumbnails let user select a specific photo; arrows navigate between watches
-  const activeLightboxPhotos = activeLightboxGroup ? activeLightboxGroup.photos : []
+  const activeLightboxPhotos = useMemo(
+    () => activeLightboxGroup?.photos ?? [],
+    [activeLightboxGroup]
+  )
   // photoOverride lets related-photo clicks stay in the lightbox without a page nav
   const activeLightboxPhoto = photoOverride ?? (activeLightboxPhotos[lightbox?.photoIdx ?? 0] ?? null)
 

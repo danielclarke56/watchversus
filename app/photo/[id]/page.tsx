@@ -132,6 +132,7 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
         slug: photos.slug,
         url: photos.url,
         thumbnailUrl: photos.thumbnailUrl,
+        userName: photos.userName,
         brandName: photos.brandName,
         modelName: photos.modelName,
       })
