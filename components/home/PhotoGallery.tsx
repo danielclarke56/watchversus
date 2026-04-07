@@ -679,18 +679,18 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
         </div>
       )}
 
-      {/* ─── Full-screen dark lightbox ─── */}
+      {/* ─── Full-screen light lightbox ─── */}
       {lightbox !== null && activeLightboxPhoto && (
         <div
-          className="fixed inset-0 z-50 bg-black flex"
+          className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex"
           style={{ overscrollBehavior: 'contain' }}
           onClick={closeLightbox}
         >
-          {/* Close button — top-right, white on dark */}
+          {/* Close button — top-right, dark on light */}
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-            className="fixed top-4 right-4 z-[60] text-white bg-white/10 hover:bg-white/25 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center transition-all border border-white/20"
+            className="fixed top-4 right-4 z-[60] text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition-all border border-gray-200"
             aria-label="Close"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
@@ -718,13 +718,13 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                 {/* Loading spinner */}
                 {lightboxImageLoading && (
                   <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                    <div className="w-10 h-10 border-2 border-white/20 border-t-white/80 rounded-full animate-spin" />
+                    <div className="w-10 h-10 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
                   </div>
                 )}
 
                 {/* Zoom level indicator */}
                 {zoom > 1 && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white/80 text-xs px-2.5 py-1 rounded-full z-10 pointer-events-none">
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 text-gray-700 text-xs px-2.5 py-1 rounded-full z-10 pointer-events-none shadow-sm border border-gray-200">
                     {Math.round(zoom * 10) / 10}×
                   </div>
                 )}
@@ -754,7 +754,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); navigateToFlat(currentFlatIdx - 1) }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center transition-all z-20 border border-white/20 text-2xl leading-none"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700 bg-white/90 hover:bg-white shadow-sm rounded-full w-12 h-12 flex items-center justify-center transition-all z-20 border border-gray-200 text-2xl leading-none"
                     aria-label="Previous photo"
                   >
                     ‹
@@ -766,7 +766,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); navigateToFlat(currentFlatIdx + 1) }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center transition-all z-20 border border-white/20 text-2xl leading-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 bg-white/90 hover:bg-white shadow-sm rounded-full w-12 h-12 flex items-center justify-center transition-all z-20 border border-gray-200 text-2xl leading-none"
                     aria-label="Next photo"
                   >
                     ›
@@ -780,7 +780,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                       <div
                         key={i}
                         className={`w-1.5 h-1.5 rounded-full transition-all ${
-                          i === (lightbox?.photoIdx ?? 0) ? 'bg-white scale-125' : 'bg-white/40'
+                          i === (lightbox?.photoIdx ?? 0) ? 'bg-gray-700 scale-125' : 'bg-gray-400'
                         }`}
                       />
                     ))}
@@ -813,22 +813,22 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                 if (w?.case_material) specs.push({ label: 'Material', value: w.case_material })
 
                 return (
-                  <div className="flex-shrink-0 bg-gray-950 border-t border-white/5 px-4 py-3">
+                  <div className="flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         {(brand || model) && (
-                          <p className="text-white font-semibold text-sm truncate">
+                          <p className="text-gray-900 font-semibold text-sm truncate">
                             {[brand, model].filter(Boolean).join(' ')}
                           </p>
                         )}
-                        <p className="text-white/40 text-xs mt-0.5">
+                        <p className="text-gray-400 text-xs mt-0.5">
                           by{' '}
                           {p.isOfficial ? (
-                            <span className="text-amber-400">Watchems</span>
+                            <span className="text-amber-600">Watchems</span>
                           ) : (
                             <Link
                               href={`/profile/${p.userId}`}
-                              className="text-amber-400 hover:text-amber-300 underline transition-colors"
+                              className="text-amber-600 hover:text-amber-700 underline transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >
                               {p.userName}
@@ -839,8 +839,8 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                           <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
                             {specs.map((s) => (
                               <div key={s.label} className="flex items-baseline gap-1">
-                                <span className="text-white/35 text-[10px] uppercase tracking-wide">{s.label}</span>
-                                <span className="text-white/80 text-xs font-medium">{s.value}</span>
+                                <span className="text-gray-400 text-[10px] uppercase tracking-wide">{s.label}</span>
+                                <span className="text-gray-700 text-xs font-medium">{s.value}</span>
                               </div>
                             ))}
                           </div>
@@ -880,14 +880,14 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                     {/* Mobile: related photos strip */}
                     {relatedPhotos.length > 0 && (
                       <div className="mt-3 md:hidden">
-                        <p className="text-white/35 text-[10px] uppercase tracking-wide mb-2">More like this</p>
+                        <p className="text-gray-400 text-[10px] uppercase tracking-wide mb-2">More like this</p>
                         <div className="flex gap-2 overflow-x-auto pb-1">
                           {relatedPhotos.slice(0, 10).map((rp) => (
                             <button
                               key={rp.id}
                               type="button"
                               onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
-                              className="shrink-0 relative rounded-lg overflow-hidden w-14 h-14 border border-white/10 hover:border-white/30 transition-colors"
+                              className="shrink-0 relative rounded-lg overflow-hidden w-14 h-14 border border-gray-200 hover:border-gray-400 transition-colors"
                             >
                               <Image src={rp.url} alt={buildPhotoAltText(rp)} fill className="object-cover" sizes="56px" />
                             </button>
@@ -902,19 +902,19 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
 
             {/* ── Right panel: related photos (desktop only) ── */}
             {otherWatchRelated.length > 0 && (
-              <div className="hidden md:flex flex-col w-64 bg-gray-950 border-l border-white/5 overflow-hidden">
+              <div className="hidden md:flex flex-col w-64 bg-gray-50 border-l border-gray-100 overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
                   {relatedPhotosLoading ? (
                     <div className="grid grid-cols-2 gap-2">
                       {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="aspect-square rounded-xl bg-white/5 animate-pulse" />
+                        <div key={i} className="aspect-square rounded-xl bg-gray-200 animate-pulse" />
                       ))}
                     </div>
                   ) : (
                     <>
                       {sameModelRelated.length > 0 && (
                         <div>
-                          <p className="text-white/30 text-[10px] font-semibold uppercase tracking-wide mb-2">
+                          <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mb-2">
                             More {currentModelName ?? 'like this'}
                           </p>
                           <div className="grid grid-cols-2 gap-1.5">
@@ -925,7 +925,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                                   key={rp.id}
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
-                                  className="group relative aspect-square rounded-xl overflow-hidden bg-white/5 hover:bg-white/10 transition-colors"
+                                  className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
                                   aria-label={lbl || 'Related photo'}
                                 >
                                   <Image src={rp.url} alt={buildPhotoAltText(rp)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="120px" />
@@ -943,7 +943,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                       {otherModelRelated.length > 0 && (
                         <div>
                           {sameModelRelated.length > 0 && (
-                            <p className="text-white/30 text-[10px] font-semibold uppercase tracking-wide mb-2">Other watches</p>
+                            <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mb-2">Other watches</p>
                           )}
                           <div className="grid grid-cols-2 gap-1.5">
                             {otherModelRelated.slice(0, 20).map((rp) => {
@@ -953,7 +953,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                                   key={rp.id}
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
-                                  className="group relative aspect-square rounded-xl overflow-hidden bg-white/5 hover:bg-white/10 transition-colors"
+                                  className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
                                   aria-label={lbl || 'Related photo'}
                                 >
                                   <Image src={rp.url} alt={buildPhotoAltText(rp)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="120px" />
