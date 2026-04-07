@@ -28,7 +28,7 @@ const AI_CONFIRM_FIELDS = [
 ] as const
 type AiConfirmField = (typeof AI_CONFIRM_FIELDS)[number]
 
-type PhotoStatus = 'compressing' | 'identifying' | 'ready' | 'uploading' | 'done' | 'error'
+type PhotoStatus = 'compressing' | 'ready' | 'uploading' | 'done' | 'error'
 
 interface AiCandidate {
   brand: string
@@ -52,11 +52,10 @@ interface PhotoItem {
   preview: string
   status: PhotoStatus
   errorMessage: string
-  isWatch: boolean | null
-  aiGenerated: boolean | null
-  aiIdentified: boolean
-  aiFilledFields: Set<AiConfirmField>
-  aiConfirmedFields: Partial<Record<AiConfirmField, boolean>>
+}
+
+// All watch metadata is shared across photos (same watch, multiple angles)
+interface WatchMeta {
   brandName: string
   modelName: string
   referenceNumber: string
@@ -68,6 +67,12 @@ interface PhotoItem {
   betweenLugs: string
   thickness: string
   waterResistance: string
+  isWatch: boolean | null
+  aiGenerated: boolean | null
+  aiIdentified: boolean
+  identifyStatus: 'idle' | 'identifying' | 'done' | 'error'
+  aiFilledFields: Set<AiConfirmField>
+  aiConfirmedFields: Partial<Record<AiConfirmField, boolean>>
 }
 
 function createItem(file: File): PhotoItem {
@@ -77,11 +82,11 @@ function createItem(file: File): PhotoItem {
     preview: '',
     status: 'compressing',
     errorMessage: '',
-    isWatch: null,
-    aiGenerated: null,
-    aiIdentified: false,
-    aiFilledFields: new Set(),
-    aiConfirmedFields: {},
+  }
+}
+
+function defaultMeta(): WatchMeta {
+  return {
     brandName: '',
     modelName: '',
     referenceNumber: '',
@@ -93,505 +98,37 @@ function createItem(file: File): PhotoItem {
     betweenLugs: '',
     thickness: '',
     waterResistance: '',
+    isWatch: null,
+    aiGenerated: null,
+    aiIdentified: false,
+    identifyStatus: 'idle',
+    aiFilledFields: new Set(),
+    aiConfirmedFields: {},
   }
 }
 
-const MAX_CONCURRENT_IDENTIFY = 3
 const MAX_PHOTOS = 20
-
-// ─── PhotoCard ────────────────────────────────────────────────────────────────
-
-interface PhotoCardProps {
-  item: PhotoItem
-  onRemove: () => void
-  onUpdate: (patch: Partial<PhotoItem>) => void
-  onRetryIdentify: () => void
-  onRetryUpload: () => void
-  onCropRequest: (src: string, file: File) => void
-}
-
-function PhotoCard({ item, onRemove, onUpdate, onRetryIdentify, onRetryUpload, onCropRequest }: PhotoCardProps) {
-  const [showMore, setShowMore] = useState(false)
-
-  function isAiUnconfirmed(field: AiConfirmField) {
-    return item.aiIdentified && item.aiFilledFields.has(field) && !item.aiConfirmedFields[field]
-  }
-
-  function confirmField(field: AiConfirmField) {
-    onUpdate({ aiConfirmedFields: { ...item.aiConfirmedFields, [field]: true } })
-  }
-
-  function fieldBorderClass(field: AiConfirmField) {
-    if (isAiUnconfirmed(field)) return 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
-    if (item.aiIdentified && item.aiFilledFields.has(field) && item.aiConfirmedFields[field]) return 'border-green-400'
-    return 'border-borderStrong focus:border-accent'
-  }
-
-  // Inline confirm icon: rendered absolutely inside a relative-positioned input wrapper
-  function InlineConfirm({ field }: { field: AiConfirmField }) {
-    if (isAiUnconfirmed(field)) {
-      return (
-        <button
-          type="button"
-          onClick={() => confirmField(field)}
-          aria-label={`Accept AI suggestion for ${field}`}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-        >
-          ✓
-        </button>
-      )
-    }
-    if (item.aiIdentified && item.aiFilledFields.has(field) && item.aiConfirmedFields[field]) {
-      return (
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm font-bold" aria-label="Confirmed">✓</span>
-      )
-    }
-    return null
-  }
-
-  function inputPrClass(field: AiConfirmField) {
-    return item.aiIdentified && item.aiFilledFields.has(field) ? 'pr-8' : ''
-  }
-
-  const allAiFieldsConfirmed =
-    !item.aiIdentified ||
-    item.aiFilledFields.size === 0 ||
-    Array.from(item.aiFilledFields).every((f) => !!item.aiConfirmedFields[f])
-
-  const aiFilledCount = item.aiFilledFields.size
-  const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
-    (f) => item.aiFilledFields.has(f) && item.aiConfirmedFields[f]
-  ).length
-
-  function StatusBadge() {
-    switch (item.status) {
-      case 'compressing':
-        return <span className="text-xs text-textMuted">Optimising...</span>
-      case 'identifying':
-        return (
-          <span className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400">
-            <span className="animate-spin inline-block w-3 h-3 border border-blue-500 border-t-transparent rounded-full" />
-            Identifying...
-          </span>
-        )
-      case 'ready':
-        if (item.isWatch === false) return <span className="text-xs text-yellow-600">⚠️ Not a watch?</span>
-        if (!allAiFieldsConfirmed) return <span className="text-xs text-amber-600">Needs review</span>
-        if (item.aiGenerated) return <span className="text-xs text-amber-600">⚠️ May be AI-generated</span>
-        return <span className="text-xs text-green-600">✓ Ready</span>
-      case 'uploading':
-        return (
-          <span className="flex items-center gap-1.5 text-xs text-blue-600">
-            <span className="animate-spin inline-block w-3 h-3 border border-blue-500 border-t-transparent rounded-full" />
-            Uploading...
-          </span>
-        )
-      case 'done':
-        return <span className="text-xs text-green-600 font-medium">✓ Uploaded</span>
-      case 'error':
-        return <span className="text-xs text-red-500 truncate max-w-[160px]">{item.errorMessage || 'Error'}</span>
-    }
-  }
-
-  const canInteract = item.status !== 'uploading' && item.status !== 'done' && item.status !== 'compressing'
-
-  return (
-    <div
-      className={`bg-surface border rounded-xl overflow-hidden flex flex-col ${
-        item.status === 'done'
-          ? 'border-green-400'
-          : item.status === 'error'
-          ? 'border-red-300'
-          : 'border-borderStrong'
-      }`}
-    >
-      {/* Thumbnail */}
-      <div className="relative">
-        {item.preview ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.preview} alt="Preview" className="w-full h-48 object-cover" />
-        ) : (
-          <div className="w-full h-48 bg-neutral flex items-center justify-center">
-            <div className="animate-pulse text-textMuted text-sm">Processing...</div>
-          </div>
-        )}
-
-        {/* Done overlay */}
-        {item.status === 'done' && (
-          <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-            <span className="text-5xl">✓</span>
-          </div>
-        )}
-
-        {/* Remove */}
-        {item.status !== 'uploading' && item.status !== 'done' && (
-          <button
-            type="button"
-            onClick={onRemove}
-            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shadow"
-            aria-label="Remove photo"
-          >
-            &times;
-          </button>
-        )}
-
-        {/* Crop */}
-        {item.preview && canInteract && (
-          <button
-            type="button"
-            onClick={() => onCropRequest(item.preview, item.file)}
-            className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
-          >
-            ✂️ Crop
-          </button>
-        )}
-      </div>
-
-      {/* Status bar */}
-      <div className="px-3 py-2 border-b border-borderStrong flex items-center justify-between gap-2 min-h-[34px]">
-        <StatusBadge />
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {item.status === 'ready' && (
-            <button
-              type="button"
-              onClick={onRetryIdentify}
-              className="text-xs text-textMuted hover:text-textPrimary underline"
-            >
-              Re-identify
-            </button>
-          )}
-          {item.status === 'error' && (
-            <>
-              <button
-                type="button"
-                onClick={onRetryIdentify}
-                className="text-xs text-blue-500 hover:text-blue-700 underline"
-              >
-                Re-identify
-              </button>
-              <button
-                type="button"
-                onClick={onRetryUpload}
-                className="text-xs text-blue-500 hover:text-blue-700 underline"
-              >
-                Retry upload
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Form — only when actionable */}
-      {(item.status === 'ready' || item.status === 'error') && (
-        <div className="p-3 space-y-3 flex-1">
-          {/* Warnings */}
-          {item.isWatch === false && (
-            <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-              <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                ⚠️ This doesn&apos;t look like a watch photo. You can still submit if incorrect.
-              </p>
-            </div>
-          )}
-          {item.aiGenerated === true && (
-            <div className="p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
-              <p className="text-xs text-amber-800 dark:text-amber-200">
-                ⚠️ Photo may be AI-generated. AI images won&apos;t be approved.
-              </p>
-            </div>
-          )}
-
-          {/* AI confirmation progress */}
-          {item.aiIdentified && aiFilledCount > 0 && (
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                  ✨ AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''}
-                </span>
-                <span className="text-xs text-blue-700 dark:text-blue-300 tabular-nums">
-                  {aiConfirmedCount}/{aiFilledCount}
-                </span>
-              </div>
-              <div className="h-1 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                  style={{ width: `${(aiConfirmedCount / aiFilledCount) * 100}%` }}
-                />
-              </div>
-              {!allAiFieldsConfirmed && (
-                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                  Confirm all AI-filled fields above to submit.
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Brand */}
-          <div>
-            <label className="block text-xs font-medium text-textSecond mb-1">
-              Brand <span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={item.brandName}
-                onChange={(e) => {
-                  const patch: Partial<PhotoItem> = { brandName: e.target.value }
-                  if (item.aiFilledFields.has('brand'))
-                    patch.aiConfirmedFields = { ...item.aiConfirmedFields, brand: true }
-                  onUpdate(patch)
-                }}
-                placeholder="e.g. Rolex"
-                maxLength={80}
-                className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('brand')} ${inputPrClass('brand')}`}
-              />
-              <InlineConfirm field="brand" />
-            </div>
-          </div>
-
-          {/* Model */}
-          <div>
-            <label className="block text-xs font-medium text-textSecond mb-1">
-              Model <span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={item.modelName}
-                onChange={(e) => {
-                  const patch: Partial<PhotoItem> = { modelName: e.target.value }
-                  if (item.aiFilledFields.has('model'))
-                    patch.aiConfirmedFields = { ...item.aiConfirmedFields, model: true }
-                  onUpdate(patch)
-                }}
-                placeholder="e.g. Submariner"
-                maxLength={100}
-                className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('model')} ${inputPrClass('model')}`}
-              />
-              <InlineConfirm field="model" />
-            </div>
-          </div>
-
-          {/* Optional details toggle */}
-          <button
-            type="button"
-            onClick={() => setShowMore((v) => !v)}
-            className="text-xs text-textMuted hover:text-textPrimary underline text-left"
-          >
-            {showMore ? 'Hide optional details' : '+ Add optional details'}
-          </button>
-
-          {showMore && (
-            <div className="space-y-3">
-              {/* Reference */}
-              <div>
-                <label className="block text-xs font-medium text-textSecond mb-1">Reference</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={item.referenceNumber}
-                    onChange={(e) => {
-                      const patch: Partial<PhotoItem> = { referenceNumber: e.target.value }
-                      if (item.aiFilledFields.has('reference'))
-                        patch.aiConfirmedFields = { ...item.aiConfirmedFields, reference: true }
-                      onUpdate(patch)
-                    }}
-                    placeholder="e.g. 126610LN"
-                    maxLength={60}
-                    className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('reference')} ${inputPrClass('reference')}`}
-                  />
-                  <InlineConfirm field="reference" />
-                </div>
-              </div>
-
-              {/* Movement */}
-              <div>
-                <label className="block text-xs font-medium text-textSecond mb-1">Movement</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={item.movement}
-                    onChange={(e) => {
-                      const patch: Partial<PhotoItem> = { movement: e.target.value }
-                      if (item.aiFilledFields.has('movement'))
-                        patch.aiConfirmedFields = { ...item.aiConfirmedFields, movement: true }
-                      onUpdate(patch)
-                    }}
-                    placeholder="e.g. Automatic"
-                    maxLength={60}
-                    className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('movement')} ${inputPrClass('movement')}`}
-                  />
-                  <InlineConfirm field="movement" />
-                </div>
-              </div>
-
-              {/* Case dimensions */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-textSecond mb-1">Case size</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={item.caseSize}
-                      onChange={(e) => {
-                        const patch: Partial<PhotoItem> = { caseSize: e.target.value }
-                        if (item.aiFilledFields.has('caseSize'))
-                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, caseSize: true }
-                        onUpdate(patch)
-                      }}
-                      placeholder="e.g. 40mm"
-                      maxLength={20}
-                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
-                    />
-                    <InlineConfirm field="caseSize" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-textSecond mb-1">Lug-to-lug</label>
-                  <div className="relative">
-                    <input type="text" value={item.lugToLug}
-                      onChange={(e) => {
-                        const patch: Partial<PhotoItem> = { lugToLug: e.target.value }
-                        if (item.aiFilledFields.has('lugToLug'))
-                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, lugToLug: true }
-                        onUpdate(patch)
-                      }}
-                      placeholder="e.g. 47mm" maxLength={20}
-                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
-                    />
-                    <InlineConfirm field="lugToLug" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-textSecond mb-1">Lug width</label>
-                  <div className="relative">
-                    <input type="text" value={item.betweenLugs}
-                      onChange={(e) => {
-                        const patch: Partial<PhotoItem> = { betweenLugs: e.target.value }
-                        if (item.aiFilledFields.has('betweenLugs'))
-                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, betweenLugs: true }
-                        onUpdate(patch)
-                      }}
-                      placeholder="e.g. 20mm" maxLength={20}
-                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
-                    />
-                    <InlineConfirm field="betweenLugs" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-textSecond mb-1">Thickness</label>
-                  <div className="relative">
-                    <input type="text" value={item.thickness}
-                      onChange={(e) => {
-                        const patch: Partial<PhotoItem> = { thickness: e.target.value }
-                        if (item.aiFilledFields.has('thickness'))
-                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, thickness: true }
-                        onUpdate(patch)
-                      }}
-                      placeholder="e.g. 12.5mm" maxLength={20}
-                      className={`w-full bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
-                    />
-                    <InlineConfirm field="thickness" />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-textSecond mb-1">Water resistance</label>
-                <div className="relative">
-                  <input type="text" value={item.waterResistance}
-                    onChange={(e) => {
-                      const patch: Partial<PhotoItem> = { waterResistance: e.target.value }
-                      if (item.aiFilledFields.has('waterResistance'))
-                        patch.aiConfirmedFields = { ...item.aiConfirmedFields, waterResistance: true }
-                      onUpdate(patch)
-                    }}
-                    placeholder="e.g. 300m / 1000ft" maxLength={40}
-                    className={`w-full bg-surfaceAlt rounded-md px-3 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('waterResistance')} ${inputPrClass('waterResistance')}`}
-                  />
-                  <InlineConfirm field="waterResistance" />
-                </div>
-              </div>
-
-              {/* Wrist size & price — selects get a side confirm button */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-textSecond mb-1">Wrist size</label>
-                  <div className="flex gap-1 items-center">
-                    <select value={item.wristSize}
-                      onChange={(e) => {
-                        const patch: Partial<PhotoItem> = { wristSize: e.target.value }
-                        if (item.aiFilledFields.has('wristSize'))
-                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, wristSize: true }
-                        onUpdate(patch)
-                      }}
-                      className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('wristSize')}`}
-                    >
-                      <option value="">Select...</option>
-                      {WRIST_SIZE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                    {isAiUnconfirmed('wristSize') && (
-                      <button type="button" onClick={() => confirmField('wristSize')} aria-label="Accept wrist size"
-                        className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
-                    )}
-                    {item.aiIdentified && item.aiFilledFields.has('wristSize') && item.aiConfirmedFields['wristSize'] && (
-                      <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm font-bold">✓</span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-textSecond mb-1">Est. value</label>
-                  <div className="flex gap-1 items-center">
-                    <select value={item.estimatedPrice}
-                      onChange={(e) => {
-                        const patch: Partial<PhotoItem> = { estimatedPrice: e.target.value }
-                        if (item.aiFilledFields.has('estimatedPrice'))
-                          patch.aiConfirmedFields = { ...item.aiConfirmedFields, estimatedPrice: true }
-                        onUpdate(patch)
-                      }}
-                      className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('estimatedPrice')}`}
-                    >
-                      <option value="">Select...</option>
-                      {ESTIMATED_PRICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                    {isAiUnconfirmed('estimatedPrice') && (
-                      <button type="button" onClick={() => confirmField('estimatedPrice')} aria-label="Accept estimated price"
-                        className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
-                    )}
-                    {item.aiIdentified && item.aiFilledFields.has('estimatedPrice') && item.aiConfirmedFields['estimatedPrice'] && (
-                      <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm font-bold">✓</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── UploadClient ─────────────────────────────────────────────────────────────
 
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
   const [items, setItems] = useState<PhotoItem[]>([])
+  const [meta, setMeta] = useState<WatchMeta>(defaultMeta())
   const [isDragging, setIsDragging] = useState(false)
   const [globalError, setGlobalError] = useState('')
   const [success, setSuccess] = useState(false)
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [partialSuccess, setPartialSuccess] = useState('')
   const [pendingCrop, setPendingCrop] = useState<{ src: string; file: File; id: string } | null>(null)
+  const [showMore, setShowMore] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
-
-  // Rate-limiting refs for identify
-  const identifyQueueRef = useRef<string[]>([])
-  const activeCountRef = useRef(0)
-  // Store compressed files by id so identify/upload can read them without stale closures
   const filesById = useRef<Map<string, File>>(new Map())
 
   function patchItem(id: string, patch: Partial<PhotoItem>) {
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)))
+  }
+
+  function patchMeta(patch: Partial<WatchMeta>) {
+    setMeta((prev) => ({ ...prev, ...patch }))
   }
 
   async function compressImage(file: File): Promise<File> {
@@ -617,32 +154,13 @@ export default function UploadClient() {
     })
   }
 
-  // ── Rate-limited identify ──────────────────────────────────────────────────
+  // ── AI identification (runs on primary photo only) ─────────────────────────
 
-  function queueIdentify(id: string) {
-    identifyQueueRef.current.push(id)
-    drainQueue()
-  }
-
-  function drainQueue() {
-    while (
-      activeCountRef.current < MAX_CONCURRENT_IDENTIFY &&
-      identifyQueueRef.current.length > 0
-    ) {
-      const id = identifyQueueRef.current.shift()!
-      activeCountRef.current++
-      identifyOne(id).finally(() => {
-        activeCountRef.current--
-        drainQueue()
-      })
-    }
-  }
-
-  async function identifyOne(id: string) {
-    const file = filesById.current.get(id)
+  async function identifyPrimary(primaryId: string) {
+    const file = filesById.current.get(primaryId)
     if (!file) return
 
-    patchItem(id, { status: 'identifying' })
+    patchMeta({ identifyStatus: 'identifying' })
 
     try {
       const formData = new FormData()
@@ -651,55 +169,48 @@ export default function UploadClient() {
       if (!res.ok) throw new Error('Identification failed')
       const data = await res.json()
 
-      setItems((prev) =>
-        prev.map((item) => {
-          if (item.id !== id) return item
+      const metaPatch: Partial<WatchMeta> = {
+        isWatch: data.isWatch,
+        aiGenerated: data.isAiGenerated ?? null,
+        identifyStatus: 'done',
+      }
 
-          const patch: Partial<PhotoItem> = {
-            isWatch: data.isWatch,
-            aiGenerated: data.isAiGenerated ?? null,
-            status: 'ready',
-          }
+      if (data.candidates?.[0]) {
+        const c = data.candidates[0] as AiCandidate
+        const filled = new Set<AiConfirmField>()
+        if (c.brand) filled.add('brand')
+        if (c.model) filled.add('model')
+        if (c.reference) filled.add('reference')
+        if (c.movement) filled.add('movement')
+        if (c.caseSize) filled.add('caseSize')
+        if (c.lugToLug) filled.add('lugToLug')
+        if (c.betweenLugs) filled.add('betweenLugs')
+        if (c.thickness) filled.add('thickness')
+        if (c.waterResistance) filled.add('waterResistance')
+        if (c.wristSize) filled.add('wristSize')
+        if (c.estimatedPrice) filled.add('estimatedPrice')
 
-          if (data.candidates?.[0]) {
-            const c = data.candidates[0] as AiCandidate
-            const filled = new Set<AiConfirmField>()
-            if (c.brand) filled.add('brand')
-            if (c.model) filled.add('model')
-            if (c.reference) filled.add('reference')
-            if (c.movement) filled.add('movement')
-            if (c.caseSize) filled.add('caseSize')
-            if (c.lugToLug) filled.add('lugToLug')
-            if (c.betweenLugs) filled.add('betweenLugs')
-            if (c.thickness) filled.add('thickness')
-            if (c.waterResistance) filled.add('waterResistance')
-            if (c.wristSize) filled.add('wristSize')
-            if (c.estimatedPrice) filled.add('estimatedPrice')
-
-            Object.assign(patch, {
-              brandName: c.brand || '',
-              modelName: c.model || '',
-              referenceNumber: c.reference || '',
-              movement: c.movement || '',
-              caseSize: c.caseSize || '',
-              wristSize: c.wristSize || '',
-              estimatedPrice: c.estimatedPrice || '',
-              lugToLug: c.lugToLug || '',
-              betweenLugs: c.betweenLugs || '',
-              thickness: c.thickness || '',
-              waterResistance: c.waterResistance || '',
-              aiIdentified: true,
-              aiFilledFields: filled,
-              aiConfirmedFields: {},
-            })
-          }
-
-          return { ...item, ...patch }
+        Object.assign(metaPatch, {
+          brandName: c.brand || '',
+          modelName: c.model || '',
+          referenceNumber: c.reference || '',
+          movement: c.movement || '',
+          caseSize: c.caseSize || '',
+          wristSize: c.wristSize || '',
+          estimatedPrice: c.estimatedPrice || '',
+          lugToLug: c.lugToLug || '',
+          betweenLugs: c.betweenLugs || '',
+          thickness: c.thickness || '',
+          waterResistance: c.waterResistance || '',
+          aiIdentified: true,
+          aiFilledFields: filled,
+          aiConfirmedFields: {},
         })
-      )
+      }
+
+      patchMeta(metaPatch)
     } catch {
-      // Assume watch if API fails; user can still manually fill
-      patchItem(id, { status: 'ready', isWatch: true })
+      patchMeta({ identifyStatus: 'error', isWatch: true })
     }
   }
 
@@ -726,7 +237,8 @@ export default function UploadClient() {
     if (errs.length) setGlobalError(errs.join(' · '))
     if (!valid.length) return
 
-    // Create placeholder items (shown immediately)
+    // Capture before state update — if no items yet this is the first batch
+    const isFirstBatch = items.length === 0
     const placeholders = valid.map((f) => createItem(f))
 
     setItems((prev) => {
@@ -735,20 +247,23 @@ export default function UploadClient() {
       return [...prev, ...placeholders.slice(0, slots)]
     })
 
-    // Compress + preview each in parallel, then queue identify
     await Promise.all(
       placeholders.map(async (placeholder) => {
         try {
           const compressed = await compressImage(placeholder.file)
           const preview = await fileToDataUrl(compressed)
           filesById.current.set(placeholder.id, compressed)
-          patchItem(placeholder.id, { file: compressed, preview, status: 'identifying' })
-          queueIdentify(placeholder.id)
+          patchItem(placeholder.id, { file: compressed, preview, status: 'ready' })
         } catch {
           patchItem(placeholder.id, { status: 'error', errorMessage: 'Failed to process image' })
         }
       })
     )
+
+    // Identify once, on first photo of first batch
+    if (isFirstBatch && placeholders.length > 0) {
+      identifyPrimary(placeholders[0].id)
+    }
   }
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -777,23 +292,53 @@ export default function UploadClient() {
     if (e.dataTransfer.files?.length) processFiles(e.dataTransfer.files)
   }
 
+  // ── Photo management ───────────────────────────────────────────────────────
+
+  function setPrimary(id: string) {
+    setItems((prev) => {
+      const idx = prev.findIndex((i) => i.id === id)
+      if (idx <= 0) return prev
+      const next = [...prev]
+      const [item] = next.splice(idx, 1)
+      next.unshift(item)
+      return next
+    })
+  }
+
+  function removeItem(id: string) {
+    const wasPrimary = items.length > 0 && items[0].id === id
+    const nextPrimary = wasPrimary && items.length > 1 ? items[1] : null
+
+    setItems((prev) => prev.filter((i) => i.id !== id))
+    filesById.current.delete(id)
+    if (pendingCrop?.id === id) setPendingCrop(null)
+
+    if (wasPrimary) {
+      patchMeta({
+        identifyStatus: 'idle', aiIdentified: false,
+        aiFilledFields: new Set(), aiConfirmedFields: {},
+        isWatch: null, aiGenerated: null,
+      })
+      if (nextPrimary) identifyPrimary(nextPrimary.id)
+    }
+  }
+
   // ── Crop ───────────────────────────────────────────────────────────────────
 
   function handleCropConfirm(croppedFile: File, croppedDataUrl: string) {
     if (!pendingCrop) return
     const { id } = pendingCrop
+    const wasPrimary = items.length > 0 && items[0].id === id
     filesById.current.set(id, croppedFile)
-    patchItem(id, {
-      file: croppedFile,
-      preview: croppedDataUrl,
-      isWatch: null,
-      aiGenerated: null,
-      aiIdentified: false,
-      aiFilledFields: new Set(),
-      aiConfirmedFields: {},
-      status: 'identifying',
-    })
-    queueIdentify(id)
+    patchItem(id, { file: croppedFile, preview: croppedDataUrl })
+    if (wasPrimary) {
+      patchMeta({
+        identifyStatus: 'idle', aiIdentified: false,
+        aiFilledFields: new Set(), aiConfirmedFields: {},
+        isWatch: null, aiGenerated: null,
+      })
+      identifyPrimary(id)
+    }
     setPendingCrop(null)
   }
 
@@ -801,36 +346,89 @@ export default function UploadClient() {
     setPendingCrop(null)
   }
 
+  // ── Form field helpers ─────────────────────────────────────────────────────
+
+  function metaChange(field: string, aiField: AiConfirmField | null, value: string) {
+    const patch: Partial<WatchMeta> = { [field]: value } as Partial<WatchMeta>
+    if (aiField && meta.aiFilledFields.has(aiField)) {
+      patch.aiConfirmedFields = { ...meta.aiConfirmedFields, [aiField]: true }
+    }
+    patchMeta(patch)
+  }
+
+  function confirmField(field: AiConfirmField) {
+    patchMeta({ aiConfirmedFields: { ...meta.aiConfirmedFields, [field]: true } })
+  }
+
+  function isAiUnconfirmed(field: AiConfirmField) {
+    return meta.aiIdentified && meta.aiFilledFields.has(field) && !meta.aiConfirmedFields[field]
+  }
+
+  function fieldBorderClass(field: AiConfirmField) {
+    if (isAiUnconfirmed(field)) return 'border-blue-400 ring-1 ring-blue-300 dark:ring-blue-600'
+    if (meta.aiIdentified && meta.aiFilledFields.has(field) && meta.aiConfirmedFields[field]) return 'border-green-400'
+    return 'border-borderStrong focus:border-accent'
+  }
+
+  function inputPrClass(field: AiConfirmField) {
+    return meta.aiIdentified && meta.aiFilledFields.has(field) ? 'pr-8' : ''
+  }
+
+  function InlineConfirm({ field }: { field: AiConfirmField }) {
+    if (isAiUnconfirmed(field)) {
+      return (
+        <button
+          type="button"
+          onClick={() => confirmField(field)}
+          aria-label={`Accept AI suggestion for ${field}`}
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+        >
+          ✓
+        </button>
+      )
+    }
+    if (meta.aiIdentified && meta.aiFilledFields.has(field) && meta.aiConfirmedFields[field]) {
+      return <span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-sm" aria-label="Confirmed">✓</span>
+    }
+    return null
+  }
+
+  const allAiFieldsConfirmed =
+    !meta.aiIdentified ||
+    meta.aiFilledFields.size === 0 ||
+    Array.from(meta.aiFilledFields).every((f) => !!meta.aiConfirmedFields[f])
+
+  const aiFilledCount = meta.aiFilledFields.size
+  const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
+    (f) => meta.aiFilledFields.has(f) && meta.aiConfirmedFields[f]
+  ).length
+
   // ── Submit ─────────────────────────────────────────────────────────────────
 
-  function isItemReady(item: PhotoItem) {
-    if (item.status !== 'ready' && item.status !== 'error') return false
-    if (!item.brandName.trim()) return false
-    if (item.isWatch === false) return false
-    const allAiFieldsConfirmed =
-      !item.aiIdentified ||
-      item.aiFilledFields.size === 0 ||
-      Array.from(item.aiFilledFields).every((f) => !!item.aiConfirmedFields[f])
+  function isFormReady() {
+    if (items.filter((i) => i.status === 'ready').length === 0) return false
+    if (!meta.brandName.trim()) return false
+    if (meta.isWatch === false) return false
     return allAiFieldsConfirmed
   }
 
   async function uploadItem(item: PhotoItem): Promise<void> {
     patchItem(item.id, { status: 'uploading', errorMessage: '' })
     const file = filesById.current.get(item.id) || item.file
-    const watchId = toSlug(`${item.brandName} ${item.modelName}`)
+    const watchId = toSlug(`${meta.brandName} ${meta.modelName}`)
     const formData = new FormData()
     formData.append('photo', file)
-    if (item.brandName.trim()) formData.append('brandName', item.brandName.trim())
-    if (item.modelName.trim()) formData.append('modelName', item.modelName.trim())
-    if (item.referenceNumber.trim()) formData.append('referenceNumber', item.referenceNumber.trim())
-    if (item.movement) formData.append('movement', item.movement)
-    if (item.caseSize.trim()) formData.append('caseSize', item.caseSize.trim())
-    if (item.wristSize) formData.append('wristSize', item.wristSize)
-    if (item.estimatedPrice) formData.append('estimatedPrice', item.estimatedPrice)
-    if (item.lugToLug.trim()) formData.append('lugToLug', item.lugToLug.trim())
-    if (item.betweenLugs.trim()) formData.append('betweenLugs', item.betweenLugs.trim())
-    if (item.thickness.trim()) formData.append('thickness', item.thickness.trim())
-    if (item.waterResistance.trim()) formData.append('waterResistance', item.waterResistance.trim())
+    if (meta.brandName.trim()) formData.append('brandName', meta.brandName.trim())
+    if (meta.modelName.trim()) formData.append('modelName', meta.modelName.trim())
+    if (meta.referenceNumber.trim()) formData.append('referenceNumber', meta.referenceNumber.trim())
+    if (meta.movement) formData.append('movement', meta.movement)
+    if (meta.caseSize.trim()) formData.append('caseSize', meta.caseSize.trim())
+    if (meta.wristSize) formData.append('wristSize', meta.wristSize)
+    if (meta.estimatedPrice) formData.append('estimatedPrice', meta.estimatedPrice)
+    if (meta.lugToLug.trim()) formData.append('lugToLug', meta.lugToLug.trim())
+    if (meta.betweenLugs.trim()) formData.append('betweenLugs', meta.betweenLugs.trim())
+    if (meta.thickness.trim()) formData.append('thickness', meta.thickness.trim())
+    if (meta.waterResistance.trim()) formData.append('waterResistance', meta.waterResistance.trim())
 
     const res = await fetch(`/api/photos/${watchId}`, { method: 'POST', body: formData })
     if (!res.ok) {
@@ -842,15 +440,13 @@ export default function UploadClient() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setPartialSuccess('')
+    if (!isFormReady()) return
 
-    const readyItems = items.filter(isItemReady)
-    if (!readyItems.length) return
-
+    const readyItems = items.filter((i) => i.status === 'ready')
     let successCount = 0
     let failCount = 0
 
-    for (let i = 0; i < readyItems.length; i++) {
-      const item = readyItems[i]
+    for (const item of readyItems) {
       try {
         await uploadItem(item)
         patchItem(item.id, { status: 'done' })
@@ -865,9 +461,7 @@ export default function UploadClient() {
     }
 
     if (successCount > 0 && failCount === 0) {
-      // All succeeded
-      const donePreviews = readyItems.map((i) => i.preview)
-      setSuccessPreviews(donePreviews)
+      setSuccessPreviews(readyItems.map((i) => i.preview))
       setSuccess(true)
     } else if (successCount > 0 && failCount > 0) {
       setPartialSuccess(
@@ -878,7 +472,7 @@ export default function UploadClient() {
 
   async function retryUpload(id: string) {
     const item = items.find((i) => i.id === id)
-    if (!item || !isItemReady({ ...item, status: 'ready' })) return
+    if (!item) return
     try {
       await uploadItem({ ...item, status: 'ready' })
       patchItem(id, { status: 'done' })
@@ -892,11 +486,12 @@ export default function UploadClient() {
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
-  const readyCount = items.filter(isItemReady).length
-  const totalActive = items.filter((i) => i.status !== 'done').length
-  const isUploading = items.some((i) => i.status === 'uploading')
+  const primaryItem = items[0] ?? null
   const hasItems = items.length > 0
   const atMax = items.length >= MAX_PHOTOS
+  const isUploading = items.some((i) => i.status === 'uploading')
+  const readyCount = items.filter((i) => i.status === 'ready').length
+  const canSubmit = isFormReady() && !isUploading
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -910,8 +505,8 @@ export default function UploadClient() {
 
   return (
     <main className="min-h-screen bg-surfaceAlt text-textPrimary">
-      <div className="max-w-[80rem] mx-auto px-4 py-8 sm:py-16">
-        <Link href="/" className="text-xs sm:text-sm text-textMuted hover:text-textPrimary mb-6 sm:mb-8 inline-block">
+      <div className="max-w-[80rem] mx-auto px-4 py-8 sm:py-12">
+        <Link href="/" className="text-xs sm:text-sm text-textMuted hover:text-textPrimary mb-6 inline-block">
           &larr; Back to home
         </Link>
 
@@ -935,12 +530,7 @@ export default function UploadClient() {
               <div className="flex justify-center gap-2 sm:gap-3 mb-4 flex-wrap">
                 {successPreviews.map((src, i) => (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={i}
-                    src={src}
-                    className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-xl"
-                    alt={`Submitted photo ${i + 1}`}
-                  />
+                  <img key={i} src={src} className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-xl" alt={`Submitted photo ${i + 1}`} />
                 ))}
               </div>
             )}
@@ -964,6 +554,7 @@ export default function UploadClient() {
                 onClick={() => {
                   setSuccess(false)
                   setItems([])
+                  setMeta(defaultMeta())
                   setGlobalError('')
                   setSuccessPreviews([])
                   setPartialSuccess('')
@@ -977,54 +568,443 @@ export default function UploadClient() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Global error */}
             {globalError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-sm text-red-800">{globalError}</p>
               </div>
             )}
-
-            {/* Partial success banner */}
             {partialSuccess && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-sm text-green-800">{partialSuccess}</p>
               </div>
             )}
 
-            {/* Drop zone — shown when empty or as "add more" */}
-            {!atMax && (
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl text-center cursor-pointer transition-all ${
-                  hasItems ? 'py-4 px-6' : 'py-12 px-6'
-                } ${
-                  isDragging
-                    ? 'border-accent bg-accent/5'
-                    : 'border-borderStrong hover:border-accent'
-                }`}
-              >
-                {hasItems ? (
-                  <p className="text-textMuted text-sm">
-                    + Drop more photos or click to add ({items.length}/{MAX_PHOTOS})
-                  </p>
+            {/* Two-column layout: photo left, form right */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
+
+              {/* ── LEFT: Photo area ── */}
+              <div className="bg-surface border border-borderStrong rounded-xl p-4 shadow-sm space-y-4">
+
+                {/* Primary photo preview or drop zone */}
+                {hasItems && primaryItem?.preview ? (
+                  <div className="relative rounded-lg overflow-hidden bg-neutral aspect-[4/3]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={primaryItem.preview} alt="Primary photo" className="w-full h-full object-cover" />
+
+                    {meta.identifyStatus === 'identifying' && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="text-white text-sm flex items-center gap-2">
+                          <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                          Identifying watch...
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="absolute top-2 left-2 bg-accent text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                      Primary
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setPendingCrop({ src: primaryItem.preview, file: primaryItem.file, id: primaryItem.id })}
+                      className="absolute bottom-2 left-2 bg-white/80 text-xs px-2 py-1 rounded shadow hover:bg-white text-gray-700"
+                    >
+                      ✂ Crop
+                    </button>
+                  </div>
                 ) : (
-                  <>
-                    <div className="text-4xl sm:text-5xl mb-3">{'\uD83D\uDCF7'}</div>
-                    <p className="text-textMuted mb-1 text-sm">
-                      {isDragging
-                        ? 'Drop your photos here'
-                        : 'Drag & drop photos or click to select'}
-                    </p>
-                    <p className="text-textMuted text-xs">
-                      Select multiple files at once · JPEG, PNG, WebP, AVIF · Up to 20MB each
-                    </p>
-                  </>
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => fileRef.current?.click()}
+                    className={`aspect-[4/3] border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors ${
+                      isDragging ? 'border-accent bg-accent/5' : 'border-borderStrong hover:border-accent'
+                    }`}
+                  >
+                    {hasItems ? (
+                      <div className="text-textMuted text-sm flex items-center gap-2">
+                        <span className="animate-spin inline-block w-4 h-4 border-2 border-textMuted border-t-transparent rounded-full" />
+                        Processing...
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-4xl mb-3">📷</div>
+                        <p className="text-textMuted text-sm text-center px-4">
+                          {isDragging ? 'Drop your photos here' : 'Drag & drop or click to add photos'}
+                        </p>
+                        <p className="text-textMuted text-xs mt-1">JPEG, PNG, WebP · Up to 20MB each</p>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Thumbnail strip + add button */}
+                {hasItems && (
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((item, i) => (
+                      <div key={item.id} className="relative group">
+                        <div
+                          onClick={() => { if (i > 0 && item.status !== 'uploading') setPrimary(item.id) }}
+                          className={`w-16 h-16 rounded-lg overflow-hidden bg-neutral ${
+                            i === 0
+                              ? 'ring-2 ring-accent'
+                              : item.status !== 'uploading'
+                              ? 'cursor-pointer hover:ring-2 hover:ring-accent/60'
+                              : ''
+                          }`}
+                        >
+                          {item.preview ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.preview} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="animate-spin w-3 h-3 border-2 border-textMuted border-t-transparent rounded-full" />
+                            </div>
+                          )}
+                          {item.status === 'uploading' && (
+                            <div className="absolute inset-0 bg-blue-500/40 rounded-lg flex items-center justify-center">
+                              <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                            </div>
+                          )}
+                          {item.status === 'done' && (
+                            <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
+                              <span className="text-white font-bold text-lg">✓</span>
+                            </div>
+                          )}
+                          {item.status === 'error' && (
+                            <div className="absolute inset-0 bg-red-500/40 rounded-lg flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); retryUpload(item.id) }}
+                                className="text-white text-[10px] font-bold bg-red-600/80 px-1.5 py-0.5 rounded"
+                                title={item.errorMessage || 'Retry upload'}
+                              >
+                                Retry
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {item.status !== 'uploading' && item.status !== 'done' && (
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.id)}
+                            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label="Remove photo"
+                          >
+                            &times;
+                          </button>
+                        )}
+
+                        {i > 0 && item.status === 'ready' && (
+                          <div className="absolute bottom-0 left-0 right-0 text-center pointer-events-none">
+                            <span className="text-[9px] text-white bg-black/60 px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                              Set primary
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {!atMax && (
+                      <button
+                        type="button"
+                        onClick={() => fileRef.current?.click()}
+                        className="w-16 h-16 border-2 border-dashed border-borderStrong hover:border-accent rounded-lg flex items-center justify-center text-textMuted hover:text-accent transition-colors text-2xl leading-none"
+                        aria-label="Add more photos"
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Drop zone for adding more angles */}
+                {hasItems && !atMax && (
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`border border-dashed rounded-lg py-2 text-center text-xs transition-colors ${
+                      isDragging
+                        ? 'border-accent bg-accent/5 text-accent'
+                        : 'border-borderStrong text-textMuted'
+                    }`}
+                  >
+                    Drop more angles here · {items.length}/{MAX_PHOTOS} photos
+                  </div>
                 )}
               </div>
-            )}
+
+              {/* ── RIGHT: Watch form ── */}
+              <div className="bg-surface border border-borderStrong rounded-xl p-5 shadow-sm space-y-5">
+
+                {/* Warnings */}
+                {meta.isWatch === false && (
+                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                    <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                      ⚠️ This doesn&apos;t look like a watch photo. You can still submit if the AI is incorrect.
+                    </p>
+                  </div>
+                )}
+                {meta.aiGenerated === true && (
+                  <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
+                    <p className="text-xs text-amber-800 dark:text-amber-200">
+                      ⚠️ Photo may be AI-generated. AI images won&apos;t be approved.
+                    </p>
+                  </div>
+                )}
+
+                {/* AI identification status */}
+                {meta.identifyStatus !== 'idle' && (
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-textMuted">
+                      {meta.identifyStatus === 'identifying' ? (
+                        <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                          <span className="animate-spin inline-block w-3 h-3 border border-blue-500 border-t-transparent rounded-full" />
+                          Identifying watch...
+                        </span>
+                      ) : meta.identifyStatus === 'error' ? (
+                        'Identification failed — fill in details manually'
+                      ) : (
+                        'Watch identified from primary photo'
+                      )}
+                    </span>
+                    {meta.identifyStatus !== 'identifying' && primaryItem && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          patchMeta({
+                            identifyStatus: 'idle', aiIdentified: false,
+                            aiFilledFields: new Set(), aiConfirmedFields: {},
+                          })
+                          identifyPrimary(primaryItem.id)
+                        }}
+                        className="text-textMuted hover:text-textPrimary underline ml-3"
+                      >
+                        Re-identify
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* AI confirmation progress */}
+                {meta.aiIdentified && aiFilledCount > 0 && (
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                        AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''}
+                      </span>
+                      <span className="text-xs text-blue-700 dark:text-blue-300 tabular-nums">
+                        {aiConfirmedCount}/{aiFilledCount}
+                      </span>
+                    </div>
+                    <div className="h-1 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                        style={{ width: `${(aiConfirmedCount / aiFilledCount) * 100}%` }}
+                      />
+                    </div>
+                    {!allAiFieldsConfirmed && (
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5">
+                        Click ✓ on highlighted fields to confirm each AI suggestion.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Brand */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-1.5">
+                    Brand <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={meta.brandName}
+                      onChange={(e) => metaChange('brandName', 'brand', e.target.value)}
+                      placeholder="e.g. Rolex"
+                      maxLength={80}
+                      className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('brand')} ${inputPrClass('brand')}`}
+                    />
+                    <InlineConfirm field="brand" />
+                  </div>
+                </div>
+
+                {/* Model */}
+                <div>
+                  <label className="block text-sm font-medium text-textSecond mb-1.5">
+                    Model <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={meta.modelName}
+                      onChange={(e) => metaChange('modelName', 'model', e.target.value)}
+                      placeholder="e.g. Submariner"
+                      maxLength={100}
+                      className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('model')} ${inputPrClass('model')}`}
+                    />
+                    <InlineConfirm field="model" />
+                  </div>
+                </div>
+
+                {/* Optional details toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowMore((v) => !v)}
+                  className="text-xs text-textMuted hover:text-textPrimary underline text-left"
+                >
+                  {showMore ? 'Hide optional details' : '+ Add optional details'}
+                </button>
+
+                {showMore && (
+                  <div className="space-y-4">
+                    {/* Reference */}
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-1.5">Reference</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={meta.referenceNumber}
+                          onChange={(e) => metaChange('referenceNumber', 'reference', e.target.value)}
+                          placeholder="e.g. 126610LN"
+                          maxLength={60}
+                          className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('reference')} ${inputPrClass('reference')}`}
+                        />
+                        <InlineConfirm field="reference" />
+                      </div>
+                    </div>
+
+                    {/* Movement */}
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-1.5">Movement</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={meta.movement}
+                          onChange={(e) => metaChange('movement', 'movement', e.target.value)}
+                          placeholder="e.g. Automatic"
+                          maxLength={60}
+                          className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('movement')} ${inputPrClass('movement')}`}
+                        />
+                        <InlineConfirm field="movement" />
+                      </div>
+                    </div>
+
+                    {/* Case dimensions — grouped 2×2 */}
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-1.5">Dimensions</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={meta.caseSize}
+                            onChange={(e) => metaChange('caseSize', 'caseSize', e.target.value)}
+                            placeholder="Case: 40mm"
+                            maxLength={20}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
+                          />
+                          <InlineConfirm field="caseSize" />
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={meta.lugToLug}
+                            onChange={(e) => metaChange('lugToLug', 'lugToLug', e.target.value)}
+                            placeholder="Lug-to-lug: 47mm"
+                            maxLength={20}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
+                          />
+                          <InlineConfirm field="lugToLug" />
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={meta.betweenLugs}
+                            onChange={(e) => metaChange('betweenLugs', 'betweenLugs', e.target.value)}
+                            placeholder="Lug width: 20mm"
+                            maxLength={20}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
+                          />
+                          <InlineConfirm field="betweenLugs" />
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={meta.thickness}
+                            onChange={(e) => metaChange('thickness', 'thickness', e.target.value)}
+                            placeholder="Thickness: 12mm"
+                            maxLength={20}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
+                          />
+                          <InlineConfirm field="thickness" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Water resistance */}
+                    <div>
+                      <label className="block text-sm font-medium text-textSecond mb-1.5">Water resistance</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={meta.waterResistance}
+                          onChange={(e) => metaChange('waterResistance', 'waterResistance', e.target.value)}
+                          placeholder="e.g. 300m / 1000ft"
+                          maxLength={40}
+                          className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('waterResistance')} ${inputPrClass('waterResistance')}`}
+                        />
+                        <InlineConfirm field="waterResistance" />
+                      </div>
+                    </div>
+
+                    {/* Wrist size + Price */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-textSecond mb-1.5">Wrist size</label>
+                        <div className="flex gap-1 items-center">
+                          <select
+                            value={meta.wristSize}
+                            onChange={(e) => metaChange('wristSize', 'wristSize', e.target.value)}
+                            className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2.5 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('wristSize')}`}
+                          >
+                            <option value="">Select...</option>
+                            {WRIST_SIZE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                          {isAiUnconfirmed('wristSize') && (
+                            <button type="button" onClick={() => confirmField('wristSize')} className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                          )}
+                          {meta.aiIdentified && meta.aiFilledFields.has('wristSize') && meta.aiConfirmedFields['wristSize'] && (
+                            <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm">✓</span>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-textSecond mb-1.5">Est. value</label>
+                        <div className="flex gap-1 items-center">
+                          <select
+                            value={meta.estimatedPrice}
+                            onChange={(e) => metaChange('estimatedPrice', 'estimatedPrice', e.target.value)}
+                            className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2.5 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('estimatedPrice')}`}
+                          >
+                            <option value="">Select...</option>
+                            {ESTIMATED_PRICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                          {isAiUnconfirmed('estimatedPrice') && (
+                            <button type="button" onClick={() => confirmField('estimatedPrice')} className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                          )}
+                          {meta.aiIdentified && meta.aiFilledFields.has('estimatedPrice') && meta.aiConfirmedFields['estimatedPrice'] && (
+                            <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm">✓</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
             <input
               ref={fileRef}
@@ -1035,86 +1015,45 @@ export default function UploadClient() {
               className="hidden"
             />
 
-            {/* Photo grid */}
+            {/* Sticky submit bar */}
             {hasItems && (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {items.map((item) => (
-                    <PhotoCard
-                      key={item.id}
-                      item={item}
-                      onRemove={() => {
-                        setItems((prev) => prev.filter((i) => i.id !== item.id))
-                        filesById.current.delete(item.id)
-                        // Remove from identify queue if pending
-                        identifyQueueRef.current = identifyQueueRef.current.filter(
-                          (qid) => qid !== item.id
-                        )
-                      }}
-                      onUpdate={(patch) => patchItem(item.id, patch)}
-                      onRetryIdentify={() => {
-                        patchItem(item.id, {
-                          aiIdentified: false,
-                          aiFilledFields: new Set(),
-                          aiConfirmedFields: {},
-                          isWatch: null,
-                          aiGenerated: null,
-                        })
-                        queueIdentify(item.id)
-                      }}
-                      onRetryUpload={() => retryUpload(item.id)}
-                      onCropRequest={(src, file) =>
-                        setPendingCrop({ src, file, id: item.id })
-                      }
-                    />
-                  ))}
-                </div>
-
-                {/* Submit bar */}
-                <div className="sticky bottom-4 z-10">
-                  <div className="bg-surface border border-borderStrong rounded-xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="text-sm text-textSecond text-center sm:text-left">
-                      {readyCount === 0 ? (
-                        <span className="text-textMuted">
-                          {totalActive === 0
-                            ? 'All photos uploaded'
-                            : 'Confirm all AI-filled fields above to submit'}
-                        </span>
-                      ) : (
-                        <span>
-                          <span className="font-semibold text-textPrimary">{readyCount}</span> of{' '}
-                          {totalActive} photo{totalActive !== 1 ? 's' : ''} ready to submit
-                          {totalActive - readyCount > 0 && (
-                            <span className="text-textMuted">
-                              {' '}({totalActive - readyCount} need{totalActive - readyCount === 1 ? 's' : ''} review)
-                            </span>
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={readyCount === 0 || isUploading}
-                      className={`w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-colors text-sm ${
-                        readyCount > 0 && !isUploading
-                          ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
-                          : 'bg-neutral text-textMuted cursor-not-allowed'
-                      }`}
-                    >
-                      {isUploading
-                        ? 'Uploading...'
-                        : readyCount === 1
-                        ? 'Submit 1 photo'
-                        : `Submit ${readyCount} photos`}
-                    </button>
+              <div className="sticky bottom-4 z-10">
+                <div className="bg-surface border border-borderStrong rounded-xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-sm text-textSecond text-center sm:text-left">
+                    {readyCount === 0 ? (
+                      <span className="text-textMuted">All photos uploaded</span>
+                    ) : !meta.brandName.trim() ? (
+                      <span className="text-textMuted">Enter a brand name to submit</span>
+                    ) : !allAiFieldsConfirmed ? (
+                      <span className="text-amber-600">Confirm AI-filled fields to submit</span>
+                    ) : (
+                      <span>
+                        <span className="font-semibold text-textPrimary">{readyCount}</span>{' '}
+                        photo{readyCount !== 1 ? 's' : ''} of the same watch ready to submit
+                      </span>
+                    )}
                   </div>
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className={`w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-colors text-sm ${
+                      canSubmit
+                        ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
+                        : 'bg-neutral text-textMuted cursor-not-allowed'
+                    }`}
+                  >
+                    {isUploading
+                      ? 'Uploading...'
+                      : readyCount === 1
+                      ? 'Submit 1 photo'
+                      : `Submit ${readyCount} photos`}
+                  </button>
                 </div>
-              </>
+              </div>
             )}
           </form>
         )}
 
-        {/* Crop Modal */}
         {pendingCrop && (
           <CropModal
             imageSrc={pendingCrop.src}
