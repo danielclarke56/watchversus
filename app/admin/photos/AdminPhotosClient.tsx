@@ -238,7 +238,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
-  onReorder?: (watchId: string, photos: ApprovedPhoto[], currentIdx: number, direction: 'up' | 'down') => void
+  onReorder?: (watchId: string, reorderedPhotos: ApprovedPhoto[]) => void
   isApproved: boolean
   isRejected?: boolean
 }) {
@@ -247,6 +247,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
     currentIndex: 0,
     watchId: group.watchId,
   })
+  const [dragState, setDragState] = useState<{ watchId: string; index: number } | null>(null)
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
 
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
   const isAiFillingGroup = aiFillingGroup === group.watchId
@@ -336,15 +338,67 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               const isLastPhoto = group.photos.length === 1
               const canDelete = isRejected || isPending ? true : !isLastPhoto
               
-              // Reorder visibility logic
-              const canShowReorderArrows = isApproved && onReorder && !isLastPhoto
-              const canMoveLeft = idx > 0
-              const canMoveRight = idx < group.photos.length - 1
+              // Drag state tracking
+              const isDragging = dragState?.watchId === group.watchId && dragState?.index === idx
+              const isDropTarget = dropTargetIndex === idx && dragState?.watchId === group.watchId
+              const canDrag = isApproved && !isLastPhoto
+
+              const handleDragStart = (e: React.DragEvent) => {
+                setDragState({ watchId: group.watchId, index: idx })
+                e.dataTransfer.effectAllowed = 'move'
+              }
+
+              const handleDragOver = (e: React.DragEvent) => {
+                e.preventDefault()
+                e.dataTransfer.dropEffect = 'move'
+                setDropTargetIndex(idx)
+              }
+
+              const handleDragLeave = () => {
+                setDropTargetIndex(null)
+              }
+
+              const handleDrop = async (e: React.DragEvent) => {
+                e.preventDefault()
+                if (!dragState || dragState.watchId !== group.watchId || dragState.index === idx) {
+                  setDragState(null)
+                  setDropTargetIndex(null)
+                  return
+                }
+
+                // Reorder the array
+                const reorderedPhotos = [...(group.photos as ApprovedPhoto[])]
+                const [movedPhoto] = reorderedPhotos.splice(dragState.index, 1)
+                reorderedPhotos.splice(idx, 0, movedPhoto)
+
+                // Call onReorder with the new order
+                onReorder?.(group.watchId, reorderedPhotos)
+
+                setDragState(null)
+                setDropTargetIndex(null)
+              }
+
+              const handleDragEnd = () => {
+                setDragState(null)
+                setDropTargetIndex(null)
+              }
 
               return (
                 <div
                   key={photo.id}
-                  className="relative aspect-square rounded overflow-hidden border border-border hover:border-blue-400 hover:ring-1 hover:ring-blue-300 transition-all group"
+                  draggable={canDrag}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onDragEnd={handleDragEnd}
+                  className={`relative aspect-square rounded overflow-hidden border border-border transition-all group cursor-grab active:cursor-grabbing ${
+                    isDragging ? 'opacity-50' : ''
+                  } ${
+                    isDropTarget ? 'ring-2 ring-blue-500 scale-105' : 'hover:border-blue-400 hover:ring-1 hover:ring-blue-300'
+                  } ${
+                    canDrag ? 'cursor-grab hover:border-blue-400 hover:ring-1 hover:ring-blue-300' : ''
+                  }`}
                 >
                   <button
                     onClick={() => openLightbox(idx)}
@@ -364,32 +418,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                     <div className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
                       #{idx + 1}
                     </div>
-                  )}
-
-                  {/* Left reorder arrow */}
-                  {canShowReorderArrows && canMoveLeft && (
-                    <button
-                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'up')}
-                      disabled={isActing}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/60 text-white w-5 h-full max-h-8 flex items-center justify-center text-xs hover:bg-blue-600 transition-colors disabled:opacity-50"
-                      title="Move left"
-                      aria-label="Move photo left"
-                    >
-                      ←
-                    </button>
-                  )}
-
-                  {/* Right reorder arrow */}
-                  {canShowReorderArrows && canMoveRight && (
-                    <button
-                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'down')}
-                      disabled={isActing}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/60 text-white w-5 h-full max-h-8 flex items-center justify-center text-xs hover:bg-blue-600 transition-colors disabled:opacity-50"
-                      title="Move right"
-                      aria-label="Move photo right"
-                    >
-                      →
-                    </button>
                   )}
 
                   {/* Delete button overlay */}
@@ -737,16 +765,9 @@ export default function AdminPhotosClient() {
 
   async function handleReorder(
     watchId: string,
-    photos: ApprovedPhoto[],
-    currentIdx: number,
-    direction: 'up' | 'down'
+    reorderedPhotos: ApprovedPhoto[]
   ) {
-    const newIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1
-    if (newIdx < 0 || newIdx >= photos.length) return
-
-    const reorderedPhotos = [...photos]
-    ;[reorderedPhotos[currentIdx], reorderedPhotos[newIdx]] = [reorderedPhotos[newIdx], reorderedPhotos[currentIdx]]
-
+    // reorderedPhotos is already in the new order from drag-and-drop
     setActing(`reorder-${watchId}`)
     try {
       const res = await fetch('/api/admin/photos', {
