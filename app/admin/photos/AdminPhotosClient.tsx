@@ -335,6 +335,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               const isActing = acting === photo.id
               const isLastPhoto = group.photos.length === 1
               const canDelete = isRejected || isPending ? true : !isLastPhoto
+              
+              // Reorder visibility logic
+              const canShowReorderArrows = isApproved && onReorder && !isLastPhoto
+              const canMoveLeft = idx > 0
+              const canMoveRight = idx < group.photos.length - 1
 
               return (
                 <div
@@ -353,6 +358,39 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                       className="w-full h-full object-cover"
                     />
                   </button>
+
+                  {/* Position badge (only for approved photos) */}
+                  {isApproved && (
+                    <div className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
+                      #{idx + 1}
+                    </div>
+                  )}
+
+                  {/* Left reorder arrow */}
+                  {canShowReorderArrows && canMoveLeft && (
+                    <button
+                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'up')}
+                      disabled={isActing}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/60 text-white w-5 h-full max-h-8 flex items-center justify-center text-xs hover:bg-blue-600 transition-colors disabled:opacity-50"
+                      title="Move left"
+                      aria-label="Move photo left"
+                    >
+                      ←
+                    </button>
+                  )}
+
+                  {/* Right reorder arrow */}
+                  {canShowReorderArrows && canMoveRight && (
+                    <button
+                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'down')}
+                      disabled={isActing}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/60 text-white w-5 h-full max-h-8 flex items-center justify-center text-xs hover:bg-blue-600 transition-colors disabled:opacity-50"
+                      title="Move right"
+                      aria-label="Move photo right"
+                    >
+                      →
+                    </button>
+                  )}
 
                   {/* Delete button overlay */}
                   {onDelete && (
@@ -375,51 +413,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
             })}
           </div>
         </div>
-
-        {/* Per-photo actions (reorder only) */}
-        {isApproved && onReorder && (
-          <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
-            <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">
-              Photo Order
-            </p>
-            <div className="space-y-1.5">
-              {group.photos.map((photo, idx) => {
-                const isActing = acting === photo.id
-                const canMoveUp = idx > 0
-                const canMoveDown = idx < group.photos.length - 1
-
-                return (
-                  <div key={photo.id} className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'up')}
-                      disabled={isActing || !canMoveUp}
-                      className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
-                        canMoveUp
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      }`}
-                      title="Move up"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'down')}
-                      disabled={isActing || !canMoveDown}
-                      className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
-                        canMoveDown
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      }`}
-                      title="Move down"
-                    >
-                      ↓
-                    </button>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Action buttons — bottom of card */}
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 bg-surfaceAlt flex items-center gap-2">
