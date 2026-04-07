@@ -239,7 +239,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
-  onReorder?: (watchId: string, reorderedPhotos: ApprovedPhoto[]) => void
+  onReorder?: (watchId: string, reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]) => void
   isApproved: boolean
   isRejected?: boolean
 }) {
@@ -344,7 +344,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               // Drag state tracking
               const isDragging = dragState?.watchId === group.watchId && dragState?.index === idx
               const isDropTarget = dropTargetIndex === idx && dragState?.watchId === group.watchId
-              const canDrag = isApproved && !isLastPhoto
+              const canDrag = !isRejected && !isLastPhoto
 
               const handleDragStart = (e: React.DragEvent) => {
                 setDragState({ watchId: group.watchId, index: idx })
@@ -370,7 +370,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                 }
 
                 // Reorder the array
-                const reorderedPhotos = [...(group.photos as ApprovedPhoto[])]
+                const reorderedPhotos = [...group.photos]
                 const [movedPhoto] = reorderedPhotos.splice(dragState.index, 1)
                 reorderedPhotos.splice(idx, 0, movedPhoto)
 
@@ -411,7 +411,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                 if (touchDragIndexRef.current === null) return
                 const fromIdx = touchDragIndexRef.current
                 if (dropTargetIndex !== null && dropTargetIndex !== fromIdx) {
-                  const reorderedPhotos = [...(group.photos as ApprovedPhoto[])]
+                  const reorderedPhotos = [...group.photos]
                   const [movedPhoto] = reorderedPhotos.splice(fromIdx, 1)
                   reorderedPhotos.splice(dropTargetIndex, 0, movedPhoto)
                   onReorder?.(group.watchId, reorderedPhotos)
@@ -455,8 +455,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                     />
                   </button>
 
-                  {/* Position badge (only for approved photos) */}
-                  {isApproved && (
+                  {/* Position badge (for draggable photos — pending and approved) */}
+                  {canDrag && (
                     <div className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
                       #{idx + 1}
                     </div>
@@ -812,7 +812,7 @@ export default function AdminPhotosClient() {
 
   async function handleReorder(
     watchId: string,
-    reorderedPhotos: ApprovedPhoto[]
+    reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]
   ) {
     // reorderedPhotos is already in the new order from drag-and-drop
     setActing(`reorder-${watchId}`)
@@ -829,6 +829,32 @@ export default function AdminPhotosClient() {
             sortOrder: reorderedPhotos.findIndex((rp) => rp.id === p.id),
           }))
         )
+        showToast('Order saved')
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
+  async function handleReorderPending(
+    watchId: string,
+    reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]
+  ) {
+    setActing(`reorder-${watchId}`)
+    try {
+      const res = await fetch('/api/admin/photos', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ watchId, photoIds: reorderedPhotos.map((p) => p.id) }),
+      })
+      if (res.ok) {
+        // Reorder pending photos in local state to reflect drag order
+        setPendingPhotos((prev) => {
+          const reorderedIds = reorderedPhotos.map((p) => p.id)
+          const watchPhotos = prev.filter((p) => p.watchId === watchId)
+          const otherPhotos = prev.filter((p) => p.watchId !== watchId)
+          const sorted = reorderedIds.map((id) => watchPhotos.find((p) => p.id === id)!).filter(Boolean)
+          return [...otherPhotos, ...sorted]
+        })
         showToast('Order saved')
       }
     } catch { /* ignore */ }
@@ -1033,16 +1059,14 @@ export default function AdminPhotosClient() {
                       group={group}
                       watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
-
-
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
-
                       onAiFillGroup={handleAiFillGroup}
                       onApproveGroup={handleApproveGroup}
                       onRejectGroup={handleRejectGroup}
                       onDelete={(photo) => handleDeletePending(photo)}
+                      onReorder={handleReorderPending}
                       isApproved={false}
                     />
                   ))}
