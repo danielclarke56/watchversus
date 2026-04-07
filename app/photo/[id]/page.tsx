@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic'
 
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, or } from 'drizzle-orm'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
 
@@ -14,15 +14,17 @@ interface PhotoPageProps {
   params: { id: string }
 }
 
-// Generate static params for all approved photo IDs
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Generate static params for all approved photo slugs
 export async function generateStaticParams(): Promise<{ id: string }[]> {
   try {
-    const photoIds = await db
-      .select({ id: photos.id })
+    const rows = await db
+      .select({ slug: photos.slug, id: photos.id })
       .from(photos)
       .where(eq(photos.status, 'approved'))
 
-    return photoIds.map((row) => ({ id: row.id }))
+    return rows.map((row) => ({ id: row.slug ?? row.id }))
   } catch {
     return []
   }
@@ -30,19 +32,21 @@ export async function generateStaticParams(): Promise<{ id: string }[]> {
 
 // Generate dynamic metadata
 export async function generateMetadata({ params }: PhotoPageProps): Promise<Metadata> {
+  const param = params.id
+  const isUUID = UUID_REGEX.test(param)
+
   const photoRecord = await db
     .select()
     .from(photos)
-    .where(eq(photos.id, params.id))
+    .where(isUUID ? eq(photos.id, param) : or(eq(photos.slug, param), eq(photos.id, param))!)
     .limit(1)
 
   if (photoRecord.length === 0 || photoRecord[0].status !== 'approved') {
-    return {
-      title: 'Photo Not Found | Watchems',
-    }
+    return { title: 'Photo Not Found | Watchems' }
   }
 
   const p = photoRecord[0]
+  const slug = p.slug ?? p.id
   const brandName = p.brandName || 'Watch'
   const modelName = p.modelName || 'on the wrist'
   const title = `${brandName} ${modelName} Wrist Photo by ${p.userName} | Watchems`
@@ -52,12 +56,12 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
     title,
     description,
     alternates: {
-      canonical: `https://watchems.com/photo/${params.id}`,
+      canonical: `https://watchems.com/photo/${slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://watchems.com/photo/${params.id}`,
+      url: `https://watchems.com/photo/${slug}`,
       type: 'website',
       images: [
         {
@@ -72,10 +76,13 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
 }
 
 export default async function PhotoPage({ params }: PhotoPageProps) {
+  const param = params.id
+  const isUUID = UUID_REGEX.test(param)
+
   const photoRecord = await db
     .select()
     .from(photos)
-    .where(eq(photos.id, params.id))
+    .where(isUUID ? eq(photos.id, param) : or(eq(photos.slug, param), eq(photos.id, param))!)
     .limit(1)
 
   if (photoRecord.length === 0 || photoRecord[0].status !== 'approved') {
@@ -83,6 +90,13 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
   }
 
   const p = photoRecord[0]
+
+  // UUID accessed directly — 301 redirect to slug URL
+  if (isUUID && p.slug) {
+    redirect(`/photo/${p.slug}`)
+  }
+
+  const slug = p.slug ?? p.id
   const brandName = p.brandName || 'Watch'
   const modelName = p.modelName || 'on the wrist'
 
@@ -107,7 +121,7 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
       <main className="min-h-screen">
         <Suspense>
           <HeroSearch />
-          <PhotoGallery initialPhotoId={params.id} />
+          <PhotoGallery initialPhotoSlug={slug} />
         </Suspense>
       </main>
     </>

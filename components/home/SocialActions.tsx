@@ -8,11 +8,13 @@ import SaveModal from './SaveModal'
 
 interface SocialActionsProps {
   photoId: string
+  /** SEO slug for share URLs (falls back to photoId if not provided) */
+  photoSlug?: string
   /** 'card' = small overlay on gallery card hover, 'lightbox' = row below lightbox image */
   variant: 'card' | 'lightbox'
 }
 
-export default function SocialActions({ photoId, variant }: SocialActionsProps) {
+export default function SocialActions({ photoId, photoSlug, variant }: SocialActionsProps) {
   const { isSignedIn } = useUser()
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
@@ -112,7 +114,7 @@ export default function SocialActions({ photoId, variant }: SocialActionsProps) 
 
       {/* Share */}
       <ShareDropdown
-        photoId={photoId}
+        photoSlug={photoSlug ?? photoId}
         iconSize={iconSize}
         className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : ''}
       />

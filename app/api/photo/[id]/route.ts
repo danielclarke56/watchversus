@@ -3,16 +3,21 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, or } from 'drizzle-orm'
 import { isValidSlug } from '@/lib/validation'
 import type { ApprovedPhoto } from '@/lib/photos'
 
-/** GET /api/photo/[id] — fetch single approved photo by id */
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** GET /api/photo/[id] — fetch single approved photo by slug or UUID */
 export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!isValidSlug(params.id)) {
+  const param = params.id
+  const isUUID = UUID_REGEX.test(param)
+
+  if (!isUUID && !isValidSlug(param)) {
     return NextResponse.json({ error: 'Invalid photo ID' }, { status: 400 })
   }
 
@@ -20,7 +25,7 @@ export async function GET(
     const photoRecord = await db
       .select()
       .from(photos)
-      .where(eq(photos.id, params.id))
+      .where(isUUID ? eq(photos.id, param) : or(eq(photos.slug, param), eq(photos.id, param))!)
       .limit(1)
 
     if (photoRecord.length === 0 || photoRecord[0].status !== 'approved') {
@@ -30,6 +35,7 @@ export async function GET(
     const p = photoRecord[0]
     const approved: ApprovedPhoto = {
       id: p.id,
+      slug: p.slug,
       watchId: p.watchId,
       userId: p.userId,
       userName: p.userName,

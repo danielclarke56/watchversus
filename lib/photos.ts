@@ -1,5 +1,6 @@
 export interface Photo {
   id: string
+  slug?: string | null
   watchId: string
   userId: string
   userName: string

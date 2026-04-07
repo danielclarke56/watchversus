@@ -24,6 +24,7 @@ export const photos = pgTable(
     waterResistance: text('water_resistance'),
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
     sortOrder: integer('sort_order').default(0).notNull(),
+    slug: text('slug').unique(), // SEO-friendly: {brand}-{model}-{first8charsOfUUID}
     createdAt: timestamp('created_at')
       .default(sql`now()`)
       .notNull(),
@@ -33,6 +34,7 @@ export const photos = pgTable(
     userIdIdx: index('photos_user_id_idx').on(table.userId),
     statusIdx: index('photos_status_idx').on(table.status),
     createdAtIdx: index('photos_created_at_idx').on(table.createdAt),
+    slugIdx: index('photos_slug_idx').on(table.slug),
   })
 )
 

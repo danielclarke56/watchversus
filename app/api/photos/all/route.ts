@@ -79,6 +79,7 @@ export async function GET(req: NextRequest) {
         betweenLugs: photos.betweenLugs,
         thickness: photos.thickness,
         waterResistance: photos.waterResistance,
+        slug: photos.slug,
       })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
@@ -117,6 +118,7 @@ export async function GET(req: NextRequest) {
         betweenLugs: p.betweenLugs ?? null,
         thickness: p.thickness ?? null,
         waterResistance: p.waterResistance ?? null,
+        slug: p.slug ?? null,
       }
     })
 

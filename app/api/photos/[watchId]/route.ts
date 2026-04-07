@@ -6,6 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import type { ApprovedPhoto } from '@/lib/photos'
 import { ACCEPTED_TYPES } from '@/lib/photos'
+import { generatePhotoSlug } from '@/lib/generatePhotoSlug'
 
 export const dynamic = 'force-dynamic'
 import { isValidSlug, sanitizeText } from '@/lib/validation'
@@ -210,6 +211,7 @@ export async function POST(
       userId,
       userName: sanitizeText(userName, 50),
       url: photoUrl,
+      slug: generatePhotoSlug(brandName, modelName, effectiveWatchId, photoId),
       brandName: brandName || undefined,
       modelName: modelName || undefined,
       referenceNumber: referenceNumber || undefined,
