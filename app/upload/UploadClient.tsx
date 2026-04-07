@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import imageCompression from 'browser-image-compression'
@@ -122,6 +122,8 @@ export default function UploadClient() {
   const [showMore, setShowMore] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const filesById = useRef<Map<string, File>>(new Map())
+  const metaRef = useRef(meta)
+  useEffect(() => { metaRef.current = meta }, [meta])
 
   function patchItem(id: string, patch: Partial<PhotoItem>) {
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)))
@@ -178,30 +180,32 @@ export default function UploadClient() {
       if (data.candidates?.[0]) {
         const c = data.candidates[0] as AiCandidate
         const filled = new Set<AiConfirmField>()
-        if (c.brand) filled.add('brand')
-        if (c.model) filled.add('model')
-        if (c.reference) filled.add('reference')
-        if (c.movement) filled.add('movement')
-        if (c.caseSize) filled.add('caseSize')
-        if (c.lugToLug) filled.add('lugToLug')
-        if (c.betweenLugs) filled.add('betweenLugs')
-        if (c.thickness) filled.add('thickness')
-        if (c.waterResistance) filled.add('waterResistance')
-        if (c.wristSize) filled.add('wristSize')
-        if (c.estimatedPrice) filled.add('estimatedPrice')
+
+        // Only fill empty fields — preserve anything the user already typed
+        const currentMeta = metaRef.current
+        const fieldMap: { ai: keyof AiCandidate; meta: keyof WatchMeta; confirm: AiConfirmField }[] = [
+          { ai: 'brand', meta: 'brandName', confirm: 'brand' },
+          { ai: 'model', meta: 'modelName', confirm: 'model' },
+          { ai: 'reference', meta: 'referenceNumber', confirm: 'reference' },
+          { ai: 'movement', meta: 'movement', confirm: 'movement' },
+          { ai: 'caseSize', meta: 'caseSize', confirm: 'caseSize' },
+          { ai: 'wristSize', meta: 'wristSize', confirm: 'wristSize' },
+          { ai: 'estimatedPrice', meta: 'estimatedPrice', confirm: 'estimatedPrice' },
+          { ai: 'lugToLug', meta: 'lugToLug', confirm: 'lugToLug' },
+          { ai: 'betweenLugs', meta: 'betweenLugs', confirm: 'betweenLugs' },
+          { ai: 'thickness', meta: 'thickness', confirm: 'thickness' },
+          { ai: 'waterResistance', meta: 'waterResistance', confirm: 'waterResistance' },
+        ]
+
+        for (const { ai, meta: metaKey, confirm } of fieldMap) {
+          const aiVal = c[ai]
+          if (aiVal && !(currentMeta[metaKey] as string).trim()) {
+            filled.add(confirm)
+            ;(metaPatch as Record<string, unknown>)[metaKey] = aiVal
+          }
+        }
 
         Object.assign(metaPatch, {
-          brandName: c.brand || '',
-          modelName: c.model || '',
-          referenceNumber: c.reference || '',
-          movement: c.movement || '',
-          caseSize: c.caseSize || '',
-          wristSize: c.wristSize || '',
-          estimatedPrice: c.estimatedPrice || '',
-          lugToLug: c.lugToLug || '',
-          betweenLugs: c.betweenLugs || '',
-          thickness: c.thickness || '',
-          waterResistance: c.waterResistance || '',
           aiIdentified: true,
           aiFilledFields: filled,
           aiConfirmedFields: {},
@@ -237,8 +241,6 @@ export default function UploadClient() {
     if (errs.length) setGlobalError(errs.join(' · '))
     if (!valid.length) return
 
-    // Capture before state update — if no items yet this is the first batch
-    const isFirstBatch = items.length === 0
     const placeholders = valid.map((f) => createItem(f))
 
     setItems((prev) => {
@@ -260,10 +262,7 @@ export default function UploadClient() {
       })
     )
 
-    // Identify once, on first photo of first batch
-    if (isFirstBatch && placeholders.length > 0) {
-      identifyPrimary(placeholders[0].id)
-    }
+    // No longer auto-identify — user triggers via button
   }
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -307,7 +306,6 @@ export default function UploadClient() {
 
   function removeItem(id: string) {
     const wasPrimary = items.length > 0 && items[0].id === id
-    const nextPrimary = wasPrimary && items.length > 1 ? items[1] : null
 
     setItems((prev) => prev.filter((i) => i.id !== id))
     filesById.current.delete(id)
@@ -319,7 +317,6 @@ export default function UploadClient() {
         aiFilledFields: new Set(), aiConfirmedFields: {},
         isWatch: null, aiGenerated: null,
       })
-      if (nextPrimary) identifyPrimary(nextPrimary.id)
     }
   }
 
@@ -337,7 +334,6 @@ export default function UploadClient() {
         aiFilledFields: new Set(), aiConfirmedFields: {},
         isWatch: null, aiGenerated: null,
       })
-      identifyPrimary(id)
     }
     setPendingCrop(null)
   }
@@ -756,22 +752,31 @@ export default function UploadClient() {
                   </div>
                 )}
 
+                {/* AI auto-fill button */}
+                {primaryItem && meta.identifyStatus === 'idle' && (
+                  <button
+                    type="button"
+                    onClick={() => identifyPrimary(primaryItem.id)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                    </svg>
+                    Auto-fill with AI
+                  </button>
+                )}
+
                 {/* AI identification status */}
-                {meta.identifyStatus !== 'idle' && (
+                {meta.identifyStatus === 'identifying' && (
+                  <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+                    <span className="animate-spin inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+                    Identifying watch...
+                  </div>
+                )}
+                {meta.identifyStatus === 'error' && (
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-textMuted">
-                      {meta.identifyStatus === 'identifying' ? (
-                        <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-                          <span className="animate-spin inline-block w-3 h-3 border border-blue-500 border-t-transparent rounded-full" />
-                          Identifying watch...
-                        </span>
-                      ) : meta.identifyStatus === 'error' ? (
-                        'Identification failed — fill in details manually'
-                      ) : (
-                        'Watch identified from primary photo'
-                      )}
-                    </span>
-                    {meta.identifyStatus !== 'identifying' && primaryItem && (
+                    <span className="text-textMuted">Identification failed — fill in details manually</span>
+                    {primaryItem && (
                       <button
                         type="button"
                         onClick={() => {
@@ -779,7 +784,25 @@ export default function UploadClient() {
                             identifyStatus: 'idle', aiIdentified: false,
                             aiFilledFields: new Set(), aiConfirmedFields: {},
                           })
-                          identifyPrimary(primaryItem.id)
+                        }}
+                        className="text-textMuted hover:text-textPrimary underline ml-3"
+                      >
+                        Try again
+                      </button>
+                    )}
+                  </div>
+                )}
+                {meta.identifyStatus === 'done' && (
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-textMuted">Watch identified from primary photo</span>
+                    {primaryItem && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          patchMeta({
+                            identifyStatus: 'idle', aiIdentified: false,
+                            aiFilledFields: new Set(), aiConfirmedFields: {},
+                          })
                         }}
                         className="text-textMuted hover:text-textPrimary underline ml-3"
                       >
