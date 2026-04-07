@@ -17,18 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${base}/upload`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${base}/quiz`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
       url: `${base}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
@@ -75,18 +63,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  // All profile pages (distinct userIds from approved photos)
-  const userIds = await db
-    .selectDistinct({ userId: photos.userId })
-    .from(photos)
-    .where(eq(photos.status, 'approved'))
-
-  const profilePages: MetadataRoute.Sitemap = userIds.map((row) => ({
-    url: `${base}/profile/${row.userId}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }))
-
-  return [...staticPages, ...photoPages, ...watchPages, ...profilePages]
+  return [...staticPages, ...photoPages, ...watchPages]
 }
