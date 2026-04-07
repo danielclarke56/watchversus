@@ -10,6 +10,7 @@ import type { Watch } from '@/lib/types'
 
 interface PhotoItem {
   id: string
+  slug?: string | null
   watchId: string
   userId: string
   url: string
@@ -72,7 +73,7 @@ function getWatchLabel(group: WatchGroup) {
   return { brand, model, ref }
 }
 
-function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
+function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
@@ -185,13 +186,15 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   // Group photos by watchId early — used in useEffect hooks below
   const groups = useMemo(() => groupByWatch(photos), [photos])
 
-  // Auto-open lightbox when initialPhotoId is provided (Pinterest-style direct link)
+  // Auto-open lightbox when initialPhotoSlug is provided (Pinterest-style direct link)
   useEffect(() => {
-    if (!initialPhotoId || initialPhotoOpenedRef.current || loading || groups.length === 0) return
+    if (!initialPhotoSlug || initialPhotoOpenedRef.current || loading || groups.length === 0) return
 
-    // Search all loaded groups for the target photo
+    // Search all loaded groups for the target photo (match by slug, fall back to id)
     for (let gi = 0; gi < groups.length; gi++) {
-      const pi = groups[gi].photos.findIndex((p) => p.id === initialPhotoId)
+      const pi = groups[gi].photos.findIndex(
+        (p) => (p.slug ?? p.id) === initialPhotoSlug
+      )
       if (pi !== -1) {
         initialPhotoOpenedRef.current = true
         galleryUrlRef.current = '/'
@@ -214,7 +217,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
       // No more pages — stop retrying
       initialPhotoOpenedRef.current = true
     }
-  }, [initialPhotoId, groups, loading, nextCursor, loadingMore, fetchPhotos])
+  }, [initialPhotoSlug, groups, loading, nextCursor, loadingMore, fetchPhotos])
 
   useEffect(() => {
     let cancelled = false
@@ -379,7 +382,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     const photo = groups[groupIdx]?.photos[photoIdx]
     if (photo) {
       lightboxOpenRef.current = true
-      window.history.pushState({ lightbox: true }, '', `/photo/${photo.id}`)
+      window.history.pushState({ lightbox: true }, '', `/photo/${photo.slug ?? photo.id}`)
       setPhotoOverride(null)
       setLightboxImageLoading(true)
       setCopied(false)
@@ -391,7 +394,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
     if (photo) {
-      window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+      window.history.replaceState({ lightbox: true }, '', `/photo/${photo.slug ?? photo.id}`)
     }
     setPhotoOverride(null)
     setLightboxImageLoading(true)
@@ -413,7 +416,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     }
     // Not yet in gallery groups — show directly via override
     setPhotoOverride(photo)
-    window.history.replaceState({ lightbox: true }, '', `/photo/${photo.id}`)
+    window.history.replaceState({ lightbox: true }, '', `/photo/${photo.slug ?? photo.id}`)
     setLightboxImageLoading(true)
     setCopied(false)
     setLinkCopied(false)
@@ -441,8 +444,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     // Navigation back is handled by the photo page's back button or browser back
   }, [])
 
-  const handleShare = useCallback(async (photoId: string) => {
-    const shareUrl = `https://watchems.com/photo/${photoId}`
+  const handleShare = useCallback(async (photoSlug: string) => {
+    const shareUrl = `https://watchems.com/photo/${photoSlug}`
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({ url: shareUrl })
@@ -456,8 +459,8 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
     }
   }, [])
 
-  const handleCopyLink = useCallback(async (photoId: string) => {
-    const shareUrl = `https://watchems.com/photo/${photoId}`
+  const handleCopyLink = useCallback(async (photoSlug: string) => {
+    const shareUrl = `https://watchems.com/photo/${photoSlug}`
     await navigator.clipboard.writeText(shareUrl)
     setLinkCopied(true)
     setTimeout(() => setLinkCopied(false), 2000)
@@ -815,7 +818,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                       <div className="flex items-center justify-center gap-2 pt-2">
                         <button
                           type="button"
-                          onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.id) }}
+                          onClick={(e) => { e.stopPropagation(); handleShare(activeLightboxPhoto.slug ?? activeLightboxPhoto.id) }}
                           className="text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-9 h-9 flex items-center justify-center transition-all"
                           aria-label="Share photo"
                         >
@@ -831,7 +834,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
                         </button>
                         <button
                           type="button"
-                          onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.id) }}
+                          onClick={(e) => { e.stopPropagation(); handleCopyLink(activeLightboxPhoto.slug ?? activeLightboxPhoto.id) }}
                           className="text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full h-9 flex items-center justify-center transition-all px-3 gap-1.5 text-sm"
                           aria-label="Copy link"
                         >
@@ -1045,7 +1048,7 @@ function PhotoGalleryContent({ initialPhotoId }: { initialPhotoId?: string }) {
   )
 }
 
-export default function PhotoGallery({ initialPhotoId }: { initialPhotoId?: string }) {
+export default function PhotoGallery({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -1056,7 +1059,7 @@ export default function PhotoGallery({ initialPhotoId }: { initialPhotoId?: stri
         </div>
       </div>
     }>
-      <PhotoGalleryContent initialPhotoId={initialPhotoId} />
+      <PhotoGalleryContent initialPhotoSlug={initialPhotoSlug} />
     </Suspense>
   )
 }

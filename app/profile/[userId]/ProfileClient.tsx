@@ -11,8 +11,8 @@ interface ProfileClientProps {
 export default function ProfileClient({ watchId, photos }: ProfileClientProps) {
   const router = useRouter()
 
-  const handlePhotoClick = (photoId: string) => {
-    router.push(`/photo/${photoId}`)
+  const handlePhotoClick = (photo: { id: string; slug?: string | null }) => {
+    router.push(`/photo/${photo.slug ?? photo.id}`)
   }
 
   // Extract watch details from the first photo (they're all the same watch)
@@ -25,7 +25,7 @@ export default function ProfileClient({ watchId, photos }: ProfileClientProps) {
     <>
       <div
         className="bg-surface border border-borderStrong rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
-        onClick={() => handlePhotoClick(photos[0].id)}
+        onClick={() => handlePhotoClick(photos[0])}
       >
         {/* Primary photo */}
         <div className="relative aspect-square bg-neutral overflow-hidden">

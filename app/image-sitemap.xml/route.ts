@@ -24,11 +24,12 @@ function escapeXml(str: string | null | undefined): string {
 export async function GET() {
   // Query approved photos, ordered by createdAt DESC, limited to 50,000
   const allPhotos = await db
-    .select({ 
-      id: photos.id, 
-      url: photos.url, 
+    .select({
+      id: photos.id,
+      slug: photos.slug,
+      url: photos.url,
       thumbnailUrl: photos.thumbnailUrl,
-      brandName: photos.brandName, 
+      brandName: photos.brandName,
       modelName: photos.modelName,
       referenceNumber: photos.referenceNumber,
       userName: photos.userName,
@@ -63,7 +64,7 @@ export async function GET() {
 
       return `
   <url>
-    <loc>${escapeXml(`${baseUrl}/photo/${photo.id}`)}</loc>
+    <loc>${escapeXml(`${baseUrl}/photo/${photo.slug ?? photo.id}`)}</loc>
     <image:image>
       <image:loc>${escapeXml(imageUrl)}</image:loc>
       <image:title>${escapeXml(altText)}</image:title>

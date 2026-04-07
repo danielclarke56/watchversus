@@ -4,17 +4,18 @@ import { useState, useRef, useEffect } from 'react'
 import { Share2, Link, Check } from 'lucide-react'
 
 interface ShareDropdownProps {
-  photoId: string
+  /** SEO slug (preferred) or UUID fallback — used to build the share URL */
+  photoSlug: string
   className?: string
   iconSize?: number
 }
 
-export default function ShareDropdown({ photoId, className = '', iconSize = 16 }: ShareDropdownProps) {
+export default function ShareDropdown({ photoSlug, className = '', iconSize = 16 }: ShareDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const shareUrl = `https://watchems.com/photo/${photoId}`
+  const shareUrl = `https://watchems.com/photo/${photoSlug}`
 
   useEffect(() => {
     const handleClickOutside = (e: PointerEvent) => {
