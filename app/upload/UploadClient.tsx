@@ -268,6 +268,7 @@ export default function UploadClient() {
     if (index === 0) {
       setIsWatch(null)
       setAiGenerated(null)
+      setAiIdentified(false)
       setAiFilledFields(new Set())
       setAiConfirmedFields({})
     }
@@ -434,15 +435,16 @@ export default function UploadClient() {
   }
 
   // Form is valid when: has files, has brand, not rejected as non-watch,
-  // and if AI ran: brand and model must both be confirmed (either accepted or manually edited)
-  const brandConfirmed = !aiIdentified || !aiFilledFields.has('brand') || !!aiConfirmedFields['brand']
-  const modelConfirmed = !aiIdentified || !aiFilledFields.has('model') || !!aiConfirmedFields['model']
+  // and if AI ran: every AI-filled field must be confirmed (either accepted or manually edited)
+  const allAiFieldsConfirmed =
+    !aiIdentified ||
+    aiFilledFields.size === 0 ||
+    Array.from(aiFilledFields).every((f) => !!aiConfirmedFields[f])
   const isFormValid =
     files.length > 0 &&
     brandName.trim().length > 0 &&
     isWatch !== false &&
-    brandConfirmed &&
-    modelConfirmed
+    allAiFieldsConfirmed
 
   if (!isLoaded) {
     return (
@@ -1167,17 +1169,24 @@ export default function UploadClient() {
 
               {/* Submit button */}
               {files.length > 0 && (
-                <button
-                  type="submit"
-                  disabled={!isFormValid || uploading}
-                  className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                    isFormValid && !uploading
-                      ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
-                      : 'bg-neutral text-textMuted cursor-not-allowed'
-                  }`}
-                >
-                  {uploading ? 'Uploading...' : 'Submit photo'}
-                </button>
+                <>
+                  <button
+                    type="submit"
+                    disabled={!isFormValid || uploading}
+                    className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                      isFormValid && !uploading
+                        ? 'bg-accent hover:bg-accentHover text-white cursor-pointer'
+                        : 'bg-neutral text-textMuted cursor-not-allowed'
+                    }`}
+                  >
+                    {uploading ? 'Uploading...' : 'Submit photo'}
+                  </button>
+                  {!isFormValid && !uploading && !allAiFieldsConfirmed && (
+                    <p className="text-xs text-textMuted text-center">
+                      Confirm all AI-filled fields above to submit
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </form>

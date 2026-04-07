@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
-import { getInitialPhotos } from '@/lib/getInitialPhotos'
 import type { Metadata } from 'next'
 
 const faqItems = [
@@ -89,9 +88,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function HomePage() {
-  const initialData = await getInitialPhotos()
-
+export default function HomePage() {
   return (
     <>
       {/* JSON-LD Schemas */}
@@ -111,7 +108,7 @@ export default async function HomePage() {
       <main className="min-h-screen">
         <Suspense>
           <HeroSearch />
-          <PhotoGallery initialData={initialData} />
+          <PhotoGallery />
         </Suspense>
       </main>
     </>
