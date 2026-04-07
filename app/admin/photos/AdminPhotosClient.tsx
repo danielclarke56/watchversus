@@ -331,79 +331,88 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         {/* Compact thumbnail grid */}
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-            {group.photos.map((photo, idx) => (
-              <button
-                key={photo.id}
-                onClick={() => openLightbox(idx)}
-                className="aspect-square rounded overflow-hidden border border-border hover:border-blue-400 hover:ring-1 hover:ring-blue-300 transition-all"
-                aria-label={`View photo ${idx + 1}`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.url}
-                  alt={`Photo ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
+            {group.photos.map((photo, idx) => {
+              const isActing = acting === photo.id
+              const isLastPhoto = group.photos.length === 1
+              const canDelete = isRejected || isPending ? true : !isLastPhoto
+
+              return (
+                <div
+                  key={photo.id}
+                  className="relative aspect-square rounded overflow-hidden border border-border hover:border-blue-400 hover:ring-1 hover:ring-blue-300 transition-all group"
+                >
+                  <button
+                    onClick={() => openLightbox(idx)}
+                    className="w-full h-full"
+                    aria-label={`View photo ${idx + 1}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={photo.url}
+                      alt={`Photo ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+
+                  {/* Delete button overlay */}
+                  {onDelete && (
+                    <button
+                      onClick={() => onDelete(photo)}
+                      disabled={isActing || !canDelete}
+                      className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                        canDelete
+                          ? 'bg-black/60 text-white hover:bg-red-600'
+                          : 'bg-gray-500/60 text-gray-300 cursor-not-allowed'
+                      }`}
+                      title={isLastPhoto && !isRejected && !isPending ? 'Cannot delete the last photo' : 'Delete photo'}
+                      aria-label="Delete photo"
+                    >
+                      {isActing ? '…' : '✕'}
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
 
-        {/* Per-photo actions (delete + reorder) */}
-        {(isPending || isApproved || isRejected) && onDelete && (
+        {/* Per-photo actions (reorder only) */}
+        {isApproved && onReorder && (
           <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
             <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">
-              {isApproved ? 'Photo Order & Actions' : 'Photo Actions'}
+              Photo Order
             </p>
             <div className="space-y-1.5">
               {group.photos.map((photo, idx) => {
                 const isActing = acting === photo.id
-                const isLastPhoto = group.photos.length === 1
-                const canDelete = isRejected || isPending ? true : !isLastPhoto
-                const canMoveUp = isApproved && idx > 0
-                const canMoveDown = isApproved && idx < group.photos.length - 1
+                const canMoveUp = idx > 0
+                const canMoveDown = idx < group.photos.length - 1
 
                 return (
                   <div key={photo.id} className="flex items-center gap-1.5">
-                    {isApproved && (
-                      <>
-                        <button
-                          onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'up')}
-                          disabled={isActing || !canMoveUp}
-                          className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
-                            canMoveUp
-                              ? 'bg-blue-600 text-white hover:bg-blue-700'
-                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          }`}
-                          title="Move up"
-                        >
-                          ↑
-                        </button>
-                        <button
-                          onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'down')}
-                          disabled={isActing || !canMoveDown}
-                          className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
-                            canMoveDown
-                              ? 'bg-blue-600 text-white hover:bg-blue-700'
-                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          }`}
-                          title="Move down"
-                        >
-                          ↓
-                        </button>
-                      </>
-                    )}
                     <button
-                      onClick={() => onDelete(photo)}
-                      disabled={isActing || !canDelete}
-                      className={`text-xs px-2 py-0.5 rounded font-medium transition-colors ${
-                        canDelete
-                          ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'up')}
+                      disabled={isActing || !canMoveUp}
+                      className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
+                        canMoveUp
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       }`}
-                      title={isLastPhoto && !isRejected && !isPending ? 'Cannot delete the last photo' : ''}
+                      title="Move up"
                     >
-                      {isActing ? '...' : isRejected ? 'Delete' : isPending ? 'Delete' : 'Del'}
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => onReorder?.(group.watchId, group.photos as ApprovedPhoto[], idx, 'down')}
+                      disabled={isActing || !canMoveDown}
+                      className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${
+                        canMoveDown
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                      title="Move down"
+                    >
+                      ↓
                     </button>
                   </div>
                 )
