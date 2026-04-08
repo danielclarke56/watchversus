@@ -136,7 +136,7 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
         </div>
 
         {/* Nav tabs */}
-        <div className="flex overflow-x-auto">
+        <div className="flex overflow-x-auto scrollbar-hide">
           {NAV_ITEMS.map((item) => {
             const isActive = item.href === '/dashboard'
               ? pathname === '/dashboard'

@@ -39,11 +39,11 @@ export default function Footer() {
           <p className="text-textMuted text-xs">
             © {new Date().getFullYear()} Watchems. All rights reserved.
           </p>
-          <div className="flex gap-5">
-            <Link href="/about" className="text-textMuted hover:text-textSecond text-xs transition-colors">About</Link>
-            <Link href="/about#contact" className="text-textMuted hover:text-textSecond text-xs transition-colors">Contact</Link>
-            <Link href="/privacy" className="text-textMuted hover:text-textSecond text-xs transition-colors">Privacy</Link>
-            <Link href="/terms" className="text-textMuted hover:text-textSecond text-xs transition-colors">Terms</Link>
+          <div className="flex flex-wrap gap-1 sm:gap-2">
+            <Link href="/about" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">About</Link>
+            <Link href="/about#contact" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Contact</Link>
+            <Link href="/privacy" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Privacy</Link>
+            <Link href="/terms" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Terms</Link>
           </div>
         </div>
       </div>

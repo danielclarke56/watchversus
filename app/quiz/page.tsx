@@ -33,7 +33,7 @@ export default function QuizPage() {
     <>
       {/* Static SEO intro section */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-textPrimary mb-4">What Watch Should I Buy?</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-textPrimary mb-4">What Watch Should I Buy?</h1>
         <p className="text-textSecond text-lg mb-2">Not sure which watch is right for you? Answer 5 quick questions about your style, budget, and lifestyle — and get personalized recommendations from our database of 57 watches.</p>
       </div>
 

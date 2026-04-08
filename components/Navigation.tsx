@@ -54,7 +54,7 @@ export default function Navigation() {
         <div className="flex items-center gap-4 shrink-0">
           <Link
             href="/upload"
-            className="btn-gold text-xs px-4 py-2 rounded-md font-semibold"
+            className="btn-gold text-xs sm:text-sm px-4 py-2.5 rounded-md font-semibold min-h-[44px] flex items-center"
           >
             <span className="sm:hidden">Upload</span>
             <span className="hidden sm:inline">Upload a Photo</span>

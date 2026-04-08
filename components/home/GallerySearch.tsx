@@ -457,7 +457,7 @@ export default function GallerySearch() {
           <>
             {/* Trending / recent searches on empty focus */}
             {showTrending && (trending.length > 0 || recentSearches.length > 0) && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-72 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
                 {trending.length > 0 && (
                   <div className="px-3 pt-3 pb-1">
                     <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold mb-2">Trending</p>
@@ -505,7 +505,7 @@ export default function GallerySearch() {
 
             {/* Grouped autocomplete: brands + models */}
             {input && (brandMatches.length > 0 || modelMatches.length > 0) && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
                 {brandMatches.length > 0 && (
                   <div className="px-3 pt-3 pb-1">
                     <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold mb-1">Brands</p>

@@ -19,13 +19,13 @@ export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-textPrimary mb-3">About Watchems</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-textPrimary mb-3">About Watchems</h1>
         <p className="text-textSecond text-lg">A community photo gallery for watch enthusiasts</p>
       </div>
 
       <div className="space-y-10">
         {/* What We Are */}
-        <section className="card p-7">
+        <section className="card p-4 sm:p-7">
           <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
             <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">01</span>
             What We Are
@@ -40,7 +40,7 @@ export default function AboutPage() {
         </section>
 
         {/* Sharing Your Watch */}
-        <section className="card p-7">
+        <section className="card p-4 sm:p-7">
           <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
             <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">02</span>
             Sharing Your Watch
@@ -55,7 +55,7 @@ export default function AboutPage() {
         </section>
 
         {/* No Affiliate Links */}
-        <section className="card p-7">
+        <section className="card p-4 sm:p-7">
           <h2 className="text-2xl font-bold text-textPrimary mb-4 flex items-center gap-3">
             <span className="w-8 h-8 rounded-sm bg-accentLight border border-borderStrong flex items-center justify-center text-accent text-sm font-bold shrink-0">03</span>
             No Affiliate Links

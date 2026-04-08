@@ -59,7 +59,7 @@ export default function ReviewsList({ reviews }: ReviewsListProps) {
           <p className="text-gray-700 mb-4 leading-relaxed">{review.body}</p>
 
           {/* Pros and Cons */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             {/* Pros */}
             <div>
               <h5 className="text-sm font-semibold text-green-700 mb-2">Pros</h5>
