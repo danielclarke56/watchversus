@@ -55,12 +55,20 @@ export async function POST(req: NextRequest) {
     const client = new GoogleGenerativeAI(apiKey)
     const model = client.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-    const watchDescription = [brandName, modelName, referenceNumber].filter(Boolean).join(' ')
-    const prompt = `You are a watch specification expert. Given a watch's brand, model name${imageUrls?.length ? ', and photos of the actual watch' : ''}, return its technical specifications as JSON.
+    // Build watch description — reference number is the most specific identifier
+    const watchDescription = referenceNumber
+      ? `${brandName} ${modelName} (ref. ${referenceNumber})`
+      : `${brandName} ${modelName}`
 
-Watch: ${watchDescription}
+    const prompt = `You are a watch specification database expert with deep knowledge of watch technical specs.
 
-Return ONLY a JSON object with these exact keys (use empty string "" if unknown):
+Watch to look up: ${watchDescription}
+
+${referenceNumber ? `IMPORTANT: The reference number "${referenceNumber}" is the most specific identifier — prioritize specs for this exact reference over generic model specs. Different references of the same model can have different case sizes, materials, and features.` : ''}
+
+${imageUrls?.length ? 'Photos of the watch are attached. Use them to confirm or refine specs visible in the image (case size markings, dial text, caseback engravings, depth ratings).' : ''}
+
+Return ONLY a JSON object with these exact keys (use empty string "" if genuinely unknown — do NOT guess):
 {
   "movement": "",
   "caseSize": "",
@@ -74,13 +82,17 @@ Return ONLY a JSON object with these exact keys (use empty string "" if unknown)
   "caseMaterial": ""
 }
 
-Field rules:
-- movement: type only (e.g. "Automatic", "Quartz", "Manual")
-- caseSize, lugToLug, betweenLugs, thickness, wristSize: numeric mm value only (no "mm")
-- waterResistance: numeric value only in meters (no "m" or "ATM")
-- estimatedPrice: numeric USD value only (no "$" or "USD")
-- productionYear: 4-digit year or range (e.g. "2020" or "2018-2022")
-- caseMaterial: material only (e.g. "Stainless Steel", "Titanium")
+Field rules (strict — wrong format breaks the UI):
+- movement: movement type only → "Automatic", "Manual", or "Quartz"
+- caseSize: numeric mm only, no unit → e.g. "40"
+- lugToLug: numeric mm only, no unit → e.g. "47"
+- betweenLugs: numeric mm only, no unit → e.g. "20"
+- thickness: numeric mm only, no unit → e.g. "12.5"
+- waterResistance: numeric meters only, no unit → e.g. "300"
+- estimatedPrice: numeric USD retail only, no symbol → e.g. "9500"
+- wristSize: leave empty string "" (we do not have this data)
+- productionYear: 4-digit year or range → e.g. "2020" or "2018-2023"
+- caseMaterial: material name only → e.g. "Stainless Steel", "Titanium", "Gold"
 
 No markdown, no explanation — JSON only.`
 

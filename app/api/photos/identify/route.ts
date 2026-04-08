@@ -47,36 +47,48 @@ export async function POST(request: NextRequest) {
         },
       },
       {
-        text: `You are a watch identification expert. Analyze this photo and return ONLY valid JSON with this exact structure:
+        text: `You are an expert watch identifier. Your job is to identify the exact watch model from a photo.
+
+STEP 1 — READ DIAL TEXT FIRST (highest confidence signal):
+Look very carefully for any text printed on the dial: brand name, model name, "Submariner", "Speedmaster", "Datejust", "Seamaster", "Explorer", reference numbers, calibre numbers, depth ratings, etc. Text on the dial is the most reliable identification signal.
+
+STEP 2 — READ CASE / CASEBACK TEXT:
+Look for engravings or text on the case sides, crown guards, or visible caseback.
+
+STEP 3 — VISUAL FEATURES:
+Use case shape, bezel type/markings, crown position/guards, dial color/texture, indices style, hand style, bracelet/strap type to narrow down candidates.
+
+STEP 4 — IDENTIFY, then RETURN JSON ONLY:
+
 {
   "isWatch": true or false,
   "isAiGenerated": true or false,
   "candidates": [
     {
-      "brand": "string",
-      "model": "string",
-      "reference": "string or null",
-      "movement": "Automatic|Mechanical|Quartz|Digital or null",
-      "caseSize": "e.g. '40mm' or null",
+      "brand": "exact brand name as printed on dial",
+      "model": "exact model name/line (e.g. Submariner, Speedmaster Professional)",
+      "reference": "reference number if visible or reliably known (e.g. 116610LN), else null",
+      "movement": "Automatic|Manual|Quartz|Digital or null",
+      "caseSize": "numeric mm only, no unit (e.g. 40), or null",
+      "lugToLug": "numeric mm only, no unit (e.g. 47), or null",
+      "betweenLugs": "numeric mm only, no unit (e.g. 20), or null",
+      "thickness": "numeric mm only, no unit (e.g. 12.5), or null",
+      "waterResistance": "numeric meters only, no unit (e.g. 300), or null",
+      "estimatedPrice": "numeric USD only, no symbol (e.g. 9500), or null",
       "wristSize": null,
-      "estimatedPrice": null,
-      "productionYear": "e.g. '2020' or null",
-      "lugToLug": "e.g. '47mm' or null",
-      "betweenLugs": "e.g. '20mm' or null",
-      "thickness": "e.g. '12.5mm' or null",
-      "waterResistance": "e.g. '300m / 1000ft' or null",
+      "productionYear": "4-digit year or range (e.g. 2020 or 2018-2023), or null",
       "confidence": "high|medium|low",
-      "reasoning": "brief explanation of why this match is plausible"
+      "reasoning": "one sentence: which visual or text cues led to this identification"
     }
   ]
 }
 
 Rules:
 1. If isWatch=false, return candidates as empty array [].
-2. If isWatch=true, return up to 3 most likely watch candidates, ranked by confidence.
-3. Confidence levels: "high" for well-known watches or clear details, "medium" for reasonable guesses, "low" for speculative matches.
-4. Set isAiGenerated=true only if the image is clearly a render, CGI, or synthetic image. Real photos with perfect lighting are still real. Use EXIF hint: hasCamera=${hasCamera}.
-5. Return null for any field you cannot reliably determine.
+2. If isWatch=true, return up to 3 candidates ranked by confidence. First candidate must be your best guess.
+3. confidence="high" only when you can read brand/model text on the dial clearly. confidence="medium" for strong visual match without readable text. confidence="low" for speculative.
+4. isAiGenerated=true only for renders/CGI. Real photos with studio lighting are still real. EXIF hint: hasCamera=${hasCamera}.
+5. All numeric spec fields: return numeric string only, NO units. Return null if genuinely unknown.
 6. No markdown, no explanation — JSON only.`,
       },
     ])

@@ -152,12 +152,17 @@ export async function POST(
   const brandName = formData.get('brandName') as string | null
   const modelName = formData.get('modelName') as string | null
 
-  // Dedup: if user already has a photo with the same brand+model, reuse that watchId
-  // This prevents duplicate watch cards when the same watch is uploaded multiple times
+  // Resolve watchId:
+  // 1. If this user already has a photo for this brand+model, reuse their watchId
+  //    (groups multi-angle shots from the same user under one card).
+  // 2. Otherwise, if params.watchId already has photos from OTHER users, generate a
+  //    user-scoped watchId so this user gets their own separate card.
+  // 3. Otherwise use params.watchId as-is (first-ever submission for this watch).
   let effectiveWatchId = params.watchId
-  if (brandName && brandName.trim() && modelName && modelName.trim()) {
-    try {
-      const existing = await db
+  try {
+    // Step 1: same-user dedup
+    if (brandName?.trim() && modelName?.trim()) {
+      const sameUserExisting = await db
         .select({ watchId: photos.watchId })
         .from(photos)
         .where(
@@ -168,12 +173,34 @@ export async function POST(
           )
         )
         .limit(1)
-      if (existing.length > 0) {
-        effectiveWatchId = existing[0].watchId
+
+      if (sameUserExisting.length > 0) {
+        // User has uploaded this watch before — add to their existing card
+        effectiveWatchId = sameUserExisting[0].watchId
+      } else {
+        // Step 2: check if the slug is already taken by another user
+        const otherUserPhoto = await db
+          .select({ userId: photos.userId })
+          .from(photos)
+          .where(
+            and(
+              eq(photos.watchId, params.watchId),
+              sql`${photos.userId} != ${userId}`
+            )
+          )
+          .limit(1)
+
+        if (otherUserPhoto.length > 0) {
+          // Slug is owned by another user — create a user-scoped watchId
+          // Use a 6-char hash of the userId for a stable, short suffix
+          const userHash = crypto.createHash('sha256').update(userId).digest('hex').slice(0, 6)
+          effectiveWatchId = `${params.watchId}-${userHash}`
+        }
+        // else: params.watchId is unclaimed — use it as-is
       }
-    } catch {
-      // dedup query failed — fall back to URL param watchId
     }
+  } catch {
+    // query failed — fall back to URL param watchId
   }
 
   const { isR2Configured } = await import('@/lib/r2')

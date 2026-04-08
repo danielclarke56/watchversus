@@ -21,6 +21,25 @@ const ESTIMATED_PRICE_OPTIONS = [
   'Prefer not to say',
 ]
 
+// Strip units from AI numeric fields — model may return "40mm" despite instructions
+function stripUnits(val: string | null | undefined): string {
+  if (!val) return ''
+  return val.toString().replace(/[^0-9.]/g, '').trim()
+}
+
+// Map a numeric USD price string from AI to the nearest dropdown bucket
+function mapPriceToBucket(val: string | null | undefined): string {
+  if (!val) return ''
+  const n = parseFloat(val.toString().replace(/[^0-9.]/g, ''))
+  if (isNaN(n)) return ''
+  if (n < 500) return 'Under $500'
+  if (n < 1000) return '$500 – $1,000'
+  if (n < 5000) return '$1,000 – $5,000'
+  if (n < 15000) return '$5,000 – $15,000'
+  if (n < 50000) return '$15,000 – $50,000'
+  return '$50,000+'
+}
+
 const AI_CONFIRM_FIELDS = [
   'brand', 'model', 'reference', 'movement', 'caseSize',
   'lugToLug', 'betweenLugs', 'thickness', 'waterResistance',
@@ -197,11 +216,22 @@ export default function UploadClient() {
           { ai: 'waterResistance', meta: 'waterResistance', confirm: 'waterResistance' },
         ]
 
+        // Numeric fields where units must be stripped
+        const numericFields = new Set<AiConfirmField>(['caseSize', 'lugToLug', 'betweenLugs', 'thickness', 'waterResistance'])
+
         for (const { ai, meta: metaKey, confirm } of fieldMap) {
           const aiVal = c[ai]
           if (aiVal && !(currentMeta[metaKey] as string).trim()) {
-            filled.add(confirm)
-            ;(metaPatch as Record<string, unknown>)[metaKey] = aiVal
+            let mapped: string = String(aiVal)
+            if (confirm === 'estimatedPrice') {
+              mapped = mapPriceToBucket(mapped)
+            } else if (numericFields.has(confirm)) {
+              mapped = stripUnits(mapped)
+            }
+            if (mapped) {
+              filled.add(confirm)
+              ;(metaPatch as Record<string, unknown>)[metaKey] = mapped
+            }
           }
         }
 
@@ -583,9 +613,9 @@ export default function UploadClient() {
 
                 {/* Primary photo preview or drop zone */}
                 {hasItems && primaryItem?.preview ? (
-                  <div className="relative rounded-lg overflow-hidden bg-neutral aspect-[4/3]">
+                  <div className="relative rounded-lg overflow-hidden bg-gray-100 aspect-[4/3] flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={primaryItem.preview} alt="Primary photo" className="w-full h-full object-cover" />
+                    <img src={primaryItem.preview} alt="Primary photo" className="w-full h-full object-contain" />
 
                     {meta.identifyStatus === 'identifying' && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
