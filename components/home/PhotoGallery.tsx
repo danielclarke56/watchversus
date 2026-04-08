@@ -417,10 +417,18 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       const prev = flatPhotos[currentFlatIdx - 1]
       if (prev) urlsToPreload.push(prev.url)
     }
+    // Preload via Next.js image optimizer URLs so the browser cache is reused
+    // by the <Image> component (which serves through /_next/image, not raw URLs).
+    // 1200w covers 60vw on up to ~2000px-wide screens; 828w covers mobile 100vw.
     urlsToPreload.forEach((url) => {
-      const img = document.createElement('img')
-      img.src = url
-      img.style.display = 'none'
+      const encoded = encodeURIComponent(url)
+      ;[1200, 828].forEach((w) => {
+        const link = document.createElement('link')
+        link.rel = 'prefetch'
+        link.as = 'image'
+        link.href = `/_next/image?url=${encoded}&w=${w}&q=75`
+        document.head.appendChild(link)
+      })
     })
   }, [lightbox, currentFlatIdx, flatPhotos])
 
@@ -742,6 +750,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                     src={activeLightboxPhoto.url}
                     alt={buildPhotoAltText(activeLightboxPhoto)}
                     fill
+                    sizes="(max-width: 768px) 100vw, 60vw"
                     className="object-contain"
                     priority
                     onLoad={() => setLightboxImageLoading(false)}
