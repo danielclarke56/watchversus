@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Heart } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 import ShareDropdown from './ShareDropdown'
-import SaveModal from './SaveModal'
 
 interface SocialActionsProps {
   photoId: string
@@ -18,11 +17,10 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
   const { isSignedIn } = useUser()
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
-  const [saved, setSaved] = useState(false)
   const [animating, setAnimating] = useState(false)
   const fetchedRef = useRef(false)
 
-  // Fetch initial like + saved state
+  // Fetch initial like state
   useEffect(() => {
     if (fetchedRef.current) return
     fetchedRef.current = true
@@ -35,15 +33,7 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
       })
       .catch(() => {})
 
-    if (isSignedIn) {
-      fetch(`/api/photo/${photoId}/saved`)
-        .then((r) => r.json())
-        .then((data) => {
-          setSaved((data.savedIn || []).length > 0)
-        })
-        .catch(() => {})
-    }
-  }, [photoId, isSignedIn])
+  }, [photoId])
 
   const handleLike = useCallback(
     async (e: React.MouseEvent) => {
@@ -79,10 +69,6 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
     },
     [liked, photoId, isSignedIn]
   )
-
-  const handleSavedChange = useCallback((isSaved: boolean) => {
-    setSaved(isSaved)
-  }, [])
 
   const iconSize = variant === 'card' ? 14 : 16
 
@@ -123,14 +109,6 @@ export default function SocialActions({ photoId, photoSlug, variant }: SocialAct
         className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : '[&>button]:bg-gray-100 [&>button]:hover:bg-gray-200 [&>button]:text-gray-500 [&>button]:hover:text-gray-700'}
       />
 
-      {/* Save */}
-      <SaveModal
-        photoId={photoId}
-        iconSize={iconSize}
-        isSaved={saved}
-        onSavedChange={handleSavedChange}
-        className={variant === 'card' ? '[&>button]:w-8 [&>button]:h-8' : '[&>button]:bg-gray-100 [&>button]:hover:bg-gray-200 [&>button]:text-gray-500 [&>button]:hover:text-gray-700'}
-      />
     </div>
   )
 }

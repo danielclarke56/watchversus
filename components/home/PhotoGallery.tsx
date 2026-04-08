@@ -304,7 +304,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       if (model) params.set('model', model)
       if (brand) params.set('brand', brand)
       const res = await fetch(`/api/photos/related?${params.toString()}`)
-      const data: { sameWatch: PhotoItem[]; sameModel: PhotoItem[]; sameBrand: PhotoItem[]; fallback: PhotoItem[] } = await res.json()
+      const data: { sameWatch: PhotoItem[]; related: PhotoItem[] } = await res.json()
 
       // Inject same-watch photos not yet in the main feed so groupByWatch merges them into the carousel.
       // Only inject photos from the same user — cross-user photos with the same watchId are a data anomaly
@@ -317,7 +317,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
         return missing.length > 0 ? [...prev, ...missing] : prev
       })
 
-      const relatedList = [...data.sameWatch, ...data.sameModel, ...data.sameBrand, ...data.fallback]
+      const relatedList = [...data.sameWatch, ...data.related]
       relatedPhotosCacheRef.current.set(watchId, relatedList)
       setRelatedPhotos(relatedList)
     } catch (error) {

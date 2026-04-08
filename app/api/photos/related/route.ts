@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and, desc, ilike, ne } from 'drizzle-orm'
-import { getWatchById } from '@/lib/watches'
+import { eq, and, desc, ilike, inArray } from 'drizzle-orm'
+import { getWatchById, watches } from '@/lib/watches'
+import { getSuggestedComparisons } from '@/lib/comparisons'
 import { checkAdmin } from '@/lib/admin'
+
+const MAX_PER_WATCH = 3 // Limit photos per watch for diversity
 
 /**
  * GET /api/photos/related?watchId=...&model=...&brand=...&excludeId=...
- * Batch endpoint: returns same-watch, same-model, same-brand, and fallback photos
- * in a single request instead of 3-4 sequential calls.
+ * Smart related photos endpoint using:
+ * - Tier 1: Same watch (other users' photos)
+ * - Tier 2: Curated alternatives + comparison pairs (from watches.json + comparison-tiers.json)
+ * - Tier 3: Same category + similar price range
+ * - Tier 4: Same brand (different category/price)
+ * - Tier 5: Fallback (trending from matching style/category, then recent)
  */
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
@@ -19,15 +26,49 @@ export async function GET(req: NextRequest) {
 
   if (!watchId) {
     return NextResponse.json(
-      { sameWatch: [], sameModel: [], sameBrand: [], fallback: [] },
+      { sameWatch: [], related: [] },
       { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
     )
   }
 
   try {
-    // Run all queries in parallel
-    const [watchPhotos, modelPhotos, brandPhotos, fallbackPhotos] = await Promise.all([
-      // Same watch
+    // Look up the current watch in the static library for smart matching
+    const currentWatch = watches.find((w) => w.id === watchId) ?? null
+
+    // Build ranked list of related watch IDs using the comparison scoring algorithm
+    // This leverages: alternatives[], comparison-tiers, category, price, brand, score
+    const rankedRelated = currentWatch
+      ? getSuggestedComparisons(currentWatch, 20)
+      : []
+
+    // Split ranked watches into tiers for query prioritization
+    const alternativeIds = rankedRelated.slice(0, 6).map((w) => w.id)  // Top 6: alternatives + curated pairs
+    const categoryIds = rankedRelated.slice(6, 14).map((w) => w.id)     // Next 8: same category/price
+    const remainingIds = rankedRelated.slice(14).map((w) => w.id)        // Rest: same brand etc.
+
+    // Same-category watches NOT already in rankedRelated (for broader discovery)
+    const categoryFallbackIds = currentWatch
+      ? watches
+          .filter((w) =>
+            w.id !== watchId &&
+            w.primary_category === currentWatch.primary_category &&
+            !rankedRelated.some((r) => r.id === w.id)
+          )
+          .slice(0, 10)
+          .map((w) => w.id)
+      : []
+
+    // Collect all watch IDs we want photos for (deduplicated)
+    const allRelatedIds = Array.from(new Set([
+      ...alternativeIds,
+      ...categoryIds,
+      ...remainingIds,
+      ...categoryFallbackIds,
+    ]))
+
+    // Run queries in parallel
+    const [sameWatchPhotos, relatedPhotos, brandPhotos, fallbackPhotos] = await Promise.all([
+      // Tier 1: Same watch
       db
         .select()
         .from(photos)
@@ -35,39 +76,33 @@ export async function GET(req: NextRequest) {
         .orderBy(desc(photos.createdAt))
         .limit(12),
 
-      // Same model (fuzzy match on model name)
-      model
+      // Tiers 2-4: All ranked related watches in one query
+      allRelatedIds.length > 0
         ? db
             .select()
             .from(photos)
-            .where(
-              and(
-                eq(photos.status, 'approved'),
-                ne(photos.watchId, watchId),
-                ilike(photos.modelName, `%${model}%`)
-              )
-            )
+            .where(and(
+              eq(photos.status, 'approved'),
+              inArray(photos.watchId, allRelatedIds)
+            ))
             .orderBy(desc(photos.createdAt))
-            .limit(20)
+            .limit(80)
         : Promise.resolve([]),
 
-      // Same brand
+      // Brand fallback: same brand photos not in the ranked list (for model name matching)
       brand
         ? db
             .select()
             .from(photos)
-            .where(
-              and(
-                eq(photos.status, 'approved'),
-                ne(photos.watchId, watchId),
-                ilike(photos.brandName, `%${brand}%`)
-              )
-            )
+            .where(and(
+              eq(photos.status, 'approved'),
+              ilike(photos.brandName, `%${brand}%`)
+            ))
             .orderBy(desc(photos.createdAt))
-            .limit(20)
+            .limit(30)
         : Promise.resolve([]),
 
-      // Fallback (trending)
+      // Final fallback: recent approved photos
       db
         .select()
         .from(photos)
@@ -79,7 +114,7 @@ export async function GET(req: NextRequest) {
     const unslugify = (slug: string): string =>
       slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 
-    const enrich = (p: typeof watchPhotos[number]) => {
+    const enrich = (p: typeof sameWatchPhotos[number]) => {
       const watch = getWatchById(p.watchId)
       return {
         id: p.id,
@@ -110,35 +145,69 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Deduplicate across tiers
+    // Deduplicate and enforce per-watch diversity limit
     const seenIds = new Set<string>()
+    const watchPhotoCount = new Map<string, number>()
     if (excludeId) seenIds.add(excludeId)
 
-    const dedupe = (items: typeof watchPhotos) =>
+    const dedupeWithLimit = (items: typeof sameWatchPhotos, perWatchLimit: number = MAX_PER_WATCH) =>
       items
         .filter((p) => {
           if (seenIds.has(p.id)) return false
+          const count = watchPhotoCount.get(p.watchId) ?? 0
+          if (p.watchId !== watchId && count >= perWatchLimit) return false
           seenIds.add(p.id)
+          watchPhotoCount.set(p.watchId, count + 1)
           return true
         })
         .map(enrich)
 
-    const sameWatch = dedupe(watchPhotos)
-    const sameModel = dedupe(modelPhotos)
-    const sameBrand = dedupe(brandPhotos)
+    // Tier 1: Same watch (no per-watch limit — show all angles)
+    const sameWatch = sameWatchPhotos
+      .filter((p) => {
+        if (seenIds.has(p.id)) return false
+        seenIds.add(p.id)
+        return true
+      })
+      .map(enrich)
 
-    // Only include fallback if we don't have enough diverse results
-    const differentWatchCount = [...sameModel, ...sameBrand].filter((p) => p.watchId !== watchId).length
-    const fallback = differentWatchCount < 8 ? dedupe(fallbackPhotos) : []
+    // Tiers 2-4: Sort related photos by their rank in the scoring algorithm
+    const rankMap = new Map<string, number>()
+    alternativeIds.forEach((id, i) => rankMap.set(id, i))
+    categoryIds.forEach((id, i) => rankMap.set(id, 100 + i))
+    remainingIds.forEach((id, i) => rankMap.set(id, 200 + i))
+    categoryFallbackIds.forEach((id, i) => rankMap.set(id, 300 + i))
+
+    const sortedRelated = relatedPhotos.sort((a, b) => {
+      const rankA = rankMap.get(a.watchId) ?? 999
+      const rankB = rankMap.get(b.watchId) ?? 999
+      return rankA - rankB
+    })
+
+    const related = dedupeWithLimit(sortedRelated)
+
+    // Brand photos not already included
+    const brandRelated = dedupeWithLimit(
+      brandPhotos.filter((p) => p.watchId !== watchId)
+    )
+
+    // Fallback — only if we don't have enough diversity
+    const uniqueWatches = new Set([...related, ...brandRelated].map((p) => p.watchId))
+    const fallback = uniqueWatches.size < 6
+      ? dedupeWithLimit(fallbackPhotos.filter((p) => p.watchId !== watchId))
+      : []
 
     return NextResponse.json(
-      { sameWatch, sameModel, sameBrand, fallback },
+      {
+        sameWatch,
+        related: [...related, ...brandRelated, ...fallback],
+      },
       { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
     )
   } catch (error) {
     console.error('[/api/photos/related] Query failed:', error)
     return NextResponse.json(
-      { sameWatch: [], sameModel: [], sameBrand: [], fallback: [] },
+      { sameWatch: [], related: [] },
       { status: 500 }
     )
   }
