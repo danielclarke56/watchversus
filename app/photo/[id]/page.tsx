@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, or, and, ne, desc } from 'drizzle-orm'
+import { eq, or, and, ne, asc, desc } from 'drizzle-orm'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
 
@@ -124,7 +124,7 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
       })
       .from(photos)
       .where(and(eq(photos.watchId, p.watchId), eq(photos.status, 'approved'), ne(photos.id, p.id)))
-      .orderBy(desc(photos.sortOrder), desc(photos.createdAt))
+      .orderBy(asc(photos.sortOrder), desc(photos.createdAt))
       .limit(6),
     db
       .select({
