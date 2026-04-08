@@ -314,7 +314,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
     const handleUp = () => {
       setPointerDrag((prev) => {
         if (prev && dropIndex !== null && dropIndex !== prev.index) {
-          const reordered = [...group.photos]
+          const source = pendingReorder ?? group.photos
+          const reordered = [...source]
           const [moved] = reordered.splice(prev.index, 1)
           reordered.splice(dropIndex, 0, moved)
           setPendingReorder(reordered)
@@ -331,7 +332,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
       window.removeEventListener('pointermove', handleMove)
       window.removeEventListener('pointerup', handleUp)
     }
-  }, [pointerDrag, dropIndex, group.photos, group.watchId, onReorder])
+  }, [pointerDrag, dropIndex, group.photos, pendingReorder, group.watchId, onReorder])
 
   return (
     <>
