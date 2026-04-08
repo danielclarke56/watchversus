@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
@@ -145,41 +147,44 @@ export async function GET(req: NextRequest) {
 
     const hasActiveFilter = !!(q || brand || filterMovement || priceMin !== null || priceMax !== null || caseSizeMin !== null || caseSizeMax !== null)
 
-    // Use window function count(*) OVER() to get total count in the same query
-    // This eliminates the need for a separate COUNT query
-    const photoRecords = await db
-      .select({
-        id: photos.id,
-        watchId: photos.watchId,
-        userId: photos.userId,
-        userName: photos.userName,
-        url: photos.url,
-        status: photos.status,
-        createdAt: photos.createdAt,
-        brandName: photos.brandName,
-        modelName: photos.modelName,
-        referenceNumber: photos.referenceNumber,
-        movement: photos.movement,
-        caseSize: photos.caseSize,
-        wristSize: photos.wristSize,
-        estimatedPrice: photos.estimatedPrice,
-        productionYear: photos.productionYear,
-        lugToLug: photos.lugToLug,
-        betweenLugs: photos.betweenLugs,
-        thickness: photos.thickness,
-        waterResistance: photos.waterResistance,
-        sortOrder: photos.sortOrder,
-        slug: photos.slug,
-        ...(hasActiveFilter ? { totalCount: drizzleSql<number>`count(*) OVER()`.as('total_count') } : {}),
-      })
-      .from(photos)
-      .where(whereClause)
-      .orderBy(desc(photos.createdAt))
-      .limit(limit + 1)
-
-    const countResult = hasActiveFilter
-      ? (photoRecords[0] as { totalCount?: number })?.totalCount ?? 0
-      : null
+    // Run count query in parallel with the data query
+    const [photoRecords, countResult] = await Promise.all([
+      db
+        .select({
+          id: photos.id,
+          watchId: photos.watchId,
+          userId: photos.userId,
+          userName: photos.userName,
+          url: photos.url,
+          status: photos.status,
+          createdAt: photos.createdAt,
+          brandName: photos.brandName,
+          modelName: photos.modelName,
+          referenceNumber: photos.referenceNumber,
+          movement: photos.movement,
+          caseSize: photos.caseSize,
+          wristSize: photos.wristSize,
+          estimatedPrice: photos.estimatedPrice,
+          productionYear: photos.productionYear,
+          lugToLug: photos.lugToLug,
+          betweenLugs: photos.betweenLugs,
+          thickness: photos.thickness,
+          waterResistance: photos.waterResistance,
+          sortOrder: photos.sortOrder,
+          slug: photos.slug,
+        })
+        .from(photos)
+        .where(whereClause)
+        .orderBy(desc(photos.createdAt))
+        .limit(limit + 1),
+      hasActiveFilter
+        ? db
+            .select({ count: drizzleSql<number>`count(*)::int` })
+            .from(photos)
+            .where(whereClause)
+            .then((r) => r[0]?.count ?? 0)
+        : Promise.resolve(null),
+    ])
 
     // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
     const unslugify = (slug: string): string =>
