@@ -821,7 +821,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       {/* ─── Full-screen light lightbox ─── */}
       {lightbox !== null && activeLightboxPhoto && (
         <div
-          className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex"
+          className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex overflow-hidden"
           style={{ overscrollBehavior: 'contain' }}
           onClick={closeLightbox}
         >
@@ -839,11 +839,11 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
 
           {/* Main content */}
           <div
-            className="flex flex-1 flex-col md:flex-row min-h-0"
+            className="flex flex-1 flex-col md:flex-row min-h-0 w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ── Left / main column ── */}
-            <div className="flex flex-col min-h-0 min-w-0 flex-1 md:flex-[3]">
+            <div className="flex flex-col min-h-0 min-w-0 flex-1 md:flex-[3] w-full overflow-hidden">
 
               {/* Photo area */}
               <div
