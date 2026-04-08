@@ -182,13 +182,16 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   // Override: a related photo not yet in `groups`
   const [photoOverride, setPhotoOverride] = useState<PhotoItem | null>(null)
 
+  // Abort controller for cancelling stale fetches
+  const abortRef = useRef<AbortController | null>(null)
+
   // Pinterest-style URL tracking
   const galleryUrlRef = useRef<string>('/')
   const lightboxOpenRef = useRef(false)
   const initialPhotoOpenedRef = useRef(false)
   const groupsRef = useRef<ReturnType<typeof groupByWatch>>([])
 
-  const fetchPhotos = useCallback(async (cursor?: string) => {
+  const fetchPhotos = useCallback(async (cursor?: string, signal?: AbortSignal) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
     if (cursor) params.set('cursor', cursor)
     if (activeWatchId) params.set('watchId', activeWatchId)
@@ -199,7 +202,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     if (activePriceMax) params.set('priceMax', activePriceMax)
     if (activeCaseSizeMin) params.set('caseSizeMin', activeCaseSizeMin)
     if (activeCaseSizeMax) params.set('caseSizeMax', activeCaseSizeMax)
-    const res = await fetch(`/api/photos/all?${params.toString()}`)
+    const res = await fetch(`/api/photos/all?${params.toString()}`, { signal })
     const data: PhotosResponse = await res.json()
     return data
   }, [activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax])
@@ -215,51 +218,25 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       const model = currentPhoto.modelName || currentPhoto.watchName || null
       const brand = currentPhoto.watchBrand || currentPhoto.brandName || null
 
-      const watchParams = new URLSearchParams({ watchId, limit: '12' })
-      const watchRes = await fetch(`/api/photos/all?${watchParams.toString()}`)
-      const watchData: PhotosResponse = await watchRes.json()
-      const sameWatch = watchData.photos.filter((p) => p.id !== currentPhoto.id)
-      const seenIds = new Set(sameWatch.map((p) => p.id))
-      seenIds.add(currentPhoto.id)
+      // Single batched request instead of 3-4 sequential calls
+      const params = new URLSearchParams({ watchId, excludeId: currentPhoto.id })
+      if (model) params.set('model', model)
+      if (brand) params.set('brand', brand)
+      const res = await fetch(`/api/photos/related?${params.toString()}`)
+      const data: { sameWatch: PhotoItem[]; sameModel: PhotoItem[]; sameBrand: PhotoItem[]; fallback: PhotoItem[] } = await res.json()
 
       // Inject same-watch photos not yet in the main feed so groupByWatch merges them into the carousel.
       // Only inject photos from the same user — cross-user photos with the same watchId are a data anomaly
       // (two users' submissions incorrectly merged) and must NOT be merged into the same carousel group.
       setPhotos((prev) => {
         const existingIds = new Set(prev.map((p) => p.id))
-        const missing = watchData.photos.filter(
+        const missing = data.sameWatch.filter(
           (p) => !existingIds.has(p.id) && p.userId === currentPhoto.userId
         )
         return missing.length > 0 ? [...prev, ...missing] : prev
       })
 
-      let sameModel: PhotoItem[] = []
-      if (model) {
-        const modelParams = new URLSearchParams({ q: model, limit: '20' })
-        const modelRes = await fetch(`/api/photos/all?${modelParams.toString()}`)
-        const modelData: PhotosResponse = await modelRes.json()
-        sameModel = modelData.photos.filter((p) => !seenIds.has(p.id))
-        for (const p of sameModel) seenIds.add(p.id)
-      }
-
-      let brandPhotos: PhotoItem[] = []
-      if (brand) {
-        const brandParams = new URLSearchParams({ q: brand, limit: '20' })
-        const brandRes = await fetch(`/api/photos/all?${brandParams.toString()}`)
-        const brandData: PhotosResponse = await brandRes.json()
-        brandPhotos = brandData.photos.filter((p) => !seenIds.has(p.id))
-        for (const p of brandPhotos) seenIds.add(p.id)
-      }
-
-      let fallbackPhotos: PhotoItem[] = []
-      const differentWatchCount = [...sameModel, ...brandPhotos].filter((p) => p.watchId !== watchId).length
-      if (differentWatchCount < 8) {
-        const fallbackRes = await fetch(`/api/photos/all?limit=24`)
-        const fallbackData: PhotosResponse = await fallbackRes.json()
-        fallbackPhotos = fallbackData.photos.filter((p) => !seenIds.has(p.id))
-      }
-
-      const relatedList = [...sameWatch, ...sameModel, ...brandPhotos, ...fallbackPhotos]
+      const relatedList = [...data.sameWatch, ...data.sameModel, ...data.sameBrand, ...data.fallback]
       relatedPhotosCacheRef.current.set(watchId, relatedList)
       setRelatedPhotos(relatedList)
     } catch (error) {
@@ -316,25 +293,36 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     // viewing a photo, not actually changing the search filter.
     if (lightboxOpenRef.current) return
 
-    let cancelled = false
-    setLoading(true)
-    setPhotos([])
-    setNextCursor(null)
-    setTotalCount(null)
-    setLightbox(null)
+    // Debounce rapid filter changes (e.g. clicking multiple chips quickly)
+    const timer = setTimeout(() => {
+      // Abort any in-flight request before starting a new one
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
 
-    fetchPhotos().then((data) => {
-      if (!cancelled) {
-        setPhotos(data.photos)
-        setNextCursor(data.nextCursor)
-        setTotalCount(data.totalCount)
-        setLoading(false)
-      }
-    }).catch(() => {
-      if (!cancelled) setLoading(false)
-    })
+      setLoading(true)
+      setPhotos([])
+      setNextCursor(null)
+      setTotalCount(null)
+      setLightbox(null)
 
-    return () => { cancelled = true }
+      fetchPhotos(undefined, controller.signal).then((data) => {
+        if (!controller.signal.aborted) {
+          setPhotos(data.photos)
+          setNextCursor(data.nextCursor)
+          setTotalCount(data.totalCount)
+          setLoading(false)
+        }
+      }).catch((err) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return
+        if (!controller.signal.aborted) setLoading(false)
+      })
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      abortRef.current?.abort()
+    }
   }, [fetchPhotos, activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax])
 
   useEffect(() => {
@@ -953,7 +941,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                 if (w?.case_material) specs.push({ label: 'Material', value: w.case_material })
 
                 return (
-                  <div className="flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3">
+                  <div className="flex-shrink-0 md:flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3 max-h-[45vh] md:max-h-none overflow-y-auto">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         {(brand || model) && (
@@ -1017,21 +1005,35 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                       </div>
                     )}
 
-                    {/* Mobile: related photos strip */}
+                    {/* Mobile: Pinterest-style related photos grid */}
                     {relatedPhotos.length > 0 && (
-                      <div className="mt-3 md:hidden">
-                        <p className="text-gray-400 text-[10px] uppercase tracking-wide mb-2">More like this</p>
-                        <div className="flex gap-2 overflow-x-auto pb-1">
-                          {relatedPhotos.slice(0, 10).map((rp) => (
-                            <button
-                              key={rp.id}
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
-                              className="shrink-0 relative rounded-lg overflow-hidden w-14 h-14 border border-gray-200 hover:border-gray-400 transition-colors"
-                            >
-                              <Image src={rp.url} alt={buildPhotoAltText(rp)} fill className="object-cover" sizes="56px" />
-                            </button>
-                          ))}
+                      <div className="mt-4 md:hidden">
+                        <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
+                        <div className="columns-2 gap-2.5">
+                          {relatedPhotos.slice(0, 10).map((rp) => {
+                            const lbl = [rp.brandName || rp.watchBrand, rp.modelName || rp.watchName].filter(Boolean).join(' ')
+                            return (
+                              <button
+                                key={rp.id}
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
+                                className="block w-full mb-2.5 break-inside-avoid"
+                              >
+                                <div className="relative rounded-xl overflow-hidden bg-gray-100">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={rp.thumbnailUrl || rp.url}
+                                    alt={buildPhotoAltText(rp)}
+                                    className="w-full h-auto object-cover"
+                                    loading="lazy"
+                                  />
+                                </div>
+                                {lbl && (
+                                  <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{lbl}</p>
+                                )}
+                              </button>
+                            )
+                          })}
                         </div>
                       </div>
                     )}
