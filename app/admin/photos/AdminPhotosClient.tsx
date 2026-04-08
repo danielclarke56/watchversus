@@ -223,6 +223,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onApproveGroup,
   onRejectGroup,
   onRestoreGroup,
+  onDeleteGroup,
   onDelete,
   onReorder,
   isApproved,
@@ -242,6 +243,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
   onRejectGroup?: (watchId: string, photoIds: string[]) => void
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
+  onDeleteGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
   onReorder?: (watchId: string, reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]) => void
   isApproved: boolean
@@ -529,6 +531,18 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               className="flex-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50"
             >
               {isRestoringGroup ? 'Restoring...' : `Restore to Pending`}
+            </button>
+          )}
+          {isRejected && onDeleteGroup && (
+            <button
+              onClick={() => {
+                if (confirm(`Permanently delete all ${group.photos.length} photo${group.photos.length > 1 ? 's' : ''} for ${displayName}? This cannot be undone.`))
+                  onDeleteGroup(group.watchId, group.photos.map((p) => p.id))
+              }}
+              disabled={acting === `delete-group-${group.watchId}`}
+              className="text-sm bg-red-700 hover:bg-red-800 text-white px-3 py-2 rounded font-semibold transition-colors disabled:opacity-50"
+            >
+              {acting === `delete-group-${group.watchId}` ? 'Deleting…' : '🗑 Delete all'}
             </button>
           )}
           {isApproved && !isDirty && (
@@ -999,6 +1013,21 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
+  async function handleDeleteRejectedGroup(watchId: string, photoIds: string[]) {
+    setActing(`delete-group-${watchId}`)
+    try {
+      await Promise.all(photoIds.map((photoId) =>
+        fetch('/api/admin/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', watchId, photoId }),
+        })
+      ))
+      setRejectedPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
@@ -1186,6 +1215,7 @@ export default function AdminPhotosClient() {
 
                       onAiFillGroup={handleAiFillGroup}
                       onRestoreGroup={handleRestoreGroup}
+                      onDeleteGroup={handleDeleteRejectedGroup}
                       onDelete={(photo) => handleDeleteRejected(photo)}
                       isApproved={false}
                       isRejected={true}
