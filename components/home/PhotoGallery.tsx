@@ -181,6 +181,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
 
   // Override: a related photo not yet in `groups`
   const [photoOverride, setPhotoOverride] = useState<PhotoItem | null>(null)
+  const [showMobileSpecs, setShowMobileSpecs] = useState(false)
 
   // Abort controller for cancelling stale fetches
   const abortRef = useRef<AbortController | null>(null)
@@ -361,6 +362,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   useEffect(() => {
     if (lightbox === null) return
     setLightboxImageLoading(true)
+    setShowMobileSpecs(false)
   }, [lightbox])
 
   // Fetch watch metadata when lightbox photo changes
@@ -965,14 +967,42 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                           )}
                         </p>
                         {specs.length > 0 && (
-                          <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
-                            {specs.map((s) => (
-                              <div key={s.label} className="flex items-baseline gap-1">
-                                <span className="text-gray-400 text-[10px] uppercase tracking-wide">{s.label}</span>
-                                <span className="text-gray-700 text-xs font-medium">{s.value}</span>
+                          <>
+                            {/* Mobile: collapsible specs */}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setShowMobileSpecs(!showMobileSpecs) }}
+                              className="md:hidden mt-1.5 flex items-center gap-1 text-gray-400 text-[10px] uppercase tracking-wide font-semibold"
+                            >
+                              Specs
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={`w-3 h-3 transition-transform ${showMobileSpecs ? 'rotate-180' : ''}`}
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                            {showMobileSpecs && (
+                              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 md:hidden">
+                                {specs.map((s) => (
+                                  <div key={s.label} className="flex items-baseline gap-1">
+                                    <span className="text-gray-400 text-[10px] uppercase tracking-wide">{s.label}</span>
+                                    <span className="text-gray-700 text-xs font-medium">{s.value}</span>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            )}
+                            {/* Desktop: always visible */}
+                            <div className="hidden md:flex mt-1.5 flex-wrap gap-x-4 gap-y-1">
+                              {specs.map((s) => (
+                                <div key={s.label} className="flex items-baseline gap-1">
+                                  <span className="text-gray-400 text-[10px] uppercase tracking-wide">{s.label}</span>
+                                  <span className="text-gray-700 text-xs font-medium">{s.value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </>
                         )}
                       </div>
                       {/* Like / share / save */}
