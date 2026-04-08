@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 import { NextResponse } from 'next/server'
 import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
@@ -64,7 +62,7 @@ export async function GET() {
         brands,
         trending,
       },
-      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
+      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } }
     )
   } catch (error) {
     console.error('Error fetching watches with photos:', error)

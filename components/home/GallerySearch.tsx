@@ -68,6 +68,16 @@ function saveRecentSearch(query: string) {
   } catch { /* ignore */ }
 }
 
+// Module-level cache for /api/photos/watches — avoids re-fetching on every mount
+interface WatchesCache {
+  watches: WatchWithCount[]
+  brands: BrandWithCount[]
+  trending: string[]
+  ts: number
+}
+let watchesCache: WatchesCache | null = null
+const WATCHES_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
 export default function GallerySearch() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -132,24 +142,40 @@ export default function GallerySearch() {
     }
   }, [])
 
-  // Fetch watches with photos on mount
+  // Fetch watches with photos on mount (with module-level cache)
   useEffect(() => {
-    const fetchWatches = async () => {
-      try {
-        const res = await fetch('/api/photos/watches')
-        const data = await res.json()
-        setWatches(data.watches || [])
-        setBrands(data.brands || [])
-        setTrending(data.trending || [])
-      } catch (error) {
-        console.error('Failed to fetch watches:', error)
-        setWatches([])
-      } finally {
-        setIsLoading(false)
-      }
+    const applyData = (data: WatchesCache) => {
+      setWatches(data.watches)
+      setBrands(data.brands)
+      setTrending(data.trending)
+      setIsLoading(false)
     }
 
-    fetchWatches()
+    // Serve from cache immediately if fresh
+    if (watchesCache && Date.now() - watchesCache.ts < WATCHES_CACHE_TTL) {
+      applyData(watchesCache)
+    }
+
+    // Always revalidate in background
+    fetch('/api/photos/watches')
+      .then((res) => res.json())
+      .then((data) => {
+        const cached: WatchesCache = {
+          watches: data.watches || [],
+          brands: data.brands || [],
+          trending: data.trending || [],
+          ts: Date.now(),
+        }
+        watchesCache = cached
+        applyData(cached)
+      })
+      .catch((error) => {
+        console.error('Failed to fetch watches:', error)
+        if (!watchesCache) {
+          setWatches([])
+          setIsLoading(false)
+        }
+      })
   }, [])
 
   // Load recent searches on mount
