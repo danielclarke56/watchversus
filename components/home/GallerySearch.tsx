@@ -29,12 +29,15 @@ interface FilterChip {
   valueMax?: string
 }
 
+// Filter chip data — hidden from UI for now, kept for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MOVEMENT_CHIPS: FilterChip[] = [
   { key: 'mv-automatic', label: 'Automatic', param: 'movement', value: 'automatic' },
   { key: 'mv-quartz', label: 'Quartz', param: 'movement', value: 'quartz' },
   { key: 'mv-manual', label: 'Manual', param: 'movement', value: 'manual' },
 ]
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PRICE_CHIPS: FilterChip[] = [
   { key: 'price-0-500', label: 'Under $500', param: 'price', value: '0-500', paramMin: 'priceMin', paramMax: 'priceMax', valueMin: '0', valueMax: '500' },
   { key: 'price-500-2000', label: '$500\u2013$2K', param: 'price', value: '500-2000', paramMin: 'priceMin', paramMax: 'priceMax', valueMin: '500', valueMax: '2000' },
@@ -43,6 +46,7 @@ const PRICE_CHIPS: FilterChip[] = [
   { key: 'price-10000+', label: '$10K+', param: 'price', value: '10000+', paramMin: 'priceMin', paramMax: 'priceMax', valueMin: '10000', valueMax: '' },
 ]
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SIZE_CHIPS: FilterChip[] = [
   { key: 'size-0-38', label: 'Under 38mm', param: 'caseSize', value: '0-38', paramMin: 'caseSizeMin', paramMax: 'caseSizeMax', valueMin: '0', valueMax: '38' },
   { key: 'size-38-42', label: '38\u201342mm', param: 'caseSize', value: '38-42', paramMin: 'caseSizeMin', paramMax: 'caseSizeMax', valueMin: '38', valueMax: '42' },
@@ -366,7 +370,8 @@ export default function GallerySearch() {
     setIsOpen(false)
   }
 
-  // Toggle a filter chip
+  // Toggle a filter chip (hidden from UI for now)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toggleChip = (chip: FilterChip) => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('watch')
@@ -405,6 +410,7 @@ export default function GallerySearch() {
     router.replace(qs ? `/?${qs}` : '/')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toggleBrandChip = (brandName: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('watch')
@@ -417,6 +423,7 @@ export default function GallerySearch() {
     router.replace(qs ? `/?${qs}` : '/')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isChipActive = (chip: FilterChip): boolean => {
     if (chip.param === 'movement') return activeMovement === chip.value
     if (chip.param === 'price') return activePriceMin === chip.valueMin && activePriceMax === (chip.valueMax || null)
@@ -426,7 +433,7 @@ export default function GallerySearch() {
 
   const hasActiveFilters = activeBrand || activeMovement || activePriceMin || activePriceMax || activeCaseSizeMin || activeCaseSizeMax
 
-  // Brand chips from API (top brands by photo count)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const brandChips = brands.slice(0, 8)
 
   return (
@@ -593,83 +600,7 @@ export default function GallerySearch() {
         )}
       </div>
 
-      {/* Filter chips */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
-        {/* Brand chips */}
-        {brandChips.map((brand) => (
-          <button
-            key={`brand-${brand.name}`}
-            type="button"
-            onClick={() => toggleBrandChip(brand.name)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
-              activeBrand === brand.name.toLowerCase()
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            {brand.name}
-          </button>
-        ))}
-
-        {/* Separator */}
-        {brandChips.length > 0 && (
-          <div className="shrink-0 w-px bg-gray-200 my-1" />
-        )}
-
-        {/* Movement chips */}
-        {MOVEMENT_CHIPS.map((chip) => (
-          <button
-            key={chip.key}
-            type="button"
-            onClick={() => toggleChip(chip)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
-              isChipActive(chip)
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            {chip.label}
-          </button>
-        ))}
-
-        {/* Separator */}
-        <div className="shrink-0 w-px bg-gray-200 my-1" />
-
-        {/* Price chips */}
-        {PRICE_CHIPS.map((chip) => (
-          <button
-            key={chip.key}
-            type="button"
-            onClick={() => toggleChip(chip)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
-              isChipActive(chip)
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            {chip.label}
-          </button>
-        ))}
-
-        {/* Separator */}
-        <div className="shrink-0 w-px bg-gray-200 my-1" />
-
-        {/* Case size chips */}
-        {SIZE_CHIPS.map((chip) => (
-          <button
-            key={chip.key}
-            type="button"
-            onClick={() => toggleChip(chip)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
-              isChipActive(chip)
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            {chip.label}
-          </button>
-        ))}
-      </div>
+      {/* Filter chips — hidden for now until feature is refined */}
     </div>
   )
 }

@@ -210,7 +210,7 @@ function DidYouMean({ query, onSearch, onBrand }: { query: string | null; onSear
   )
 }
 
-function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
+function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: string; userId?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
@@ -283,10 +283,11 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     if (activePriceMax) params.set('priceMax', activePriceMax)
     if (activeCaseSizeMin) params.set('caseSizeMin', activeCaseSizeMin)
     if (activeCaseSizeMax) params.set('caseSizeMax', activeCaseSizeMax)
+    if (userId) params.set('userId', userId)
     const res = await fetch(`/api/photos/all?${params.toString()}`, { signal })
     const data: PhotosResponse = await res.json()
     return data
-  }, [activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax])
+  }, [activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax, userId])
 
   const fetchRelatedPhotos = useCallback(async (currentPhoto: PhotoItem) => {
     const watchId = currentPhoto.watchId
@@ -788,9 +789,9 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     : null
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-      {/* Filter indicators with result count */}
-      {activeWatchId && selectedWatchName && (
+    <section className={userId ? 'pb-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'}>
+      {/* Filter indicators with result count (hidden in user collection mode) */}
+      {!userId && activeWatchId && selectedWatchName && (
         <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
           <span className="text-sm font-medium text-blue-900">
             {totalCount !== null ? (
@@ -804,7 +805,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
           </button>
         </div>
       )}
-      {!activeWatchId && hasActiveSearch && (
+      {!userId && !activeWatchId && hasActiveSearch && (
         <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
           <span className="text-sm font-medium text-blue-900">
             {totalCount !== null ? (
@@ -1154,7 +1155,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   )
 }
 
-export default function PhotoGallery({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
+export default function PhotoGallery({ initialPhotoSlug, userId }: { initialPhotoSlug?: string; userId?: string }) {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
@@ -1165,7 +1166,7 @@ export default function PhotoGallery({ initialPhotoSlug }: { initialPhotoSlug?: 
         </div>
       </div>
     }>
-      <PhotoGalleryContent initialPhotoSlug={initialPhotoSlug} />
+      <PhotoGalleryContent initialPhotoSlug={initialPhotoSlug} userId={userId} />
     </Suspense>
   )
 }

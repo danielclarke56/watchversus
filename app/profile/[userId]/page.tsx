@@ -4,10 +4,10 @@ import { clerkClient } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import Image from 'next/image'
 import Link from 'next/link'
-import ProfileClient from './ProfileClient'
-import EmptyState from '@/components/ui/EmptyState'
+import PhotoGallery from '@/components/home/PhotoGallery'
 
 export async function generateMetadata(
   { params }: { params: { userId: string } }
@@ -47,24 +47,11 @@ export default async function ProfilePage({ params }: { params: { userId: string
   }
 
   // Fetch approved photos for this user
-  const photoRecords = await db
-    .select()
+  // Get photo count for display
+  const [{ photoCount }] = await db
+    .select({ photoCount: sql<number>`count(*)::int` })
     .from(photos)
     .where(and(eq(photos.userId, params.userId), eq(photos.status, 'approved')))
-
-  // Group photos by watchId
-  const groupedPhotos: Record<string, typeof photoRecords> = {}
-  photoRecords.forEach((photo) => {
-    if (!groupedPhotos[photo.watchId]) {
-      groupedPhotos[photo.watchId] = []
-    }
-    groupedPhotos[photo.watchId].push(photo)
-  })
-
-  const watches = Object.entries(groupedPhotos).map(([watchId, watchPhotos]) => ({
-    watchId,
-    photos: watchPhotos,
-  }))
 
   // Get display name and avatar
   const displayName = user.firstName
@@ -113,30 +100,16 @@ export default async function ProfilePage({ params }: { params: { userId: string
               <p className="text-textMuted mb-4">Watch Collector</p>
               <div className="text-sm text-textSecond">
                 <p>
-                  <span className="font-semibold text-textPrimary">{watches.length}</span> {watches.length === 1 ? 'watch' : 'watches'} in collection
+                  <span className="font-semibold text-textPrimary">{photoCount}</span> photo{photoCount !== 1 ? 's' : ''} uploaded
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Collection section */}
-        {watches.length === 0 ? (
-          <EmptyState title="No watches in collection yet" actionUrl="/" actionText="View all watches →" actionStyle="link" />
-        ) : (
-          <>
-            <h2 className="text-2xl font-bold mb-6">Collection</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {watches.map(({ watchId, photos: watchPhotos }) => (
-                <ProfileClient
-                  key={watchId}
-                  watchId={watchId}
-                  photos={watchPhotos}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        {/* Collection gallery */}
+        <h2 className="text-2xl font-bold mb-6">Collection</h2>
+        <PhotoGallery userId={params.userId} />
       </div>
     </main>
   )

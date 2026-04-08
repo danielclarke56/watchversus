@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
   const cursor = searchParams.get('cursor')
   const brand = searchParams.get('brand')?.toLowerCase() ?? ''
   const watchId = searchParams.get('watchId') ?? ''
+  const userId = searchParams.get('userId') ?? ''
   const q = searchParams.get('q')?.toLowerCase() ?? ''
 
   // New filter params
@@ -56,6 +57,9 @@ export async function GET(req: NextRequest) {
     }
     if (watchId) {
       conditions.push(eq(photos.watchId, watchId))
+    }
+    if (userId) {
+      conditions.push(eq(photos.userId, userId))
     }
 
     // Apply chip filters via watchId IN (...)

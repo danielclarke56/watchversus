@@ -3,11 +3,11 @@ import { notFound } from 'next/navigation'
 import { clerkClient } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import Image from 'next/image'
 import Link from 'next/link'
-import ProfileClient from '@/app/profile/[userId]/ProfileClient'
-import EmptyState from '@/components/ui/EmptyState'
+import PhotoGallery from '@/components/home/PhotoGallery'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,26 +50,10 @@ export default async function PublicProfilePage({ params }: { params: { username
     notFound()
   }
 
-  // Fetch approved photos
-  const photoRecords = await db
-    .select()
+  const [{ photoCount }] = await db
+    .select({ photoCount: sql<number>`count(*)::int` })
     .from(photos)
     .where(and(eq(photos.userId, user.id), eq(photos.status, 'approved')))
-    .orderBy(desc(photos.createdAt))
-
-  // Group photos by watchId
-  const groupedPhotos: Record<string, typeof photoRecords> = {}
-  for (const photo of photoRecords) {
-    if (!groupedPhotos[photo.watchId]) {
-      groupedPhotos[photo.watchId] = []
-    }
-    groupedPhotos[photo.watchId].push(photo)
-  }
-
-  const watches = Object.entries(groupedPhotos).map(([watchId, watchPhotos]) => ({
-    watchId,
-    photos: watchPhotos,
-  }))
 
   const displayName = user.firstName
     ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
@@ -118,12 +102,12 @@ export default async function PublicProfilePage({ params }: { params: { username
               <p className="text-textMuted mb-4">Watch Collector</p>
               <div className="flex flex-wrap gap-6 justify-center sm:justify-start text-sm text-textSecond">
                 <div>
-                  <span className="font-semibold text-textPrimary">{watches.length}</span>{' '}
-                  {watches.length === 1 ? 'watch' : 'watches'} in collection
+                  <span className="font-semibold text-textPrimary">{photoCount}</span>{' '}
+                  photo{photoCount !== 1 ? 's' : ''} uploaded
                 </div>
                 <div>
-                  <span className="font-semibold text-textPrimary">{photoRecords.length}</span>{' '}
-                  approved {photoRecords.length === 1 ? 'photo' : 'photos'}
+                  <span className="font-semibold text-textPrimary">{photoCount}</span>{' '}
+                  approved photo{photoCount !== 1 ? 's' : ''}
                 </div>
                 <div>
                   Member since{' '}
@@ -136,23 +120,9 @@ export default async function PublicProfilePage({ params }: { params: { username
           </div>
         </div>
 
-        {/* Collection section */}
-        {watches.length === 0 ? (
-          <EmptyState title="No watches in collection yet" actionUrl="/" actionText="View all watches →" actionStyle="link" />
-        ) : (
-          <>
-            <h2 className="text-2xl font-bold mb-6">Collection</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-              {watches.map(({ watchId, photos: watchPhotos }) => (
-                <ProfileClient
-                  key={watchId}
-                  watchId={watchId}
-                  photos={watchPhotos}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        {/* Collection gallery */}
+        <h2 className="text-2xl font-bold mb-6">Collection</h2>
+        <PhotoGallery userId={user.id} />
       </div>
     </main>
   )
