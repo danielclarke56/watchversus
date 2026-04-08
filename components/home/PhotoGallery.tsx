@@ -119,6 +119,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   const galleryUrlRef = useRef<string>('/')
   const lightboxOpenRef = useRef(false)
   const initialPhotoOpenedRef = useRef(false)
+  const groupsRef = useRef<ReturnType<typeof groupByWatch>>([])
 
   const fetchPhotos = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
@@ -196,7 +197,11 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     }
   }, [])
 
-  const groups = useMemo(() => groupByWatch(photos), [photos])
+  const groups = useMemo(() => {
+    const g = groupByWatch(photos)
+    groupsRef.current = g
+    return g
+  }, [photos])
 
   // Flat list of ALL photos across all groups (gallery-wide navigation)
   const flatPhotos = useMemo(() => groups.flatMap((g) => g.photos), [groups])
@@ -336,7 +341,9 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   }, [lightbox?.groupIdx, lightbox?.photoIdx, photoOverride?.id])
 
   const openLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
-    const photo = groups[groupIdx]?.photos[photoIdx]
+    // Read from ref so this callback is never stale — avoids the race where groups
+    // empties during a search filter change and onClick fires before re-population
+    const photo = groupsRef.current[groupIdx]?.photos[photoIdx]
     if (photo) {
       galleryUrlRef.current = window.location.pathname + window.location.search
       lightboxOpenRef.current = true
@@ -345,7 +352,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       setLightboxImageLoading(true)
       setLightbox({ groupIdx, photoIdx })
     }
-  }, [groups])
+  }, [])
 
   const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
