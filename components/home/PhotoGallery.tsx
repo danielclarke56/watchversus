@@ -561,15 +561,35 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   }, [activeLightboxPhoto, fetchRelatedPhotos])
 
   const otherWatchRelated = relatedPhotos.filter(
-    (p) => p.watchId !== activeLightboxPhoto?.watchId
+    (p) => !(p.watchId === activeLightboxPhoto?.watchId && p.userId === activeLightboxPhoto?.userId)
   )
   const currentModelName = activeLightboxPhoto?.modelName || activeLightboxPhoto?.watchName || null
+
+  // Group related photos by watchId+userId (same user's upload = one entry)
+  type RelatedGroup = { key: string; cover: PhotoItem; photos: PhotoItem[]; label: string }
+  const groupRelated = (items: PhotoItem[]): RelatedGroup[] => {
+    const map = new Map<string, PhotoItem[]>()
+    for (const p of items) {
+      const key = `${p.watchId}::${p.userId}`
+      if (!map.has(key)) map.set(key, [])
+      map.get(key)!.push(p)
+    }
+    return Array.from(map.entries()).map(([key, photos]) => ({
+      key,
+      cover: photos[0],
+      photos,
+      label: [photos[0].brandName || photos[0].watchBrand, photos[0].modelName || photos[0].watchName].filter(Boolean).join(' '),
+    }))
+  }
+
   const sameModelRelated = currentModelName
     ? otherWatchRelated.filter((p) => (p.modelName || p.watchName) === currentModelName)
     : []
   const otherModelRelated = currentModelName
     ? otherWatchRelated.filter((p) => (p.modelName || p.watchName) !== currentModelName)
     : otherWatchRelated
+  const sameModelGroups = groupRelated(sameModelRelated)
+  const otherModelGroups = groupRelated(otherModelRelated)
 
   // Scroll-wheel zoom
   const photoAreaRef = useRef<HTMLDivElement>(null)
@@ -1106,59 +1126,63 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                     </div>
                   ) : (
                     <>
-                      {sameModelRelated.length > 0 && (
+                      {sameModelGroups.length > 0 && (
                         <div>
                           <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mb-2">
                             More {currentModelName ?? 'like this'}
                           </p>
                           <div className="grid grid-cols-2 gap-1.5">
-                            {sameModelRelated.slice(0, 12).map((rp) => {
-                              const lbl = [rp.brandName || rp.watchBrand, rp.modelName || rp.watchName].filter(Boolean).join(' ')
-                              return (
-                                <button
-                                  key={rp.id}
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
-                                  className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
-                                  aria-label={lbl || 'Related photo'}
-                                >
-                                  <Image src={rp.url} alt={buildPhotoAltText(rp)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
-                                  {lbl && (
-                                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <p className="text-white text-[10px] font-medium truncate">{lbl}</p>
-                                    </div>
-                                  )}
-                                </button>
-                              )
-                            })}
+                            {sameModelGroups.slice(0, 12).map((g) => (
+                              <button
+                                key={g.key}
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(g.cover) }}
+                                className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
+                                aria-label={g.label || 'Related photo'}
+                              >
+                                <Image src={g.cover.url} alt={buildPhotoAltText(g.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
+                                {g.photos.length > 1 && (
+                                  <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full z-10">
+                                    {g.photos.length}
+                                  </span>
+                                )}
+                                {g.label && (
+                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <p className="text-white text-[10px] font-medium truncate">{g.label}</p>
+                                  </div>
+                                )}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       )}
-                      {otherModelRelated.length > 0 && (
+                      {otherModelGroups.length > 0 && (
                         <div>
-                          {sameModelRelated.length > 0 && (
+                          {sameModelGroups.length > 0 && (
                             <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mb-2">Other watches</p>
                           )}
                           <div className="grid grid-cols-2 gap-1.5">
-                            {otherModelRelated.slice(0, 20).map((rp) => {
-                              const lbl = [rp.brandName || rp.watchBrand, rp.modelName || rp.watchName].filter(Boolean).join(' ')
-                              return (
-                                <button
-                                  key={rp.id}
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
-                                  className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
-                                  aria-label={lbl || 'Related photo'}
-                                >
-                                  <Image src={rp.url} alt={buildPhotoAltText(rp)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
-                                  {lbl && (
-                                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <p className="text-white text-[10px] font-medium truncate">{lbl}</p>
-                                    </div>
-                                  )}
-                                </button>
-                              )
-                            })}
+                            {otherModelGroups.slice(0, 20).map((g) => (
+                              <button
+                                key={g.key}
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(g.cover) }}
+                                className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
+                                aria-label={g.label || 'Related photo'}
+                              >
+                                <Image src={g.cover.url} alt={buildPhotoAltText(g.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
+                                {g.photos.length > 1 && (
+                                  <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full z-10">
+                                    {g.photos.length}
+                                  </span>
+                                )}
+                                {g.label && (
+                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <p className="text-white text-[10px] font-medium truncate">{g.label}</p>
+                                  </div>
+                                )}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       )}
