@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and, desc, or, ilike, inArray } from 'drizzle-orm'
+import { eq, lt, and, desc, or, ilike, inArray, sql as drizzleSql } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 
 /**
@@ -32,29 +32,46 @@ export async function GET(req: NextRequest) {
     }
     // Push search query to DB level (fixes pagination + filter mismatch)
     if (q && !watchId) {
-      // Search against static watch library (name, brand, reference)
+      // Split into tokens so "rolex sub 41" matches all three fields independently
+      const tokens = q.split(/\s+/).filter(Boolean)
+
+      // Static watch library pre-filter: a watchId is included if ALL tokens match
       const matchingWatchIds = watches
-        .filter(
-          (w) =>
-            w.name?.toLowerCase().includes(q) ||
-            w.brand?.toLowerCase().includes(q) ||
-            w.reference?.toLowerCase().includes(q)
-        )
+        .filter((w) => {
+          const haystack = [w.name, w.brand, w.reference, w.id].join(' ').toLowerCase()
+          return tokens.every((t) => haystack.includes(t))
+        })
         .map((w) => w.id)
 
-      const searchConditions = [
-        ilike(photos.brandName, `%${q}%`),
-        ilike(photos.modelName, `%${q}%`),
-        ilike(photos.referenceNumber, `%${q}%`),
-        ilike(photos.watchId, `%${q}%`),
-      ]
+      // Similarity threshold for typo tolerance — 0.25 is permissive enough for
+      // "Rollex"→"Rolex" or "Submairner"→"Submariner" without too many false positives
+      const SIMILARITY_THRESHOLD = 0.25
 
-      // Only add inArray if we found matching watch IDs (inArray with empty array throws)
-      if (matchingWatchIds.length > 0) {
-        searchConditions.push(inArray(photos.watchId, matchingWatchIds))
+      // Each token must match at least one column (AND across tokens, OR across columns)
+      // For tokens >= 4 chars, also try trigram similarity for typo tolerance
+      for (const token of tokens) {
+        const tokenConditions: ReturnType<typeof ilike>[] = [
+          ilike(photos.brandName, `%${token}%`),
+          ilike(photos.modelName, `%${token}%`),
+          ilike(photos.referenceNumber, `%${token}%`),
+          ilike(photos.watchId, `%${token}%`),
+        ]
+
+        // Add similarity() fuzzy match for longer tokens (avoids noise on short ones like "41")
+        if (token.length >= 4) {
+          tokenConditions.push(
+            drizzleSql`similarity(${photos.brandName}, ${token}) > ${SIMILARITY_THRESHOLD}` as ReturnType<typeof ilike>
+          )
+          tokenConditions.push(
+            drizzleSql`similarity(${photos.modelName}, ${token}) > ${SIMILARITY_THRESHOLD}` as ReturnType<typeof ilike>
+          )
+        }
+
+        if (matchingWatchIds.length > 0) {
+          tokenConditions.push(inArray(photos.watchId, matchingWatchIds) as unknown as ReturnType<typeof ilike>)
+        }
+        conditions.push(or(...tokenConditions)!)
       }
-
-      conditions.push(or(...searchConditions)!)
     }
 
     // Fetch photos sorted by createdAt ascending, then reverse

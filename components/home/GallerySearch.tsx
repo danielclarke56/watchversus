@@ -86,13 +86,17 @@ export default function GallerySearch() {
     }
   }, [activeWatchId, activeQuery, watches])
 
-  // Filter watches by input text
+  // Filter watches by input text — split multi-word queries, match all tokens
   const filtered = input
     ? watches.filter((w) => {
-        const searchText = input.toLowerCase()
-        const name = w.watchName.toLowerCase()
-        const brand = (w.watchBrand ?? '').toLowerCase()
-        return name.includes(searchText) || brand.includes(searchText)
+        const tokens = input.toLowerCase().split(/\s+/).filter(Boolean)
+        const haystack = [
+          w.watchName,
+          w.watchBrand ?? '',
+          w.watchReference ?? '',
+          w.watchId,
+        ].join(' ').toLowerCase()
+        return tokens.every((t) => haystack.includes(t))
       })
     : []
 
@@ -223,11 +227,11 @@ export default function GallerySearch() {
             >
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 truncate">
-                  {watch.watchName}
+                  {[watch.watchBrand, watch.watchName].filter(Boolean).join(' ')}
                 </p>
-                {watch.watchBrand && (
-                  <p className="text-sm text-gray-500 truncate">
-                    {watch.watchBrand}
+                {watch.watchReference && (
+                  <p className="text-xs text-gray-400 truncate font-mono">
+                    {watch.watchReference}
                   </p>
                 )}
               </div>
