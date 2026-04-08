@@ -238,6 +238,12 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   }, [initialPhotoSlug, groups, loading, nextCursor, loadingMore, fetchPhotos])
 
   useEffect(() => {
+    // When the lightbox is open it manipulates the URL via pushState, which causes
+    // Next.js App Router to update searchParams and change activeQuery/activeWatchId.
+    // Ignore those URL-driven re-runs while the lightbox is open — the user is just
+    // viewing a photo, not actually changing the search filter.
+    if (lightboxOpenRef.current) return
+
     let cancelled = false
     setLoading(true)
     setPhotos([])
