@@ -1036,28 +1036,36 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                       </div>
                     )}
 
-                    {/* Mobile: Pinterest-style related photos grid */}
+                    {/* Mobile: Pinterest-style related photos grid (grouped by watch) */}
                     {relatedPhotos.length > 0 && (
                       <div className="mt-4 md:hidden">
                         <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
                         <div className="columns-2 gap-2.5">
-                          {relatedPhotos.slice(0, 10).map((rp) => {
-                            const lbl = [rp.brandName || rp.watchBrand, rp.modelName || rp.watchName].filter(Boolean).join(' ')
+                          {groupByWatch(relatedPhotos.filter((p) => p.watchId !== activeLightboxPhoto?.watchId)).slice(0, 10).map((group) => {
+                            const { brand, model } = getWatchLabel(group)
+                            const lbl = [brand, model].filter(Boolean).join(' ')
+                            const cover = group.photos[0]
+                            const photoCount = group.photos.length
                             return (
                               <button
-                                key={rp.id}
+                                key={group.watchId}
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(rp) }}
+                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(cover) }}
                                 className="block w-full mb-2.5 break-inside-avoid"
                               >
                                 <div className="relative rounded-xl overflow-hidden bg-gray-100">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
-                                    src={rp.url}
-                                    alt={buildPhotoAltText(rp)}
+                                    src={cover.url}
+                                    alt={buildPhotoAltText(cover)}
                                     className="w-full h-auto object-cover"
                                     loading="lazy"
                                   />
+                                  {photoCount > 1 && (
+                                    <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+                                      {photoCount}
+                                    </span>
+                                  )}
                                 </div>
                                 {lbl && (
                                   <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{lbl}</p>
