@@ -138,7 +138,6 @@ export default function UploadClient() {
   const [successPreviews, setSuccessPreviews] = useState<string[]>([])
   const [partialSuccess, setPartialSuccess] = useState('')
   const [pendingCrop, setPendingCrop] = useState<{ src: string; file: File; id: string } | null>(null)
-  const [showMore, setShowMore] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const filesById = useRef<Map<string, File>>(new Map())
   const metaRef = useRef(meta)
@@ -903,17 +902,8 @@ export default function UploadClient() {
                   </div>
                 </div>
 
-                {/* Optional details toggle */}
-                <button
-                  type="button"
-                  onClick={() => setShowMore((v) => !v)}
-                  className="text-xs text-textMuted hover:text-textPrimary underline text-left"
-                >
-                  {showMore ? 'Hide optional details' : '+ Add optional details'}
-                </button>
-
-                {showMore && (
-                  <div className="space-y-4">
+                {/* Optional details — always visible */}
+                <div className="space-y-4">
                     {/* Reference */}
                     <div>
                       <label className="block text-sm font-medium text-textSecond mb-1.5">Reference</label>
@@ -955,10 +945,11 @@ export default function UploadClient() {
                             type="text"
                             value={meta.caseSize}
                             onChange={(e) => metaChange('caseSize', 'caseSize', e.target.value)}
-                            placeholder="Case: 40mm"
+                            placeholder="Case: 40"
                             maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
                           />
+                          {meta.caseSize && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
                           <InlineConfirm field="caseSize" />
                         </div>
                         <div className="relative">
@@ -966,10 +957,11 @@ export default function UploadClient() {
                             type="text"
                             value={meta.lugToLug}
                             onChange={(e) => metaChange('lugToLug', 'lugToLug', e.target.value)}
-                            placeholder="Lug-to-lug: 47mm"
+                            placeholder="Lug-to-lug: 47"
                             maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
                           />
+                          {meta.lugToLug && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
                           <InlineConfirm field="lugToLug" />
                         </div>
                         <div className="relative">
@@ -977,10 +969,11 @@ export default function UploadClient() {
                             type="text"
                             value={meta.betweenLugs}
                             onChange={(e) => metaChange('betweenLugs', 'betweenLugs', e.target.value)}
-                            placeholder="Lug width: 20mm"
+                            placeholder="Lug width: 20"
                             maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
                           />
+                          {meta.betweenLugs && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
                           <InlineConfirm field="betweenLugs" />
                         </div>
                         <div className="relative">
@@ -988,10 +981,11 @@ export default function UploadClient() {
                             type="text"
                             value={meta.thickness}
                             onChange={(e) => metaChange('thickness', 'thickness', e.target.value)}
-                            placeholder="Thickness: 12mm"
+                            placeholder="Thickness: 12"
                             maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
+                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
                           />
+                          {meta.thickness && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
                           <InlineConfirm field="thickness" />
                         </div>
                       </div>
@@ -1055,7 +1049,7 @@ export default function UploadClient() {
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
