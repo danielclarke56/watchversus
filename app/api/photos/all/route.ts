@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, gt, and, asc, or, ilike, inArray } from 'drizzle-orm'
+import { eq, lt, and, desc, or, ilike, inArray } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 
 /**
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const conditions = [eq(photos.status, 'approved')]
     if (cursor) {
       const cursorTime = new Date(cursor)
-      conditions.push(gt(photos.createdAt, cursorTime))
+      conditions.push(lt(photos.createdAt, cursorTime))
     }
     if (watchId) {
       conditions.push(eq(photos.watchId, watchId))
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
       })
       .from(photos)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0])
-      .orderBy(asc(photos.createdAt))
+      .orderBy(desc(photos.createdAt))
       .limit(limit + 1)
 
     // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
