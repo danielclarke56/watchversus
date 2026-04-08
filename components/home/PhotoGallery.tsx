@@ -57,11 +57,13 @@ const PAGE_SIZE = 20
 function groupByWatch(photos: PhotoItem[]): WatchGroup[] {
   const map = new Map<string, PhotoItem[]>()
   for (const photo of photos) {
-    if (!map.has(photo.watchId)) map.set(photo.watchId, [])
-    map.get(photo.watchId)!.push(photo)
+    // Group by watchId+userId so different users' uploads stay separate
+    const key = `${photo.watchId}::${photo.userId}`
+    if (!map.has(key)) map.set(key, [])
+    map.get(key)!.push(photo)
   }
-  return Array.from(map.entries()).map(([watchId, photos]) => ({
-    watchId,
+  return Array.from(map.entries()).map(([, photos]) => ({
+    watchId: photos[0].watchId,
     photos: [...photos].sort((a, b) => {
       const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
       if (orderDiff !== 0) return orderDiff
@@ -996,17 +998,17 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 const w = lightboxWatch
 
                 const specs: { label: string; value: string }[] = []
-                if (ref) specs.push({ label: 'Ref.', value: ref })
+                if (ref) specs.push({ label: 'Reference', value: ref })
                 const mv = p.movement || (w?.movement_type ? formatMovementType(w.movement_type) : null)
                 if (mv) specs.push({ label: 'Movement', value: mv })
                 const cs = p.caseSize || (w?.case_diameter_mm ? `${w.case_diameter_mm}mm` : null)
                 if (cs) specs.push({ label: 'Case', value: cs })
                 const wr = p.waterResistance || (w?.water_resistance_m ? `${w.water_resistance_m}m` : null)
-                if (wr) specs.push({ label: 'WR', value: wr })
-                if (p.lugToLug) specs.push({ label: 'L2L', value: p.lugToLug })
-                if (p.betweenLugs) specs.push({ label: 'Lugs', value: p.betweenLugs })
-                if (p.thickness) specs.push({ label: 'Thick', value: p.thickness })
-                if (p.wristSize) specs.push({ label: 'Wrist', value: p.wristSize })
+                if (wr) specs.push({ label: 'Water Resistance', value: wr })
+                if (p.lugToLug) specs.push({ label: 'Lug to Lug', value: p.lugToLug })
+                if (p.betweenLugs) specs.push({ label: 'Lug Width', value: p.betweenLugs })
+                if (p.thickness) specs.push({ label: 'Thickness', value: p.thickness })
+                if (p.wristSize) specs.push({ label: 'Wrist Size', value: p.wristSize })
                 if (p.productionYear) specs.push({ label: 'Year', value: p.productionYear })
                 if (p.estimatedPrice) specs.push({ label: 'Price', value: p.estimatedPrice })
                 if (w?.case_material) specs.push({ label: 'Material', value: w.case_material })
