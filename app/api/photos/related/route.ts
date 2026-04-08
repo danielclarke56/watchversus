@@ -5,6 +5,7 @@ import { eq, and, desc, ilike, inArray } from 'drizzle-orm'
 import { getWatchById, watches } from '@/lib/watches'
 import { getSuggestedComparisons } from '@/lib/comparisons'
 import { checkAdmin } from '@/lib/admin'
+import { checkReadRateLimit } from '@/lib/ratelimit'
 
 const MAX_PER_WATCH = 3 // Limit photos per watch for diversity
 
@@ -18,8 +19,13 @@ const MAX_PER_WATCH = 3 // Limit photos per watch for diversity
  * - Tier 5: Fallback (trending from matching style/category, then recent)
  */
 export async function GET(req: NextRequest) {
+  const { success } = await checkReadRateLimit(req)
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
   const searchParams = req.nextUrl.searchParams
   const watchId = searchParams.get('watchId') ?? ''
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const model = searchParams.get('model') ?? ''
   const brand = searchParams.get('brand') ?? ''
   const excludeId = searchParams.get('excludeId') ?? ''

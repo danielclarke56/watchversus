@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
 
 interface Photo {
   id: string
@@ -217,12 +218,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
       {/* Primary thumbnail */}
       <div className="relative w-full h-48 bg-gray-100">
         <PhotoThumb url={primary.url} alt={alt} />
-        {/* Photo count badge */}
-        {group.photos.length > 1 && (
-          <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-semibold px-1.5 py-0.5 rounded-md">
-            🖼 {group.photos.length}
-          </div>
-        )}
+        <PhotoCountBadge count={group.photos.length} variant="badge" showIcon />
         {/* Status badge */}
         <div className={`absolute bottom-2 left-2 text-xs font-medium px-2 py-0.5 rounded-full ${badge.class}`}>
           {badge.text}

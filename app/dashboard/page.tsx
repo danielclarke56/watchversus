@@ -6,6 +6,7 @@ import { photos } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import Link from 'next/link'
 import PhotoGrid from './PhotoGrid'
+import EmptyState from '@/components/ui/EmptyState'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,21 +58,14 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="p-4 sm:p-6">
             {sortedPhotos.length === 0 ? (
-              <div className="text-center py-8 sm:py-12">
-                <div className="text-4xl sm:text-5xl mb-4">📸</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                  No uploads yet
-                </h3>
-                <p className="text-gray-600 mb-6 text-sm sm:text-base">
-                  You haven&apos;t uploaded any watch photos yet. Start contributing to the Watchems community!
-                </p>
-                <Link
-                  href="/upload"
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors text-sm sm:text-base"
-                >
-                  Upload Your First Watch
-                </Link>
-              </div>
+              <EmptyState
+                icon="📸"
+                title="No uploads yet"
+                message="You haven't uploaded any watch photos yet. Start contributing to the Watchems community!"
+                actionUrl="/upload"
+                actionText="Upload Your First Watch"
+                actionStyle="blue"
+              />
             ) : (
               <PhotoGrid photos={sortedPhotos} />
             )}

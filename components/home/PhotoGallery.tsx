@@ -2,12 +2,16 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 import { getWatchBySlug } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Watch } from '@/lib/types'
 import SocialActions from './SocialActions'
+import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
+import PhotoCardOverlay from '@/components/ui/PhotoCardOverlay'
+import UserAttribution from '@/components/ui/UserAttribution'
+import SectionLabel from '@/components/ui/SectionLabel'
+import EmptyState from '@/components/ui/EmptyState'
 
 interface PhotoItem {
   id: string
@@ -89,12 +93,20 @@ function groupByWatchUser(items: PhotoItem[]): RelatedGroup[] {
     if (!map.has(key)) map.set(key, [])
     map.get(key)!.push(p)
   }
-  return Array.from(map.entries()).map(([key, photos]) => ({
-    key,
-    cover: photos[0],
-    photos,
-    label: [photos[0].brandName || photos[0].watchBrand, photos[0].modelName || photos[0].watchName].filter(Boolean).join(' '),
-  }))
+  return Array.from(map.entries()).map(([key, photos]) => {
+    // Pick best cover: lowest sortOrder first, then oldest (first uploaded)
+    const cover = [...photos].sort((a, b) => {
+      const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+      if (orderDiff !== 0) return orderDiff
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    })[0]
+    return {
+      key,
+      cover,
+      photos,
+      label: [photos[0].brandName || photos[0].watchBrand, photos[0].modelName || photos[0].watchName].filter(Boolean).join(' '),
+    }
+  })
 }
 
 function RelatedPhotoCard({ group, onClick, variant }: {
@@ -118,11 +130,7 @@ function RelatedPhotoCard({ group, onClick, variant }: {
             className="w-full h-auto object-cover"
             loading="lazy"
           />
-          {group.photos.length > 1 && (
-            <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-              {group.photos.length}
-            </span>
-          )}
+          <PhotoCountBadge count={group.photos.length} />
         </div>
         {group.label && (
           <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{group.label}</p>
@@ -140,16 +148,8 @@ function RelatedPhotoCard({ group, onClick, variant }: {
       aria-label={group.label || 'Related photo'}
     >
       <Image src={group.cover.url} alt={buildPhotoAltText(group.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
-      {group.photos.length > 1 && (
-        <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full z-10">
-          {group.photos.length}
-        </span>
-      )}
-      {group.label && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <p className="text-white text-[10px] font-medium truncate">{group.label}</p>
-        </div>
-      )}
+      <PhotoCountBadge count={group.photos.length} />
+      <PhotoCardOverlay label={group.label} />
     </button>
   )
 }
@@ -837,12 +837,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
         hasActiveSearch ? (
           <DidYouMean query={activeQuery} onSearch={(q) => router.replace(`/?q=${encodeURIComponent(q)}`)} onBrand={(b) => router.replace(`/?brand=${b.toLowerCase()}`)} />
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="text-6xl mb-6">📷</div>
-            <h2 className="text-2xl font-bold text-textPrimary mb-2">No photos yet</h2>
-            <p className="text-textSecond mb-6">Be the first to share your watch</p>
-            <a href="/upload" className="btn-gold">Upload a Photo</a>
-          </div>
+          <EmptyState icon="📷" title="No photos yet" message="Be the first to share your watch" actionUrl="/upload" actionText="Upload a Photo" />
         )
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -866,19 +861,8 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
                   priority={groupIdx < 6}
                 />
-                {count > 1 && (
-                  <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-semibold px-1.5 py-0.5 rounded-md flex items-center gap-1">
-                    <span>🖼</span>
-                    <span>{count}</span>
-                  </div>
-                )}
-                {watchDisplayName && (
-                  <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 transition-opacity ${
-                    hasActiveSearch ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                  }`}>
-                    <p className="text-white text-xs font-medium truncate">{watchDisplayName}</p>
-                  </div>
-                )}
+                <PhotoCountBadge count={count} variant="badge" showIcon />
+                <PhotoCardOverlay label={watchDisplayName} alwaysVisible={hasActiveSearch} />
               </button>
             )
           })}
@@ -1035,20 +1019,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                             {[brand, model].filter(Boolean).join(' ')}
                           </p>
                         )}
-                        <p className="text-gray-400 text-xs mt-0.5">
-                          by{' '}
-                          {p.isOfficial ? (
-                            <span className="text-amber-600">Watchems</span>
-                          ) : (
-                            <Link
-                              href={`/profile/${p.userId}`}
-                              className="text-amber-600 hover:text-amber-700 underline transition-colors"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {p.userName}
-                            </Link>
-                          )}
-                        </p>
+                        <UserAttribution userName={p.userName} userId={p.userId} isOfficial={p.isOfficial} className="text-gray-400 text-xs mt-0.5" onClick={(e) => e.stopPropagation()} />
                         {specs.length > 0 && (
                           <>
                             {/* Mobile: collapsible specs */}
@@ -1122,7 +1093,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                     {/* Mobile: Pinterest-style related photos grid (grouped by watch+user) */}
                     {otherWatchRelated.length > 0 && (
                       <div className="mt-4 md:hidden">
-                        <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
+                        <SectionLabel className="mb-3">More like this</SectionLabel>
                         <div className="columns-2 gap-2.5">
                           {groupByWatchUser(otherWatchRelated).slice(0, 10).map((g) => (
                             <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="masonry" />
@@ -1149,9 +1120,9 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                     <>
                       {sameModelGroups.length > 0 && (
                         <div>
-                          <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mb-2">
+                          <SectionLabel className="mb-2">
                             More {currentModelName ?? 'like this'}
-                          </p>
+                          </SectionLabel>
                           <div className="grid grid-cols-2 gap-1.5">
                             {sameModelGroups.slice(0, 12).map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
@@ -1162,7 +1133,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                       {otherModelGroups.length > 0 && (
                         <div>
                           {sameModelGroups.length > 0 && (
-                            <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wide mb-2">Other watches</p>
+                            <SectionLabel className="mb-2">Other watches</SectionLabel>
                           )}
                           <div className="grid grid-cols-2 gap-1.5">
                             {otherModelGroups.slice(0, 20).map((g) => (

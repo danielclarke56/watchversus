@@ -7,6 +7,7 @@ import { eq, and } from 'drizzle-orm'
 import Image from 'next/image'
 import Link from 'next/link'
 import ProfileClient from './ProfileClient'
+import EmptyState from '@/components/ui/EmptyState'
 
 export async function generateMetadata(
   { params }: { params: { userId: string } }
@@ -121,15 +122,7 @@ export default async function ProfilePage({ params }: { params: { userId: string
 
         {/* Collection section */}
         {watches.length === 0 ? (
-          <div className="bg-surface border border-borderStrong rounded-xl p-12 text-center">
-            <p className="text-textMuted mb-4">No watches in collection yet</p>
-            <Link
-              href="/"
-              className="inline-block text-accent hover:text-accentHover font-medium transition-colors"
-            >
-              View all watches →
-            </Link>
-          </div>
+          <EmptyState title="No watches in collection yet" actionUrl="/" actionText="View all watches →" actionStyle="link" />
         ) : (
           <>
             <h2 className="text-2xl font-bold mb-6">Collection</h2>

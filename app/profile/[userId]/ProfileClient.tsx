@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Photo } from '@/lib/db/schema'
+import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
+import PhotoCardOverlay from '@/components/ui/PhotoCardOverlay'
 
 interface ProfileClientProps {
   watchId?: string
@@ -37,17 +39,8 @@ export default function ProfileClient({ photos }: ProfileClientProps) {
         className="object-cover transition-transform duration-200 group-hover:scale-105"
         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
       />
-      {count > 1 && (
-        <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-semibold px-1.5 py-0.5 rounded-md flex items-center gap-1">
-          <span>🖼</span>
-          <span>{count}</span>
-        </div>
-      )}
-      {watchDisplayName && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <p className="text-white text-xs font-medium truncate">{watchDisplayName}</p>
-        </div>
-      )}
+      <PhotoCountBadge count={count} variant="badge" showIcon />
+      <PhotoCardOverlay label={watchDisplayName} />
     </button>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import SectionLabel from '@/components/ui/SectionLabel'
 
 interface WatchWithCount {
   watchId: string
@@ -486,7 +487,7 @@ export default function GallerySearch() {
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
                 {trending.length > 0 && (
                   <div className="px-3 pt-3 pb-1">
-                    <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold mb-2">Trending</p>
+                    <SectionLabel className="mb-2">Trending</SectionLabel>
                     {trending.map((brand, idx) => (
                       <button
                         key={brand}
@@ -504,7 +505,7 @@ export default function GallerySearch() {
                 )}
                 {recentSearches.length > 0 && (
                   <div className={`px-3 pb-3 pt-1 ${trending.length > 0 ? 'border-t border-gray-100' : 'pt-3'}`}>
-                    <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold mb-2">Recent searches</p>
+                    <SectionLabel className="mb-2">Recent searches</SectionLabel>
                     {recentSearches.map((query, idx) => {
                       const globalIdx = trending.length + idx
                       return (
@@ -534,7 +535,7 @@ export default function GallerySearch() {
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
                 {brandMatches.length > 0 && (
                   <div className="px-3 pt-3 pb-1">
-                    <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold mb-1">Brands</p>
+                    <SectionLabel className="mb-1">Brands</SectionLabel>
                     {brandMatches.map((brand, idx) => (
                       <button
                         key={brand.name}
@@ -555,7 +556,7 @@ export default function GallerySearch() {
                 )}
                 {modelMatches.length > 0 && (
                   <div className={`px-3 pb-2 pt-1 ${brandMatches.length > 0 ? 'border-t border-gray-100' : 'pt-3'}`}>
-                    <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold mb-1">Models</p>
+                    <SectionLabel className="mb-1">Models</SectionLabel>
                     {modelMatches.map((watch, idx) => {
                       const globalIdx = brandMatches.length + idx
                       return (
