@@ -74,6 +74,86 @@ function getWatchLabel(group: WatchGroup) {
   return { brand, model, ref }
 }
 
+// Group related photos by watchId+userId (same user's upload = one entry)
+interface RelatedGroup {
+  key: string
+  cover: PhotoItem
+  photos: PhotoItem[]
+  label: string
+}
+
+function groupByWatchUser(items: PhotoItem[]): RelatedGroup[] {
+  const map = new Map<string, PhotoItem[]>()
+  for (const p of items) {
+    const key = `${p.watchId}::${p.userId}`
+    if (!map.has(key)) map.set(key, [])
+    map.get(key)!.push(p)
+  }
+  return Array.from(map.entries()).map(([key, photos]) => ({
+    key,
+    cover: photos[0],
+    photos,
+    label: [photos[0].brandName || photos[0].watchBrand, photos[0].modelName || photos[0].watchName].filter(Boolean).join(' '),
+  }))
+}
+
+function RelatedPhotoCard({ group, onClick, variant }: {
+  group: RelatedGroup
+  onClick: (cover: PhotoItem) => void
+  variant: 'grid' | 'masonry'
+}) {
+  if (variant === 'masonry') {
+    return (
+      <button
+        key={group.key}
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onClick(group.cover) }}
+        className="block w-full mb-2.5 break-inside-avoid"
+      >
+        <div className="relative rounded-xl overflow-hidden bg-gray-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={group.cover.url}
+            alt={buildPhotoAltText(group.cover)}
+            className="w-full h-auto object-cover"
+            loading="lazy"
+          />
+          {group.photos.length > 1 && (
+            <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+              {group.photos.length}
+            </span>
+          )}
+        </div>
+        {group.label && (
+          <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{group.label}</p>
+        )}
+      </button>
+    )
+  }
+
+  return (
+    <button
+      key={group.key}
+      type="button"
+      onClick={(e) => { e.stopPropagation(); onClick(group.cover) }}
+      className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
+      aria-label={group.label || 'Related photo'}
+    >
+      <Image src={group.cover.url} alt={buildPhotoAltText(group.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
+      {group.photos.length > 1 && (
+        <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full z-10">
+          {group.photos.length}
+        </span>
+      )}
+      {group.label && (
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <p className="text-white text-[10px] font-medium truncate">{group.label}</p>
+        </div>
+      )}
+    </button>
+  )
+}
+
 const POPULAR_BRANDS = ['Rolex', 'Omega', 'Seiko', 'Tudor', 'Hamilton']
 
 function DidYouMean({ query, onSearch, onBrand }: { query: string | null; onSearch: (q: string) => void; onBrand: (b: string) => void }) {
@@ -565,31 +645,14 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   )
   const currentModelName = activeLightboxPhoto?.modelName || activeLightboxPhoto?.watchName || null
 
-  // Group related photos by watchId+userId (same user's upload = one entry)
-  type RelatedGroup = { key: string; cover: PhotoItem; photos: PhotoItem[]; label: string }
-  const groupRelated = (items: PhotoItem[]): RelatedGroup[] => {
-    const map = new Map<string, PhotoItem[]>()
-    for (const p of items) {
-      const key = `${p.watchId}::${p.userId}`
-      if (!map.has(key)) map.set(key, [])
-      map.get(key)!.push(p)
-    }
-    return Array.from(map.entries()).map(([key, photos]) => ({
-      key,
-      cover: photos[0],
-      photos,
-      label: [photos[0].brandName || photos[0].watchBrand, photos[0].modelName || photos[0].watchName].filter(Boolean).join(' '),
-    }))
-  }
-
   const sameModelRelated = currentModelName
     ? otherWatchRelated.filter((p) => (p.modelName || p.watchName) === currentModelName)
     : []
   const otherModelRelated = currentModelName
     ? otherWatchRelated.filter((p) => (p.modelName || p.watchName) !== currentModelName)
     : otherWatchRelated
-  const sameModelGroups = groupRelated(sameModelRelated)
-  const otherModelGroups = groupRelated(otherModelRelated)
+  const sameModelGroups = groupByWatchUser(sameModelRelated)
+  const otherModelGroups = groupByWatchUser(otherModelRelated)
 
   // Scroll-wheel zoom
   const photoAreaRef = useRef<HTMLDivElement>(null)
@@ -1057,58 +1120,16 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                     )}
 
                     {/* Mobile: Pinterest-style related photos grid (grouped by watch+user) */}
-                    {relatedPhotos.length > 0 && (() => {
-                      // Group by watchId+userId so different users' submissions stay separate
-                      const filtered = relatedPhotos.filter((p) =>
-                        !(p.watchId === activeLightboxPhoto?.watchId && p.userId === activeLightboxPhoto?.userId)
-                      )
-                      const groupMap = new Map<string, PhotoItem[]>()
-                      for (const p of filtered) {
-                        const key = `${p.watchId}::${p.userId}`
-                        if (!groupMap.has(key)) groupMap.set(key, [])
-                        groupMap.get(key)!.push(p)
-                      }
-                      const entries = Array.from(groupMap.entries()).slice(0, 10)
-                      if (entries.length === 0) return null
-                      return (
-                        <div className="mt-4 md:hidden">
-                          <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
-                          <div className="columns-2 gap-2.5">
-                            {entries.map(([key, photos]) => {
-                              const cover = photos[0]
-                              const lbl = [cover.brandName || cover.watchBrand, cover.modelName || cover.watchName].filter(Boolean).join(' ')
-                              const photoCount = photos.length
-                              return (
-                                <button
-                                  key={key}
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); openRelatedPhoto(cover) }}
-                                  className="block w-full mb-2.5 break-inside-avoid"
-                                >
-                                  <div className="relative rounded-xl overflow-hidden bg-gray-100">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      src={cover.url}
-                                      alt={buildPhotoAltText(cover)}
-                                      className="w-full h-auto object-cover"
-                                      loading="lazy"
-                                    />
-                                    {photoCount > 1 && (
-                                      <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-                                        {photoCount}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {lbl && (
-                                    <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{lbl}</p>
-                                  )}
-                                </button>
-                              )
-                            })}
-                          </div>
+                    {otherWatchRelated.length > 0 && (
+                      <div className="mt-4 md:hidden">
+                        <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
+                        <div className="columns-2 gap-2.5">
+                          {groupByWatchUser(otherWatchRelated).slice(0, 10).map((g) => (
+                            <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="masonry" />
+                          ))}
                         </div>
-                      )
-                    })()}
+                      </div>
+                    )}
                   </div>
                 )
               })()}
@@ -1133,25 +1154,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                           </p>
                           <div className="grid grid-cols-2 gap-1.5">
                             {sameModelGroups.slice(0, 12).map((g) => (
-                              <button
-                                key={g.key}
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(g.cover) }}
-                                className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
-                                aria-label={g.label || 'Related photo'}
-                              >
-                                <Image src={g.cover.url} alt={buildPhotoAltText(g.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
-                                {g.photos.length > 1 && (
-                                  <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full z-10">
-                                    {g.photos.length}
-                                  </span>
-                                )}
-                                {g.label && (
-                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <p className="text-white text-[10px] font-medium truncate">{g.label}</p>
-                                  </div>
-                                )}
-                              </button>
+                              <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
                           </div>
                         </div>
@@ -1163,25 +1166,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                           )}
                           <div className="grid grid-cols-2 gap-1.5">
                             {otherModelGroups.slice(0, 20).map((g) => (
-                              <button
-                                key={g.key}
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(g.cover) }}
-                                className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
-                                aria-label={g.label || 'Related photo'}
-                              >
-                                <Image src={g.cover.url} alt={buildPhotoAltText(g.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
-                                {g.photos.length > 1 && (
-                                  <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full z-10">
-                                    {g.photos.length}
-                                  </span>
-                                )}
-                                {g.label && (
-                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <p className="text-white text-[10px] font-medium truncate">{g.label}</p>
-                                  </div>
-                                )}
-                              </button>
+                              <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
                           </div>
                         </div>
