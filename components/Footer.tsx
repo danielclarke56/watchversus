@@ -14,7 +14,7 @@ export default function Footer() {
             </div>
             <p className="text-textSecond text-sm leading-relaxed max-w-sm">
               A community photo gallery for watch enthusiasts. Browse and upload real watch
-              photos — from Seiko to Rolex, no affiliate links, no sponsored content.
+              photos — from Seiko to Rolex.
             </p>
           </div>
 
