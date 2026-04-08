@@ -471,6 +471,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   }, [groups, navigateLightbox])
 
   const closeLightbox = useCallback(() => {
+    lightboxOpenRef.current = false
     setLightbox(null)
     setPhotoOverride(null)
     window.history.pushState({}, '', galleryUrlRef.current)
@@ -1022,7 +1023,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                                 <div className="relative rounded-xl overflow-hidden bg-gray-100">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
-                                    src={rp.thumbnailUrl || rp.url}
+                                    src={rp.url}
                                     alt={buildPhotoAltText(rp)}
                                     className="w-full h-auto object-cover"
                                     loading="lazy"
