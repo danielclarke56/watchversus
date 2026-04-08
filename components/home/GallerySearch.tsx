@@ -149,7 +149,8 @@ export default function GallerySearch() {
   }
 
   const selectWatch = (watch: WatchWithCount) => {
-    router.push(`/?watch=${encodeURIComponent(watch.watchId)}`)
+    // open=1 tells the gallery to auto-open the lightbox for the first photo
+    router.push(`/?watch=${encodeURIComponent(watch.watchId)}&open=1`)
     setIsOpen(false)
     setSelectedIndex(-1)
   }

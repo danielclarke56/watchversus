@@ -78,6 +78,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')
+  const autoOpen = searchParams.get('open') === '1'
 
   const [photos, setPhotos] = useState<PhotoItem[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
@@ -353,6 +354,17 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       setLightbox({ groupIdx, photoIdx })
     }
   }, [])
+
+  // Auto-open first photo when coming from a dropdown selection (?open=1)
+  useEffect(() => {
+    if (!autoOpen || loading || groups.length === 0) return
+    // Strip open=1 from URL so back-navigation doesn't re-trigger
+    const params = new URLSearchParams(window.location.search)
+    params.delete('open')
+    const qs = params.toString()
+    window.history.replaceState({}, '', qs ? `/?${qs}` : '/')
+    openLightbox(0, 0)
+  }, [autoOpen, loading, groups.length, openLightbox])
 
   const navigateLightbox = useCallback((groupIdx: number, photoIdx: number = 0) => {
     const photo = groups[groupIdx]?.photos[photoIdx]
