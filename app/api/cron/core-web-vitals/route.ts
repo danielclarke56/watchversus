@@ -134,32 +134,22 @@ function checkThresholds(metrics: CoreWebVitalsMetrics): Alert[] {
 }
 
 /**
- * Verify Vercel cron secret token (optional but recommended for security)
+ * Verify Vercel cron secret token
  */
 function verifyVercelCronSecret(request: NextRequest): boolean {
-  // Vercel cron jobs automatically add an Authorization header
-  // with the value: Bearer <cron_secret>
-  // This is set in your Vercel project settings or vercel.json
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader) {
-    return false
-  }
-
-  // In production, verify against VERCEL_CRON_SECRET environment variable
   const secret = process.env.VERCEL_CRON_SECRET
-  if (secret && authHeader === `Bearer ${secret}`) {
-    return true
+  if (!secret) {
+    // In development, allow requests when no secret is configured
+    return process.env.NODE_ENV === 'development'
   }
 
-  // Allow requests from Vercel's cron service
-  // (in development, you can call this endpoint manually)
-  return process.env.NODE_ENV === 'development'
+  const authHeader = request.headers.get('authorization')
+  return authHeader === `Bearer ${secret}`
 }
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron request (optional security check)
-    if (process.env.VERCEL_CRON_SECRET && !verifyVercelCronSecret(request)) {
+    if (!verifyVercelCronSecret(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

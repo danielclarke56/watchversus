@@ -14,10 +14,27 @@ const nextConfig = {
     ],
   },
   async headers() {
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com",
+      "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
+      "font-src 'self' https://api.fontshare.com",
+      "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://pub-5454588e96dd48eea58ff55965bbe8f5.r2.dev https://img.clerk.com",
+      "connect-src 'self' https://*.clerk.accounts.dev https://clerk.watchems.com https://api.clerk.com https://cdn.vercel-insights.com https://vitals.vercel-analytics.com https://www.google-analytics.com https://www.googletagmanager.com",
+      "frame-src 'self' https://*.clerk.accounts.dev",
+      "worker-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "upgrade-insecure-requests",
+    ].join('; ')
+
     return [
       {
         source: '/:path*',
         headers: [
+          { key: 'Content-Security-Policy', value: csp },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

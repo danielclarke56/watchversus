@@ -1,11 +1,12 @@
 export const dynamic = 'force-dynamic'
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { count } from 'drizzle-orm'
+import { checkReadRateLimit } from '@/lib/ratelimit'
 
 /**
  * GET /api/photos/watches
@@ -13,7 +14,11 @@ import { count } from 'drizzle-orm'
  * Returns watches enriched with metadata, sorted by photo count (descending)
  * Also returns brand aggregations for filter chips and trending brands
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { success } = await checkReadRateLimit(req)
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
   try {
     // Query for distinct watchIds with approved photos, grouped with count
     const photosByWatch = await db

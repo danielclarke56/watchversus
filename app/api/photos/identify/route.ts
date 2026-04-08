@@ -2,12 +2,30 @@ export const dynamic = 'force-dynamic'
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import sharp from 'sharp'
+import { checkRateLimit } from '@/lib/ratelimit'
 
 const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const { success } = await checkRateLimit(userId)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.' },
+        { status: 429 }
+      )
+    }
+
     const formData = await request.formData()
     const photo = formData.get('photo') as File
 

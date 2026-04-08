@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, lt, and, desc, or, ilike, inArray, sql as drizzleSql } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
+import { checkReadRateLimit } from '@/lib/ratelimit'
 
 /**
  * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex&movement=automatic&priceMin=500&priceMax=2000&caseSizeMin=38&caseSizeMax=42
@@ -13,6 +14,10 @@ import { checkAdmin } from '@/lib/admin'
  * Supports cursor-based pagination, text search, and filter chips
  */
 export async function GET(req: NextRequest) {
+  const { success } = await checkReadRateLimit(req)
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
   const searchParams = req.nextUrl.searchParams
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100)
   const cursor = searchParams.get('cursor')

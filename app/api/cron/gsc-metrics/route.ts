@@ -201,23 +201,18 @@ async function fetchGSCMetrics(accessToken: string): Promise<GSCResponse> {
  * Verify Vercel cron secret token
  */
 function verifyVercelCronSecret(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader) {
-    return false
-  }
-
   const secret = process.env.VERCEL_CRON_SECRET
-  if (secret && authHeader === `Bearer ${secret}`) {
-    return true
+  if (!secret) {
+    return process.env.NODE_ENV === 'development'
   }
 
-  return process.env.NODE_ENV === 'development'
+  const authHeader = request.headers.get('authorization')
+  return authHeader === `Bearer ${secret}`
 }
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron request
-    if (process.env.VERCEL_CRON_SECRET && !verifyVercelCronSecret(request)) {
+    if (!verifyVercelCronSecret(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
