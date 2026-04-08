@@ -248,10 +248,16 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
     currentIndex: 0,
     watchId: group.watchId,
   })
-  const [dragState, setDragState] = useState<{ watchId: string; index: number } | null>(null)
-  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
-  const touchDragIndexRef = useRef<number | null>(null)
+  const [pointerDrag, setPointerDrag] = useState<{
+    index: number; ghostX: number; ghostY: number
+    offsetX: number; offsetY: number; cardW: number; cardH: number
+  } | null>(null)
+  const [dropIndex, setDropIndex] = useState<number | null>(null)
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const gridRef = useRef<HTMLDivElement>(null)
+  const [pendingReorder, setPendingReorder] = useState<(PendingPhoto | ApprovedPhoto)[] | null>(null)
+  const [savingReorder, setSavingReorder] = useState(false)
+  const [reorderSavedOk, setReorderSavedOk] = useState(false)
 
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
   const isAiFillingGroup = aiFillingGroup === group.watchId
@@ -283,6 +289,45 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         prev.currentIndex === 0 ? group.photos.length - 1 : prev.currentIndex - 1,
     }))
   }, [group.photos.length])
+
+  // Pointer-based drag: move ghost + find drop target
+  useEffect(() => {
+    if (!pointerDrag) return
+
+    const handleMove = (e: PointerEvent) => {
+      setPointerDrag((prev) => prev ? { ...prev, ghostX: e.clientX, ghostY: e.clientY } : null)
+      for (let i = 0; i < cardRefs.current.length; i++) {
+        const el = cardRefs.current[i]
+        if (!el) continue
+        const r = el.getBoundingClientRect()
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+          setDropIndex(i)
+          break
+        }
+      }
+    }
+
+    const handleUp = () => {
+      setPointerDrag((prev) => {
+        if (prev && dropIndex !== null && dropIndex !== prev.index) {
+          const reordered = [...group.photos]
+          const [moved] = reordered.splice(prev.index, 1)
+          reordered.splice(dropIndex, 0, moved)
+          setPendingReorder(reordered)
+          setReorderSavedOk(false)
+        }
+        return null
+      })
+      setDropIndex(null)
+    }
+
+    window.addEventListener('pointermove', handleMove)
+    window.addEventListener('pointerup', handleUp)
+    return () => {
+      window.removeEventListener('pointermove', handleMove)
+      window.removeEventListener('pointerup', handleUp)
+    }
+  }, [pointerDrag, dropIndex, group.photos, group.watchId, onReorder])
 
   return (
     <>
@@ -336,114 +381,50 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         {/* Compact thumbnail grid */}
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
           <div ref={gridRef} className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-            {group.photos.map((photo, idx) => {
+            {(pendingReorder ?? group.photos as (PendingPhoto | ApprovedPhoto)[]).map((photo, idx) => {
               const isActing = acting === photo.id
               const isLastPhoto = group.photos.length === 1
               const canDelete = isRejected || isPending ? true : !isLastPhoto
               
-              // Drag state tracking
-              const isDragging = dragState?.watchId === group.watchId && dragState?.index === idx
-              const isDropTarget = dropTargetIndex === idx && dragState?.watchId === group.watchId
               const canDrag = !isRejected && !isLastPhoto
+              const isDragging = pointerDrag?.index === idx
+              const isDropTarget = dropIndex === idx && pointerDrag !== null && dropIndex !== pointerDrag.index
 
-              const handleDragStart = (e: React.DragEvent) => {
-                setDragState({ watchId: group.watchId, index: idx })
-                e.dataTransfer.effectAllowed = 'move'
-              }
-
-              const handleDragOver = (e: React.DragEvent) => {
-                e.preventDefault()
-                e.dataTransfer.dropEffect = 'move'
-                setDropTargetIndex(idx)
-              }
-
-              const handleDragLeave = () => {
-                setDropTargetIndex(null)
-              }
-
-              const handleDrop = async (e: React.DragEvent) => {
-                e.preventDefault()
-                if (!dragState || dragState.watchId !== group.watchId || dragState.index === idx) {
-                  setDragState(null)
-                  setDropTargetIndex(null)
-                  return
-                }
-
-                // Reorder the array
-                const reorderedPhotos = [...group.photos]
-                const [movedPhoto] = reorderedPhotos.splice(dragState.index, 1)
-                reorderedPhotos.splice(idx, 0, movedPhoto)
-
-                // Call onReorder with the new order
-                onReorder?.(group.watchId, reorderedPhotos)
-
-                setDragState(null)
-                setDropTargetIndex(null)
-              }
-
-              const handleDragEnd = () => {
-                setDragState(null)
-                setDropTargetIndex(null)
-              }
-
-              const handleTouchStart = (e: React.TouchEvent) => {
+              const handlePointerDown = (e: React.PointerEvent) => {
                 if (!canDrag) return
-                touchDragIndexRef.current = idx
-                setDragState({ watchId: group.watchId, index: idx })
-                e.stopPropagation()
-              }
-
-              const handleTouchMove = (e: React.TouchEvent) => {
-                if (touchDragIndexRef.current === null || !canDrag) return
+                // Only main button (left click / touch)
+                if (e.button !== 0 && e.pointerType === 'mouse') return
                 e.preventDefault()
-                const touch = e.touches[0]
-                const el = document.elementFromPoint(touch.clientX, touch.clientY)
-                const card = el?.closest('[data-photo-idx]')
-                if (card) {
-                  const targetIdx = parseInt((card as HTMLElement).dataset.photoIdx ?? '-1', 10)
-                  if (targetIdx >= 0 && targetIdx !== touchDragIndexRef.current) {
-                    setDropTargetIndex(targetIdx)
-                  }
-                }
-              }
-
-              const handleTouchEnd = () => {
-                if (touchDragIndexRef.current === null) return
-                const fromIdx = touchDragIndexRef.current
-                if (dropTargetIndex !== null && dropTargetIndex !== fromIdx) {
-                  const reorderedPhotos = [...group.photos]
-                  const [movedPhoto] = reorderedPhotos.splice(fromIdx, 1)
-                  reorderedPhotos.splice(dropTargetIndex, 0, movedPhoto)
-                  onReorder?.(group.watchId, reorderedPhotos)
-                }
-                touchDragIndexRef.current = null
-                setDragState(null)
-                setDropTargetIndex(null)
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                setPointerDrag({
+                  index: idx,
+                  ghostX: e.clientX,
+                  ghostY: e.clientY,
+                  offsetX: e.clientX - rect.left,
+                  offsetY: e.clientY - rect.top,
+                  cardW: rect.width,
+                  cardH: rect.height,
+                })
+                setDropIndex(idx)
               }
 
               return (
                 <div
                   key={photo.id}
-                  data-photo-idx={idx}
-                  draggable={canDrag}
-                  onDragStart={handleDragStart}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onDragEnd={handleDragEnd}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  className={`relative aspect-square rounded overflow-hidden border border-border transition-all group cursor-grab active:cursor-grabbing ${
-                    isDragging ? 'opacity-50' : ''
-                  } ${
-                    isDropTarget ? 'ring-2 ring-blue-500 scale-105' : 'hover:border-blue-400 hover:ring-1 hover:ring-blue-300'
-                  } ${
-                    canDrag ? 'cursor-grab hover:border-blue-400 hover:ring-1 hover:ring-blue-300' : ''
+                  ref={(el) => { cardRefs.current[idx] = el }}
+                  onPointerDown={handlePointerDown}
+                  className={`relative aspect-square rounded overflow-hidden border transition-all select-none touch-none ${
+                    isDragging
+                      ? 'opacity-30 border-dashed border-blue-400 bg-blue-50'
+                      : isDropTarget
+                        ? 'ring-2 ring-blue-500 border-blue-500 scale-105 shadow-lg'
+                        : canDrag
+                          ? 'border-border cursor-grab hover:border-blue-400 hover:ring-1 hover:ring-blue-300 hover:shadow-md'
+                          : 'border-border'
                   }`}
                 >
                   <button
-                    onClick={() => openLightbox(idx)}
+                    onClick={(e) => { if (pointerDrag) { e.preventDefault(); return }; openLightbox(idx) }}
                     className="w-full h-full"
                     aria-label={`View photo ${idx + 1}`}
                   >
@@ -465,7 +446,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                   {/* Delete button overlay */}
                   {onDelete && (
                     <button
-                      onClick={() => onDelete(photo)}
+                      onClick={() => onDelete(photo as T)}
                       disabled={isActing || !canDelete}
                       className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                         canDelete
@@ -482,6 +463,38 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               )
             })}
           </div>
+
+          {/* Pending reorder save bar */}
+          {pendingReorder && (
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  setSavingReorder(true)
+                  await onReorder?.(group.watchId, pendingReorder)
+                  setSavingReorder(false)
+                  setReorderSavedOk(true)
+                  setPendingReorder(null)
+                  setTimeout(() => setReorderSavedOk(false), 2000)
+                }}
+                disabled={savingReorder}
+                className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {savingReorder ? (
+                  <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Saving…</>
+                ) : '💾 Save order'}
+              </button>
+              <button
+                onClick={() => setPendingReorder(null)}
+                disabled={savingReorder}
+                className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1.5 rounded transition-colors"
+              >
+                Discard
+              </button>
+            </div>
+          )}
+          {reorderSavedOk && (
+            <p className="mt-1.5 text-xs text-green-600 font-medium">✓ Order saved</p>
+          )}
         </div>
 
         {/* Action buttons — bottom of card */}
@@ -542,6 +555,35 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         onNext={goNext}
         onPrev={goPrev}
       />
+
+      {/* Floating ghost — follows cursor while dragging */}
+      {pointerDrag && (() => {
+        const dragPhotos = pendingReorder ?? group.photos
+        const photo = dragPhotos[pointerDrag.index]
+        if (!photo) return null
+        return (
+          <div
+            style={{
+              position: 'fixed',
+              left: pointerDrag.ghostX - pointerDrag.offsetX,
+              top: pointerDrag.ghostY - pointerDrag.offsetY,
+              width: pointerDrag.cardW,
+              height: pointerDrag.cardH,
+              zIndex: 1000,
+              pointerEvents: 'none',
+              transform: 'rotate(3deg) scale(1.08)',
+              boxShadow: '0 24px 48px rgba(0,0,0,0.35)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              cursor: 'grabbing',
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photo.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(59,130,246,0.8)', borderRadius: '8px' }} />
+          </div>
+        )
+      })()}
     </>
   )
 }
