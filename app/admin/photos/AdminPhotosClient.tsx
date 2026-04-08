@@ -78,9 +78,13 @@ function groupPhotosByWatch<T extends PendingPhoto | ApprovedPhoto>(photos: T[])
     grouped.get(photo.watchId)!.photos.push(photo)
   })
 
-  // Sort each group's photos by date descending (newest first)
+  // Sort each group's photos by sortOrder asc, then createdAt asc (upload order)
   grouped.forEach((group) => {
-    group.photos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    group.photos.sort((a, b) => {
+      const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+      if (orderDiff !== 0) return orderDiff
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    })
   })
 
   // Return groups sorted by most recent photo in each group

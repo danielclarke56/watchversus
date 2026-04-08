@@ -18,6 +18,7 @@ export interface Photo {
   betweenLugs?: string | null
   thickness?: string | null
   waterResistance?: string | null
+  sortOrder?: number
   createdAt: string
 }
 
