@@ -148,6 +148,13 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       const seenIds = new Set(sameWatch.map((p) => p.id))
       seenIds.add(currentPhoto.id)
 
+      // Inject same-watch photos not yet in the main feed so groupByWatch merges them into the carousel
+      setPhotos((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id))
+        const missing = watchData.photos.filter((p) => !existingIds.has(p.id))
+        return missing.length > 0 ? [...prev, ...missing] : prev
+      })
+
       let sameModel: PhotoItem[] = []
       if (model) {
         const modelParams = new URLSearchParams({ q: model, limit: '20' })
