@@ -148,10 +148,14 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
       const seenIds = new Set(sameWatch.map((p) => p.id))
       seenIds.add(currentPhoto.id)
 
-      // Inject same-watch photos not yet in the main feed so groupByWatch merges them into the carousel
+      // Inject same-watch photos not yet in the main feed so groupByWatch merges them into the carousel.
+      // Only inject photos from the same user — cross-user photos with the same watchId are a data anomaly
+      // (two users' submissions incorrectly merged) and must NOT be merged into the same carousel group.
       setPhotos((prev) => {
         const existingIds = new Set(prev.map((p) => p.id))
-        const missing = watchData.photos.filter((p) => !existingIds.has(p.id))
+        const missing = watchData.photos.filter(
+          (p) => !existingIds.has(p.id) && p.userId === currentPhoto.userId
+        )
         return missing.length > 0 ? [...prev, ...missing] : prev
       })
 

@@ -183,6 +183,7 @@ export async function PATCH(req: NextRequest) {
 
   // Allowlist of editable columns
   const allowedKeys: Record<string, keyof typeof photos> = {
+    watchId: 'watchId',
     brandName: 'brandName',
     modelName: 'modelName',
     referenceNumber: 'referenceNumber',
