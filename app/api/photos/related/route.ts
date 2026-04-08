@@ -197,11 +197,10 @@ export async function GET(req: NextRequest) {
       brandPhotos.filter((p) => p.watchId !== watchId)
     )
 
-    // Fallback — only if we don't have enough diversity
-    const uniqueWatches = new Set([...related, ...brandRelated].map((p) => p.watchId))
-    const fallback = uniqueWatches.size < 6
-      ? dedupeWithLimit(fallbackPhotos.filter((p) => p.watchId !== watchId))
-      : []
+    // Always include fallback to ensure a rich "more like this" section
+    const fallback = dedupeWithLimit(
+      fallbackPhotos.filter((p) => p.watchId !== watchId)
+    )
 
     return NextResponse.json(
       {
