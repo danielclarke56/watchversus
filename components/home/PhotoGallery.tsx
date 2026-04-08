@@ -40,6 +40,7 @@ interface PhotoItem {
 interface PhotosResponse {
   photos: PhotoItem[]
   nextCursor: string | null
+  totalCount: number | null
 }
 
 interface WatchGroup {
@@ -73,15 +74,80 @@ function getWatchLabel(group: WatchGroup) {
   return { brand, model, ref }
 }
 
+const POPULAR_BRANDS = ['Rolex', 'Omega', 'Seiko', 'Tudor', 'Hamilton']
+
+function DidYouMean({ query, onSearch, onBrand }: { query: string | null; onSearch: (q: string) => void; onBrand: (b: string) => void }) {
+  // Try to find partial matches from popular brands
+  const suggestions = useMemo(() => {
+    if (!query) return []
+    const tokens = query.toLowerCase().split(/\s+/).filter(Boolean)
+    return POPULAR_BRANDS.filter((brand) =>
+      tokens.some((t) => {
+        const bl = brand.toLowerCase()
+        // Partial match: at least 3 chars overlap
+        return bl.includes(t) || t.includes(bl) || (t.length >= 3 && bl.startsWith(t.slice(0, 3)))
+      })
+    )
+  }, [query])
+
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="text-5xl mb-4">🔍</div>
+      <h2 className="text-xl font-bold text-textPrimary mb-2">No results found</h2>
+      {query && (
+        <p className="text-textSecond mb-4">
+          No photos match &lsquo;{query}&rsquo;
+        </p>
+      )}
+      {suggestions.length > 0 && (
+        <div className="mb-4">
+          <p className="text-sm text-gray-500 mb-2">Did you mean:</p>
+          <div className="flex gap-2 justify-center flex-wrap">
+            {suggestions.map((s) => (
+              <button key={s} type="button" onClick={() => onSearch(s)} className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div>
+        <p className="text-sm text-gray-500 mb-2">Popular searches:</p>
+        <div className="flex gap-2 justify-center flex-wrap">
+          {POPULAR_BRANDS.map((brand) => (
+            <button
+              key={brand}
+              type="button"
+              onClick={() => onBrand(brand)}
+              className="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-300 hover:border-gray-400 transition-colors"
+            >
+              {brand}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')
   const autoOpen = searchParams.get('open') === '1'
+  const activeBrand = searchParams.get('brand')
+  const activeMovement = searchParams.get('movement')
+  const activePriceMin = searchParams.get('priceMin')
+  const activePriceMax = searchParams.get('priceMax')
+  const activeCaseSizeMin = searchParams.get('caseSizeMin')
+  const activeCaseSizeMax = searchParams.get('caseSizeMax')
+
+  const hasActiveSearch = !!(activeQuery || activeWatchId || activeBrand || activeMovement || activePriceMin || activePriceMax || activeCaseSizeMin || activeCaseSizeMax)
 
   const [photos, setPhotos] = useState<PhotoItem[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
+  const [totalCount, setTotalCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -127,10 +193,16 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     if (cursor) params.set('cursor', cursor)
     if (activeWatchId) params.set('watchId', activeWatchId)
     if (activeQuery) params.set('q', activeQuery)
+    if (activeBrand) params.set('brand', activeBrand)
+    if (activeMovement) params.set('movement', activeMovement)
+    if (activePriceMin) params.set('priceMin', activePriceMin)
+    if (activePriceMax) params.set('priceMax', activePriceMax)
+    if (activeCaseSizeMin) params.set('caseSizeMin', activeCaseSizeMin)
+    if (activeCaseSizeMax) params.set('caseSizeMax', activeCaseSizeMax)
     const res = await fetch(`/api/photos/all?${params.toString()}`)
     const data: PhotosResponse = await res.json()
     return data
-  }, [activeWatchId, activeQuery])
+  }, [activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax])
 
   const fetchRelatedPhotos = useCallback(async (currentPhoto: PhotoItem) => {
     const watchId = currentPhoto.watchId
@@ -248,12 +320,14 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     setLoading(true)
     setPhotos([])
     setNextCursor(null)
+    setTotalCount(null)
     setLightbox(null)
 
     fetchPhotos().then((data) => {
       if (!cancelled) {
         setPhotos(data.photos)
         setNextCursor(data.nextCursor)
+        setTotalCount(data.totalCount)
         setLoading(false)
       }
     }).catch(() => {
@@ -261,7 +335,7 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
     })
 
     return () => { cancelled = true }
-  }, [fetchPhotos, activeWatchId, activeQuery])
+  }, [fetchPhotos, activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax])
 
   useEffect(() => {
     if (!sentinelRef.current) return
@@ -641,21 +715,36 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-      {/* Filter indicators */}
+      {/* Filter indicators with result count */}
       {activeWatchId && selectedWatchName && (
         <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
           <span className="text-sm font-medium text-blue-900">
-            Showing: <span className="font-semibold">{selectedWatchName}</span>
+            {totalCount !== null ? (
+              <>{totalCount} photo{totalCount !== 1 ? 's' : ''} for <span className="font-semibold">&lsquo;{selectedWatchName}&rsquo;</span></>
+            ) : (
+              <>Showing: <span className="font-semibold">{selectedWatchName}</span></>
+            )}
           </span>
           <button type="button" onClick={() => router.replace('/')} className="ml-auto text-blue-600 hover:text-blue-800 font-semibold">
             ✕ Clear
           </button>
         </div>
       )}
-      {!activeWatchId && activeQuery && (
+      {!activeWatchId && hasActiveSearch && (
         <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
           <span className="text-sm font-medium text-blue-900">
-            Results for: <span className="font-semibold">{activeQuery}</span>
+            {totalCount !== null ? (
+              <>
+                {totalCount} photo{totalCount !== 1 ? 's' : ''}
+                {activeQuery && <> for <span className="font-semibold">&lsquo;{activeQuery}&rsquo;</span></>}
+                {activeBrand && <> in <span className="font-semibold capitalize">{activeBrand}</span></>}
+              </>
+            ) : (
+              <>
+                {activeQuery && <>Results for: <span className="font-semibold">{activeQuery}</span></>}
+                {activeBrand && !activeQuery && <>Brand: <span className="font-semibold capitalize">{activeBrand}</span></>}
+              </>
+            )}
           </span>
           <button type="button" onClick={() => router.replace('/')} className="ml-auto text-blue-600 hover:text-blue-800 font-semibold">
             ✕ Clear
@@ -671,12 +760,16 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="text-6xl mb-6">📷</div>
-          <h2 className="text-2xl font-bold text-textPrimary mb-2">No photos yet</h2>
-          <p className="text-textSecond mb-6">Be the first to share your watch</p>
-          <a href="/upload" className="btn-gold">Upload a Photo</a>
-        </div>
+        hasActiveSearch ? (
+          <DidYouMean query={activeQuery} onSearch={(q) => router.replace(`/?q=${encodeURIComponent(q)}`)} onBrand={(b) => router.replace(`/?brand=${b.toLowerCase()}`)} />
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="text-6xl mb-6">📷</div>
+            <h2 className="text-2xl font-bold text-textPrimary mb-2">No photos yet</h2>
+            <p className="text-textSecond mb-6">Be the first to share your watch</p>
+            <a href="/upload" className="btn-gold">Upload a Photo</a>
+          </div>
+        )
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {groups.map((group, groupIdx) => {
@@ -706,7 +799,9 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                   </div>
                 )}
                 {watchDisplayName && (
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 transition-opacity ${
+                    hasActiveSearch ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}>
                     <p className="text-white text-xs font-medium truncate">{watchDisplayName}</p>
                   </div>
                 )}

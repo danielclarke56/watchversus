@@ -8,9 +8,9 @@ import { eq, lt, and, desc, or, ilike, inArray, sql as drizzleSql } from 'drizzl
 import { checkAdmin } from '@/lib/admin'
 
 /**
- * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex
+ * GET /api/photos/all?limit=50&cursor=<timestamp>&brand=rolex&movement=automatic&priceMin=500&priceMax=2000&caseSizeMin=38&caseSizeMax=42
  * Fetch ALL approved photos across ALL watches from Postgres
- * Supports cursor-based pagination and optional brand filtering
+ * Supports cursor-based pagination, text search, and filter chips
  */
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
@@ -20,7 +20,29 @@ export async function GET(req: NextRequest) {
   const watchId = searchParams.get('watchId') ?? ''
   const q = searchParams.get('q')?.toLowerCase() ?? ''
 
+  // New filter params
+  const filterMovement = searchParams.get('movement')?.toLowerCase() ?? ''
+  const priceMin = searchParams.get('priceMin') ? parseInt(searchParams.get('priceMin')!) : null
+  const priceMax = searchParams.get('priceMax') ? parseInt(searchParams.get('priceMax')!) : null
+  const caseSizeMin = searchParams.get('caseSizeMin') ? parseInt(searchParams.get('caseSizeMin')!) : null
+  const caseSizeMax = searchParams.get('caseSizeMax') ? parseInt(searchParams.get('caseSizeMax')!) : null
+
   try {
+    // Pre-filter static watch library by chip filters to get matching watchIds
+    let chipFilteredWatchIds: string[] | null = null
+    if (filterMovement || priceMin !== null || priceMax !== null || caseSizeMin !== null || caseSizeMax !== null || brand) {
+      const filtered = watches.filter((w) => {
+        if (brand && w.brand.toLowerCase() !== brand) return false
+        if (filterMovement && w.movement_type !== filterMovement) return false
+        if (priceMin !== null && w.price_new_usd.max < priceMin) return false
+        if (priceMax !== null && w.price_new_usd.min > priceMax) return false
+        if (caseSizeMin !== null && w.case_diameter_mm < caseSizeMin) return false
+        if (caseSizeMax !== null && w.case_diameter_mm > caseSizeMax) return false
+        return true
+      })
+      chipFilteredWatchIds = filtered.map((w) => w.id)
+    }
+
     // Build where condition
     const conditions = [eq(photos.status, 'approved')]
     if (cursor) {
@@ -30,15 +52,57 @@ export async function GET(req: NextRequest) {
     if (watchId) {
       conditions.push(eq(photos.watchId, watchId))
     }
+
+    // Apply chip filters via watchId IN (...)
+    if (chipFilteredWatchIds !== null && !watchId) {
+      if (chipFilteredWatchIds.length === 0) {
+        // No watches match filters — return empty
+        return NextResponse.json(
+          { photos: [], nextCursor: null, totalCount: 0 },
+          { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
+        )
+      }
+
+      // Also match photos whose DB-level fields match the filters (user-submitted photos
+      // that may not be in the static watch library)
+      const dbFilterConditions: ReturnType<typeof ilike>[] = []
+
+      if (filterMovement) {
+        dbFilterConditions.push(ilike(photos.movement, `%${filterMovement}%`))
+      }
+
+      // Combine static library match + DB field match
+      if (dbFilterConditions.length > 0) {
+        conditions.push(
+          or(
+            inArray(photos.watchId, chipFilteredWatchIds),
+            ...dbFilterConditions
+          )!
+        )
+      } else {
+        conditions.push(inArray(photos.watchId, chipFilteredWatchIds))
+      }
+    }
+
     // Push search query to DB level (fixes pagination + filter mismatch)
     if (q && !watchId) {
       // Split into tokens so "rolex sub 41" matches all three fields independently
       const tokens = q.split(/\s+/).filter(Boolean)
 
       // Static watch library pre-filter: a watchId is included if ALL tokens match
+      // Also check movement_type, water_resistance_m, and price fields
       const matchingWatchIds = watches
         .filter((w) => {
-          const haystack = [w.name, w.brand, w.reference, w.id].join(' ').toLowerCase()
+          const haystack = [
+            w.name,
+            w.brand,
+            w.reference,
+            w.id,
+            w.movement_type,
+            w.water_resistance_m ? `${w.water_resistance_m}m` : '',
+            w.case_diameter_mm ? `${w.case_diameter_mm}mm` : '',
+            w.primary_category,
+          ].join(' ').toLowerCase()
           return tokens.every((t) => haystack.includes(t))
         })
         .map((w) => w.id)
@@ -55,6 +119,11 @@ export async function GET(req: NextRequest) {
           ilike(photos.modelName, `%${token}%`),
           ilike(photos.referenceNumber, `%${token}%`),
           ilike(photos.watchId, `%${token}%`),
+          // Extend search to match specs
+          ilike(photos.movement, `%${token}%`),
+          ilike(photos.waterResistance, `%${token}%`),
+          ilike(photos.estimatedPrice, `%${token}%`),
+          ilike(photos.caseSize, `%${token}%`),
         ]
 
         // Add similarity() fuzzy match for longer tokens (avoids noise on short ones like "41")
@@ -74,35 +143,47 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Fetch photos sorted by createdAt ascending, then reverse
-    const photoRecords = await db
-      .select({
-        id: photos.id,
-        watchId: photos.watchId,
-        userId: photos.userId,
-        userName: photos.userName,
-        url: photos.url,
-        status: photos.status,
-        createdAt: photos.createdAt,
-        brandName: photos.brandName,
-        modelName: photos.modelName,
-        referenceNumber: photos.referenceNumber,
-        movement: photos.movement,
-        caseSize: photos.caseSize,
-        wristSize: photos.wristSize,
-        estimatedPrice: photos.estimatedPrice,
-        productionYear: photos.productionYear,
-        lugToLug: photos.lugToLug,
-        betweenLugs: photos.betweenLugs,
-        thickness: photos.thickness,
-        waterResistance: photos.waterResistance,
-        sortOrder: photos.sortOrder,
-        slug: photos.slug,
-      })
-      .from(photos)
-      .where(conditions.length > 1 ? and(...conditions) : conditions[0])
-      .orderBy(desc(photos.createdAt))
-      .limit(limit + 1)
+    const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0]
+
+    // Run count query in parallel with the data query
+    const [photoRecords, countResult] = await Promise.all([
+      db
+        .select({
+          id: photos.id,
+          watchId: photos.watchId,
+          userId: photos.userId,
+          userName: photos.userName,
+          url: photos.url,
+          status: photos.status,
+          createdAt: photos.createdAt,
+          brandName: photos.brandName,
+          modelName: photos.modelName,
+          referenceNumber: photos.referenceNumber,
+          movement: photos.movement,
+          caseSize: photos.caseSize,
+          wristSize: photos.wristSize,
+          estimatedPrice: photos.estimatedPrice,
+          productionYear: photos.productionYear,
+          lugToLug: photos.lugToLug,
+          betweenLugs: photos.betweenLugs,
+          thickness: photos.thickness,
+          waterResistance: photos.waterResistance,
+          sortOrder: photos.sortOrder,
+          slug: photos.slug,
+        })
+        .from(photos)
+        .where(whereClause)
+        .orderBy(desc(photos.createdAt))
+        .limit(limit + 1),
+      // Only count when there's an active search/filter (avoid expensive full-table count)
+      (q || brand || filterMovement || priceMin !== null || priceMax !== null || caseSizeMin !== null || caseSizeMax !== null)
+        ? db
+            .select({ count: drizzleSql<number>`count(*)::int` })
+            .from(photos)
+            .where(whereClause)
+            .then((r) => r[0]?.count ?? 0)
+        : Promise.resolve(null),
+    ])
 
     // Un-slugify a watchId as a display fallback (e.g. "tudor-black-bay-54" → "Tudor Black Bay 54")
     const unslugify = (slug: string): string =>
@@ -141,26 +222,18 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    // Filter by brand if provided (only applies if watchId is not set)
-    let filtered = enriched
-    if (brand && !watchId) {
-      filtered = enriched.filter((p) => p.watchBrand?.toLowerCase() === brand)
-    }
-
     // Take limit and compute next cursor
-    const result = filtered.slice(0, limit)
-    const nextCursor = filtered.length > limit ? result[result.length - 1]?.createdAt ?? null : null
-
-    const cacheHeader = 'no-store'
+    const result = enriched.slice(0, limit)
+    const nextCursor = enriched.length > limit ? result[result.length - 1]?.createdAt ?? null : null
 
     return NextResponse.json(
-      { photos: result, nextCursor },
-      { headers: { 'Cache-Control': cacheHeader } }
+      { photos: result, nextCursor, totalCount: countResult },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
     )
   } catch (error) {
     console.error('[/api/photos/all] Query failed:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch photos', photos: [], nextCursor: null },
+      { error: 'Failed to fetch photos', photos: [], nextCursor: null, totalCount: 0 },
       { status: 500 }
     )
   }

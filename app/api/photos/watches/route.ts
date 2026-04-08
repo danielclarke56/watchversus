@@ -11,6 +11,7 @@ import { count } from 'drizzle-orm'
  * GET /api/photos/watches
  * Fetch all distinct watches that have at least 1 approved photo
  * Returns watches enriched with metadata, sorted by photo count (descending)
+ * Also returns brand aggregations for filter chips and trending brands
  */
 export async function GET() {
   try {
@@ -43,13 +44,32 @@ export async function GET() {
       // Sort by count descending (most-photographed first)
       .sort((a, b) => b.count - a.count)
 
-    return NextResponse.json({
-      watches: enrichedWatches,
-    })
+    // Aggregate brands with photo counts (for filter chips)
+    const brandMap = new Map<string, number>()
+    for (const w of enrichedWatches) {
+      if (w.watchBrand) {
+        brandMap.set(w.watchBrand, (brandMap.get(w.watchBrand) ?? 0) + w.count)
+      }
+    }
+    const brands = Array.from(brandMap.entries())
+      .map(([name, photoCount]) => ({ name, photoCount }))
+      .sort((a, b) => b.photoCount - a.photoCount)
+
+    // Top 5 brands = trending
+    const trending = brands.slice(0, 5).map((b) => b.name)
+
+    return NextResponse.json(
+      {
+        watches: enrichedWatches,
+        brands,
+        trending,
+      },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
+    )
   } catch (error) {
     console.error('Error fetching watches with photos:', error)
     return NextResponse.json(
-      { watches: [] },
+      { watches: [], brands: [], trending: [] },
       { status: 500 }
     )
   }
