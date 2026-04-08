@@ -1036,46 +1036,59 @@ function PhotoGalleryContent({ initialPhotoSlug }: { initialPhotoSlug?: string }
                       </div>
                     )}
 
-                    {/* Mobile: Pinterest-style related photos grid (grouped by watch) */}
-                    {relatedPhotos.length > 0 && (
-                      <div className="mt-4 md:hidden">
-                        <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
-                        <div className="columns-2 gap-2.5">
-                          {groupByWatch(relatedPhotos.filter((p) => p.watchId !== activeLightboxPhoto?.watchId)).slice(0, 10).map((group) => {
-                            const { brand, model } = getWatchLabel(group)
-                            const lbl = [brand, model].filter(Boolean).join(' ')
-                            const cover = group.photos[0]
-                            const photoCount = group.photos.length
-                            return (
-                              <button
-                                key={group.watchId}
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); openRelatedPhoto(cover) }}
-                                className="block w-full mb-2.5 break-inside-avoid"
-                              >
-                                <div className="relative rounded-xl overflow-hidden bg-gray-100">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={cover.url}
-                                    alt={buildPhotoAltText(cover)}
-                                    className="w-full h-auto object-cover"
-                                    loading="lazy"
-                                  />
-                                  {photoCount > 1 && (
-                                    <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-                                      {photoCount}
-                                    </span>
+                    {/* Mobile: Pinterest-style related photos grid (grouped by watch+user) */}
+                    {relatedPhotos.length > 0 && (() => {
+                      // Group by watchId+userId so different users' submissions stay separate
+                      const filtered = relatedPhotos.filter((p) =>
+                        !(p.watchId === activeLightboxPhoto?.watchId && p.userId === activeLightboxPhoto?.userId)
+                      )
+                      const groupMap = new Map<string, PhotoItem[]>()
+                      for (const p of filtered) {
+                        const key = `${p.watchId}::${p.userId}`
+                        if (!groupMap.has(key)) groupMap.set(key, [])
+                        groupMap.get(key)!.push(p)
+                      }
+                      const entries = Array.from(groupMap.entries()).slice(0, 10)
+                      if (entries.length === 0) return null
+                      return (
+                        <div className="mt-4 md:hidden">
+                          <p className="text-gray-400 text-[10px] uppercase tracking-wide font-semibold mb-3">More like this</p>
+                          <div className="columns-2 gap-2.5">
+                            {entries.map(([key, photos]) => {
+                              const cover = photos[0]
+                              const lbl = [cover.brandName || cover.watchBrand, cover.modelName || cover.watchName].filter(Boolean).join(' ')
+                              const photoCount = photos.length
+                              return (
+                                <button
+                                  key={key}
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); openRelatedPhoto(cover) }}
+                                  className="block w-full mb-2.5 break-inside-avoid"
+                                >
+                                  <div className="relative rounded-xl overflow-hidden bg-gray-100">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={cover.url}
+                                      alt={buildPhotoAltText(cover)}
+                                      className="w-full h-auto object-cover"
+                                      loading="lazy"
+                                    />
+                                    {photoCount > 1 && (
+                                      <span className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+                                        {photoCount}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {lbl && (
+                                    <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{lbl}</p>
                                   )}
-                                </div>
-                                {lbl && (
-                                  <p className="text-gray-700 text-xs font-medium mt-1.5 text-left truncate">{lbl}</p>
-                                )}
-                              </button>
-                            )
-                          })}
+                                </button>
+                              )
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )
+                    })()}
                   </div>
                 )
               })()}
