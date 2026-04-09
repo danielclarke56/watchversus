@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -7,7 +8,7 @@ import Link from 'next/link'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, or, and, ne, asc, desc } from 'drizzle-orm'
+import { or, and, ne, asc, desc, eq } from 'drizzle-orm'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
 
@@ -16,20 +17,6 @@ interface PhotoPageProps {
 }
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-// Generate static params for all approved photo slugs
-export async function generateStaticParams(): Promise<{ id: string }[]> {
-  try {
-    const rows = await db
-      .select({ slug: photos.slug, id: photos.id })
-      .from(photos)
-      .where(eq(photos.status, 'approved'))
-
-    return rows.map((row) => ({ id: row.slug ?? row.id }))
-  } catch {
-    return []
-  }
-}
 
 // Generate dynamic metadata
 export async function generateMetadata({ params }: PhotoPageProps): Promise<Metadata> {
