@@ -13,7 +13,7 @@ export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <h1 className="text-4xl font-bold text-textPrimary mb-2">Terms of Use</h1>
-      <p className="text-textMuted text-sm mb-10">Last updated: March 26, 2026</p>
+      <p className="text-textMuted text-sm mb-10">Last updated: April 9, 2026</p>
 
       <div className="prose-custom space-y-8">
         <section>
@@ -62,11 +62,21 @@ export default function TermsPage() {
 
           <h3>Ownership</h3>
           <p>
-            You retain ownership of the content you create. However, by submitting content
-            to Watchems, you grant us a worldwide, non-exclusive, royalty-free,
-            perpetual, irrevocable license to use, display, reproduce, modify, distribute,
-            and create derivative works from your content in connection with operating and
-            promoting the platform. This license survives account deletion.
+            <strong>You own the photos you upload.</strong> Watchems makes no claim of
+            ownership over any photograph you submit. Copyright in the photos you take
+            remains with you, the photographer. We do not sell, license, or transfer your
+            photos to third parties.
+          </p>
+          <p>
+            By submitting content to Watchems, you grant us a worldwide, non-exclusive,
+            royalty-free license to display, reproduce, and distribute your content solely
+            in connection with operating and promoting the platform — for example, showing
+            your photo in the public gallery, on the watch detail page, in our image
+            sitemap for search engines, and in site-related social media posts that credit
+            you. This license exists only so we can actually show your photo on the site;
+            it does not give us any other rights. You can request removal of your photos at
+            any time by emailing{' '}
+            <span className="text-accent">hello@watchems.com</span>.
           </p>
 
           <h3>Your responsibilities</h3>
