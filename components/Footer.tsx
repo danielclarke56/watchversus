@@ -44,6 +44,7 @@ export default function Footer() {
             <Link href="/about#contact" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Contact</Link>
             <Link href="/privacy" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Privacy</Link>
             <Link href="/terms" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Terms</Link>
+            <Link href="/copyright" className="text-textMuted hover:text-textSecond text-xs transition-colors px-2 py-2 min-h-[44px] flex items-center">Copyright</Link>
           </div>
         </div>
       </div>

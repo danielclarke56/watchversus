@@ -163,16 +163,13 @@ export default function TermsPage() {
         <section>
           <h2>9. DMCA and copyright claims</h2>
           <p>
-            If you believe content on Watchems infringes your copyright, please email{' '}
-            <span className="text-accent">hello@watchems.com</span> with:
+            If you believe content on Watchems infringes your copyright, see our{' '}
+            <Link href="/copyright" className="text-accent hover:text-accentHover underline">
+              Copyright Policy
+            </Link>{' '}
+            for the full takedown and counter-notice procedure, including the contact
+            information for our designated copyright agent.
           </p>
-          <ul>
-            <li>A description of the copyrighted work</li>
-            <li>The URL where the infringing content appears</li>
-            <li>Your contact information</li>
-            <li>A statement that you have a good-faith belief that the use is unauthorized</li>
-          </ul>
-          <p>We will review and respond to valid claims promptly.</p>
         </section>
 
         <section>
