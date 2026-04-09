@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
         // No watches match filters — return empty
         return NextResponse.json(
           { photos: [], nextCursor: null, totalCount: 0 },
-          { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
+          { headers: { 'Cache-Control': 'no-store' } }
         )
       }
 
@@ -240,7 +240,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { photos: result, nextCursor, totalCount: countResult },
-      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } }
+      { headers: { 'Cache-Control': 'no-store' } }
     )
   } catch (error) {
     console.error('[/api/photos/all] Query failed:', error)
