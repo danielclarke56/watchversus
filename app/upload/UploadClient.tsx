@@ -385,6 +385,34 @@ export default function UploadClient() {
     patchMeta({ aiConfirmedFields: { ...meta.aiConfirmedFields, [field]: true } })
   }
 
+  // Maps an AI confirm field to its corresponding WatchMeta key (most match 1:1).
+  const AI_TO_META_KEY: Record<AiConfirmField, keyof WatchMeta> = {
+    brand: 'brandName',
+    model: 'modelName',
+    reference: 'referenceNumber',
+    movement: 'movement',
+    caseSize: 'caseSize',
+    lugToLug: 'lugToLug',
+    betweenLugs: 'betweenLugs',
+    thickness: 'thickness',
+    waterResistance: 'waterResistance',
+    wristSize: 'wristSize',
+    estimatedPrice: 'estimatedPrice',
+  }
+
+  function rejectField(field: AiConfirmField) {
+    const metaKey = AI_TO_META_KEY[field]
+    const nextFilled = new Set(meta.aiFilledFields)
+    nextFilled.delete(field)
+    const nextConfirmed = { ...meta.aiConfirmedFields }
+    delete nextConfirmed[field]
+    patchMeta({
+      [metaKey]: '',
+      aiFilledFields: nextFilled,
+      aiConfirmedFields: nextConfirmed,
+    } as Partial<WatchMeta>)
+  }
+
   function isAiUnconfirmed(field: AiConfirmField) {
     return meta.aiIdentified && meta.aiFilledFields.has(field) && !meta.aiConfirmedFields[field]
   }
@@ -396,20 +424,31 @@ export default function UploadClient() {
   }
 
   function inputPrClass(field: AiConfirmField) {
-    return meta.aiIdentified && meta.aiFilledFields.has(field) ? 'pr-8' : ''
+    if (!meta.aiIdentified || !meta.aiFilledFields.has(field)) return ''
+    return isAiUnconfirmed(field) ? 'pr-14' : 'pr-8'
   }
 
   function InlineConfirm({ field }: { field: AiConfirmField }) {
     if (isAiUnconfirmed(field)) {
       return (
-        <button
-          type="button"
-          onClick={() => confirmField(field)}
-          aria-label={`Accept AI suggestion for ${field}`}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
-        >
-          ✓
-        </button>
+        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+          <button
+            type="button"
+            onClick={() => confirmField(field)}
+            aria-label={`Accept AI suggestion for ${field}`}
+            className="w-5 h-5 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+          >
+            ✓
+          </button>
+          <button
+            type="button"
+            onClick={() => rejectField(field)}
+            aria-label={`Reject AI suggestion for ${field}`}
+            className="w-5 h-5 flex items-center justify-center text-red-500 hover:text-red-700 font-bold text-sm transition-colors"
+          >
+            ✕
+          </button>
+        </div>
       )
     }
     if (meta.aiIdentified && meta.aiFilledFields.has(field) && meta.aiConfirmedFields[field]) {
@@ -940,53 +979,61 @@ export default function UploadClient() {
                     <div>
                       <label className="block text-sm font-medium text-textSecond mb-1.5">Dimensions</label>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={meta.caseSize}
-                            onChange={(e) => metaChange('caseSize', 'caseSize', e.target.value)}
-                            placeholder="Case: 40"
-                            maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
-                          />
-                          {meta.caseSize && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
-                          <InlineConfirm field="caseSize" />
+                        <div className="flex items-center gap-1.5">
+                          <div className="relative flex-1 min-w-0">
+                            <input
+                              type="text"
+                              value={meta.caseSize}
+                              onChange={(e) => metaChange('caseSize', 'caseSize', e.target.value)}
+                              placeholder="Case"
+                              maxLength={20}
+                              className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
+                            />
+                            <InlineConfirm field="caseSize" />
+                          </div>
+                          <span className="text-xs text-textMuted flex-shrink-0">mm</span>
                         </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={meta.lugToLug}
-                            onChange={(e) => metaChange('lugToLug', 'lugToLug', e.target.value)}
-                            placeholder="Lug-to-lug: 47"
-                            maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
-                          />
-                          {meta.lugToLug && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
-                          <InlineConfirm field="lugToLug" />
+                        <div className="flex items-center gap-1.5">
+                          <div className="relative flex-1 min-w-0">
+                            <input
+                              type="text"
+                              value={meta.lugToLug}
+                              onChange={(e) => metaChange('lugToLug', 'lugToLug', e.target.value)}
+                              placeholder="Lug-to-lug"
+                              maxLength={20}
+                              className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
+                            />
+                            <InlineConfirm field="lugToLug" />
+                          </div>
+                          <span className="text-xs text-textMuted flex-shrink-0">mm</span>
                         </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={meta.betweenLugs}
-                            onChange={(e) => metaChange('betweenLugs', 'betweenLugs', e.target.value)}
-                            placeholder="Lug width: 20"
-                            maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
-                          />
-                          {meta.betweenLugs && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
-                          <InlineConfirm field="betweenLugs" />
+                        <div className="flex items-center gap-1.5">
+                          <div className="relative flex-1 min-w-0">
+                            <input
+                              type="text"
+                              value={meta.betweenLugs}
+                              onChange={(e) => metaChange('betweenLugs', 'betweenLugs', e.target.value)}
+                              placeholder="Lug width"
+                              maxLength={20}
+                              className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
+                            />
+                            <InlineConfirm field="betweenLugs" />
+                          </div>
+                          <span className="text-xs text-textMuted flex-shrink-0">mm</span>
                         </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={meta.thickness}
-                            onChange={(e) => metaChange('thickness', 'thickness', e.target.value)}
-                            placeholder="Thickness: 12"
-                            maxLength={20}
-                            className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 pr-8 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
-                          />
-                          {meta.thickness && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">mm</span>}
-                          <InlineConfirm field="thickness" />
+                        <div className="flex items-center gap-1.5">
+                          <div className="relative flex-1 min-w-0">
+                            <input
+                              type="text"
+                              value={meta.thickness}
+                              onChange={(e) => metaChange('thickness', 'thickness', e.target.value)}
+                              placeholder="Thickness"
+                              maxLength={20}
+                              className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
+                            />
+                            <InlineConfirm field="thickness" />
+                          </div>
+                          <span className="text-xs text-textMuted flex-shrink-0">mm</span>
                         </div>
                       </div>
                     </div>
@@ -1021,7 +1068,10 @@ export default function UploadClient() {
                             {WRIST_SIZE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                           </select>
                           {isAiUnconfirmed('wristSize') && (
-                            <button type="button" onClick={() => confirmField('wristSize')} className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                            <>
+                              <button type="button" onClick={() => confirmField('wristSize')} aria-label="Accept AI suggestion for wrist size" className="flex-shrink-0 w-6 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                              <button type="button" onClick={() => rejectField('wristSize')} aria-label="Reject AI suggestion for wrist size" className="flex-shrink-0 w-6 h-7 flex items-center justify-center text-red-500 hover:text-red-700 font-bold text-sm">✕</button>
+                            </>
                           )}
                           {meta.aiIdentified && meta.aiFilledFields.has('wristSize') && meta.aiConfirmedFields['wristSize'] && (
                             <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm">✓</span>
@@ -1040,7 +1090,10 @@ export default function UploadClient() {
                             {ESTIMATED_PRICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                           </select>
                           {isAiUnconfirmed('estimatedPrice') && (
-                            <button type="button" onClick={() => confirmField('estimatedPrice')} className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                            <>
+                              <button type="button" onClick={() => confirmField('estimatedPrice')} aria-label="Accept AI suggestion for estimated price" className="flex-shrink-0 w-6 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
+                              <button type="button" onClick={() => rejectField('estimatedPrice')} aria-label="Reject AI suggestion for estimated price" className="flex-shrink-0 w-6 h-7 flex items-center justify-center text-red-500 hover:text-red-700 font-bold text-sm">✕</button>
+                            </>
                           )}
                           {meta.aiIdentified && meta.aiFilledFields.has('estimatedPrice') && meta.aiConfirmedFields['estimatedPrice'] && (
                             <span className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-green-500 text-sm">✓</span>
