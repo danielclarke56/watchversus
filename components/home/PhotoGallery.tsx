@@ -1098,7 +1098,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                       <div className="mt-4 md:hidden">
                         <SectionLabel className="mb-3">More like this</SectionLabel>
                         <div className="columns-2 gap-2.5">
-                          {groupByWatchUser(otherWatchRelated).slice(0, 10).map((g) => (
+                          {groupByWatchUser(otherWatchRelated).slice(0, 20).map((g) => (
                             <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="masonry" />
                           ))}
                         </div>
@@ -1127,7 +1127,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             More {currentModelName ?? 'like this'}
                           </SectionLabel>
                           <div className="grid grid-cols-2 gap-1.5">
-                            {sameModelGroups.slice(0, 12).map((g) => (
+                            {sameModelGroups.slice(0, 24).map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
                           </div>
@@ -1139,7 +1139,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             <SectionLabel className="mb-2">Other watches</SectionLabel>
                           )}
                           <div className="grid grid-cols-2 gap-1.5">
-                            {otherModelGroups.slice(0, 20).map((g) => (
+                            {otherModelGroups.slice(0, 40).map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
                           </div>
