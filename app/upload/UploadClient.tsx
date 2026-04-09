@@ -10,7 +10,13 @@ function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-const WRIST_SIZE_OPTIONS = ['Under 6"', '6"', '6.5"', '7"', '7.5"', '8"', 'Over 8"']
+const WRIST_SIZE_OPTIONS = [
+  'Under 6"',
+  '6"', '6.25"', '6.5"', '6.75"',
+  '7"', '7.25"', '7.5"', '7.75"',
+  '8"', '8.25"',
+  'Over 8.25"',
+]
 const ESTIMATED_PRICE_OPTIONS = [
   'Under $500',
   '$500 – $1,000',
