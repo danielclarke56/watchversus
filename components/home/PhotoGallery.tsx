@@ -259,7 +259,13 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   // Related photos
   const [relatedPhotos, setRelatedPhotos] = useState<PhotoItem[]>([])
   const [relatedPhotosLoading, setRelatedPhotosLoading] = useState(false)
-  const relatedPhotosCacheRef = useRef<Map<string, PhotoItem[]>>(new Map())
+  const [relatedNextCursor, setRelatedNextCursor] = useState<string | null>(null)
+  const [relatedLoadingMore, setRelatedLoadingMore] = useState(false)
+  const relatedPhotosCacheRef = useRef<
+    Map<string, { photos: PhotoItem[]; cursor: string | null }>
+  >(new Map())
+  const relatedSentinelRef = useRef<HTMLDivElement | null>(null)
+  const activeLightboxPhotoRef = useRef<PhotoItem | null>(null)
 
   // Override: a related photo not yet in `groups`
   const [photoOverride, setPhotoOverride] = useState<PhotoItem | null>(null)
@@ -293,11 +299,14 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
   const fetchRelatedPhotos = useCallback(async (currentPhoto: PhotoItem) => {
     const watchId = currentPhoto.watchId
-    if (relatedPhotosCacheRef.current.has(watchId)) {
-      setRelatedPhotos(relatedPhotosCacheRef.current.get(watchId) || [])
+    const cached = relatedPhotosCacheRef.current.get(watchId)
+    if (cached) {
+      setRelatedPhotos(cached.photos)
+      setRelatedNextCursor(cached.cursor)
       return
     }
     setRelatedPhotosLoading(true)
+    setRelatedNextCursor(null)
     try {
       const model = currentPhoto.modelName || currentPhoto.watchName || null
       const brand = currentPhoto.watchBrand || currentPhoto.brandName || null
@@ -307,7 +316,11 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       if (model) params.set('model', model)
       if (brand) params.set('brand', brand)
       const res = await fetch(`/api/photos/related?${params.toString()}`)
-      const data: { sameWatch: PhotoItem[]; related: PhotoItem[] } = await res.json()
+      const data: {
+        sameWatch: PhotoItem[]
+        related: PhotoItem[]
+        nextCursor: string | null
+      } = await res.json()
 
       // Inject same-watch photos not yet in the main feed so groupByWatch merges them into the carousel.
       // Only inject photos from the same user — cross-user photos with the same watchId are a data anomaly
@@ -321,15 +334,59 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       })
 
       const relatedList = [...data.sameWatch, ...data.related]
-      relatedPhotosCacheRef.current.set(watchId, relatedList)
+      const nextCursor = data.nextCursor ?? null
+      relatedPhotosCacheRef.current.set(watchId, { photos: relatedList, cursor: nextCursor })
       setRelatedPhotos(relatedList)
+      setRelatedNextCursor(nextCursor)
     } catch (error) {
       console.error('Failed to fetch related photos:', error)
       setRelatedPhotos([])
+      setRelatedNextCursor(null)
     } finally {
       setRelatedPhotosLoading(false)
     }
   }, [])
+
+  const fetchMoreRelatedPhotos = useCallback(async () => {
+    const currentPhoto = activeLightboxPhotoRef.current
+    if (!currentPhoto) return
+    if (!relatedNextCursor) return
+    if (relatedLoadingMore) return
+
+    const watchId = currentPhoto.watchId
+    setRelatedLoadingMore(true)
+    try {
+      const params = new URLSearchParams({
+        watchId,
+        excludeId: currentPhoto.id,
+        loadMore: '1',
+        cursor: relatedNextCursor,
+      })
+      const res = await fetch(`/api/photos/related?${params.toString()}`)
+      const data: {
+        sameWatch: PhotoItem[]
+        related: PhotoItem[]
+        nextCursor: string | null
+      } = await res.json()
+
+      const newPhotos = data.related ?? []
+      const newCursor = data.nextCursor ?? null
+
+      setRelatedPhotos((prev) => {
+        const seen = new Set(prev.map((p) => p.id))
+        const additions = newPhotos.filter((p) => !seen.has(p.id))
+        const merged = additions.length > 0 ? [...prev, ...additions] : prev
+        // Update cache so reopening this watch later preserves the loaded pages.
+        relatedPhotosCacheRef.current.set(watchId, { photos: merged, cursor: newCursor })
+        return merged
+      })
+      setRelatedNextCursor(newCursor)
+    } catch (error) {
+      console.error('Failed to fetch more related photos:', error)
+    } finally {
+      setRelatedLoadingMore(false)
+    }
+  }, [relatedNextCursor, relatedLoadingMore])
 
   const groups = useMemo(() => {
     const g = groupByWatch(photos)
@@ -639,9 +696,27 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
   // Fetch related photos when lightbox photo changes
   useEffect(() => {
+    activeLightboxPhotoRef.current = activeLightboxPhoto
     if (!activeLightboxPhoto) return
     fetchRelatedPhotos(activeLightboxPhoto)
   }, [activeLightboxPhoto, fetchRelatedPhotos])
+
+  // Infinite scroll: load more fallback photos when sentinel enters viewport
+  useEffect(() => {
+    const node = relatedSentinelRef.current
+    if (!node) return
+    if (!relatedNextCursor) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          fetchMoreRelatedPhotos()
+        }
+      },
+      { rootMargin: '600px' }
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [relatedNextCursor, fetchMoreRelatedPhotos])
 
   const otherWatchRelated = relatedPhotos.filter(
     (p) => !(p.watchId === activeLightboxPhoto?.watchId && p.userId === activeLightboxPhoto?.userId)
@@ -1098,7 +1173,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                       <div className="mt-4 md:hidden">
                         <SectionLabel className="mb-3">More like this</SectionLabel>
                         <div className="columns-2 gap-2.5">
-                          {groupByWatchUser(otherWatchRelated).slice(0, 20).map((g) => (
+                          {groupByWatchUser(otherWatchRelated).map((g) => (
                             <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="masonry" />
                           ))}
                         </div>
@@ -1127,7 +1202,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             More {currentModelName ?? 'like this'}
                           </SectionLabel>
                           <div className="grid grid-cols-2 gap-1.5">
-                            {sameModelGroups.slice(0, 24).map((g) => (
+                            {sameModelGroups.map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
                           </div>
@@ -1139,10 +1214,24 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             <SectionLabel className="mb-2">Other watches</SectionLabel>
                           )}
                           <div className="grid grid-cols-2 gap-1.5">
-                            {otherModelGroups.slice(0, 40).map((g) => (
+                            {otherModelGroups.map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
                           </div>
+                        </div>
+                      )}
+                      {/* Infinite-scroll sentinel + loading indicator */}
+                      {relatedNextCursor && (
+                        <div ref={relatedSentinelRef} className="py-3 flex justify-center">
+                          {relatedLoadingMore ? (
+                            <div className="grid grid-cols-2 gap-1.5 w-full">
+                              {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="aspect-square rounded-xl bg-gray-200 animate-pulse" />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="h-1" />
+                          )}
                         </div>
                       )}
                     </>
