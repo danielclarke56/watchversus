@@ -141,11 +141,18 @@ export async function POST(
   }
 
   let cleanBuffer: Buffer
+  let thumbBuffer: Buffer
   try {
-    cleanBuffer = await sharp(rawBuffer)
-      .rotate()
+    const rotated = sharp(rawBuffer).rotate()
+    cleanBuffer = await rotated
+      .clone()
       .resize(2400, 2400, { fit: 'inside', withoutEnlargement: true })
       .webp({ quality: 85 })
+      .toBuffer()
+    thumbBuffer = await rotated
+      .clone()
+      .resize(600, 600, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 75 })
       .toBuffer()
   } catch {
     auditLog('upload.validation_failed', { reason: 'sharp_decode', userId, ip, size: file.size })
@@ -211,11 +218,15 @@ export async function POST(
     // query failed — fall back to URL param watchId
   }
 
+  let thumbnailUrl: string | null = null
   const { isR2Configured } = await import('@/lib/r2')
   if (isR2Configured) {
     try {
-      const { uploadPhotoToR2 } = await import('@/lib/r2')
-      photoUrl = await uploadPhotoToR2(effectiveWatchId, photoId, cleanBuffer)
+      const { uploadPhotoToR2, uploadThumbnailToR2 } = await import('@/lib/r2')
+      ;[photoUrl, thumbnailUrl] = await Promise.all([
+        uploadPhotoToR2(effectiveWatchId, photoId, cleanBuffer),
+        uploadThumbnailToR2(effectiveWatchId, photoId, thumbBuffer),
+      ])
     } catch (error) {
       auditLog('upload.storage_failed', { userId, ip, photoId, error: String(error) })
       return NextResponse.json({ error: 'Storage unavailable. Please try again later.' }, { status: 503 })
@@ -225,8 +236,11 @@ export async function POST(
     const dir = path.join(process.cwd(), 'public', 'images', 'user-uploads', effectiveWatchId)
     fs.mkdirSync(dir, { recursive: true })
     const localFilename = `${photoId}.webp`
+    const thumbFilename = `${photoId}.thumb.webp`
     fs.writeFileSync(path.join(dir, localFilename), cleanBuffer)
+    fs.writeFileSync(path.join(dir, thumbFilename), thumbBuffer)
     photoUrl = `/images/user-uploads/${effectiveWatchId}/${localFilename}`
+    thumbnailUrl = `/images/user-uploads/${effectiveWatchId}/${thumbFilename}`
   }
 
   const referenceNumber = formData.get('referenceNumber') as string | null
@@ -246,6 +260,7 @@ export async function POST(
       userId,
       userName: sanitizeText(userName, 50),
       url: photoUrl,
+      thumbnailUrl: thumbnailUrl ?? undefined,
       slug: generatePhotoSlug(brandName, modelName, effectiveWatchId, photoId),
       brandName: brandName || undefined,
       modelName: modelName || undefined,

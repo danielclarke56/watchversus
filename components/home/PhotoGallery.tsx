@@ -19,6 +19,7 @@ interface PhotoItem {
   watchId: string
   userId: string
   url: string
+  thumbnailUrl?: string | null
   userName: string
   isOfficial?: boolean
   createdAt: string
@@ -149,7 +150,7 @@ function RelatedPhotoCard({ group, onClick, variant }: {
       className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 hover:bg-gray-200 transition-colors"
       aria-label={group.label || 'Related photo'}
     >
-      <Image src={group.cover.url} alt={buildPhotoAltText(group.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
+      <Image src={group.cover.thumbnailUrl || group.cover.url} alt={buildPhotoAltText(group.cover)} fill className="object-cover transition-transform duration-200 group-hover:scale-105" sizes="20vw" />
       <PhotoCountBadge count={group.photos.length} />
       <PhotoCardOverlay label={group.label} />
     </button>
@@ -932,7 +933,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 className="group relative aspect-square rounded-2xl overflow-hidden bg-surface"
               >
                 <Image
-                  src={primary.url}
+                  src={primary.thumbnailUrl || primary.url}
                   alt={buildPhotoAltText(primary)}
                   fill
                   className="object-cover transition-transform duration-200 group-hover:scale-105"
@@ -1162,7 +1163,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             }`}
                             aria-label={`Photo ${thumbIdx + 1}`}
                           >
-                            <Image src={thumb.url} alt={buildPhotoAltText(thumb)} fill className="object-cover" sizes="56px" />
+                            <Image src={thumb.thumbnailUrl || thumb.url} alt={buildPhotoAltText(thumb)} fill className="object-cover" sizes="56px" />
                           </button>
                         ))}
                       </div>
