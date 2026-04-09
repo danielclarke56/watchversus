@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/neon-http'
+import { neon } from '@neondatabase/serverless'
 import { sql } from 'drizzle-orm'
 import * as schema from './schema'
 
@@ -12,7 +13,13 @@ export function getDb() {
   if (!DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is not set')
   }
-  _db = drizzle(DATABASE_URL, { schema })
+  // Build the neon HTTP client with Next.js fetch caching disabled so queries
+  // always hit the database fresh. Without this, Next.js 14 memoizes fetch()
+  // responses and newly inserted/approved rows don't appear in API responses.
+  const sqlClient = neon(DATABASE_URL, {
+    fetchOptions: { cache: 'no-store' },
+  })
+  _db = drizzle(sqlClient, { schema })
   return _db
 }
 
