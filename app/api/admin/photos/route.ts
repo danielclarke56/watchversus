@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import fs from 'fs'
 import path from 'path'
 import { isValidSlug } from '@/lib/validation'
@@ -7,6 +7,7 @@ import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
+import { tagPhotoApprovedSubscriber } from '@/lib/kit'
 
 export const dynamic = 'force-dynamic'
 
@@ -106,6 +107,20 @@ export async function POST(req: NextRequest) {
     if (action === 'approve') {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
+
+      // Tag user in Kit as photo-approved (non-blocking)
+      if (photoRecord.userId) {
+        try {
+          const clerk = await clerkClient()
+          const user = await clerk.users.getUser(photoRecord.userId)
+          const email = user.emailAddresses?.[0]?.emailAddress
+          if (email) {
+            await tagPhotoApprovedSubscriber(email, user.firstName ?? undefined)
+          }
+        } catch (kitError) {
+          console.error('[Kit] Failed to tag user on approval:', kitError)
+        }
+      }
     } else if (action === 'reject') {
       // Only update status to rejected - do NOT delete the file
       await db.update(photos).set({ status: 'rejected' }).where(eq(photos.id, photoId))

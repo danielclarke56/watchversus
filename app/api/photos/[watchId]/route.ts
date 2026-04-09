@@ -103,9 +103,17 @@ export async function POST(
   }
 
   const user = await currentUser()
-  const userName = user?.firstName
-    ? `${user.firstName}${user.lastName ? ' ' + user.lastName.charAt(0) + '.' : ''}`
-    : 'Anonymous'
+  const firstName = user?.firstName?.trim()
+  const lastName = user?.lastName?.trim()
+  const username = user?.username?.trim()
+  const email = user?.emailAddresses?.[0]?.emailAddress
+  const userName = firstName
+    ? `${firstName}${lastName ? ' ' + lastName.charAt(0) + '.' : ''}`
+    : username
+      ? username
+      : email
+        ? email.split('@')[0]
+        : 'Anonymous'
 
   const formData = await req.formData()
   const file = formData.get('photo') as File | null
