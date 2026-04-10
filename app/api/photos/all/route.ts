@@ -238,8 +238,33 @@ export async function GET(req: NextRequest) {
     const result = enriched.slice(0, limit)
     const nextCursor = enriched.length > limit ? result[result.length - 1]?.createdAt ?? null : null
 
+    // When a text search returns zero results, suggest the closest matches
+    let suggestions: string[] | undefined
+    if (q && result.length === 0) {
+      const suggestionRows = await db
+        .select({
+          brandName: photos.brandName,
+          modelName: photos.modelName,
+          sim: drizzleSql<number>`GREATEST(
+            similarity(${photos.brandName}, ${q}),
+            similarity(${photos.modelName}, ${q})
+          )`,
+        })
+        .from(photos)
+        .where(eq(photos.status, 'approved'))
+        .orderBy(drizzleSql`GREATEST(similarity(${photos.brandName}, ${q}), similarity(${photos.modelName}, ${q})) DESC`)
+        .limit(10)
+
+      const uniqueSuggestions = Array.from(new Set(
+        suggestionRows
+          .filter((r) => r.sim > 0.1)
+          .map((r) => [r.brandName, r.modelName].filter(Boolean).join(' '))
+      ))
+      suggestions = uniqueSuggestions.slice(0, 5)
+    }
+
     return NextResponse.json(
-      { photos: result, nextCursor, totalCount: countResult },
+      { photos: result, nextCursor, totalCount: countResult, suggestions },
       { headers: { 'Cache-Control': 'no-store' } }
     )
   } catch (error) {

@@ -10,8 +10,10 @@ import SocialActions from './SocialActions'
 import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
 import PhotoCardOverlay from '@/components/ui/PhotoCardOverlay'
 import UserAttribution from '@/components/ui/UserAttribution'
+import Fuse from 'fuse.js'
 import SectionLabel from '@/components/ui/SectionLabel'
 import EmptyState from '@/components/ui/EmptyState'
+import { getWatchesCacheSync } from '@/lib/watchesCache'
 
 interface PhotoItem {
   id: string
@@ -46,6 +48,7 @@ interface PhotosResponse {
   photos: PhotoItem[]
   nextCursor: string | null
   totalCount: number | null
+  suggestions?: string[]
 }
 
 interface WatchGroup {
@@ -173,19 +176,43 @@ function RelatedPhotoCard({ group, onClick, variant }: {
 
 const POPULAR_BRANDS = ['Rolex', 'Omega', 'Seiko', 'Tudor', 'Hamilton']
 
-function DidYouMean({ query, onSearch, onBrand }: { query: string | null; onSearch: (q: string) => void; onBrand: (b: string) => void }) {
-  // Try to find partial matches from popular brands
+function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
+  query: string | null
+  serverSuggestions?: string[]
+  onSearch: (q: string) => void
+  onBrand: (b: string) => void
+}) {
   const suggestions = useMemo(() => {
     if (!query) return []
-    const tokens = query.toLowerCase().split(/\s+/).filter(Boolean)
-    return POPULAR_BRANDS.filter((brand) =>
-      tokens.some((t) => {
-        const bl = brand.toLowerCase()
-        // Partial match: at least 3 chars overlap
-        return bl.includes(t) || t.includes(bl) || (t.length >= 3 && bl.startsWith(t.slice(0, 3)))
+    const combined: string[] = []
+
+    // Server-side suggestions (from pg_trgm similarity on actual photos)
+    if (serverSuggestions?.length) {
+      combined.push(...serverSuggestions)
+    }
+
+    // Client-side Fuse.js against the shared watches cache
+    const cached = getWatchesCacheSync()
+    if (cached && cached.watches.length > 0) {
+      const fuse = new Fuse(cached.watches, {
+        keys: ['watchName', 'watchBrand'],
+        threshold: 0.5, // more permissive for "did you mean"
       })
-    )
-  }, [query])
+      const clientMatches = fuse.search(query, { limit: 5 }).map((r) =>
+        [r.item.watchBrand, r.item.watchName].filter(Boolean).join(' ')
+      )
+      combined.push(...clientMatches)
+    }
+
+    // Deduplicate (case-insensitive) and limit
+    const seen = new Set<string>()
+    return combined.filter((s) => {
+      const key = s.toLowerCase()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    }).slice(0, 5)
+  }, [query, serverSuggestions])
 
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -245,6 +272,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   const [photos, setPhotos] = useState<PhotoItem[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState<number | null>(null)
+  const [suggestions, setSuggestions] = useState<string[] | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -460,6 +488,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       setPhotos([])
       setNextCursor(null)
       setTotalCount(null)
+      setSuggestions(undefined)
       setLightbox(null)
 
       fetchPhotos(undefined, controller.signal).then((data) => {
@@ -467,6 +496,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           setPhotos(data.photos)
           setNextCursor(data.nextCursor)
           setTotalCount(data.totalCount)
+          setSuggestions(data.suggestions)
           setLoading(false)
         }
       }).catch((err) => {
@@ -928,7 +958,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
         </div>
       ) : groups.length === 0 ? (
         hasActiveSearch ? (
-          <DidYouMean query={activeQuery} onSearch={(q) => router.replace(`/?q=${encodeURIComponent(q)}`)} onBrand={(b) => router.replace(`/?brand=${b.toLowerCase()}`)} />
+          <DidYouMean query={activeQuery} serverSuggestions={suggestions} onSearch={(q) => router.replace(`/?q=${encodeURIComponent(q)}`)} onBrand={(b) => router.replace(`/?brand=${b.toLowerCase()}`)} />
         ) : (
           <EmptyState icon="📷" title="No photos yet" message="Be the first to share your watch" actionUrl="/upload" actionText="Upload a Photo" />
         )

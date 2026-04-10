@@ -2,20 +2,10 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Fuse from 'fuse.js'
 import SectionLabel from '@/components/ui/SectionLabel'
-
-interface WatchWithCount {
-  watchId: string
-  watchName: string
-  watchBrand: string | null
-  watchReference: string | null
-  count: number
-}
-
-interface BrandWithCount {
-  name: string
-  photoCount: number
-}
+import { setWatchesCache } from '@/lib/watchesCache'
+import type { WatchWithCount, BrandWithCount } from '@/lib/watchesCache'
 
 interface FilterChip {
   key: string
@@ -73,7 +63,7 @@ function saveRecentSearch(query: string) {
   } catch { /* ignore */ }
 }
 
-// Module-level cache for /api/photos/watches — avoids re-fetching on every mount
+// Module-level cache for /api/photos/watches — backed by shared lib/watchesCache
 interface WatchesCache {
   watches: WatchWithCount[]
   brands: BrandWithCount[]
@@ -172,6 +162,7 @@ export default function GallerySearch() {
           ts: Date.now(),
         }
         watchesCache = cached
+        setWatchesCache(cached) // push to shared cache for DidYouMean
         applyData(cached)
       })
       .catch((error) => {
@@ -204,33 +195,42 @@ export default function GallerySearch() {
     }
   }, [activeWatchId, activeQuery, watches])
 
-  // Brand-level autocomplete grouping
-  const brandMatches = useMemo(() => {
-    if (!input) return []
-    const tokens = input.toLowerCase().split(/\s+/).filter(Boolean)
-    return brands
-      .filter((b) => tokens.every((t) => b.name.toLowerCase().includes(t)))
-      .slice(0, 4)
-  }, [input, brands])
-
-  // Model-level matches (exclude brands to avoid duplicates)
-  const modelMatches = useMemo(() => {
-    if (!input) return []
-    const tokens = input.toLowerCase().split(/\s+/).filter(Boolean)
-    const localFiltered = watches.filter((w) => {
-      const haystack = [
-        w.watchName,
-        w.watchBrand ?? '',
-        w.watchReference ?? '',
-        w.watchId,
-      ].join(' ').toLowerCase()
-      return tokens.every((t) => haystack.includes(t))
+  // Fuse.js indexes for fuzzy autocomplete
+  const brandFuse = useMemo(() => {
+    if (brands.length === 0) return null
+    return new Fuse(brands, {
+      keys: ['name'],
+      threshold: 0.35,
+      distance: 50,
+      minMatchCharLength: 2,
     })
+  }, [brands])
+
+  const watchFuse = useMemo(() => {
+    if (watches.length === 0) return null
+    return new Fuse(watches, {
+      keys: ['watchName', 'watchBrand', 'watchReference', 'watchId'],
+      threshold: 0.35,
+      distance: 100,
+      minMatchCharLength: 2,
+    })
+  }, [watches])
+
+  // Brand-level autocomplete grouping (fuzzy)
+  const brandMatches = useMemo(() => {
+    if (!input || !brandFuse) return []
+    return brandFuse.search(input, { limit: 4 }).map((r) => r.item)
+  }, [input, brandFuse])
+
+  // Model-level matches (fuzzy, exclude brands to avoid duplicates)
+  const modelMatches = useMemo(() => {
+    if (!input || !watchFuse) return []
+    const results = watchFuse.search(input, { limit: 10 }).map((r) => r.item)
     const brandNames = new Set(brandMatches.map((b) => b.name.toLowerCase()))
-    return localFiltered
-      .filter((w) => !brandNames.has((w.watchBrand ?? '').toLowerCase()) || localFiltered.length <= 4)
+    return results
+      .filter((w) => !brandNames.has((w.watchBrand ?? '').toLowerCase()) || results.length <= 4)
       .slice(0, 6)
-  }, [input, watches, brandMatches])
+  }, [input, watchFuse, brandMatches])
 
   // Total dropdown items for keyboard navigation
   const allDropdownItems = useMemo(() => {
