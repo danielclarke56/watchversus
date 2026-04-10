@@ -14,7 +14,8 @@
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx next build)",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=8192\" npm run build)",
       "WebSearch",
-      "WebFetch(domain:developers.kit.com)"
+      "WebFetch(domain:developers.kit.com)",
+      "WebFetch(domain:watchems.com)"
     ]
   }
 }

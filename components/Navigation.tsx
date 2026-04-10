@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -58,7 +59,9 @@ export default function Navigation() {
         {/* Search bar — only on homepage */}
         {isHomePage && (
           <div className="flex-1 min-w-0">
-            <GallerySearch />
+            <Suspense>
+              <GallerySearch />
+            </Suspense>
           </div>
         )}
 

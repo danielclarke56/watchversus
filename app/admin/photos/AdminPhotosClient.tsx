@@ -23,6 +23,7 @@ type EditableFields = {
 type WatchMetaFields = EditableFields
 
 type PhotoGroup<T extends PendingPhoto | ApprovedPhoto> = {
+  key: string
   watchId: string
   photos: T[]
   brandName: string
@@ -39,6 +40,11 @@ type LightboxState = {
 }
 
 
+
+/** Extract the real watchId from a group key like "omega-seamaster::user_abc" */
+function watchIdFromKey(groupKey: string): string {
+  return groupKey.split('::')[0]
+}
 
 function photoToWatchMeta(photo: PendingPhoto | ApprovedPhoto): WatchMetaFields {
   return {
@@ -57,15 +63,17 @@ function photoToWatchMeta(photo: PendingPhoto | ApprovedPhoto): WatchMetaFields 
 }
 
 /**
- * Group photos by watchId. Each group takes metadata from the first photo.
+ * Group photos by watchId + userId (= one submission). Each group takes metadata from the first photo.
  * Photos are ordered newest first within each group.
  */
 function groupPhotosByWatch<T extends PendingPhoto | ApprovedPhoto>(photos: T[]): PhotoGroup<T>[] {
   const grouped = new Map<string, PhotoGroup<T>>()
 
   photos.forEach((photo) => {
-    if (!grouped.has(photo.watchId)) {
-      grouped.set(photo.watchId, {
+    const key = `${photo.watchId}::${photo.userId}`
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        key,
         watchId: photo.watchId,
         photos: [],
         brandName: photo.brandName ?? '',
@@ -75,7 +83,7 @@ function groupPhotosByWatch<T extends PendingPhoto | ApprovedPhoto>(photos: T[])
         submittedDate: photo.createdAt,
       })
     }
-    grouped.get(photo.watchId)!.photos.push(photo)
+    grouped.get(key)!.photos.push(photo)
   })
 
   // Sort each group's photos by sortOrder asc, then createdAt asc (upload order)
@@ -266,11 +274,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   const [reorderSavedOk, setReorderSavedOk] = useState(false)
 
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
-  const isAiFillingGroup = aiFillingGroup === group.watchId
-  const groupAiFilledOk = aiFilledGroupOk === group.watchId
-  const isApprovingGroup = acting === `group-${group.watchId}`
-  const isRejectingGroup = acting === `reject-${group.watchId}`
-  const isRestoringGroup = acting === `restore-${group.watchId}`
+  const isAiFillingGroup = aiFillingGroup === group.key
+  const groupAiFilledOk = aiFilledGroupOk === group.key
+  const isApprovingGroup = acting === `group-${group.key}`
+  const isRejectingGroup = acting === `reject-${group.key}`
+  const isRestoringGroup = acting === `restore-${group.key}`
   const isPending = !isApproved && !isRejected
 
   const openLightbox = useCallback((index: number) => {
@@ -334,7 +342,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
       window.removeEventListener('pointermove', handleMove)
       window.removeEventListener('pointerup', handleUp)
     }
-  }, [pointerDrag, dropIndex, group.photos, pendingReorder, group.watchId, onReorder])
+  }, [pointerDrag, dropIndex, group.photos, pendingReorder, group.key, onReorder])
 
   return (
     <>
@@ -361,21 +369,21 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
           <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Watch Info</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-            <FieldInput label="Brand" value={watchMeta.brandName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'brandName', v)} />
-            <FieldInput label="Model" value={watchMeta.modelName} onChange={(v) => onUpdateWatchMeta(group.watchId, 'modelName', v)} />
-            <FieldInput label="Ref #" value={watchMeta.referenceNumber} onChange={(v) => onUpdateWatchMeta(group.watchId, 'referenceNumber', v)} />
-            <FieldInput label="Movement" value={watchMeta.movement} onChange={(v) => onUpdateWatchMeta(group.watchId, 'movement', v)} />
-            <FieldInput label="Case" value={watchMeta.caseSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'caseSize', v)} unit="mm" />
-            <FieldInput label="Wrist" value={watchMeta.wristSize} onChange={(v) => onUpdateWatchMeta(group.watchId, 'wristSize', v)} unit="mm" />
-            <FieldInput label="Price" value={watchMeta.estimatedPrice} onChange={(v) => onUpdateWatchMeta(group.watchId, 'estimatedPrice', v)} unit="USD" />
-            <FieldInput label="L-L" value={watchMeta.lugToLug} onChange={(v) => onUpdateWatchMeta(group.watchId, 'lugToLug', v)} unit="mm" />
-            <FieldInput label="B.L." value={watchMeta.betweenLugs} onChange={(v) => onUpdateWatchMeta(group.watchId, 'betweenLugs', v)} unit="mm" />
-            <FieldInput label="Thick" value={watchMeta.thickness} onChange={(v) => onUpdateWatchMeta(group.watchId, 'thickness', v)} unit="mm" />
-            <FieldInput label="WR" value={watchMeta.waterResistance} onChange={(v) => onUpdateWatchMeta(group.watchId, 'waterResistance', v)} unit="m" />
+            <FieldInput label="Brand" value={watchMeta.brandName} onChange={(v) => onUpdateWatchMeta(group.key, 'brandName', v)} />
+            <FieldInput label="Model" value={watchMeta.modelName} onChange={(v) => onUpdateWatchMeta(group.key, 'modelName', v)} />
+            <FieldInput label="Ref #" value={watchMeta.referenceNumber} onChange={(v) => onUpdateWatchMeta(group.key, 'referenceNumber', v)} />
+            <FieldInput label="Movement" value={watchMeta.movement} onChange={(v) => onUpdateWatchMeta(group.key, 'movement', v)} />
+            <FieldInput label="Case" value={watchMeta.caseSize} onChange={(v) => onUpdateWatchMeta(group.key, 'caseSize', v)} unit="mm" />
+            <FieldInput label="Wrist" value={watchMeta.wristSize} onChange={(v) => onUpdateWatchMeta(group.key, 'wristSize', v)} unit="mm" />
+            <FieldInput label="Price" value={watchMeta.estimatedPrice} onChange={(v) => onUpdateWatchMeta(group.key, 'estimatedPrice', v)} unit="USD" />
+            <FieldInput label="L-L" value={watchMeta.lugToLug} onChange={(v) => onUpdateWatchMeta(group.key, 'lugToLug', v)} unit="mm" />
+            <FieldInput label="B.L." value={watchMeta.betweenLugs} onChange={(v) => onUpdateWatchMeta(group.key, 'betweenLugs', v)} unit="mm" />
+            <FieldInput label="Thick" value={watchMeta.thickness} onChange={(v) => onUpdateWatchMeta(group.key, 'thickness', v)} unit="mm" />
+            <FieldInput label="WR" value={watchMeta.waterResistance} onChange={(v) => onUpdateWatchMeta(group.key, 'waterResistance', v)} unit="m" />
           </div>
           <div className="flex items-center gap-2 mt-2">
             <button
-              onClick={() => onAiFillGroup(group.watchId, group.photos.map((p) => p.url))}
+              onClick={() => onAiFillGroup(group.key, group.photos.map((p) => p.url))}
               disabled={isAiFillingGroup}
               className="text-xs bg-purple-600 text-white px-2.5 py-1 rounded font-medium hover:bg-purple-700 transition-colors disabled:opacity-50"
             >
@@ -477,7 +485,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
               <button
                 onClick={async () => {
                   setSavingReorder(true)
-                  await onReorder?.(group.watchId, pendingReorder)
+                  await onReorder?.(group.key, pendingReorder)
                   setSavingReorder(false)
                   setReorderSavedOk(true)
                   setPendingReorder(null)
@@ -508,7 +516,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
         <div className="px-3 py-2.5 sm:px-4 sm:py-3 bg-surfaceAlt flex items-center gap-2">
           {!isApproved && !isRejected && onApproveGroup && (
             <button
-              onClick={() => onApproveGroup(group.watchId, group.photos.map((p) => p.id))}
+              onClick={() => onApproveGroup(group.key, group.photos.map((p) => p.id))}
               disabled={isApprovingGroup}
               className="flex-1 text-sm bg-green-600 text-white px-4 py-2 rounded font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
             >
@@ -517,7 +525,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           )}
           {!isApproved && !isRejected && onRejectGroup && (
             <button
-              onClick={() => onRejectGroup(group.watchId, group.photos.map((p) => p.id))}
+              onClick={() => onRejectGroup(group.key, group.photos.map((p) => p.id))}
               disabled={isRejectingGroup}
               className="bg-red-600 hover:bg-red-700 text-white rounded px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50"
             >
@@ -526,7 +534,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           )}
           {isRejected && onRestoreGroup && (
             <button
-              onClick={() => onRestoreGroup(group.watchId, group.photos.map((p) => p.id))}
+              onClick={() => onRestoreGroup(group.key, group.photos.map((p) => p.id))}
               disabled={isRestoringGroup}
               className="flex-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50"
             >
@@ -537,12 +545,12 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
             <button
               onClick={() => {
                 if (confirm(`Permanently delete all ${group.photos.length} photo${group.photos.length > 1 ? 's' : ''} for ${displayName}? This cannot be undone.`))
-                  onDeleteGroup(group.watchId, group.photos.map((p) => p.id))
+                  onDeleteGroup(group.key, group.photos.map((p) => p.id))
               }}
-              disabled={acting === `delete-group-${group.watchId}`}
+              disabled={acting === `delete-group-${group.key}`}
               className="text-sm bg-red-700 hover:bg-red-800 text-white px-3 py-2 rounded font-semibold transition-colors disabled:opacity-50"
             >
-              {acting === `delete-group-${group.watchId}` ? 'Deleting…' : '🗑 Delete all'}
+              {acting === `delete-group-${group.key}` ? 'Deleting…' : '🗑 Delete all'}
             </button>
           )}
           {isApproved && !isDirty && (
@@ -552,7 +560,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           )}
           {isApproved && isDirty && onSaveMetadata && (
             <button
-              onClick={() => onSaveMetadata(group.watchId, group.photos.map((p) => p.id))}
+              onClick={() => onSaveMetadata(group.key, group.photos.map((p) => p.id))}
               disabled={isSavingMeta}
               className="flex-1 text-sm bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
@@ -715,30 +723,31 @@ export default function AdminPhotosClient() {
   }, [])
 
   function initializeState(photos: (PendingPhoto | ApprovedPhoto)[]) {
-    // Group by watchId — take metadata from the first photo per watch
-    const metaByWatch: Record<string, WatchMetaFields> = {}
+    // Group by watchId::userId (submission) — take metadata from the first photo per group
+    const metaByGroup: Record<string, WatchMetaFields> = {}
 
     photos.forEach((photo) => {
-      if (!metaByWatch[photo.watchId]) {
-        metaByWatch[photo.watchId] = photoToWatchMeta(photo)
+      const key = `${photo.watchId}::${photo.userId}`
+      if (!metaByGroup[key]) {
+        metaByGroup[key] = photoToWatchMeta(photo)
       }
     })
 
-    setWatchMetaState((prev) => ({ ...prev, ...metaByWatch }))
+    setWatchMetaState((prev) => ({ ...prev, ...metaByGroup }))
   }
 
-  function updateWatchMeta(watchId: string, field: keyof WatchMetaFields, value: string) {
+  function updateWatchMeta(groupKey: string, field: keyof WatchMetaFields, value: string) {
     setWatchMetaState((prev) => ({
       ...prev,
-      [watchId]: { ...prev[watchId], [field]: value },
+      [groupKey]: { ...prev[groupKey], [field]: value },
     }))
-    setDirtyGroups((prev) => new Set(prev).add(watchId))
+    setDirtyGroups((prev) => new Set(prev).add(groupKey))
   }
 
-  async function handleSaveMetadata(watchId: string, photoIds: string[]) {
-    const meta = watchMetaState[watchId]
+  async function handleSaveMetadata(groupKey: string, photoIds: string[]) {
+    const meta = watchMetaState[groupKey]
     if (!meta) return
-    setSavingMetaGroup(watchId)
+    setSavingMetaGroup(groupKey)
     try {
       const results = await Promise.all(
         photoIds.map((photoId) =>
@@ -750,12 +759,12 @@ export default function AdminPhotosClient() {
         )
       )
       if (results.every((r) => r.ok)) {
-        setDirtyGroups((prev) => { const next = new Set(prev); next.delete(watchId); return next })
+        setDirtyGroups((prev) => { const next = new Set(prev); next.delete(groupKey); return next })
         // Update local approved photos state so gallery reflects new meta immediately
         setApprovedPhotos((prev) =>
-          prev.map((p) => (p.watchId !== watchId ? p : { ...p, ...meta }))
+          prev.map((p) => (photoIds.includes(p.id) ? { ...p, ...meta } : p))
         )
-        setSavedMetaGroupOk(watchId)
+        setSavedMetaGroupOk(groupKey)
         setTimeout(() => setSavedMetaGroupOk(null), 2500)
       } else {
         alert('Save failed — one or more photos could not be updated.')
@@ -766,11 +775,11 @@ export default function AdminPhotosClient() {
     setSavingMetaGroup(null)
   }
 
-  async function handleAiFillGroup(watchId: string, imageUrls: string[]) {
-    const meta = watchMetaState[watchId]
+  async function handleAiFillGroup(groupKey: string, imageUrls: string[]) {
+    const meta = watchMetaState[groupKey]
     if (!meta) return
 
-    setAiFillingGroup(watchId)
+    setAiFillingGroup(groupKey)
     setAiFilledGroupOk(null)
 
     try {
@@ -794,12 +803,12 @@ export default function AdminPhotosClient() {
 
       // Update watchMeta — only fill empty fields
       setWatchMetaState((prev) => {
-        const current = prev[watchId] ?? {}
+        const current = prev[groupKey] ?? {}
         const fill = (key: keyof typeof current) =>
           (current[key] as string)?.trim() ? current[key] : aiSuggestions[key] || ''
         return {
           ...prev,
-          [watchId]: {
+          [groupKey]: {
             ...current,
             movement: fill('movement'),
             caseSize: fill('caseSize'),
@@ -813,8 +822,8 @@ export default function AdminPhotosClient() {
         }
       })
 
-      setDirtyGroups((prev) => new Set(prev).add(watchId))
-      setAiFilledGroupOk(watchId)
+      setDirtyGroups((prev) => new Set(prev).add(groupKey))
+      setAiFilledGroupOk(groupKey)
       setTimeout(() => setAiFilledGroupOk(null), 2500)
     } catch (err) {
       console.error('AI fill failed:', err)
@@ -827,11 +836,12 @@ export default function AdminPhotosClient() {
   /**
    * Approve entire watch group — all photos and metadata approved at once
    */
-  async function handleApproveGroup(watchId: string, photoIds: string[]) {
-    setActing(`group-${watchId}`)
+  async function handleApproveGroup(groupKey: string, photoIds: string[]) {
+    const watchId = watchIdFromKey(groupKey)
+    setActing(`group-${groupKey}`)
     try {
       // Save all metadata first
-      const meta = watchMetaState[watchId]
+      const meta = watchMetaState[groupKey]
       if (meta) {
         await Promise.all(
           photoIds.map((photoId) =>
@@ -872,11 +882,12 @@ export default function AdminPhotosClient() {
   }
 
   async function handleReorder(
-    watchId: string,
+    groupKey: string,
     reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]
   ) {
+    const watchId = watchIdFromKey(groupKey)
     // reorderedPhotos is already in the new order from drag-and-drop
-    setActing(`reorder-${watchId}`)
+    setActing(`reorder-${groupKey}`)
     try {
       const res = await fetch('/api/admin/photos', {
         method: 'PUT',
@@ -897,10 +908,11 @@ export default function AdminPhotosClient() {
   }
 
   async function handleReorderPending(
-    watchId: string,
+    groupKey: string,
     reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]
   ) {
-    setActing(`reorder-${watchId}`)
+    const watchId = watchIdFromKey(groupKey)
+    setActing(`reorder-${groupKey}`)
     try {
       const res = await fetch('/api/admin/photos', {
         method: 'PUT',
@@ -911,9 +923,9 @@ export default function AdminPhotosClient() {
         // Reorder pending photos in local state to reflect drag order
         setPendingPhotos((prev) => {
           const reorderedIds = reorderedPhotos.map((p) => p.id)
-          const watchPhotos = prev.filter((p) => p.watchId === watchId)
-          const otherPhotos = prev.filter((p) => p.watchId !== watchId)
-          const sorted = reorderedIds.map((id) => watchPhotos.find((p) => p.id === id)!).filter(Boolean)
+          const groupPhotos = prev.filter((p) => reorderedIds.includes(p.id))
+          const otherPhotos = prev.filter((p) => !reorderedIds.includes(p.id))
+          const sorted = reorderedIds.map((id) => groupPhotos.find((p) => p.id === id)!).filter(Boolean)
           return [...otherPhotos, ...sorted]
         })
         showToast('Order saved')
@@ -937,8 +949,9 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
-  async function handleRejectGroup(watchId: string, photoIds: string[]) {
-    setActing(`reject-${watchId}`)
+  async function handleRejectGroup(groupKey: string, photoIds: string[]) {
+    const watchId = watchIdFromKey(groupKey)
+    setActing(`reject-${groupKey}`)
     try {
       const results = await Promise.all(
         photoIds.map((photoId) =>
@@ -959,8 +972,9 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
-  async function handleRestoreGroup(watchId: string, photoIds: string[]) {
-    setActing(`restore-${watchId}`)
+  async function handleRestoreGroup(groupKey: string, photoIds: string[]) {
+    const watchId = watchIdFromKey(groupKey)
+    setActing(`restore-${groupKey}`)
     try {
       const results = await Promise.all(
         photoIds.map((photoId) =>
@@ -1013,8 +1027,9 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
-  async function handleDeleteRejectedGroup(watchId: string, photoIds: string[]) {
-    setActing(`delete-group-${watchId}`)
+  async function handleDeleteRejectedGroup(groupKey: string, photoIds: string[]) {
+    const watchId = watchIdFromKey(groupKey)
+    setActing(`delete-group-${groupKey}`)
     try {
       await Promise.all(photoIds.map((photoId) =>
         fetch('/api/admin/photos', {
@@ -1073,9 +1088,9 @@ export default function AdminPhotosClient() {
           }`}
         >
           Pending
-          {!loading && pendingPhotos.length > 0 && (
+          {!loading && pendingGroups.length > 0 && (
             <span className="ml-1 sm:ml-2 bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
-              {pendingPhotos.length}
+              {pendingGroups.length}
             </span>
           )}
         </button>
@@ -1090,7 +1105,7 @@ export default function AdminPhotosClient() {
           Approved
           {!loading && (
             <span className="ml-1 sm:ml-2 bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
-              {approvedPhotos.length}
+              {approvedGroups.length}
             </span>
           )}
         </button>
@@ -1103,9 +1118,9 @@ export default function AdminPhotosClient() {
           }`}
         >
           Rejected
-          {!loading && rejectedPhotos.length > 0 && (
+          {!loading && rejectedGroups.length > 0 && (
             <span className="ml-1 sm:ml-2 bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
-              {rejectedPhotos.length}
+              {rejectedGroups.length}
             </span>
           )}
         </button>
@@ -1117,7 +1132,7 @@ export default function AdminPhotosClient() {
         <>
           {activeTab === 'pending' && (
             <>
-              {pendingPhotos.length === 0 ? (
+              {pendingGroups.length === 0 ? (
                 <div className="py-16 text-center">
                   <p className="text-textSecond text-lg mb-1">All clear ✓</p>
                   <p className="text-textMuted text-sm">No photos pending review.</p>
@@ -1131,9 +1146,9 @@ export default function AdminPhotosClient() {
                 <div className="space-y-3">
                   {filteredPendingGroups.map((group) => (
                     <GroupedPhotoCard
-                      key={group.watchId}
+                      key={group.key}
                       group={group}
-                      watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
+                      watchMeta={watchMetaState[group.key] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
@@ -1153,7 +1168,7 @@ export default function AdminPhotosClient() {
 
           {activeTab === 'approved' && (
             <>
-              {approvedPhotos.length === 0 ? (
+              {approvedGroups.length === 0 ? (
                 <div className="py-16 text-center">
                   <p className="text-textSecond">No approved photos yet.</p>
                 </div>
@@ -1166,18 +1181,18 @@ export default function AdminPhotosClient() {
                 <div className="space-y-3">
                   {filteredApprovedGroups.map((group) => (
                     <GroupedPhotoCard
-                      key={group.watchId}
+                      key={group.key}
                       group={group}
-                      watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
+                      watchMeta={watchMetaState[group.key] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
                       aiFillingGroup={aiFillingGroup}
                       aiFilledGroupOk={aiFilledGroupOk}
                       onUpdateWatchMeta={updateWatchMeta}
                       onAiFillGroup={handleAiFillGroup}
                       onSaveMetadata={handleSaveMetadata}
-                      isDirty={dirtyGroups.has(group.watchId)}
-                      isSavingMeta={savingMetaGroup === group.watchId}
-                      savedMetaOk={savedMetaGroupOk === group.watchId}
+                      isDirty={dirtyGroups.has(group.key)}
+                      isSavingMeta={savingMetaGroup === group.key}
+                      savedMetaOk={savedMetaGroupOk === group.key}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       onReorder={handleReorder}
                       isApproved={true}
@@ -1190,7 +1205,7 @@ export default function AdminPhotosClient() {
 
           {activeTab === 'rejected' && (
             <>
-              {rejectedPhotos.length === 0 ? (
+              {rejectedGroups.length === 0 ? (
                 <div className="py-16 text-center">
                   <p className="text-textSecond">No rejected photos.</p>
                 </div>
@@ -1203,9 +1218,9 @@ export default function AdminPhotosClient() {
                 <div className="space-y-3">
                   {filteredRejectedGroups.map((group) => (
                     <GroupedPhotoCard
-                      key={group.watchId}
+                      key={group.key}
                       group={group}
-                      watchMeta={watchMetaState[group.watchId] ?? photoToWatchMeta(group.photos[0])}
+                      watchMeta={watchMetaState[group.key] ?? photoToWatchMeta(group.photos[0])}
                       acting={acting}
 
 
