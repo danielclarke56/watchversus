@@ -38,9 +38,9 @@ body {
     box-sizing: border-box;
   }
 
-  html, body {
-    overflow-x: hidden;
-    max-width: 100vw;
+  html {
+    overflow-x: clip;
+    overscroll-behavior-x: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
