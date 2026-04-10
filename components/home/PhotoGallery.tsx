@@ -49,11 +49,24 @@ interface PhotosResponse {
 }
 
 interface WatchGroup {
+  key: string
   watchId: string
   photos: PhotoItem[]
 }
 
 const PAGE_SIZE = 20
+
+/**
+ * Merge new photos into an existing list, skipping any whose id is already present.
+ * This guards against races between the filter-change effect, IntersectionObserver
+ * load-more, and the lightbox prefetch — all of which append to the same state.
+ */
+function mergePhotosDedupe(prev: PhotoItem[], next: PhotoItem[]): PhotoItem[] {
+  if (next.length === 0) return prev
+  const seen = new Set(prev.map((p) => p.id))
+  const additions = next.filter((p) => !seen.has(p.id))
+  return additions.length > 0 ? [...prev, ...additions] : prev
+}
 
 function groupByWatch(photos: PhotoItem[]): WatchGroup[] {
   const map = new Map<string, PhotoItem[]>()
@@ -63,7 +76,8 @@ function groupByWatch(photos: PhotoItem[]): WatchGroup[] {
     if (!map.has(key)) map.set(key, [])
     map.get(key)!.push(photo)
   }
-  return Array.from(map.entries()).map(([, photos]) => ({
+  return Array.from(map.entries()).map(([key, photos]) => ({
+    key,
     watchId: photos[0].watchId,
     photos: [...photos].sort((a, b) => {
       const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
@@ -419,7 +433,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
     if (nextCursor && !loadingMore) {
       setLoadingMore(true)
       fetchPhotos(nextCursor).then((data) => {
-        setPhotos((prev) => [...prev, ...data.photos])
+        setPhotos((prev) => mergePhotosDedupe(prev, data.photos))
         setNextCursor(data.nextCursor)
         setLoadingMore(false)
       }).catch(() => setLoadingMore(false))
@@ -469,21 +483,29 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
   useEffect(() => {
     if (!sentinelRef.current) return
+    const controller = new AbortController()
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting && nextCursor && !loadingMore) {
           setLoadingMore(true)
-          fetchPhotos(nextCursor).then((data) => {
-            setPhotos((prev) => [...prev, ...data.photos])
+          fetchPhotos(nextCursor, controller.signal).then((data) => {
+            if (controller.signal.aborted) return
+            setPhotos((prev) => mergePhotosDedupe(prev, data.photos))
             setNextCursor(data.nextCursor)
             setLoadingMore(false)
-          }).catch(() => setLoadingMore(false))
+          }).catch((err) => {
+            if (err instanceof DOMException && err.name === 'AbortError') return
+            setLoadingMore(false)
+          })
         }
       },
       { rootMargin: '400px' }
     )
     observer.observe(sentinelRef.current)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      controller.abort()
+    }
   }, [nextCursor, loadingMore, fetchPhotos])
 
   // Fetch more photos when navigating near the end of loaded groups
@@ -492,7 +514,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
     if (lightbox.groupIdx >= groups.length - 5) {
       setLoadingMore(true)
       fetchPhotos(nextCursor).then((data) => {
-        setPhotos((prev) => [...prev, ...data.photos])
+        setPhotos((prev) => mergePhotosDedupe(prev, data.photos))
         setNextCursor(data.nextCursor)
         setLoadingMore(false)
       }).catch(() => setLoadingMore(false))
@@ -927,7 +949,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
             const count = group.photos.length
             return (
               <button
-                key={group.watchId}
+                key={group.key}
                 type="button"
                 onClick={() => openLightbox(groupIdx, 0)}
                 className="group relative aspect-square rounded-2xl overflow-hidden bg-surface"
