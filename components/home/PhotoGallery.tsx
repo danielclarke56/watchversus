@@ -1053,7 +1053,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
             onClick={(e) => e.stopPropagation()}
           >
             {/* ── Left / main column ── */}
-            <div className="flex flex-col min-h-0 min-w-0 flex-1 md:max-w-3xl w-full overflow-hidden">
+            <div className="flex flex-col min-h-0 min-w-0 flex-1 md:max-w-[55%] lg:max-w-[50%] xl:max-w-[40%] w-full overflow-hidden">
 
               {/* Photo area */}
               <div
@@ -1263,7 +1263,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               <div className="hidden md:flex flex-col flex-1 overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
                   {relatedPhotosLoading ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
                       {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className="aspect-square rounded-xl bg-gray-200 animate-pulse" />
                       ))}
@@ -1275,7 +1275,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                           <SectionLabel className="mb-2">
                             More {currentModelName ?? 'like this'}
                           </SectionLabel>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5">
+                          <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-1.5">
                             {sameModelGroups.map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
@@ -1287,7 +1287,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                           {sameModelGroups.length > 0 && (
                             <SectionLabel className="mb-2">Other watches</SectionLabel>
                           )}
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5">
+                          <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-1.5">
                             {otherModelGroups.map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
                             ))}
@@ -1298,7 +1298,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                       {relatedNextCursor && (
                         <div ref={relatedSentinelRef} className="py-3 flex justify-center">
                           {relatedLoadingMore ? (
-                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 w-full">
+                            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-1.5 w-full">
                               {Array.from({ length: 6 }).map((_, i) => (
                                 <div key={i} className="aspect-square rounded-xl bg-gray-200 animate-pulse" />
                               ))}
