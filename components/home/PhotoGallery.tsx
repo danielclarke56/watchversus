@@ -987,32 +987,46 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       )}
 
       {/* Filter chips — single scrollable row, always visible, active chip highlighted */}
-      {!userId && !activeWatchId && !activeQuery && !loading && filterChips.length > 0 && (
-        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {filterChips.map((c) => {
-            const isActive =
-              (c.param === 'brand' && activeBrand === c.value) ||
-              (c.param === 'dialColor' && activeDialColor === c.value) ||
-              (c.param === 'watchStyle' && activeWatchStyle === c.value) ||
-              (c.param === 'caseMaterial' && activeCaseMaterial === c.value) ||
-              (c.param === 'strapType' && activeStrapType === c.value)
-            return (
-              <button
-                key={c.key}
-                type="button"
-                onClick={() => router.replace(isActive ? '/' : `/?${c.param}=${encodeURIComponent(c.value)}`)}
-                className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors capitalize ${
-                  isActive
-                    ? 'bg-gray-900 text-white border border-gray-900'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
-                }`}
-              >
-                {c.label}
-              </button>
-            )
-          })}
-        </div>
-      )}
+      {!userId && !activeWatchId && !activeQuery && !loading && filterChips.length > 0 && (() => {
+        const hasActiveChip = !!(activeBrand || activeDialColor || activeWatchStyle || activeCaseMaterial || activeStrapType)
+        return (
+          <div className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <button
+              type="button"
+              onClick={() => router.replace('/')}
+              className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                !hasActiveChip
+                  ? 'bg-gray-900 text-white border border-gray-900'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+              }`}
+            >
+              All
+            </button>
+            {filterChips.map((c) => {
+              const isActive =
+                (c.param === 'brand' && activeBrand === c.value) ||
+                (c.param === 'dialColor' && activeDialColor === c.value) ||
+                (c.param === 'watchStyle' && activeWatchStyle === c.value) ||
+                (c.param === 'caseMaterial' && activeCaseMaterial === c.value) ||
+                (c.param === 'strapType' && activeStrapType === c.value)
+              return (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => router.replace(isActive ? '/' : `/?${c.param}=${encodeURIComponent(c.value)}`)}
+                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors capitalize ${
+                    isActive
+                      ? 'bg-gray-900 text-white border border-gray-900'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              )
+            })}
+          </div>
+        )
+      })()}
 
       {/* Gallery grid */}
       {loading ? (
