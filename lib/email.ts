@@ -1,9 +1,11 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-// Use watchems.com domain once verified, fall back to Resend's test sender
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
+let _resend: Resend | null = null
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
+  return _resend
+}
 
 interface PhotoApprovalData {
   firstName?: string
@@ -19,11 +21,13 @@ export async function sendPhotoApprovedEmail(
   to: string,
   data: PhotoApprovalData
 ): Promise<{ success: boolean; error?: string }> {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = getResend()
+  if (!resend) {
     console.warn('[Resend] Missing RESEND_API_KEY — skipping email')
     return { success: false, error: 'Resend not configured' }
   }
 
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
   const name = data.firstName || 'there'
   const watchName = [data.brandName, data.modelName].filter(Boolean).join(' ') || 'your watch'
   const photoUrl = data.slug
@@ -32,7 +36,7 @@ export async function sendPhotoApprovedEmail(
 
   try {
     const { error } = await resend.emails.send({
-      from: FROM_EMAIL,
+      from: fromEmail,
       to,
       subject: `Your ${watchName} photo is live on Watchems!`,
       html: `
