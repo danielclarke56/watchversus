@@ -1,23 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import GallerySearch from '@/components/home/GallerySearch'
 
 export default function HeroSearch() {
   return (
     <section>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-4 sm:pt-8 sm:pb-5">
-        <h1 className="text-lg sm:text-xl font-bold text-gray-900 text-center mb-0.5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+        <h1 className="text-sm sm:text-base font-semibold text-gray-900 text-center">
           Watches worn in real life
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-400 text-center mb-3">
-          Real photos from watch owners around the world
-          <span className="mx-1.5 text-gray-300">·</span>
-          <Link href="/upload" className="text-gray-400 hover:text-gray-600 underline">
+          <span className="mx-1.5 text-gray-300 font-normal">·</span>
+          <span className="text-gray-400 font-normal">Real photos from watch owners</span>
+          <span className="mx-1.5 text-gray-300 font-normal">·</span>
+          <Link href="/upload" className="text-gray-400 hover:text-gray-600 underline font-normal">
             Upload yours
           </Link>
-        </p>
-        <GallerySearch />
+        </h1>
       </div>
     </section>
   )
