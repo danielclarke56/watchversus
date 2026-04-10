@@ -478,7 +478,7 @@ export default function GallerySearch() {
             }}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
-            className="w-full pl-10 pr-10 py-2.5 rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
+            className="w-full pl-10 pr-10 h-10 rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
           />
 
           {/* Clear button */}
