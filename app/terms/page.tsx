@@ -92,18 +92,74 @@ export default function TermsPage() {
 
           <h3>Moderation</h3>
           <p>
-            All user-submitted content (reviews and photos) goes through a moderation
-            process before being published. We reserve the right to approve, reject, edit,
-            or remove any user-generated content at our sole discretion, for any reason,
-            without notice. Reasons for removal may include but are not limited to:
+            Every photo submitted to Watchems is reviewed by a human before it goes live.
+            Our review is a <strong>relevance check</strong>, not editorial curation. The
+            only question we ask is: &quot;Is this a photograph of a watch?&quot; If the
+            answer is yes, we approve it. If the answer is no — because the photo is blurry
+            beyond recognition, unrelated to watches, spam, or obviously abusive — we
+            reject it.
+          </p>
+          <p>
+            We do not edit, enhance, caption, rewrite, or creatively shape user photos. We
+            do not select photos based on artistic merit, brand preference, or editorial
+            agenda. The gallery is what users upload, in the order they upload it.
+          </p>
+
+          <h3>What moderation is not</h3>
+          <p>
+            Because our review is limited to relevance, a few things follow — and we want
+            to be explicit about them:
           </p>
           <ul>
-            <li>Spam or promotional content</li>
-            <li>Fake or misleading reviews</li>
-            <li>Offensive, abusive, or inappropriate material</li>
-            <li>Copyright or trademark infringement</li>
-            <li>Content that does not relate to the watch being reviewed</li>
+            <li>
+              <strong>We do not verify copyright.</strong> We cannot tell by looking
+              whether you actually took a photo. You are solely responsible for making
+              sure you have the right to share every photo you upload. If you didn&apos;t
+              take it, don&apos;t upload it.
+            </li>
+            <li>
+              <strong>Approval is not an endorsement.</strong> When we approve a photo,
+              we are confirming it shows a watch. We are not endorsing the photographer,
+              the watch, the brand, or any opinion expressed in the caption. We are not
+              claiming the photo is accurate, authentic, or representative of the model.
+            </li>
+            <li>
+              <strong>Approval does not transfer ownership.</strong> Copyright in a photo
+              stays with the photographer regardless of whether we approve it. Watchems
+              makes no claim of ownership over user photos. See Section 4 for the full
+              ownership terms.
+            </li>
+            <li>
+              <strong>Moderation is not editorial control for copyright purposes.</strong>{' '}
+              The relevance check we perform is a narrow, automated-in-spirit filter that
+              does not involve selecting, modifying, or curating content on the basis of
+              what it expresses. Watchems acts as a hosting service for user-generated
+              content under 17 U.S.C. § 512 (the DMCA), Canada&apos;s Notice-and-Notice
+              regime, and the equivalent EU and UK hosting safe harbors. We rely on those
+              safe harbors and do not waive them by operating a relevance filter.
+            </li>
           </ul>
+
+          <h3>When we remove content</h3>
+          <p>
+            We will remove content when:
+          </p>
+          <ul>
+            <li>It fails the relevance check (not a watch photo)</li>
+            <li>We receive a valid copyright takedown notice — see our{' '}
+              <Link href="/copyright" className="text-accent hover:text-accentHover underline">
+                Copyright Policy
+              </Link>
+            </li>
+            <li>It contains spam, malware, hate speech, harassment, threats, or illegal material</li>
+            <li>It violates any other term of this agreement</li>
+            <li>The uploader requests its removal</li>
+          </ul>
+          <p>
+            We do not remove content simply because someone disagrees with the watch
+            pictured, the price shown, or the uploader&apos;s taste. Gallery disagreement is
+            not grounds for removal.
+          </p>
         </section>
 
         <section>
