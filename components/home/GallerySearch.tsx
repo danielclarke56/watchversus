@@ -456,7 +456,7 @@ export default function GallerySearch() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search watches (Rolex, Omega, Tudor...)"
+            placeholder="Search watches..."
             value={input}
             onChange={(e) => {
               // Mark as typing, reset after 600ms of no input
@@ -478,7 +478,7 @@ export default function GallerySearch() {
             }}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
-            className="w-full pl-10 pr-10 h-10 rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
+            className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 h-9 sm:h-10 text-sm rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
           />
 
           {/* Clear button */}

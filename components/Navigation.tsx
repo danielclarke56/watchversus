@@ -48,12 +48,12 @@ export default function Navigation() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border overflow-x-hidden">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-5">
+      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2.5 sm:gap-5">
 
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="Watchems" style={{ height: '1.5rem' }} className="w-auto" />
+          <img src="/logo.svg" alt="Watchems" className="h-5 sm:h-6 w-auto" />
         </Link>
 
         {/* Search bar — only on homepage */}
@@ -69,10 +69,10 @@ export default function Navigation() {
         {!isHomePage && <div className="flex-1" />}
 
         {/* Right side: CTA + auth */}
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
           <Link
             href="/upload"
-            className="btn-gold text-xs sm:text-sm px-4 sm:px-5 h-10 rounded-lg font-semibold flex items-center"
+            className="btn-gold text-xs sm:text-sm px-3 sm:px-5 h-9 sm:h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
           >
             <span className="sm:hidden">Upload</span>
             <span className="hidden sm:inline">Upload a Photo</span>
