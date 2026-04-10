@@ -77,7 +77,7 @@ type WatchesCache = {
 let watchesCache: WatchesCache | null = null
 const WATCHES_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-export default function GallerySearch() {
+export default function GallerySearch({ onExpandChange }: { onExpandChange?: (expanded: boolean) => void } = {}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [watches, setWatches] = useState<WatchWithCount[]>([])
@@ -90,6 +90,9 @@ export default function GallerySearch() {
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Notify parent when search expands/collapses
+  useEffect(() => { onExpandChange?.(isOpen) }, [isOpen, onExpandChange])
 
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')
