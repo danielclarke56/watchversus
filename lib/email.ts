@@ -7,15 +7,39 @@ function getResend(): Resend | null {
   return _resend
 }
 
+const TEMPLATE_ID = '7b7d895b-2ee5-4bc1-8f4e-700ada63a3c3'
+
+// Cache the template HTML in memory (refreshed on cold start)
+let templateCache: string | null = null
+
+async function getTemplateHtml(): Promise<string | null> {
+  if (templateCache) return templateCache
+  try {
+    const res = await fetch(`https://api.resend.com/templates/${TEMPLATE_ID}`, {
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const html = data.record?.html || data.html || null
+    if (html) templateCache = html
+    return html
+  } catch {
+    return null
+  }
+}
+
 interface PhotoApprovalData {
   firstName?: string
   brandName?: string
   modelName?: string
+  referenceNumber?: string
   slug?: string
+  imageUrl?: string
 }
 
 /**
- * Send a photo approval notification email via Resend.
+ * Send a photo approval notification email via Resend,
+ * using the "Watch Photo Live" template from the dashboard.
  */
 export async function sendPhotoApprovedEmail(
   to: string,
@@ -28,35 +52,35 @@ export async function sendPhotoApprovedEmail(
   }
 
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
-  const name = data.firstName || 'there'
   const watchName = [data.brandName, data.modelName].filter(Boolean).join(' ') || 'your watch'
-  const photoUrl = data.slug
-    ? `https://watchems.com/photo/${data.slug}`
-    : 'https://watchems.com'
+
+  // Fetch and render the Resend dashboard template
+  const templateHtml = await getTemplateHtml()
+  if (!templateHtml) {
+    console.error('[Resend] Could not fetch template — skipping email')
+    return { success: false, error: 'Template not found' }
+  }
+
+  const vars: Record<string, string> = {
+    firstName: data.firstName || 'there',
+    slug: data.slug || '',
+    imageUrl: data.imageUrl || '',
+    brand: data.brandName || '',
+    model: data.modelName || '',
+    reference: data.referenceNumber || '',
+  }
+
+  let html = templateHtml
+  for (const [key, val] of Object.entries(vars)) {
+    html = html.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val)
+  }
 
   try {
     const { error } = await resend.emails.send({
       from: fromEmail,
       to,
       subject: `Your ${watchName} photo is live on Watchems!`,
-      html: `
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px">
-          <h2 style="font-size:20px;font-weight:700;color:#111;margin:0 0 16px">Your photo is live!</h2>
-          <p style="font-size:15px;line-height:24px;color:#444;margin:0 0 24px">
-            Hey ${name}, your <strong>${watchName}</strong> photo has been approved and is now live on Watchems.
-          </p>
-          <a href="${photoUrl}" style="display:inline-block;background:#111;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:8px">
-            View in Gallery →
-          </a>
-          <p style="font-size:13px;line-height:20px;color:#777;margin:24px 0 0">
-            Thanks for contributing to the community.
-          </p>
-          <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
-          <p style="font-size:11px;color:#aaa;margin:0">
-            © ${new Date().getFullYear()} Watchems · <a href="https://watchems.com" style="color:#aaa">watchems.com</a>
-          </p>
-        </div>
-      `,
+      html,
     })
 
     if (error) {

@@ -124,7 +124,9 @@ export async function POST(req: NextRequest) {
               firstName: user.firstName ?? undefined,
               brandName: photoRecord.brandName ?? undefined,
               modelName: photoRecord.modelName ?? undefined,
+              referenceNumber: photoRecord.referenceNumber ?? undefined,
               slug: photoRecord.slug ?? undefined,
+              imageUrl: photoRecord.thumbnailUrl ?? photoRecord.url,
             })
           }
         } catch (emailError) {
