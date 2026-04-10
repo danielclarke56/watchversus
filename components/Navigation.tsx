@@ -50,7 +50,7 @@ export default function Navigation() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
-      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2 sm:gap-5">
+      <nav className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2 sm:gap-5">
 
         {/* Logo — hidden on mobile when search expanded, always visible on sm+ */}
         <Link href="/" className={`shrink-0 flex items-center ${searchExpanded ? 'hidden sm:flex' : ''}`}>
@@ -72,7 +72,7 @@ export default function Navigation() {
         {!isHomePage && <div className="flex-1" />}
 
         {/* Right side: CTA + auth — hidden on mobile when search expanded, always visible on sm+ */}
-        <div className={`flex items-center gap-2 sm:gap-4 shrink-0 ${searchExpanded ? 'hidden sm:flex' : ''}`}>
+        <div className={`flex items-center gap-1.5 sm:gap-4 shrink-0 ${searchExpanded ? 'hidden sm:flex' : ''}`}>
           <Link
             href="/upload"
             className="btn-gold text-xs sm:text-sm h-9 sm:h-10 rounded-lg font-semibold flex items-center justify-center whitespace-nowrap w-9 sm:w-auto sm:px-5"
@@ -81,7 +81,7 @@ export default function Navigation() {
             <span className="sm:hidden text-base">+</span>
             <span className="hidden sm:inline">Upload a Photo</span>
           </Link>
-          <ClerkAuth avatarSize="w-7 h-7" />
+          <ClerkAuth avatarSize="w-6 h-6 sm:w-7 sm:h-7" />
         </div>
       </nav>
     </header>

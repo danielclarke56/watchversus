@@ -7,7 +7,7 @@ import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
-import { tagPhotoApprovedSubscriber } from '@/lib/kit'
+import { notifyPhotoApproved } from '@/lib/brevo'
 
 export const dynamic = 'force-dynamic'
 
@@ -113,17 +113,25 @@ export async function POST(req: NextRequest) {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
 
-      // Tag user in Kit as photo-approved (non-blocking)
+      // Notify Brevo of photo approval (non-blocking)
       if (photoRecord.userId) {
         try {
           const clerk = await clerkClient()
           const user = await clerk.users.getUser(photoRecord.userId)
           const email = user.emailAddresses?.[0]?.emailAddress
           if (email) {
-            await tagPhotoApprovedSubscriber(email, user.firstName ?? undefined)
+            await notifyPhotoApproved(email, {
+              firstName: user.firstName ?? undefined,
+              brandName: photoRecord.brandName ?? undefined,
+              modelName: photoRecord.modelName ?? undefined,
+              referenceName: photoRecord.referenceNumber ?? undefined,
+              watchId: photoRecord.watchId,
+              userName: photoRecord.userName,
+              slug: photoRecord.slug ?? undefined,
+            })
           }
-        } catch (kitError) {
-          console.error('[Kit] Failed to tag user on approval:', kitError)
+        } catch (brevoError) {
+          console.error('[Brevo] Failed to notify on approval:', brevoError)
         }
       }
     } else if (action === 'reject') {
