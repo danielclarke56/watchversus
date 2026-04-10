@@ -483,29 +483,21 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
   useEffect(() => {
     if (!sentinelRef.current) return
-    const controller = new AbortController()
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting && nextCursor && !loadingMore) {
           setLoadingMore(true)
-          fetchPhotos(nextCursor, controller.signal).then((data) => {
-            if (controller.signal.aborted) return
+          fetchPhotos(nextCursor).then((data) => {
             setPhotos((prev) => mergePhotosDedupe(prev, data.photos))
             setNextCursor(data.nextCursor)
             setLoadingMore(false)
-          }).catch((err) => {
-            if (err instanceof DOMException && err.name === 'AbortError') return
-            setLoadingMore(false)
-          })
+          }).catch(() => setLoadingMore(false))
         }
       },
       { rootMargin: '400px' }
     )
     observer.observe(sentinelRef.current)
-    return () => {
-      observer.disconnect()
-      controller.abort()
-    }
+    return () => observer.disconnect()
   }, [nextCursor, loadingMore, fetchPhotos])
 
   // Fetch more photos when navigating near the end of loaded groups
