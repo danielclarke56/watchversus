@@ -74,6 +74,8 @@ export async function sendPhotoApprovedEmail(
   for (const [key, val] of Object.entries(vars)) {
     html = html.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val)
   }
+  // Fix template URL: /w/ is for watch pages, /photo/ is for photo pages
+  html = html.replace(/watchems\.com\/w\//g, 'watchems.com/photo/')
 
   try {
     const { error } = await resend.emails.send({
