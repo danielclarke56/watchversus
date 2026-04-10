@@ -1079,7 +1079,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
           {/* Main content */}
           <div
-            className="flex flex-1 flex-col md:flex-row min-h-0 w-full max-w-[120rem] mx-auto overflow-hidden"
+            className="flex flex-1 flex-col md:flex-row min-h-0 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ── Left / main column ── */}
