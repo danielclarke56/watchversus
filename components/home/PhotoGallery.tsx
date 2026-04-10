@@ -941,15 +941,16 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       : photos[0].watchName ?? activeWatchId
     : null
 
-  // Build a single mixed chip list: top brands, then top styles, dial colors, straps
+  // Build a single mixed chip list: top brands, then top styles, dial colors, materials, straps
   const filterChips = useMemo(() => {
     const chips: { key: string; label: string; param: string; value: string }[] = []
     for (const b of brandTags.slice(0, 8)) chips.push({ key: `b-${b.name}`, label: b.name, param: 'brand', value: b.name.toLowerCase() })
     for (const c of watchStyleChips.slice(0, 4)) chips.push({ key: `s-${c.name}`, label: c.name, param: 'watchStyle', value: c.name })
     for (const c of dialColorChips.slice(0, 4)) chips.push({ key: `d-${c.name}`, label: `${c.name} dial`, param: 'dialColor', value: c.name })
+    for (const c of caseMaterialChips.slice(0, 3)) chips.push({ key: `m-${c.name}`, label: c.name, param: 'caseMaterial', value: c.name })
     for (const c of strapTypeChips.slice(0, 3)) chips.push({ key: `t-${c.name}`, label: c.name, param: 'strapType', value: c.name })
     return chips
-  }, [brandTags, watchStyleChips, dialColorChips, strapTypeChips])
+  }, [brandTags, watchStyleChips, dialColorChips, caseMaterialChips, strapTypeChips])
 
   return (
     <section className={userId ? 'pb-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'}>
