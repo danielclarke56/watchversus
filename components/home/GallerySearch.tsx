@@ -77,7 +77,7 @@ type WatchesCache = {
 let watchesCache: WatchesCache | null = null
 const WATCHES_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-export default function GallerySearch({ onExpandChange, forceCollapse }: { onExpandChange?: (expanded: boolean) => void; forceCollapse?: number } = {}) {
+export default function GallerySearch({ onExpandChange }: { onExpandChange?: (expanded: boolean) => void } = {}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [watches, setWatches] = useState<WatchWithCount[]>([])
@@ -94,13 +94,6 @@ export default function GallerySearch({ onExpandChange, forceCollapse }: { onExp
   // Notify parent when search expands/collapses
   useEffect(() => { onExpandChange?.(isOpen) }, [isOpen, onExpandChange])
 
-  // Parent can force-collapse the dropdown (e.g. Cancel button in navbar)
-  useEffect(() => {
-    if (forceCollapse && forceCollapse > 0) {
-      setIsOpen(false)
-      inputRef.current?.blur()
-    }
-  }, [forceCollapse])
 
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')
@@ -492,13 +485,13 @@ export default function GallerySearch({ onExpandChange, forceCollapse }: { onExp
             className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 h-9 sm:h-10 text-sm rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
           />
 
-          {/* Clear button */}
-          {(activeWatchId || activeQuery || input || hasActiveFilters) && (
+          {/* Clear / close button — visible when focused or has content */}
+          {(isOpen || activeWatchId || activeQuery || input || hasActiveFilters) && (
             <button
               type="button"
               onClick={clearFilter}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-semibold"
-              aria-label="Clear filter"
+              aria-label="Close search"
             >
               ×
             </button>

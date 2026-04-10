@@ -46,12 +46,7 @@ export default function Navigation() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
   const [searchExpanded, setSearchExpanded] = useState(false)
-  const [collapseSignal, setCollapseSignal] = useState(0)
   const handleExpandChange = useCallback((expanded: boolean) => setSearchExpanded(expanded), [])
-
-  const collapseSearch = useCallback(() => {
-    setCollapseSignal((n) => n + 1)
-  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border max-w-[100vw] overflow-x-hidden">
@@ -70,20 +65,9 @@ export default function Navigation() {
         {isHomePage && (
           <div className="flex-1 min-w-0 overflow-hidden">
             <Suspense>
-              <GallerySearch onExpandChange={handleExpandChange} forceCollapse={collapseSignal} />
+              <GallerySearch onExpandChange={handleExpandChange} />
             </Suspense>
           </div>
-        )}
-
-        {/* Cancel button — mobile only, when search is expanded */}
-        {searchExpanded && (
-          <button
-            type="button"
-            onClick={collapseSearch}
-            className="shrink-0 text-sm text-gray-500 hover:text-gray-700 font-medium sm:hidden"
-          >
-            Cancel
-          </button>
         )}
 
         {/* Spacer when search not shown */}
