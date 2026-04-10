@@ -6,7 +6,7 @@ import GallerySearch from '@/components/home/GallerySearch'
 export default function HeroSearch() {
   return (
     <section>
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-4 sm:pt-8 sm:pb-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-4 sm:pt-8 sm:pb-5">
         <h1 className="text-lg sm:text-xl font-bold text-gray-900 text-center mb-0.5">
           Watches worn in real life
         </h1>
