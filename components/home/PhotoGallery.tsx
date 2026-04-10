@@ -969,28 +969,15 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           </button>
         </div>
       )}
-      {!userId && !activeWatchId && hasActiveSearch && (
+      {!userId && !activeWatchId && activeQuery && (
         <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
           <span className="text-sm font-medium text-blue-900">
             {totalCount !== null ? (
               <>
-                {totalCount} photo{totalCount !== 1 ? 's' : ''}
-                {activeQuery && <> for <span className="font-semibold">&lsquo;{activeQuery}&rsquo;</span></>}
-                {activeBrand && <> in <span className="font-semibold capitalize">{activeBrand}</span></>}
-                {activeDialColor && <> &middot; <span className="font-semibold capitalize">{activeDialColor} dial</span></>}
-                {activeWatchStyle && <> &middot; <span className="font-semibold capitalize">{activeWatchStyle}</span></>}
-                {activeCaseMaterial && <> &middot; <span className="font-semibold capitalize">{activeCaseMaterial}</span></>}
-                {activeStrapType && <> &middot; <span className="font-semibold capitalize">{activeStrapType}</span></>}
+                {totalCount} photo{totalCount !== 1 ? 's' : ''} for <span className="font-semibold">&lsquo;{activeQuery}&rsquo;</span>
               </>
             ) : (
-              <>
-                {activeQuery && <>Results for: <span className="font-semibold">{activeQuery}</span></>}
-                {activeBrand && !activeQuery && <>Brand: <span className="font-semibold capitalize">{activeBrand}</span></>}
-                {activeDialColor && !activeQuery && !activeBrand && <><span className="font-semibold capitalize">{activeDialColor} dial</span></>}
-                {activeWatchStyle && !activeQuery && !activeBrand && !activeDialColor && <><span className="font-semibold capitalize">{activeWatchStyle}</span></>}
-                {activeCaseMaterial && !activeQuery && !activeBrand && !activeDialColor && !activeWatchStyle && <><span className="font-semibold capitalize">{activeCaseMaterial}</span></>}
-                {activeStrapType && !activeQuery && !activeBrand && !activeDialColor && !activeWatchStyle && !activeCaseMaterial && <><span className="font-semibold capitalize">{activeStrapType}</span></>}
-              </>
+              <>Results for: <span className="font-semibold">{activeQuery}</span></>
             )}
           </span>
           <button type="button" onClick={() => router.replace('/')} className="ml-auto text-blue-600 hover:text-blue-800 font-semibold">
@@ -999,19 +986,31 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
         </div>
       )}
 
-      {/* Filter chips — single scrollable row mixing brands + characteristics */}
-      {!userId && !hasActiveSearch && !activeWatchId && !loading && filterChips.length > 0 && (
+      {/* Filter chips — single scrollable row, always visible, active chip highlighted */}
+      {!userId && !activeWatchId && !activeQuery && !loading && filterChips.length > 0 && (
         <div className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {filterChips.map((c) => (
-            <button
-              key={c.key}
-              type="button"
-              onClick={() => router.replace(`/?${c.param}=${encodeURIComponent(c.value)}`)}
-              className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize"
-            >
-              {c.label}
-            </button>
-          ))}
+          {filterChips.map((c) => {
+            const isActive =
+              (c.param === 'brand' && activeBrand === c.value) ||
+              (c.param === 'dialColor' && activeDialColor === c.value) ||
+              (c.param === 'watchStyle' && activeWatchStyle === c.value) ||
+              (c.param === 'caseMaterial' && activeCaseMaterial === c.value) ||
+              (c.param === 'strapType' && activeStrapType === c.value)
+            return (
+              <button
+                key={c.key}
+                type="button"
+                onClick={() => router.replace(isActive ? '/' : `/?${c.param}=${encodeURIComponent(c.value)}`)}
+                className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors capitalize ${
+                  isActive
+                    ? 'bg-gray-900 text-white border border-gray-900'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                }`}
+              >
+                {c.label}
+              </button>
+            )
+          })}
         </div>
       )}
 
