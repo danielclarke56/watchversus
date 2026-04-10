@@ -954,36 +954,16 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
   return (
     <section className={userId ? 'pb-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'}>
-      {/* Filter indicators with result count (hidden in user collection mode) */}
-      {!userId && activeWatchId && selectedWatchName && (
-        <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-          <span className="text-sm font-medium text-blue-900">
-            {totalCount !== null ? (
-              <>{totalCount} photo{totalCount !== 1 ? 's' : ''} for <span className="font-semibold">&lsquo;{selectedWatchName}&rsquo;</span></>
-            ) : (
-              <>Showing: <span className="font-semibold">{selectedWatchName}</span></>
-            )}
-          </span>
-          <button type="button" onClick={() => router.replace('/')} className="ml-auto text-blue-600 hover:text-blue-800 font-semibold">
-            ✕ Clear
-          </button>
-        </div>
+      {/* Subtle result count (hidden in user collection mode) */}
+      {!userId && activeWatchId && selectedWatchName && totalCount !== null && (
+        <p className="mb-3 text-xs text-gray-400">
+          {totalCount} photo{totalCount !== 1 ? 's' : ''} for &ldquo;{selectedWatchName}&rdquo;
+        </p>
       )}
-      {!userId && !activeWatchId && activeQuery && (
-        <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-          <span className="text-sm font-medium text-blue-900">
-            {totalCount !== null ? (
-              <>
-                {totalCount} photo{totalCount !== 1 ? 's' : ''} for <span className="font-semibold">&lsquo;{activeQuery}&rsquo;</span>
-              </>
-            ) : (
-              <>Results for: <span className="font-semibold">{activeQuery}</span></>
-            )}
-          </span>
-          <button type="button" onClick={() => router.replace('/')} className="ml-auto text-blue-600 hover:text-blue-800 font-semibold">
-            ✕ Clear
-          </button>
-        </div>
+      {!userId && !activeWatchId && activeQuery && totalCount !== null && (
+        <p className="mb-3 text-xs text-gray-400">
+          {totalCount} photo{totalCount !== 1 ? 's' : ''} for &ldquo;{activeQuery}&rdquo;
+        </p>
       )}
 
       {/* Filter chips — single scrollable row, always visible, active chip highlighted */}
