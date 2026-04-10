@@ -1083,7 +1083,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
             onClick={(e) => e.stopPropagation()}
           >
             {/* ── Left / main column ── */}
-            <div className="flex flex-col min-h-0 min-w-0 flex-1 md:max-w-[55%] lg:max-w-[50%] xl:max-w-[40%] w-full overflow-hidden">
+            <div className={`flex flex-col min-h-0 min-w-0 w-full ${otherWatchRelated.length > 0 ? 'md:w-1/2' : ''} overflow-hidden`}>
 
               {/* Photo area */}
               <div
@@ -1290,7 +1290,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
             {/* ── Right panel: related photos (desktop only) ── */}
             {otherWatchRelated.length > 0 && (
-              <div className="hidden md:flex flex-col flex-1 overflow-hidden">
+              <div className="hidden md:flex flex-col w-1/2 overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
                   {relatedPhotosLoading ? (
                     <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
