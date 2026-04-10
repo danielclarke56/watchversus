@@ -1010,9 +1010,9 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
       {/* Gallery grid */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="columns-2 sm:columns-3 md:columns-4 xl:columns-5 gap-3">
           {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-2xl bg-surface animate-pulse" />
+            <div key={i} className={`rounded-2xl bg-surface animate-pulse mb-3 break-inside-avoid ${i % 3 === 0 ? 'h-64' : i % 3 === 1 ? 'h-48' : 'h-56'}`} />
           ))}
         </div>
       ) : groups.length === 0 ? (
@@ -1022,7 +1022,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           <EmptyState icon="📷" title="No photos yet" message="Be the first to share your watch" actionUrl="/upload" actionText="Upload a Photo" />
         )
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="columns-2 sm:columns-3 md:columns-4 xl:columns-5 gap-3 [column-fill:_balance]">
           {groups.map((group, groupIdx) => {
             const primary = group.photos[0]
             const { brand, model, ref } = getWatchLabel(group)
@@ -1033,15 +1033,14 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 key={group.key}
                 type="button"
                 onClick={() => openLightbox(groupIdx, 0)}
-                className="group relative aspect-square rounded-2xl overflow-hidden bg-surface"
+                className="group relative rounded-2xl overflow-hidden bg-surface mb-3 break-inside-avoid block w-full"
               >
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={primary.thumbnailUrl || primary.url}
                   alt={buildPhotoAltText(primary)}
-                  fill
-                  className="object-cover transition-transform duration-200 group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                  priority={groupIdx < 6}
+                  className="w-full h-auto object-cover transition-transform duration-200 group-hover:scale-105"
+                  loading={groupIdx < 6 ? 'eager' : 'lazy'}
                 />
                 <PhotoCountBadge count={count} variant="badge" showIcon />
                 <PhotoCardOverlay label={watchDisplayName} alwaysVisible={hasActiveSearch} />
