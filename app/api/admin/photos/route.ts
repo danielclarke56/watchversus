@@ -7,7 +7,7 @@ import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
-import { notifyPhotoApproved } from '@/lib/brevo'
+import { sendPhotoApprovedEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 
@@ -113,25 +113,22 @@ export async function POST(req: NextRequest) {
       // Update photo status to approved
       await db.update(photos).set({ status: 'approved' }).where(eq(photos.id, photoId))
 
-      // Notify Brevo of photo approval (non-blocking)
+      // Send approval notification email via Resend (non-blocking)
       if (photoRecord.userId) {
         try {
           const clerk = await clerkClient()
           const user = await clerk.users.getUser(photoRecord.userId)
           const email = user.emailAddresses?.[0]?.emailAddress
           if (email) {
-            await notifyPhotoApproved(email, {
+            await sendPhotoApprovedEmail(email, {
               firstName: user.firstName ?? undefined,
               brandName: photoRecord.brandName ?? undefined,
               modelName: photoRecord.modelName ?? undefined,
-              referenceName: photoRecord.referenceNumber ?? undefined,
-              watchId: photoRecord.watchId,
-              userName: photoRecord.userName,
               slug: photoRecord.slug ?? undefined,
             })
           }
-        } catch (brevoError) {
-          console.error('[Brevo] Failed to notify on approval:', brevoError)
+        } catch (emailError) {
+          console.error('[Resend] Failed to send approval email:', emailError)
         }
       }
     } else if (action === 'reject') {
