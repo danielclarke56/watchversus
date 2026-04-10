@@ -482,7 +482,7 @@ export default function GallerySearch({ onExpandChange }: { onExpandChange?: (ex
             }}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
-            className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 h-9 sm:h-10 text-sm rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-inset disabled:opacity-50"
+            className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 h-9 sm:h-10 text-base sm:text-sm rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-inset disabled:opacity-50"
           />
 
           {/* Clear / close button — visible when focused or has content */}
