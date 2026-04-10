@@ -10,13 +10,6 @@ function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-const WRIST_SIZE_OPTIONS = [
-  'Under 6"',
-  '6"', '6.25"', '6.5"', '6.75"',
-  '7"', '7.25"', '7.5"', '7.75"',
-  '8"', '8.25"',
-  'Over 8.25"',
-]
 const ESTIMATED_PRICE_OPTIONS = [
   'Under $500',
   '$500 – $1,000',
@@ -1096,14 +1089,14 @@ export default function UploadClient() {
                       <div>
                         <label className="block text-sm font-medium text-textSecond mb-1.5">Wrist size</label>
                         <div className="flex gap-1 items-center">
-                          <select
+                          <input
+                            type="text"
+                            inputMode="decimal"
                             value={meta.wristSize}
                             onChange={(e) => metaChange('wristSize', 'wristSize', e.target.value)}
+                            placeholder='e.g. 7.25"'
                             className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2.5 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('wristSize')}`}
-                          >
-                            <option value="">Select...</option>
-                            {WRIST_SIZE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                          </select>
+                          />
                           {isAiUnconfirmed('wristSize') && (
                             <>
                               <button type="button" onClick={() => confirmField('wristSize')} aria-label="Accept AI suggestion for wrist size" className="flex-shrink-0 w-6 h-7 flex items-center justify-center text-blue-500 hover:text-blue-700 font-bold text-sm">✓</button>
