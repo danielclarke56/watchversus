@@ -63,13 +63,39 @@ export async function GET(req: NextRequest) {
     // Top 5 brands = trending
     const trending = brands.slice(0, 5).map((b) => b.name)
 
+    // Aggregate visual characteristics for filter chips
+    const [dialColors, watchStyles, caseMaterials, strapTypes] = await Promise.all([
+      db.select({ value: photos.dialColor, count: count(photos.id) })
+        .from(photos).where(eq(photos.status, 'approved'))
+        .groupBy(photos.dialColor),
+      db.select({ value: photos.watchStyle, count: count(photos.id) })
+        .from(photos).where(eq(photos.status, 'approved'))
+        .groupBy(photos.watchStyle),
+      db.select({ value: photos.caseMaterial, count: count(photos.id) })
+        .from(photos).where(eq(photos.status, 'approved'))
+        .groupBy(photos.caseMaterial),
+      db.select({ value: photos.strapType, count: count(photos.id) })
+        .from(photos).where(eq(photos.status, 'approved'))
+        .groupBy(photos.strapType),
+    ])
+
+    const toChips = (rows: { value: string | null; count: number }[]) =>
+      rows
+        .filter((r) => r.value)
+        .map((r) => ({ name: r.value!, photoCount: r.count }))
+        .sort((a, b) => b.photoCount - a.photoCount)
+
     return NextResponse.json(
       {
         watches: enrichedWatches,
         brands,
         trending,
+        dialColors: toChips(dialColors),
+        watchStyles: toChips(watchStyles),
+        caseMaterials: toChips(caseMaterials),
+        strapTypes: toChips(strapTypes),
       },
-      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } }
+      { headers: { 'Cache-Control': 'no-store' } }
     )
   } catch (error) {
     console.error('Error fetching watches with photos:', error)

@@ -19,10 +19,19 @@ export interface BrandWithCount {
   photoCount: number
 }
 
+export interface CharacteristicChip {
+  name: string
+  photoCount: number
+}
+
 interface WatchesCache {
   watches: WatchWithCount[]
   brands: BrandWithCount[]
   trending: string[]
+  dialColors: CharacteristicChip[]
+  watchStyles: CharacteristicChip[]
+  caseMaterials: CharacteristicChip[]
+  strapTypes: CharacteristicChip[]
   ts: number
 }
 
@@ -37,6 +46,10 @@ async function fetchWatchesData(): Promise<WatchesCache> {
     watches: data.watches || [],
     brands: data.brands || [],
     trending: data.trending || [],
+    dialColors: data.dialColors || [],
+    watchStyles: data.watchStyles || [],
+    caseMaterials: data.caseMaterials || [],
+    strapTypes: data.strapTypes || [],
     ts: Date.now(),
   }
 }
@@ -74,6 +87,6 @@ export function getWatchesCacheSync(): WatchesCache | null {
 /**
  * Set cache from external source (e.g., when GallerySearch already fetched it).
  */
-export function setWatchesCache(data: { watches: WatchWithCount[]; brands: BrandWithCount[]; trending: string[] }) {
+export function setWatchesCache(data: Omit<WatchesCache, 'ts'>) {
   cache = { ...data, ts: Date.now() }
 }

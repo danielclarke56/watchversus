@@ -32,6 +32,11 @@ export async function GET(req: NextRequest) {
   const priceMax = searchParams.get('priceMax') ? parseInt(searchParams.get('priceMax')!) : null
   const caseSizeMin = searchParams.get('caseSizeMin') ? parseInt(searchParams.get('caseSizeMin')!) : null
   const caseSizeMax = searchParams.get('caseSizeMax') ? parseInt(searchParams.get('caseSizeMax')!) : null
+  // Visual characteristic filters
+  const filterDialColor = searchParams.get('dialColor')?.toLowerCase() ?? ''
+  const filterWatchStyle = searchParams.get('watchStyle')?.toLowerCase() ?? ''
+  const filterCaseMaterial = searchParams.get('caseMaterial')?.toLowerCase() ?? ''
+  const filterStrapType = searchParams.get('strapType')?.toLowerCase() ?? ''
 
   try {
     // Pre-filter static watch library by chip filters to get matching watchIds
@@ -61,6 +66,12 @@ export async function GET(req: NextRequest) {
     if (userId) {
       conditions.push(eq(photos.userId, userId))
     }
+
+    // Visual characteristic filters (direct DB column match)
+    if (filterDialColor) conditions.push(eq(photos.dialColor, filterDialColor))
+    if (filterWatchStyle) conditions.push(eq(photos.watchStyle, filterWatchStyle))
+    if (filterCaseMaterial) conditions.push(eq(photos.caseMaterial, filterCaseMaterial))
+    if (filterStrapType) conditions.push(eq(photos.strapType, filterStrapType))
 
     // Apply chip filters via watchId IN (...)
     if (chipFilteredWatchIds !== null && !watchId) {
@@ -154,7 +165,7 @@ export async function GET(req: NextRequest) {
 
     const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    const hasActiveFilter = !!(q || brand || filterMovement || priceMin !== null || priceMax !== null || caseSizeMin !== null || caseSizeMax !== null)
+    const hasActiveFilter = !!(q || brand || filterMovement || priceMin !== null || priceMax !== null || caseSizeMin !== null || caseSizeMax !== null || filterDialColor || filterWatchStyle || filterCaseMaterial || filterStrapType)
 
     // Run count query in parallel with the data query
     const [photoRecords, countResult] = await Promise.all([

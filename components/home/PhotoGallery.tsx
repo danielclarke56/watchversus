@@ -14,7 +14,7 @@ import Fuse from 'fuse.js'
 import SectionLabel from '@/components/ui/SectionLabel'
 import EmptyState from '@/components/ui/EmptyState'
 import { getWatchesCacheSync, getWatchesData } from '@/lib/watchesCache'
-import type { BrandWithCount } from '@/lib/watchesCache'
+import type { BrandWithCount, CharacteristicChip } from '@/lib/watchesCache'
 
 interface PhotoItem {
   id: string
@@ -267,14 +267,22 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   const activePriceMax = searchParams.get('priceMax')
   const activeCaseSizeMin = searchParams.get('caseSizeMin')
   const activeCaseSizeMax = searchParams.get('caseSizeMax')
+  const activeDialColor = searchParams.get('dialColor')
+  const activeWatchStyle = searchParams.get('watchStyle')
+  const activeCaseMaterial = searchParams.get('caseMaterial')
+  const activeStrapType = searchParams.get('strapType')
 
-  const hasActiveSearch = !!(activeQuery || activeWatchId || activeBrand || activeMovement || activePriceMin || activePriceMax || activeCaseSizeMin || activeCaseSizeMax)
+  const hasActiveSearch = !!(activeQuery || activeWatchId || activeBrand || activeMovement || activePriceMin || activePriceMax || activeCaseSizeMin || activeCaseSizeMax || activeDialColor || activeWatchStyle || activeCaseMaterial || activeStrapType)
 
   const [photos, setPhotos] = useState<PhotoItem[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState<number | null>(null)
   const [suggestions, setSuggestions] = useState<string[] | undefined>(undefined)
   const [brandTags, setBrandTags] = useState<BrandWithCount[]>([])
+  const [dialColorChips, setDialColorChips] = useState<CharacteristicChip[]>([])
+  const [watchStyleChips, setWatchStyleChips] = useState<CharacteristicChip[]>([])
+  const [caseMaterialChips, setCaseMaterialChips] = useState<CharacteristicChip[]>([])
+  const [strapTypeChips, setStrapTypeChips] = useState<CharacteristicChip[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -284,13 +292,20 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
   const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
 
-  // Load brand tags from shared watches cache
+  // Load brand tags + visual characteristic chips from shared watches cache
   useEffect(() => {
+    const apply = (data: { brands: BrandWithCount[]; dialColors: CharacteristicChip[]; watchStyles: CharacteristicChip[]; caseMaterials: CharacteristicChip[]; strapTypes: CharacteristicChip[] }) => {
+      setBrandTags(data.brands)
+      setDialColorChips(data.dialColors)
+      setWatchStyleChips(data.watchStyles)
+      setCaseMaterialChips(data.caseMaterials)
+      setStrapTypeChips(data.strapTypes)
+    }
     const cached = getWatchesCacheSync()
     if (cached) {
-      setBrandTags(cached.brands)
+      apply(cached)
     } else {
-      getWatchesData().then((data) => setBrandTags(data.brands)).catch(() => {})
+      getWatchesData().then(apply).catch(() => {})
     }
   }, [])
 
@@ -346,11 +361,15 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
     if (activePriceMax) params.set('priceMax', activePriceMax)
     if (activeCaseSizeMin) params.set('caseSizeMin', activeCaseSizeMin)
     if (activeCaseSizeMax) params.set('caseSizeMax', activeCaseSizeMax)
+    if (activeDialColor) params.set('dialColor', activeDialColor)
+    if (activeWatchStyle) params.set('watchStyle', activeWatchStyle)
+    if (activeCaseMaterial) params.set('caseMaterial', activeCaseMaterial)
+    if (activeStrapType) params.set('strapType', activeStrapType)
     if (userId) params.set('userId', userId)
     const res = await fetch(`/api/photos/all?${params.toString()}`, { signal })
     const data: PhotosResponse = await res.json()
     return data
-  }, [activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax, userId])
+  }, [activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax, activeDialColor, activeWatchStyle, activeCaseMaterial, activeStrapType, userId])
 
   const fetchRelatedPhotos = useCallback(async (currentPhoto: PhotoItem) => {
     const watchId = currentPhoto.watchId
@@ -521,7 +540,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       clearTimeout(timer)
       abortRef.current?.abort()
     }
-  }, [fetchPhotos, activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax])
+  }, [fetchPhotos, activeWatchId, activeQuery, activeBrand, activeMovement, activePriceMin, activePriceMax, activeCaseSizeMin, activeCaseSizeMax, activeDialColor, activeWatchStyle, activeCaseMaterial, activeStrapType])
 
   useEffect(() => {
     if (!sentinelRef.current) return
@@ -947,11 +966,19 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 {totalCount} photo{totalCount !== 1 ? 's' : ''}
                 {activeQuery && <> for <span className="font-semibold">&lsquo;{activeQuery}&rsquo;</span></>}
                 {activeBrand && <> in <span className="font-semibold capitalize">{activeBrand}</span></>}
+                {activeDialColor && <> &middot; <span className="font-semibold capitalize">{activeDialColor} dial</span></>}
+                {activeWatchStyle && <> &middot; <span className="font-semibold capitalize">{activeWatchStyle}</span></>}
+                {activeCaseMaterial && <> &middot; <span className="font-semibold capitalize">{activeCaseMaterial}</span></>}
+                {activeStrapType && <> &middot; <span className="font-semibold capitalize">{activeStrapType}</span></>}
               </>
             ) : (
               <>
                 {activeQuery && <>Results for: <span className="font-semibold">{activeQuery}</span></>}
                 {activeBrand && !activeQuery && <>Brand: <span className="font-semibold capitalize">{activeBrand}</span></>}
+                {activeDialColor && !activeQuery && !activeBrand && <><span className="font-semibold capitalize">{activeDialColor} dial</span></>}
+                {activeWatchStyle && !activeQuery && !activeBrand && !activeDialColor && <><span className="font-semibold capitalize">{activeWatchStyle}</span></>}
+                {activeCaseMaterial && !activeQuery && !activeBrand && !activeDialColor && !activeWatchStyle && <><span className="font-semibold capitalize">{activeCaseMaterial}</span></>}
+                {activeStrapType && !activeQuery && !activeBrand && !activeDialColor && !activeWatchStyle && !activeCaseMaterial && <><span className="font-semibold capitalize">{activeStrapType}</span></>}
               </>
             )}
           </span>
@@ -961,20 +988,54 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
         </div>
       )}
 
-      {/* Brand tags — shown on default gallery view (no active search) */}
-      {!userId && !hasActiveSearch && !activeWatchId && brandTags.length > 0 && !loading && (
-        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {brandTags.slice(0, 15).map((b) => (
-            <button
-              key={b.name}
-              type="button"
-              onClick={() => router.replace(`/?brand=${encodeURIComponent(b.name.toLowerCase())}`)}
-              className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
-            >
-              {b.name}
-              <span className="ml-1.5 text-gray-400">{b.photoCount}</span>
-            </button>
-          ))}
+      {/* Filter chip rows — shown on default gallery view (no active search) */}
+      {!userId && !hasActiveSearch && !activeWatchId && !loading && (
+        <div className="mb-5 space-y-2.5">
+          {brandTags.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+              {brandTags.slice(0, 15).map((b) => (
+                <button
+                  key={b.name}
+                  type="button"
+                  onClick={() => router.replace(`/?brand=${encodeURIComponent(b.name.toLowerCase())}`)}
+                  className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+                >
+                  {b.name}
+                  <span className="ml-1.5 text-gray-400">{b.photoCount}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {watchStyleChips.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Style</span>
+              {watchStyleChips.slice(0, 10).map((c) => (
+                <button key={c.name} type="button" onClick={() => router.replace(`/?watchStyle=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
+                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {dialColorChips.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Dial</span>
+              {dialColorChips.slice(0, 10).map((c) => (
+                <button key={c.name} type="button" onClick={() => router.replace(`/?dialColor=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
+                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {strapTypeChips.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Strap</span>
+              {strapTypeChips.slice(0, 8).map((c) => (
+                <button key={c.name} type="button" onClick={() => router.replace(`/?strapType=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
+                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

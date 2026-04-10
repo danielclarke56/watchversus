@@ -64,10 +64,14 @@ function saveRecentSearch(query: string) {
 }
 
 // Module-level cache for /api/photos/watches — backed by shared lib/watchesCache
-interface WatchesCache {
+type WatchesCache = {
   watches: WatchWithCount[]
   brands: BrandWithCount[]
   trending: string[]
+  dialColors: { name: string; photoCount: number }[]
+  watchStyles: { name: string; photoCount: number }[]
+  caseMaterials: { name: string; photoCount: number }[]
+  strapTypes: { name: string; photoCount: number }[]
   ts: number
 }
 let watchesCache: WatchesCache | null = null
@@ -159,6 +163,10 @@ export default function GallerySearch() {
           watches: data.watches || [],
           brands: data.brands || [],
           trending: data.trending || [],
+          dialColors: data.dialColors || [],
+          watchStyles: data.watchStyles || [],
+          caseMaterials: data.caseMaterials || [],
+          strapTypes: data.strapTypes || [],
           ts: Date.now(),
         }
         watchesCache = cached
