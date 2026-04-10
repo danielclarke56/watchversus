@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { getWatchBySlug } from '@/lib/watches'
@@ -172,6 +172,48 @@ function RelatedPhotoCard({ group, onClick, variant }: {
       <PhotoCountBadge count={group.photos.length} />
       <PhotoCardOverlay label={group.label} />
     </button>
+  )
+}
+
+/**
+ * Masonry grid that distributes children into columns round-robin style.
+ * Unlike CSS columns, items never reflow when new children are appended.
+ */
+function MasonryGrid({ children }: { children: React.ReactNode }) {
+  const items = React.Children.toArray(children)
+
+  // Responsive column count via a container query approach:
+  // We render a hidden probe div and read its width, but for simplicity
+  // we use a fixed breakpoint map matching Tailwind's defaults.
+  const [cols, setCols] = useState(2)
+
+  useEffect(() => {
+    function update() {
+      const w = window.innerWidth
+      if (w >= 1280) setCols(5)       // xl
+      else if (w >= 768) setCols(4)   // md
+      else if (w >= 640) setCols(3)   // sm
+      else setCols(2)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  // Distribute items into columns round-robin
+  const columns: React.ReactNode[][] = Array.from({ length: cols }, () => [])
+  items.forEach((item, i) => {
+    columns[i % cols].push(item)
+  })
+
+  return (
+    <div className="flex gap-3">
+      {columns.map((col, colIdx) => (
+        <div key={colIdx} className="flex-1 flex flex-col gap-3 min-w-0">
+          {col}
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -1008,13 +1050,13 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
         )
       })()}
 
-      {/* Gallery grid */}
+      {/* Gallery masonry */}
       {loading ? (
-        <div className="columns-2 sm:columns-3 md:columns-4 xl:columns-5 gap-3">
+        <MasonryGrid>
           {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className={`rounded-2xl bg-surface animate-pulse mb-3 break-inside-avoid ${i % 3 === 0 ? 'h-64' : i % 3 === 1 ? 'h-48' : 'h-56'}`} />
+            <div key={i} className={`rounded-2xl bg-surface animate-pulse ${i % 3 === 0 ? 'h-64' : i % 3 === 1 ? 'h-48' : 'h-56'}`} />
           ))}
-        </div>
+        </MasonryGrid>
       ) : groups.length === 0 ? (
         hasActiveSearch ? (
           <DidYouMean query={activeQuery} serverSuggestions={suggestions} onSearch={(q) => router.replace(`/?q=${encodeURIComponent(q)}`)} onBrand={(b) => router.replace(`/?brand=${b.toLowerCase()}`)} />
@@ -1022,7 +1064,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           <EmptyState icon="📷" title="No photos yet" message="Be the first to share your watch" actionUrl="/upload" actionText="Upload a Photo" />
         )
       ) : (
-        <div className="columns-2 sm:columns-3 md:columns-4 xl:columns-5 gap-3 [column-fill:_balance]">
+        <MasonryGrid>
           {groups.map((group, groupIdx) => {
             const primary = group.photos[0]
             const { brand, model, ref } = getWatchLabel(group)
@@ -1033,7 +1075,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 key={group.key}
                 type="button"
                 onClick={() => openLightbox(groupIdx, 0)}
-                className="group relative rounded-2xl overflow-hidden bg-surface mb-3 break-inside-avoid block w-full"
+                className="group relative rounded-2xl overflow-hidden bg-surface block w-full"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -1047,7 +1089,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               </button>
             )
           })}
-        </div>
+        </MasonryGrid>
       )}
 
       <div ref={sentinelRef} className="h-1" />
@@ -1353,9 +1395,13 @@ export default function PhotoGallery({ initialPhotoSlug, userId }: { initialPhot
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-2xl bg-surface animate-pulse" />
+        <div className="flex gap-3">
+          {Array.from({ length: 4 }).map((_, col) => (
+            <div key={col} className="flex-1 flex flex-col gap-3">
+              {Array.from({ length: 5 }).map((_, row) => (
+                <div key={row} className={`rounded-2xl bg-surface animate-pulse ${(col + row) % 3 === 0 ? 'h-64' : (col + row) % 3 === 1 ? 'h-48' : 'h-56'}`} />
+              ))}
+            </div>
           ))}
         </div>
       </div>
