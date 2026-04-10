@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Fuse from 'fuse.js'
-import SectionLabel from '@/components/ui/SectionLabel'
 import { setWatchesCache } from '@/lib/watchesCache'
 import type { WatchWithCount, BrandWithCount } from '@/lib/watchesCache'
 

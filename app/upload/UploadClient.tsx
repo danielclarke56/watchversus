@@ -728,6 +728,7 @@ export default function UploadClient() {
                           {isDragging ? 'Drop your photos here' : 'Drag & drop or click to add photos'}
                         </p>
                         <p className="text-textMuted text-xs mt-1">JPEG, PNG, WebP · Up to 20MB each</p>
+                        <p className="text-textMuted text-[11px] mt-2.5">🔒 GPS location, camera info &amp; all EXIF metadata are automatically removed</p>
                       </>
                     )}
                   </div>
