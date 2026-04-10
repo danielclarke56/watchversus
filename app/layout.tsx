@@ -69,7 +69,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className="bg-surfaceAlt text-textPrimary antialiased min-h-screen flex flex-col">
+      <body className="bg-surfaceAlt text-textPrimary antialiased min-h-screen flex flex-col overflow-x-hidden">
         {/* Load Satoshi font non-blocking — was render-blocking in <head> */}
         <Script id="satoshi-font" strategy="afterInteractive">
           {`(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap';document.head.appendChild(l);})()`}

@@ -49,7 +49,7 @@ export default function Navigation() {
   const handleExpandChange = useCallback((expanded: boolean) => setSearchExpanded(expanded), [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border max-w-[100vw] overflow-x-hidden">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
       <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2 sm:gap-5">
 
         {/* Logo — hidden on mobile when search expanded, always visible on sm+ */}
@@ -75,9 +75,10 @@ export default function Navigation() {
         <div className={`flex items-center gap-2 sm:gap-4 shrink-0 ${searchExpanded ? 'hidden sm:flex' : ''}`}>
           <Link
             href="/upload"
-            className="btn-gold text-xs sm:text-sm px-3 sm:px-5 h-9 sm:h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
+            className="btn-gold text-xs sm:text-sm h-9 sm:h-10 rounded-lg font-semibold flex items-center justify-center whitespace-nowrap w-9 sm:w-auto sm:px-5"
+            aria-label="Upload a Photo"
           >
-            <span className="sm:hidden">Upload</span>
+            <span className="sm:hidden text-base">+</span>
             <span className="hidden sm:inline">Upload a Photo</span>
           </Link>
           <ClerkAuth avatarSize="w-7 h-7" />
