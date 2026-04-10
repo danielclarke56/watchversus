@@ -67,8 +67,21 @@ interface AiCandidate {
   betweenLugs: string | null
   thickness: string | null
   waterResistance: string | null
+  dialColor: string | null
+  bezelColor: string | null
+  caseMaterial: string | null
+  strapType: string | null
+  watchStyle: string | null
   confidence: 'high' | 'medium' | 'low'
   reasoning: string
+}
+
+interface HiddenAiFields {
+  dialColor: string
+  bezelColor: string
+  caseMaterial: string
+  strapType: string
+  watchStyle: string
 }
 
 interface PhotoItem {
@@ -138,6 +151,7 @@ export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
   const [items, setItems] = useState<PhotoItem[]>([])
   const [meta, setMeta] = useState<WatchMeta>(defaultMeta())
+  const hiddenAiFieldsRef = useRef<HiddenAiFields>({ dialColor: '', bezelColor: '', caseMaterial: '', strapType: '', watchStyle: '' })
   const [isDragging, setIsDragging] = useState(false)
   const [globalError, setGlobalError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -245,6 +259,15 @@ export default function UploadClient() {
           aiFilledFields: filled,
           aiConfirmedFields: {},
         })
+
+        // Silently capture visual characteristics (not shown to user)
+        hiddenAiFieldsRef.current = {
+          dialColor: c.dialColor ?? '',
+          bezelColor: c.bezelColor ?? '',
+          caseMaterial: c.caseMaterial ?? '',
+          strapType: c.strapType ?? '',
+          watchStyle: c.watchStyle ?? '',
+        }
       }
 
       patchMeta(metaPatch)
@@ -499,6 +522,14 @@ export default function UploadClient() {
     if (meta.betweenLugs.trim()) formData.append('betweenLugs', meta.betweenLugs.trim())
     if (meta.thickness.trim()) formData.append('thickness', meta.thickness.trim())
     if (meta.waterResistance.trim()) formData.append('waterResistance', meta.waterResistance.trim())
+
+    // Silently append AI-detected visual characteristics (hidden from user)
+    const h = hiddenAiFieldsRef.current
+    if (h.dialColor) formData.append('dialColor', h.dialColor)
+    if (h.bezelColor) formData.append('bezelColor', h.bezelColor)
+    if (h.caseMaterial) formData.append('caseMaterial', h.caseMaterial)
+    if (h.strapType) formData.append('strapType', h.strapType)
+    if (h.watchStyle) formData.append('watchStyle', h.watchStyle)
 
     const res = await fetch(`/api/photos/${watchId}`, { method: 'POST', body: formData })
     if (!res.ok) {

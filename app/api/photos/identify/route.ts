@@ -95,6 +95,11 @@ STEP 4 — IDENTIFY, then RETURN JSON ONLY:
       "estimatedPrice": "numeric USD only, no symbol (e.g. 9500), or null",
       "wristSize": null,
       "productionYear": "4-digit year or range (e.g. 2020 or 2018-2023), or null",
+      "dialColor": "dominant dial color as seen (e.g. black, white, blue, green, silver, champagne, gray), or null",
+      "bezelColor": "bezel color/insert (e.g. black, blue, blue-red, black-green, silver, none), or null",
+      "caseMaterial": "case material (e.g. stainless steel, titanium, gold, rose gold, ceramic, plastic), or null",
+      "strapType": "strap/bracelet type (e.g. steel bracelet, leather, rubber, NATO, mesh), or null",
+      "watchStyle": "primary category (e.g. diver, dress, field, pilot, chronograph, GMT, casual, digital), or null",
       "confidence": "high|medium|low",
       "reasoning": "one sentence: which visual or text cues led to this identification"
     }

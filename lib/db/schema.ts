@@ -22,6 +22,12 @@ export const photos = pgTable(
     betweenLugs: text('between_lugs'),
     thickness: text('thickness'),
     waterResistance: text('water_resistance'),
+    // AI-detected visual characteristics (hidden from users, admin-editable)
+    dialColor: text('dial_color'),
+    bezelColor: text('bezel_color'),
+    caseMaterial: text('case_material'),
+    strapType: text('strap_type'),
+    watchStyle: text('watch_style'),
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
     sortOrder: integer('sort_order').default(0).notNull(),
     slug: text('slug').unique(), // SEO-friendly: {brand}-{model}-{first8charsOfUUID}

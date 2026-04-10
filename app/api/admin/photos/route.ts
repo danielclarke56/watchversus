@@ -47,6 +47,11 @@ export async function GET(req: NextRequest) {
       betweenLugs: p.betweenLugs,
       thickness: p.thickness,
       waterResistance: p.waterResistance,
+      dialColor: p.dialColor,
+      bezelColor: p.bezelColor,
+      caseMaterial: p.caseMaterial,
+      strapType: p.strapType,
+      watchStyle: p.watchStyle,
       sortOrder: p.sortOrder,
       createdAt: p.createdAt.toISOString(),
       approved: status === 'approved',
@@ -211,6 +216,11 @@ export async function PATCH(req: NextRequest) {
     betweenLugs: 'betweenLugs',
     thickness: 'thickness',
     waterResistance: 'waterResistance',
+    dialColor: 'dialColor',
+    bezelColor: 'bezelColor',
+    caseMaterial: 'caseMaterial',
+    strapType: 'strapType',
+    watchStyle: 'watchStyle',
   }
 
   // Build the set object with only allowed, provided fields

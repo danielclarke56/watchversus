@@ -180,6 +180,11 @@ export async function GET(req: NextRequest) {
           betweenLugs: photos.betweenLugs,
           thickness: photos.thickness,
           waterResistance: photos.waterResistance,
+          dialColor: photos.dialColor,
+          bezelColor: photos.bezelColor,
+          caseMaterial: photos.caseMaterial,
+          strapType: photos.strapType,
+          watchStyle: photos.watchStyle,
           sortOrder: photos.sortOrder,
           slug: photos.slug,
         })
@@ -229,6 +234,11 @@ export async function GET(req: NextRequest) {
         betweenLugs: p.betweenLugs ?? null,
         thickness: p.thickness ?? null,
         waterResistance: p.waterResistance ?? null,
+        dialColor: p.dialColor ?? null,
+        bezelColor: p.bezelColor ?? null,
+        caseMaterial: p.caseMaterial ?? null,
+        strapType: p.strapType ?? null,
+        watchStyle: p.watchStyle ?? null,
         sortOrder: p.sortOrder,
         slug: p.slug ?? null,
       }

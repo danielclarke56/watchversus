@@ -252,6 +252,12 @@ export async function POST(
   const betweenLugs = formData.get('betweenLugs') as string | null
   const thickness = formData.get('thickness') as string | null
   const waterResistance = formData.get('waterResistance') as string | null
+  // AI-detected visual characteristics (hidden from user)
+  const dialColor = formData.get('dialColor') as string | null
+  const bezelColor = formData.get('bezelColor') as string | null
+  const caseMaterial = formData.get('caseMaterial') as string | null
+  const strapType = formData.get('strapType') as string | null
+  const watchStyle = formData.get('watchStyle') as string | null
 
   try {
     await db.insert(photos).values({
@@ -274,6 +280,11 @@ export async function POST(
       betweenLugs: betweenLugs || undefined,
       thickness: thickness || undefined,
       waterResistance: waterResistance || undefined,
+      dialColor: dialColor || undefined,
+      bezelColor: bezelColor || undefined,
+      caseMaterial: caseMaterial || undefined,
+      strapType: strapType || undefined,
+      watchStyle: watchStyle || undefined,
       status: 'pending',
       createdAt: new Date(),
     })
