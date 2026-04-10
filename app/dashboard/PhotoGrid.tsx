@@ -9,6 +9,7 @@ import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
 interface Photo {
   id: string
   watchId: string
+  slug: string | null
   url: string
   brandName: string | null
   modelName: string | null
@@ -331,7 +332,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
           )}
           {deleteError && <p className="w-full text-xs text-red-500 text-center">{deleteError}</p>}
           {group.dominantStatus === 'approved' && (
-            <Link href="/" className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium py-1.5 border-t border-gray-100 mt-1 block">
+            <Link href={`/photo/${group.photos[0].slug ?? group.photos[0].id}`} className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium py-1.5 border-t border-gray-100 mt-1 block">
               View in Gallery →
             </Link>
           )}
