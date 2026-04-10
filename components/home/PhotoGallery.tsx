@@ -941,6 +941,16 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       : photos[0].watchName ?? activeWatchId
     : null
 
+  // Build a single mixed chip list: top brands, then top styles, dial colors, straps
+  const filterChips = useMemo(() => {
+    const chips: { key: string; label: string; param: string; value: string }[] = []
+    for (const b of brandTags.slice(0, 8)) chips.push({ key: `b-${b.name}`, label: b.name, param: 'brand', value: b.name.toLowerCase() })
+    for (const c of watchStyleChips.slice(0, 4)) chips.push({ key: `s-${c.name}`, label: c.name, param: 'watchStyle', value: c.name })
+    for (const c of dialColorChips.slice(0, 4)) chips.push({ key: `d-${c.name}`, label: `${c.name} dial`, param: 'dialColor', value: c.name })
+    for (const c of strapTypeChips.slice(0, 3)) chips.push({ key: `t-${c.name}`, label: c.name, param: 'strapType', value: c.name })
+    return chips
+  }, [brandTags, watchStyleChips, dialColorChips, strapTypeChips])
+
   return (
     <section className={userId ? 'pb-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'}>
       {/* Filter indicators with result count (hidden in user collection mode) */}
@@ -988,64 +998,19 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
         </div>
       )}
 
-      {/* Filter chip rows — shown on default gallery view (no active search) */}
-      {!userId && !hasActiveSearch && !activeWatchId && !loading && (
-        <div className="mb-5 space-y-2.5">
-          {brandTags.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-              {brandTags.slice(0, 15).map((b) => (
-                <button
-                  key={b.name}
-                  type="button"
-                  onClick={() => router.replace(`/?brand=${encodeURIComponent(b.name.toLowerCase())}`)}
-                  className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                >
-                  {b.name}
-                  <span className="ml-1.5 text-gray-400">{b.photoCount}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {watchStyleChips.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Style</span>
-              {watchStyleChips.slice(0, 10).map((c) => (
-                <button key={c.name} type="button" onClick={() => router.replace(`/?watchStyle=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
-                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {dialColorChips.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Dial</span>
-              {dialColorChips.slice(0, 10).map((c) => (
-                <button key={c.name} type="button" onClick={() => router.replace(`/?dialColor=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
-                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {caseMaterialChips.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Material</span>
-              {caseMaterialChips.slice(0, 8).map((c) => (
-                <button key={c.name} type="button" onClick={() => router.replace(`/?caseMaterial=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
-                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {strapTypeChips.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Strap</span>
-              {strapTypeChips.slice(0, 8).map((c) => (
-                <button key={c.name} type="button" onClick={() => router.replace(`/?strapType=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
-                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
-                </button>
-              ))}
-            </div>
-          )}
+      {/* Filter chips — single scrollable row mixing brands + characteristics */}
+      {!userId && !hasActiveSearch && !activeWatchId && !loading && filterChips.length > 0 && (
+        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {filterChips.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => router.replace(`/?${c.param}=${encodeURIComponent(c.value)}`)}
+              className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize"
+            >
+              {c.label}
+            </button>
+          ))}
         </div>
       )}
 
