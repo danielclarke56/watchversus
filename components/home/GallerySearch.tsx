@@ -478,7 +478,7 @@ export default function GallerySearch() {
             }}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
-            className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50"
+            className="w-full pl-10 pr-10 py-2.5 rounded-lg border-0 bg-gray-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
           />
 
           {/* Clear button */}
@@ -499,7 +499,7 @@ export default function GallerySearch() {
           <>
             {/* Trending / recent searches on empty focus */}
             {showTrending && (trending.length > 0 || recentSearches.length > 0) && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
                 {trending.length > 0 && (
                   <div className="px-3 pt-3 pb-1">
                     <SectionLabel className="mb-2">Trending</SectionLabel>
@@ -547,7 +547,7 @@ export default function GallerySearch() {
 
             {/* Grouped autocomplete: brands + models */}
             {input && (brandMatches.length > 0 || modelMatches.length > 0) && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-[50vh] overflow-y-auto">
                 {brandMatches.length > 0 && (
                   <div className="px-3 pt-3 pb-1">
                     <SectionLabel className="mb-1">Brands</SectionLabel>

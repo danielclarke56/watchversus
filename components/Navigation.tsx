@@ -47,7 +47,7 @@ export default function Navigation() {
   const isHomePage = pathname === '/'
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border drop-shadow-sm overflow-x-hidden">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border overflow-x-hidden">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center gap-3">
 
         {/* Logo */}
