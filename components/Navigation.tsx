@@ -54,20 +54,21 @@ export default function Navigation() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
-      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2.5 sm:gap-5 overflow-hidden">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border max-w-[100vw] overflow-x-hidden">
+      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2 sm:gap-5">
 
-        {/* Logo — hidden on mobile when search is expanded */}
+        {/* Logo — "W" on mobile, full logo on sm+ */}
         {!searchExpanded && (
           <Link href="/" className="shrink-0 flex items-center">
+            <span className="sm:hidden text-lg font-bold text-gray-900">W</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.svg" alt="Watchems" className="h-5 sm:h-6 w-auto" />
+            <img src="/logo.svg" alt="Watchems" className="hidden sm:block h-6 w-auto" />
           </Link>
         )}
 
         {/* Search bar — only on homepage */}
         {isHomePage && (
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <Suspense>
               <GallerySearch onExpandChange={handleExpandChange} forceCollapse={collapseSignal} />
             </Suspense>
@@ -88,9 +89,9 @@ export default function Navigation() {
         {/* Spacer when search not shown */}
         {!isHomePage && <div className="flex-1" />}
 
-        {/* Right side: CTA + auth — hidden on mobile when search is expanded */}
+        {/* Right side: CTA + auth */}
         {!searchExpanded && (
-          <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <Link
               href="/upload"
               className="btn-gold text-xs sm:text-sm px-3 sm:px-5 h-9 sm:h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
@@ -101,8 +102,6 @@ export default function Navigation() {
             <ClerkAuth avatarSize="w-7 h-7" />
           </div>
         )}
-
-        {/* Desktop: always show right side even when search is focused */}
         {searchExpanded && (
           <div className="hidden sm:flex items-center gap-4 shrink-0">
             <Link
