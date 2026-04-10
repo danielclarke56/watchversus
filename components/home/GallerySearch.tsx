@@ -449,7 +449,7 @@ export default function GallerySearch({ onExpandChange }: { onExpandChange?: (ex
   const brandChips = brands.slice(0, 8)
 
   return (
-    <div className="space-y-3">
+    <div>
       <div ref={containerRef} className="relative">
         <div className="relative">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
