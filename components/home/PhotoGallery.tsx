@@ -1026,6 +1026,16 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               ))}
             </div>
           )}
+          {caseMaterialChips.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+              <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Material</span>
+              {caseMaterialChips.slice(0, 8).map((c) => (
+                <button key={c.name} type="button" onClick={() => router.replace(`/?caseMaterial=${encodeURIComponent(c.name)}`)} className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors capitalize">
+                  {c.name}<span className="ml-1.5 text-gray-400">{c.photoCount}</span>
+                </button>
+              ))}
+            </div>
+          )}
           {strapTypeChips.length > 0 && (
             <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
               <span className="flex-shrink-0 text-[10px] uppercase tracking-wide text-gray-400 font-semibold self-center mr-0.5">Strap</span>
