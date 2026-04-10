@@ -77,7 +77,7 @@ type WatchesCache = {
 let watchesCache: WatchesCache | null = null
 const WATCHES_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-export default function GallerySearch({ onExpandChange }: { onExpandChange?: (expanded: boolean) => void } = {}) {
+export default function GallerySearch({ onExpandChange, forceCollapse }: { onExpandChange?: (expanded: boolean) => void; forceCollapse?: number } = {}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [watches, setWatches] = useState<WatchWithCount[]>([])
@@ -93,6 +93,14 @@ export default function GallerySearch({ onExpandChange }: { onExpandChange?: (ex
 
   // Notify parent when search expands/collapses
   useEffect(() => { onExpandChange?.(isOpen) }, [isOpen, onExpandChange])
+
+  // Parent can force-collapse the dropdown (e.g. Cancel button in navbar)
+  useEffect(() => {
+    if (forceCollapse && forceCollapse > 0) {
+      setIsOpen(false)
+      inputRef.current?.blur()
+    }
+  }, [forceCollapse])
 
   const activeWatchId = searchParams.get('watch')
   const activeQuery = searchParams.get('q')

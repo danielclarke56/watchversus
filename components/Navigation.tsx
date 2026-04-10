@@ -46,41 +46,74 @@ export default function Navigation() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
   const [searchExpanded, setSearchExpanded] = useState(false)
+  const [collapseSignal, setCollapseSignal] = useState(0)
   const handleExpandChange = useCallback((expanded: boolean) => setSearchExpanded(expanded), [])
 
+  const collapseSearch = useCallback(() => {
+    setCollapseSignal((n) => n + 1)
+  }, [])
+
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border overflow-x-hidden">
-      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2.5 sm:gap-5">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
+      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center gap-2.5 sm:gap-5 overflow-hidden">
 
         {/* Logo — hidden on mobile when search is expanded */}
-        <Link href="/" className={`shrink-0 flex items-center ${searchExpanded ? 'hidden sm:flex' : ''}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="Watchems" className="h-5 sm:h-6 w-auto" />
-        </Link>
+        {!searchExpanded && (
+          <Link href="/" className="shrink-0 flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="Watchems" className="h-5 sm:h-6 w-auto" />
+          </Link>
+        )}
 
         {/* Search bar — only on homepage */}
         {isHomePage && (
           <div className="flex-1 min-w-0">
             <Suspense>
-              <GallerySearch onExpandChange={handleExpandChange} />
+              <GallerySearch onExpandChange={handleExpandChange} forceCollapse={collapseSignal} />
             </Suspense>
           </div>
+        )}
+
+        {/* Cancel button — mobile only, when search is expanded */}
+        {searchExpanded && (
+          <button
+            type="button"
+            onClick={collapseSearch}
+            className="shrink-0 text-sm text-gray-500 hover:text-gray-700 font-medium sm:hidden"
+          >
+            Cancel
+          </button>
         )}
 
         {/* Spacer when search not shown */}
         {!isHomePage && <div className="flex-1" />}
 
         {/* Right side: CTA + auth — hidden on mobile when search is expanded */}
-        <div className={`flex items-center gap-2.5 sm:gap-4 shrink-0 ${searchExpanded ? 'hidden sm:flex' : ''}`}>
-          <Link
-            href="/upload"
-            className="btn-gold text-xs sm:text-sm px-3 sm:px-5 h-9 sm:h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
-          >
-            <span className="sm:hidden">Upload</span>
-            <span className="hidden sm:inline">Upload a Photo</span>
-          </Link>
-          <ClerkAuth avatarSize="w-7 h-7" />
-        </div>
+        {!searchExpanded && (
+          <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
+            <Link
+              href="/upload"
+              className="btn-gold text-xs sm:text-sm px-3 sm:px-5 h-9 sm:h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
+            >
+              <span className="sm:hidden">Upload</span>
+              <span className="hidden sm:inline">Upload a Photo</span>
+            </Link>
+            <ClerkAuth avatarSize="w-7 h-7" />
+          </div>
+        )}
+
+        {/* Desktop: always show right side even when search is focused */}
+        {searchExpanded && (
+          <div className="hidden sm:flex items-center gap-4 shrink-0">
+            <Link
+              href="/upload"
+              className="btn-gold text-sm px-5 h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
+            >
+              Upload a Photo
+            </Link>
+            <ClerkAuth avatarSize="w-7 h-7" />
+          </div>
+        )}
       </nav>
     </header>
   )
