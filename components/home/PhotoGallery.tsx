@@ -13,7 +13,8 @@ import UserAttribution from '@/components/ui/UserAttribution'
 import Fuse from 'fuse.js'
 import SectionLabel from '@/components/ui/SectionLabel'
 import EmptyState from '@/components/ui/EmptyState'
-import { getWatchesCacheSync } from '@/lib/watchesCache'
+import { getWatchesCacheSync, getWatchesData } from '@/lib/watchesCache'
+import type { BrandWithCount } from '@/lib/watchesCache'
 
 interface PhotoItem {
   id: string
@@ -273,6 +274,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState<number | null>(null)
   const [suggestions, setSuggestions] = useState<string[] | undefined>(undefined)
+  const [brandTags, setBrandTags] = useState<BrandWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -281,6 +283,16 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
   const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
+
+  // Load brand tags from shared watches cache
+  useEffect(() => {
+    const cached = getWatchesCacheSync()
+    if (cached) {
+      setBrandTags(cached.brands)
+    } else {
+      getWatchesData().then((data) => setBrandTags(data.brands)).catch(() => {})
+    }
+  }, [])
 
   // Zoom / pan state
   const [zoom, setZoom] = useState(1)
@@ -949,6 +961,23 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
         </div>
       )}
 
+      {/* Brand tags — shown on default gallery view (no active search) */}
+      {!userId && !hasActiveSearch && !activeWatchId && brandTags.length > 0 && !loading && (
+        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {brandTags.slice(0, 15).map((b) => (
+            <button
+              key={b.name}
+              type="button"
+              onClick={() => router.replace(`/?brand=${encodeURIComponent(b.name.toLowerCase())}`)}
+              className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+            >
+              {b.name}
+              <span className="ml-1.5 text-gray-400">{b.photoCount}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Gallery grid */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -1134,7 +1163,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 if (w?.case_material) specs.push({ label: 'Material', value: w.case_material })
 
                 return (
-                  <div className="flex-shrink-0 md:flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3 max-h-[45vh] md:max-h-none overflow-y-auto">
+                  <div className="flex-shrink-0 md:flex-shrink-0 px-4 py-3 max-h-[45vh] md:max-h-none overflow-y-auto">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         {(brand || model) && (
@@ -1231,7 +1260,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
             {/* ── Right panel: related photos (desktop only) ── */}
             {otherWatchRelated.length > 0 && (
-              <div className="hidden md:flex flex-col md:flex-[2] bg-gray-50 border-l border-gray-100 overflow-hidden">
+              <div className="hidden md:flex flex-col md:flex-[2] overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
                   {relatedPhotosLoading ? (
                     <div className="grid grid-cols-2 gap-2">
