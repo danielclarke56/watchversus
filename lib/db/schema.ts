@@ -96,3 +96,14 @@ export const collectionItems = pgTable(
 )
 
 export type CollectionItem = typeof collectionItems.$inferSelect
+
+export const users = pgTable(
+  'users',
+  {
+    clerkId: text('clerk_id').primaryKey(),
+    termsAcceptedAt: timestamp('terms_accepted_at'),
+    createdAt: timestamp('created_at').default(sql`now()`).notNull(),
+  }
+)
+
+export type User = typeof users.$inferSelect
