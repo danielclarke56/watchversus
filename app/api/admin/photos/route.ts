@@ -228,6 +228,7 @@ export async function PATCH(req: NextRequest) {
     caseMaterial: 'caseMaterial',
     strapType: 'strapType',
     watchStyle: 'watchStyle',
+    slug: 'slug',
   }
 
   // Build the set object with only allowed, provided fields

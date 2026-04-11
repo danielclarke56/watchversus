@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
+import { generatePhotoSlug } from '@/lib/generatePhotoSlug'
 
 type Tab = 'pending' | 'approved' | 'rejected'
 
@@ -233,6 +234,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onRestoreGroup,
   onDeleteGroup,
   onDelete,
+  onSplitPhoto,
+  splittingPhotoId,
   onReorder,
   isApproved,
   isRejected,
@@ -253,6 +256,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDeleteGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
+  onSplitPhoto?: (photo: T) => void
+  splittingPhotoId?: string | null
   onReorder?: (watchId: string, reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]) => void
   isApproved: boolean
   isRejected?: boolean
@@ -458,6 +463,19 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                     </div>
                   )}
 
+                  {/* Split button — re-identify and move to its own group */}
+                  {onSplitPhoto && !isLastPhoto && isPending && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onSplitPhoto(photo as T) }}
+                      disabled={splittingPhotoId === photo.id}
+                      className="absolute top-1 left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+                      title="Split: re-identify this photo as a separate watch"
+                      aria-label="Split photo to new watch"
+                    >
+                      {splittingPhotoId === photo.id ? '…' : '✂'}
+                    </button>
+                  )}
+
                   {/* Delete button overlay */}
                   {onDelete && (
                     <button
@@ -631,6 +649,9 @@ export default function AdminPhotosClient() {
   // AI Fill state
   const [aiFillingGroup, setAiFillingGroup] = useState<string | null>(null)
   const [aiFilledGroupOk, setAiFilledGroupOk] = useState<string | null>(null)
+
+  // Split photo state
+  const [splittingPhotoId, setSplittingPhotoId] = useState<string | null>(null)
 
   // Metadata save state (approved tab)
   const [dirtyGroups, setDirtyGroups] = useState<Set<string>>(new Set())
@@ -1043,6 +1064,93 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
+  /**
+   * Split a photo out of its group: AI-identify it, update its watchId + metadata,
+   * so it appears as its own submission in the pending list.
+   */
+  async function handleSplitPhoto(photo: PendingPhoto | ApprovedPhoto) {
+    setSplittingPhotoId(photo.id)
+    try {
+      // Step 1: AI-identify the watch in this photo
+      const identifyRes = await fetch('/api/admin/identify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: photo.url }),
+      })
+      if (!identifyRes.ok) {
+        alert('AI identification failed — try again or update manually.')
+        setSplittingPhotoId(null)
+        return
+      }
+      const ai = await identifyRes.json()
+      if (!ai.brand) {
+        alert('Could not identify the watch in this photo.')
+        setSplittingPhotoId(null)
+        return
+      }
+
+      // Step 2: Build new watchId slug + metadata
+      const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      const newWatchId = toSlug(`${ai.brand} ${ai.model || ''}`.trim())
+      const newSlug = generatePhotoSlug(ai.brand, ai.model, newWatchId, photo.id)
+      const fields: Record<string, string> = {
+        watchId: newWatchId,
+        slug: newSlug,
+        brandName: ai.brand || '',
+        modelName: ai.model || '',
+        referenceNumber: ai.reference || '',
+        movement: ai.movement || '',
+        caseSize: ai.caseSize || '',
+        lugToLug: ai.lugToLug || '',
+        betweenLugs: ai.betweenLugs || '',
+        thickness: ai.thickness || '',
+        waterResistance: ai.waterResistance || '',
+        estimatedPrice: ai.estimatedPrice || '',
+      }
+
+      // Step 3: PATCH the photo with new metadata
+      const patchRes = await fetch('/api/admin/photos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoId: photo.id, fields }),
+      })
+      if (!patchRes.ok) {
+        alert('Failed to update photo metadata.')
+        setSplittingPhotoId(null)
+        return
+      }
+
+      // Step 4: Update local state — change the photo's watchId + metadata so it re-groups
+      setPendingPhotos((prev) =>
+        prev.map((p) => p.id === photo.id ? { ...p, watchId: newWatchId, ...fields } : p)
+      )
+
+      // Re-initialize watch meta for the new group
+      const newGroupKey = `${newWatchId}::${photo.userId}`
+      setWatchMetaState((prev) => ({
+        ...prev,
+        [newGroupKey]: {
+          brandName: fields.brandName,
+          modelName: fields.modelName,
+          referenceNumber: fields.referenceNumber,
+          movement: fields.movement,
+          caseSize: fields.caseSize,
+          wristSize: '',
+          estimatedPrice: fields.estimatedPrice,
+          lugToLug: fields.lugToLug,
+          betweenLugs: fields.betweenLugs,
+          thickness: fields.thickness,
+          waterResistance: fields.waterResistance,
+        },
+      }))
+
+      showToast(`Split: ${ai.brand} ${ai.model || ''} identified`)
+    } catch {
+      alert('Split failed — try again.')
+    }
+    setSplittingPhotoId(null)
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
@@ -1157,6 +1265,8 @@ export default function AdminPhotosClient() {
                       onApproveGroup={handleApproveGroup}
                       onRejectGroup={handleRejectGroup}
                       onDelete={(photo) => handleDeletePending(photo)}
+                      onSplitPhoto={handleSplitPhoto}
+                      splittingPhotoId={splittingPhotoId}
                       onReorder={handleReorderPending}
                       isApproved={false}
                     />
