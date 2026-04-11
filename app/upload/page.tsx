@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { auth } from '@clerk/nextjs/server'
-import { requireTermsAccepted } from '@/lib/requireTerms'
+import { ensureTermsAccepted } from '@/lib/requireTerms'
 import UploadClient from './UploadClient'
 
 export const dynamic = 'force-dynamic'
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default async function UploadPage() {
   const { userId } = await auth()
-  if (userId) await requireTermsAccepted(userId)
+  if (userId) await ensureTermsAccepted(userId)
 
   return <UploadClient />
 }
