@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
       strapType: p.strapType,
       watchStyle: p.watchStyle,
       sortOrder: p.sortOrder,
+      originalUrl: p.originalUrl ?? null,
       createdAt: p.createdAt.toISOString(),
       approved: status === 'approved',
     }))

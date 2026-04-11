@@ -19,6 +19,7 @@ export interface Photo {
   thickness?: string | null
   waterResistance?: string | null
   sortOrder?: number
+  originalUrl?: string | null
   createdAt: string
 }
 

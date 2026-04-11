@@ -10,6 +10,7 @@ export const photos = pgTable(
     userName: text('user_name').notNull(),
     url: text('url').notNull(),
     thumbnailUrl: text('thumbnail_url'), // Optional: 600px wide thumbnail
+    originalUrl: text('original_url'), // Preserved before first crop so admin can revert
     brandName: text('brand_name'),
     modelName: text('model_name'),
     referenceNumber: text('reference_number'),

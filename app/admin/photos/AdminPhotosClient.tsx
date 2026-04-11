@@ -240,6 +240,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onSplitPhoto,
   splittingPhotoId,
   onCropPhoto,
+  onRevertCrop,
   croppingPhotoId,
   onReorder,
   isApproved,
@@ -264,6 +265,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onSplitPhoto?: (photo: T) => void
   splittingPhotoId?: string | null
   onCropPhoto?: (photo: T) => void
+  onRevertCrop?: (photo: T) => void
   croppingPhotoId?: string | null
   onReorder?: (watchId: string, reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]) => void
   isApproved: boolean
@@ -470,17 +472,30 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                     </div>
                   )}
 
-                  {/* Crop button */}
+                  {/* Crop / Revert buttons */}
                   {onCropPhoto && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onCropPhoto(photo as T) }}
-                      disabled={croppingPhotoId === photo.id}
-                      className="absolute bottom-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] bg-black/60 text-white hover:bg-purple-600 transition-colors disabled:opacity-50"
-                      title="Crop photo"
-                      aria-label="Crop photo"
-                    >
-                      {croppingPhotoId === photo.id ? '...' : '✂'}
-                    </button>
+                    <div className="absolute bottom-1 right-1 flex gap-0.5">
+                      {onRevertCrop && photo.originalUrl && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onRevertCrop(photo as T) }}
+                          disabled={croppingPhotoId === photo.id}
+                          className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] bg-amber-600 text-white hover:bg-amber-700 transition-colors disabled:opacity-50"
+                          title="Revert to original (undo crop)"
+                          aria-label="Revert to original"
+                        >
+                          {croppingPhotoId === photo.id ? '…' : '↺'}
+                        </button>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onCropPhoto(photo as T) }}
+                        disabled={croppingPhotoId === photo.id}
+                        className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] bg-black/60 text-white hover:bg-purple-600 transition-colors disabled:opacity-50"
+                        title="Crop photo"
+                        aria-label="Crop photo"
+                      >
+                        {croppingPhotoId === photo.id ? '…' : '⬔'}
+                      </button>
+                    </div>
                   )}
 
                   {/* Split button — re-identify and move to its own group */}
@@ -1214,6 +1229,38 @@ export default function AdminPhotosClient() {
     setCroppingPhotoId(null)
   }
 
+  /**
+   * Revert a cropped photo back to its original.
+   */
+  async function handleRevertCrop(photo: PendingPhoto | ApprovedPhoto) {
+    if (!confirm('Revert this photo to the original (pre-crop) version?')) return
+    setCroppingPhotoId(photo.id)
+    try {
+      const res = await fetch('/api/admin/crop/revert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoId: photo.id }),
+      })
+      if (!res.ok) {
+        alert('Revert failed.')
+        setCroppingPhotoId(null)
+        return
+      }
+      const { url, thumbnailUrl } = await res.json()
+      const bust = `?v=${Date.now()}`
+      const update = (p: PendingPhoto | ApprovedPhoto) =>
+        p.id === photo.id ? { ...p, url: url + bust, thumbnailUrl: (thumbnailUrl || url) + bust, originalUrl: null } : p
+
+      setPendingPhotos((prev) => prev.map(update) as PendingPhoto[])
+      setApprovedPhotos((prev) => prev.map(update) as ApprovedPhoto[])
+      setRejectedPhotos((prev) => prev.map(update) as PendingPhoto[])
+      showToast('Reverted to original')
+    } catch {
+      alert('Revert failed — try again.')
+    }
+    setCroppingPhotoId(null)
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
@@ -1331,6 +1378,7 @@ export default function AdminPhotosClient() {
                       onSplitPhoto={handleSplitPhoto}
                       splittingPhotoId={splittingPhotoId}
                       onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                      onRevertCrop={handleRevertCrop}
                       croppingPhotoId={croppingPhotoId}
                       onReorder={handleReorderPending}
                       isApproved={false}
@@ -1370,6 +1418,7 @@ export default function AdminPhotosClient() {
                       savedMetaOk={savedMetaGroupOk === group.key}
                       onDelete={(photo) => handleDeleteApproved(photo)}
                       onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                      onRevertCrop={handleRevertCrop}
                       croppingPhotoId={croppingPhotoId}
                       onReorder={handleReorder}
                       isApproved={true}
@@ -1410,6 +1459,7 @@ export default function AdminPhotosClient() {
                       onDeleteGroup={handleDeleteRejectedGroup}
                       onDelete={(photo) => handleDeleteRejected(photo)}
                       onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                      onRevertCrop={handleRevertCrop}
                       croppingPhotoId={croppingPhotoId}
                       isApproved={false}
                       isRejected={true}
