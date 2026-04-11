@@ -95,9 +95,10 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               ref={imgRef}
-              src={imageSrc}
+              src={imageSrc.startsWith('/') || imageSrc.startsWith('data:') || imageSrc.startsWith('blob:')
+                ? imageSrc
+                : `/api/image-proxy?url=${encodeURIComponent(imageSrc)}`}
               alt="Image to crop"
-              crossOrigin="anonymous"
               onLoad={handleImageLoad}
               style={{ maxHeight: '60vh' }}
               className="rounded-lg w-full object-contain"
