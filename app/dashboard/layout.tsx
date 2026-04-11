@@ -6,6 +6,7 @@ export const metadata: Metadata = {
 }
 import { redirect } from 'next/navigation'
 import DashboardSidebar from './DashboardSidebar'
+import { requireTermsAccepted } from '@/lib/requireTerms'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,6 +16,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!userId) {
     redirect('/sign-in')
   }
+
+  await requireTermsAccepted(userId)
 
   // Fetch user details for sidebar
   const client = await clerkClient()
