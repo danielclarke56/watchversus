@@ -97,8 +97,6 @@ export default function CopyrightPage() {
             promptly — usually within a few business days.
           </p>
           <p>
-            <strong>Name:</strong> Ricardo Gusman Brandao
-            <br />
             <strong>Email:</strong> hello@watchems.com
             <br />
             <strong>Location:</strong> Canada
