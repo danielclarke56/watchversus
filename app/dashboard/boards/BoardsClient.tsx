@@ -230,7 +230,7 @@ export default function BoardsClient() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {boards.map((board) => (
-              <div key={board.id} className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all bg-white">
+              <div key={board.id} className="group relative rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all bg-white">
                 {/* Rename inline form */}
                 {renaming === board.id ? (
                   <div className="p-3">
@@ -251,7 +251,7 @@ export default function BoardsClient() {
                 ) : (
                   <>
                     <Link href={`/dashboard/boards/${board.id}`}>
-                      <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                      <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden rounded-t-xl">
                         {board.coverUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img

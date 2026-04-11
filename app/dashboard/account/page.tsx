@@ -21,7 +21,6 @@ export default function AccountPage() {
               rootBox: 'w-full',
               cardBox: 'w-full shadow-none',
               card: 'w-full shadow-none border border-gray-200 rounded-lg',
-              navbar: 'hidden',
               pageScrollBox: 'p-0',
             },
           }}
