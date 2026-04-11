@@ -102,18 +102,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <ClerkProvider
         appearance={{
           elements: {
-            footerAction: {
+            footer: {
               '&::after': {
                 content: '"By signing up, you agree to our Terms of Use and Privacy Policy. Photos you upload may be featured on social media with credit."',
                 display: 'block',
                 fontSize: '11px',
-                color: '#999',
+                color: '#aaa',
                 textAlign: 'center',
-                marginTop: '12px',
+                marginTop: '8px',
                 lineHeight: '1.5',
-                maxWidth: '320px',
-                marginLeft: 'auto',
-                marginRight: 'auto',
+                padding: '0 16px 4px',
               },
             },
           },
