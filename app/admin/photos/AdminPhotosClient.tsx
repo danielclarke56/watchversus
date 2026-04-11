@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import { generatePhotoSlug } from '@/lib/generatePhotoSlug'
+
+const CropModal = dynamic(() => import('@/app/upload/CropModal'), { ssr: false })
 
 type Tab = 'pending' | 'approved' | 'rejected'
 
@@ -236,6 +239,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onDelete,
   onSplitPhoto,
   splittingPhotoId,
+  onCropPhoto,
+  croppingPhotoId,
   onReorder,
   isApproved,
   isRejected,
@@ -258,6 +263,8 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onDelete?: (photo: T) => void
   onSplitPhoto?: (photo: T) => void
   splittingPhotoId?: string | null
+  onCropPhoto?: (photo: T) => void
+  croppingPhotoId?: string | null
   onReorder?: (watchId: string, reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]) => void
   isApproved: boolean
   isRejected?: boolean
@@ -463,6 +470,19 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                     </div>
                   )}
 
+                  {/* Crop button */}
+                  {onCropPhoto && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onCropPhoto(photo as T) }}
+                      disabled={croppingPhotoId === photo.id}
+                      className="absolute bottom-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] bg-black/60 text-white hover:bg-purple-600 transition-colors disabled:opacity-50"
+                      title="Crop photo"
+                      aria-label="Crop photo"
+                    >
+                      {croppingPhotoId === photo.id ? '...' : '✂'}
+                    </button>
+                  )}
+
                   {/* Split button — re-identify and move to its own group */}
                   {onSplitPhoto && !isLastPhoto && isPending && (
                     <button
@@ -652,6 +672,10 @@ export default function AdminPhotosClient() {
 
   // Split photo state
   const [splittingPhotoId, setSplittingPhotoId] = useState<string | null>(null)
+
+  // Crop state
+  const [cropTarget, setCropTarget] = useState<{ photoId: string; imageUrl: string } | null>(null)
+  const [croppingPhotoId, setCroppingPhotoId] = useState<string | null>(null)
 
   // Metadata save state (approved tab)
   const [dirtyGroups, setDirtyGroups] = useState<Set<string>>(new Set())
@@ -1151,6 +1175,45 @@ export default function AdminPhotosClient() {
     setSplittingPhotoId(null)
   }
 
+  /**
+   * Handle crop confirmation: upload the cropped image and update local state.
+   */
+  async function handleCropConfirm(croppedFile: File) {
+    if (!cropTarget) return
+    const { photoId } = cropTarget
+    setCroppingPhotoId(photoId)
+    setCropTarget(null)
+
+    try {
+      const form = new FormData()
+      form.append('photoId', photoId)
+      form.append('photo', croppedFile)
+
+      const res = await fetch('/api/admin/crop', { method: 'POST', body: form })
+      if (!res.ok) {
+        alert('Crop upload failed.')
+        setCroppingPhotoId(null)
+        return
+      }
+
+      const { url, thumbnailUrl } = await res.json()
+
+      // Bust browser cache by appending a timestamp
+      const bust = `?v=${Date.now()}`
+      const update = (p: PendingPhoto | ApprovedPhoto) =>
+        p.id === photoId ? { ...p, url: url + bust, thumbnailUrl: (thumbnailUrl || url) + bust } : p
+
+      setPendingPhotos((prev) => prev.map(update) as PendingPhoto[])
+      setApprovedPhotos((prev) => prev.map(update) as ApprovedPhoto[])
+      setRejectedPhotos((prev) => prev.map(update) as PendingPhoto[])
+
+      showToast('Photo cropped')
+    } catch {
+      alert('Crop failed — try again.')
+    }
+    setCroppingPhotoId(null)
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
@@ -1267,6 +1330,8 @@ export default function AdminPhotosClient() {
                       onDelete={(photo) => handleDeletePending(photo)}
                       onSplitPhoto={handleSplitPhoto}
                       splittingPhotoId={splittingPhotoId}
+                      onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                      croppingPhotoId={croppingPhotoId}
                       onReorder={handleReorderPending}
                       isApproved={false}
                     />
@@ -1304,6 +1369,8 @@ export default function AdminPhotosClient() {
                       isSavingMeta={savingMetaGroup === group.key}
                       savedMetaOk={savedMetaGroupOk === group.key}
                       onDelete={(photo) => handleDeleteApproved(photo)}
+                      onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                      croppingPhotoId={croppingPhotoId}
                       onReorder={handleReorder}
                       isApproved={true}
                     />
@@ -1342,6 +1409,8 @@ export default function AdminPhotosClient() {
                       onRestoreGroup={handleRestoreGroup}
                       onDeleteGroup={handleDeleteRejectedGroup}
                       onDelete={(photo) => handleDeleteRejected(photo)}
+                      onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                      croppingPhotoId={croppingPhotoId}
                       isApproved={false}
                       isRejected={true}
                     />
@@ -1358,6 +1427,15 @@ export default function AdminPhotosClient() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2 rounded-full shadow-lg z-50 pointer-events-none">
           {toast}
         </div>
+      )}
+
+      {/* Crop modal */}
+      {cropTarget && (
+        <CropModal
+          imageSrc={cropTarget.imageUrl}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropTarget(null)}
+        />
       )}
     </div>
   )
