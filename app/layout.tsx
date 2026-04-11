@@ -99,7 +99,26 @@ function Shell({ children }: { children: React.ReactNode }) {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   if (hasClerk) {
     return (
-      <ClerkProvider>
+      <ClerkProvider
+        appearance={{
+          elements: {
+            footerAction: {
+              '&::after': {
+                content: '"By signing up, you agree to our Terms of Use and Privacy Policy. Photos you upload may be featured on social media with credit."',
+                display: 'block',
+                fontSize: '11px',
+                color: '#999',
+                textAlign: 'center',
+                marginTop: '12px',
+                lineHeight: '1.5',
+                maxWidth: '320px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              },
+            },
+          },
+        }}
+      >
         <Shell>{children}</Shell>
       </ClerkProvider>
     )
