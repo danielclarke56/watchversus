@@ -7,6 +7,7 @@ interface EmptyStateProps {
   actionUrl?: string
   actionText?: string
   actionStyle?: 'gold' | 'blue' | 'link'
+  onAction?: () => void
 }
 
 export default function EmptyState({
@@ -16,6 +17,7 @@ export default function EmptyState({
   actionUrl,
   actionText,
   actionStyle = 'gold',
+  onAction,
 }: EmptyStateProps) {
   const btnClass =
     actionStyle === 'blue'
@@ -33,6 +35,11 @@ export default function EmptyState({
         <Link href={actionUrl} className={btnClass}>
           {actionText}
         </Link>
+      )}
+      {!actionUrl && onAction && actionText && (
+        <button type="button" onClick={onAction} className={btnClass}>
+          {actionText}
+        </button>
       )}
     </div>
   )

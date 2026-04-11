@@ -11,7 +11,7 @@ import EmptyState from '@/components/ui/EmptyState'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'My Uploads | Watchems',
+  title: 'My Watches | Watchems',
   description: 'Manage your watch photo uploads.',
   robots: {
     index: false,
@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Uploads</h1>
+            <h1 className="text-2xl font-bold text-gray-900">My Watches</h1>
             <p className="text-gray-600 text-sm mt-1">
               Your submitted watch photos and their moderation status.
             </p>

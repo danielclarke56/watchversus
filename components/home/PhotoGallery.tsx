@@ -7,6 +7,7 @@ import { getWatchBySlug } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Watch } from '@/lib/types'
 import SocialActions from './SocialActions'
+import SaveToBoard from '@/components/SaveToBoard'
 import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
 import PhotoCardOverlay from '@/components/ui/PhotoCardOverlay'
 import UserAttribution from '@/components/ui/UserAttribution'
@@ -1071,11 +1072,13 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
             const watchDisplayName = [brand, model].filter(Boolean).join(' ') || ref || null
             const count = group.photos.length
             return (
-              <button
+              <div
                 key={group.key}
-                type="button"
+                className="group relative rounded-2xl overflow-hidden bg-surface block w-full cursor-pointer"
                 onClick={() => openLightbox(groupIdx, 0)}
-                className="group relative rounded-2xl overflow-hidden bg-surface block w-full"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') openLightbox(groupIdx, 0) }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -1086,7 +1089,8 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 />
                 <PhotoCountBadge count={count} variant="badge" showIcon />
                 <PhotoCardOverlay label={watchDisplayName} alwaysVisible={hasActiveSearch} />
-              </button>
+                <SaveToBoard photoId={primary.id} variant="card" />
+              </div>
             )
           })}
         </MasonryGrid>

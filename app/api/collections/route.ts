@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import crypto from 'crypto'
 import { db } from '@/lib/db'
-import { collections } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { collections, collectionItems, photos } from '@/lib/db/schema'
+import { eq, sql, desc } from 'drizzle-orm'
 
 export const dynamic = 'force-dynamic'
 
-/** GET /api/collections — list current user's collections */
+/** GET /api/collections — list current user's collections with cover image + item count */
 export async function GET() {
   const { userId } = await auth()
   if (!userId) {
@@ -16,10 +16,19 @@ export async function GET() {
 
   try {
     const rows = await db
-      .select()
+      .select({
+        id: collections.id,
+        name: collections.name,
+        createdAt: collections.createdAt,
+        itemCount: sql<number>`cast(count(${collectionItems.id}) as int)`,
+        coverUrl: sql<string | null>`max(coalesce(${photos.thumbnailUrl}, ${photos.url}))`,
+      })
       .from(collections)
+      .leftJoin(collectionItems, eq(collectionItems.collectionId, collections.id))
+      .leftJoin(photos, eq(photos.id, collectionItems.photoId))
       .where(eq(collections.userId, userId))
-      .orderBy(collections.createdAt)
+      .groupBy(collections.id)
+      .orderBy(desc(collections.createdAt))
 
     return NextResponse.json({ collections: rows })
   } catch (error) {

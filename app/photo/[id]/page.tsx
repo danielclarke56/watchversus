@@ -11,6 +11,7 @@ import { photos } from '@/lib/db/schema'
 import { or, and, ne, asc, desc, eq } from 'drizzle-orm'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
+import SaveToBoard from '@/components/SaveToBoard'
 
 interface PhotoPageProps {
   params: { id: string }
@@ -98,36 +99,20 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
   const imageUrl = p.thumbnailUrl || p.url
 
   // Fetch related photos in parallel
-  const [relatedByWatch, relatedByUser] = await Promise.all([
-    db
-      .select({
-        id: photos.id,
-        slug: photos.slug,
-        url: photos.url,
-        thumbnailUrl: photos.thumbnailUrl,
-        userName: photos.userName,
-        brandName: photos.brandName,
-        modelName: photos.modelName,
-      })
-      .from(photos)
-      .where(and(eq(photos.watchId, p.watchId), eq(photos.status, 'approved'), ne(photos.id, p.id)))
-      .orderBy(asc(photos.sortOrder), desc(photos.createdAt))
-      .limit(6),
-    db
-      .select({
-        id: photos.id,
-        slug: photos.slug,
-        url: photos.url,
-        thumbnailUrl: photos.thumbnailUrl,
-        userName: photos.userName,
-        brandName: photos.brandName,
-        modelName: photos.modelName,
-      })
-      .from(photos)
-      .where(and(eq(photos.userId, p.userId), eq(photos.status, 'approved'), ne(photos.id, p.id)))
-      .orderBy(desc(photos.createdAt))
-      .limit(4),
-  ])
+  const relatedByWatch = await db
+    .select({
+      id: photos.id,
+      slug: photos.slug,
+      url: photos.url,
+      thumbnailUrl: photos.thumbnailUrl,
+      userName: photos.userName,
+      brandName: photos.brandName,
+      modelName: photos.modelName,
+    })
+    .from(photos)
+    .where(and(eq(photos.watchId, p.watchId), eq(photos.status, 'approved'), ne(photos.id, p.id)))
+    .orderBy(asc(photos.sortOrder), desc(photos.createdAt))
+    .limit(6)
 
   // Structured data — ImageObject
   const imageJsonLd = {
@@ -227,9 +212,12 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
               {p.waterResistance ? ` Water resistance: ${p.waterResistance}.` : ''}
               {p.wristSize ? ` Wrist size: ${p.wristSize}.` : ''}
             </p>
-            <p className="text-sm text-gray-500 mt-3">
-              Submitted by <span className="font-medium text-gray-700">{p.userName}</span>
-            </p>
+            <div className="flex items-center justify-between mt-3">
+              <p className="text-sm text-gray-500">
+                Submitted by <span className="font-medium text-gray-700">{p.userName}</span>
+              </p>
+              <SaveToBoard photoId={p.id} variant="button" />
+            </div>
           </div>
 
           {/* Related photos — same watch model */}
@@ -260,38 +248,6 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
             </div>
           )}
 
-          {/* Related photos — same contributor */}
-          {relatedByUser.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                More from {p.userName}
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {relatedByUser.map((photo) => (
-                  <Link
-                    key={photo.id}
-                    href={`/photo/${photo.slug ?? photo.id}`}
-                    className="block rounded-lg overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
-                  >
-                    <div className="aspect-square bg-gray-50">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={photo.thumbnailUrl || photo.url}
-                        alt={`${photo.brandName || 'Watch'} ${photo.modelName || ''} — photo by ${photo.userName}`}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="px-2 py-1.5">
-                      <p className="text-xs text-gray-600 truncate">
-                        {photo.brandName} {photo.modelName}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </section>
       </main>
     </>
