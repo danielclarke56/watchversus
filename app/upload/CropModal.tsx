@@ -21,6 +21,19 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
 
+  // When the image loads, compute initial pixel crop from the percentage defaults
+  // so "Crop & Use Photo" works even without user interaction
+  function handleImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
+    const { width, height } = e.currentTarget
+    setCompletedCrop({
+      unit: 'px',
+      x: Math.round(width * (crop.x ?? 0) / 100),
+      y: Math.round(height * (crop.y ?? 0) / 100),
+      width: Math.round(width * (crop.width ?? 80) / 100),
+      height: Math.round(height * (crop.height ?? 80) / 100),
+    })
+  }
+
   function handleCrop() {
     if (!imgRef.current || !completedCrop) return
 
@@ -84,6 +97,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
               ref={imgRef}
               src={imageSrc}
               alt="Image to crop"
+              onLoad={handleImageLoad}
               style={{ maxHeight: '60vh' }}
               className="rounded-lg w-full object-contain"
             />
