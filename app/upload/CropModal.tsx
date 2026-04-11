@@ -97,6 +97,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel }: CropModalPr
               ref={imgRef}
               src={imageSrc}
               alt="Image to crop"
+              crossOrigin="anonymous"
               onLoad={handleImageLoad}
               style={{ maxHeight: '60vh' }}
               className="rounded-lg w-full object-contain"
