@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, index, unique } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, integer, date, index, unique } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 
 export const photos = pgTable(
@@ -107,3 +107,22 @@ export const users = pgTable(
 )
 
 export type User = typeof users.$inferSelect
+
+export const wristChecks = pgTable(
+  'wrist_checks',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    photoId: text('photo_id').notNull(),
+    date: date('date', { mode: 'string' }).notNull(),
+    notes: text('notes'),
+    createdAt: timestamp('created_at').default(sql`now()`).notNull(),
+  },
+  (table) => ({
+    userDatePhotoUnique: unique().on(table.userId, table.photoId, table.date),
+    userIdIdx: index('wrist_checks_user_id_idx').on(table.userId),
+    userDateIdx: index('wrist_checks_user_date_idx').on(table.userId, table.date),
+  })
+)
+
+export type WristCheck = typeof wristChecks.$inferSelect
