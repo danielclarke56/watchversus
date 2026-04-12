@@ -4,6 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import EmptyState from '@/components/ui/EmptyState'
 
+interface LikedStats {
+  count: number
+  coverUrl: string | null
+}
+
 interface BoardSummary {
   id: string
   name: string
@@ -23,6 +28,7 @@ const SUGGESTED_BOARDS = [
 
 export default function CollectionsClient() {
   const [boards, setBoards] = useState<BoardSummary[]>([])
+  const [liked, setLiked] = useState<LikedStats>({ count: 0, coverUrl: null })
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [newName, setNewName] = useState('')
@@ -35,13 +41,24 @@ export default function CollectionsClient() {
 
   const fetchCollections = useCallback(async () => {
     try {
-      const res = await fetch('/api/collections')
-      if (res.ok) {
-        const data = await res.json()
+      const [colRes, likedRes] = await Promise.all([
+        fetch('/api/collections'),
+        fetch('/api/user/liked'),
+      ])
+      if (colRes.ok) {
+        const data = await colRes.json()
         setBoards(data.collections)
       }
+      if (likedRes.ok) {
+        const data = await likedRes.json()
+        const photos = data.photos || []
+        setLiked({
+          count: photos.length,
+          coverUrl: photos[0]?.thumbnailUrl || photos[0]?.url || null,
+        })
+      }
     } catch (err) {
-      console.error('Failed to fetch boards:', err)
+      console.error('Failed to fetch collections:', err)
     } finally {
       setLoading(false)
     }
@@ -199,36 +216,88 @@ export default function CollectionsClient() {
             ))}
           </div>
         ) : boards.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="p-4 sm:p-6">
-              <EmptyState
-                icon="📋"
-                title="No collections yet"
-                message="Create a collection to start saving watch photos you love. Browse the gallery and tap the bookmark icon to save photos."
-                actionText="Create Your First Collection"
-                actionStyle="blue"
-                onAction={() => setShowCreate(true)}
-              />
-              {/* Suggested boards on empty state */}
-              {availableSuggestions.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2 -mt-6 pb-4">
-                  {availableSuggestions.slice(0, 4).map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      type="button"
-                      onClick={() => handleCreate(suggestion)}
-                      disabled={creating}
-                      className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors"
-                    >
-                      + {suggestion}
-                    </button>
-                  ))}
+          <>
+            {/* Liked Watches always visible */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+              <Link
+                href="/dashboard/liked"
+                className="group block rounded-xl overflow-hidden border border-gray-200 hover:border-red-300 hover:shadow-sm transition-all bg-white"
+              >
+                <div className="aspect-[4/3] bg-gradient-to-br from-red-50 to-pink-50 relative overflow-hidden">
+                  {liked.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={liked.coverUrl} alt="Liked Watches" className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-red-300">
+                      <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="p-3">
+                  <p className="text-sm font-semibold text-gray-900">Liked Watches</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{liked.count} {liked.count === 1 ? 'photo' : 'photos'}</p>
+                </div>
+              </Link>
             </div>
-          </div>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="p-4 sm:p-6">
+                <EmptyState
+                  icon="📋"
+                  title="No custom collections yet"
+                  message="Create a collection to organize saved watch photos. Browse the gallery and tap the bookmark icon to save."
+                  actionText="Create Your First Collection"
+                  actionStyle="blue"
+                  onAction={() => setShowCreate(true)}
+                />
+                {availableSuggestions.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 -mt-6 pb-4">
+                    {availableSuggestions.slice(0, 4).map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        type="button"
+                        onClick={() => handleCreate(suggestion)}
+                        disabled={creating}
+                        className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors"
+                      >
+                        + {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {/* Liked Watches — system collection */}
+            <Link
+              href="/dashboard/liked"
+              className="group block rounded-xl overflow-hidden border border-gray-200 hover:border-red-300 hover:shadow-sm transition-all bg-white"
+            >
+              <div className="aspect-[4/3] bg-gradient-to-br from-red-50 to-pink-50 relative overflow-hidden">
+                {liked.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={liked.coverUrl}
+                    alt="Liked Watches"
+                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-red-300">
+                    <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="p-3">
+                <p className="text-sm font-semibold text-gray-900">Liked Watches</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {liked.count} {liked.count === 1 ? 'photo' : 'photos'}
+                </p>
+              </div>
+            </Link>
+
             {boards.map((board) => (
               <div key={board.id} className="group relative rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all bg-white">
                 {/* Rename inline form */}
