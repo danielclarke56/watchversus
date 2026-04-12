@@ -17,10 +17,7 @@ const ClerkAuth = clerkEnabled
           default: ({ avatarSize }: { avatarSize?: string }) => (
             <>
               <SignedOut>
-                <SignInButton
-                  mode="modal"
-                  signUpForceRedirectUrl="/accept-terms"
-                >
+                <SignInButton mode="modal">
                   <button className="text-sm text-textSecond hover:text-accent transition-colors font-medium">
                     Sign In
                   </button>

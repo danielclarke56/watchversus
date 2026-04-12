@@ -1,21 +1,23 @@
-import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
 /**
- * Server-side check: redirect to /accept-terms if the user hasn't accepted.
- * Call this in any server component or layout that requires terms acceptance.
+ * Auto-record terms acceptance on first authenticated page visit.
+ * The sign-up modal displays "By signing up, you agree to our Terms
+ * of Use and Privacy Policy" — creating an account = implicit acceptance.
  */
 export async function ensureTermsAccepted(userId: string) {
   const row = await db
-    .select({ termsAcceptedAt: users.termsAcceptedAt })
+    .select({ clerkId: users.clerkId })
     .from(users)
     .where(eq(users.clerkId, userId))
     .limit(1)
 
-  const hasAccepted = row.length > 0 && row[0].termsAcceptedAt !== null
-  if (!hasAccepted) {
-    redirect('/accept-terms')
+  if (row.length === 0) {
+    await db.insert(users).values({
+      clerkId: userId,
+      termsAcceptedAt: new Date(),
+    })
   }
 }

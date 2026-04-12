@@ -612,7 +612,7 @@ export default function UploadClient() {
         {!isSignedIn ? (
           <div className="bg-surface border border-borderStrong rounded-xl p-6 sm:p-8 text-center shadow-sm">
             <p className="text-textSecond mb-4 text-sm sm:text-base">Sign in to upload your watch photos</p>
-            <SignInButton mode="modal" signUpForceRedirectUrl="/accept-terms">
+            <SignInButton mode="modal">
               <button className="px-4 sm:px-6 py-2 sm:py-3 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors text-sm sm:text-base w-full sm:w-auto">
                 Sign in to upload
               </button>
