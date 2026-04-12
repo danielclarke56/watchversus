@@ -234,7 +234,7 @@ export default function WristCheckClient() {
 
   return (
     <div className="py-6 sm:py-8 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Wrist Check</h1>
         <p className="text-gray-600 text-sm mb-6">Track which watch you wear each day.</p>
 
@@ -535,14 +535,17 @@ export default function WristCheckClient() {
                 </div>
               )}
 
-              {/* Unworn watches */}
-              {(() => {
-                const wornWatchIds = new Set(entries.map((e) => e.watchId))
-                const unworn = watches.filter((w) => !wornWatchIds.has(w.watchId))
-                if (unworn.length === 0) return null
-                return (
-                  <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            </div>
+
+            {/* Third column — Unworn watches */}
+            {(() => {
+              const wornWatchIds = new Set(entries.map((e) => e.watchId))
+              const unworn = watches.filter((w) => !wornWatchIds.has(w.watchId))
+              if (unworn.length === 0) return null
+              return (
+                <div className="lg:w-56 shrink-0">
+                  <div className="bg-white rounded-xl border border-gray-200 p-4 max-h-[400px] overflow-y-auto">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 sticky top-0 bg-white pb-1">
                       Not Worn in {format(currentMonth, 'MMMM')}
                     </p>
                     <div className="space-y-2">
@@ -562,9 +565,9 @@ export default function WristCheckClient() {
                       ))}
                     </div>
                   </div>
-                )
-              })()}
-            </div>
+                </div>
+              )
+            })()}
             </div>
           </>
         )}
