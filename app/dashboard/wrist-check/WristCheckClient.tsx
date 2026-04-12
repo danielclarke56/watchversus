@@ -354,108 +354,121 @@ export default function WristCheckClient() {
                           )}
                         </button>
 
-                        {/* Dropdown popover — anchored to the day cell */}
-                        {isSelected && (
-                          <div
-                            ref={dropdownRef}
-                            className="absolute z-50 top-full mt-1 bg-white rounded-xl shadow-xl border border-gray-200 p-3 w-64 sm:w-72"
-                            style={{
-                              // Position: try to keep within viewport
-                              left: '50%',
-                              transform: 'translateX(-50%)',
-                            }}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-xs font-semibold text-gray-900">
-                                {format(new Date(dateStr + 'T12:00:00'), 'EEE, MMM d')}
-                              </p>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedDate(null)}
-                                className="text-gray-400 hover:text-gray-600"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </button>
-                            </div>
-
-                            {/* Already logged */}
-                            {dayEntries.length > 0 && (
-                              <div className="mb-2 space-y-1">
-                                {dayEntries.map((entry) => (
-                                  <div key={entry.id} className="flex items-center gap-2 bg-blue-50 rounded-lg px-2 py-1.5">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      src={entry.thumbnailUrl || entry.url}
-                                      alt={entry.brandName || 'Watch'}
-                                      className="w-7 h-7 rounded-full object-cover shrink-0"
-                                    />
-                                    <span className="text-xs font-medium text-gray-900 truncate flex-1">
-                                      {[entry.brandName, entry.modelName].filter(Boolean).join(' ') || 'Watch'}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleRemoveEntry(entry.id)}
-                                      className="text-gray-400 hover:text-red-500 shrink-0 transition-colors"
-                                      aria-label="Remove"
-                                    >
-                                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Watch list */}
-                            <div className="max-h-48 overflow-y-auto space-y-0.5">
-                              {watches.map((watch) => {
-                                const alreadyLogged = dayEntries.some((e) => e.photoId === watch.photoId)
-                                return (
-                                  <button
-                                    key={watch.photoId}
-                                    type="button"
-                                    onClick={() => !alreadyLogged && handleAddWatch(watch.photoId, dateStr)}
-                                    disabled={saving || alreadyLogged}
-                                    className={`w-full flex items-center gap-2 p-1.5 rounded-lg transition-colors text-left ${
-                                      alreadyLogged
-                                        ? 'opacity-40 cursor-default'
-                                        : 'hover:bg-gray-50 cursor-pointer'
-                                    }`}
-                                  >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      src={watch.thumbnailUrl || watch.url}
-                                      alt={watch.brandName || 'Watch'}
-                                      className="w-8 h-8 rounded-lg object-cover shrink-0"
-                                    />
-                                    <div className="min-w-0 flex-1">
-                                      <p className="text-xs font-medium text-gray-900 truncate">
-                                        {watch.brandName || 'Watch'}
-                                      </p>
-                                      {watch.modelName && (
-                                        <p className="text-[11px] text-gray-500 truncate">{watch.modelName}</p>
-                                      )}
-                                    </div>
-                                    {alreadyLogged && (
-                                      <svg className="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                      </svg>
-                                    )}
-                                  </button>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     )
                   })}
                 </div>
               )}
             </div>
+
+            {/* Watch picker — bottom sheet on mobile, inline on desktop */}
+            {selectedDate && (() => {
+              const dayEntries = entriesByDate.get(selectedDate) || []
+              return (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 bg-black/30 z-40 sm:hidden"
+                    onClick={() => setSelectedDate(null)}
+                  />
+                  <div
+                    ref={dropdownRef}
+                    className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl p-4 pb-8 max-h-[70vh] overflow-y-auto sm:relative sm:bottom-auto sm:left-auto sm:right-auto sm:rounded-xl sm:shadow-lg sm:border sm:border-gray-200 sm:p-4 sm:max-h-none sm:mt-0 sm:mb-4"
+                  >
+                    {/* Handle bar on mobile */}
+                    <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3 sm:hidden" />
+
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-semibold text-gray-900">
+                        {format(new Date(selectedDate + 'T12:00:00'), 'EEEE, MMM d')}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDate(null)}
+                        className="text-gray-400 hover:text-gray-600 p-1"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Already logged */}
+                    {dayEntries.length > 0 && (
+                      <div className="mb-3 space-y-1.5">
+                        <p className="text-xs text-gray-500">Wearing:</p>
+                        {dayEntries.map((entry) => (
+                          <div key={entry.id} className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={entry.thumbnailUrl || entry.url}
+                              alt={entry.brandName || 'Watch'}
+                              className="w-8 h-8 rounded-full object-cover shrink-0"
+                            />
+                            <span className="text-sm font-medium text-gray-900 truncate flex-1">
+                              {[entry.brandName, entry.modelName].filter(Boolean).join(' ') || 'Watch'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveEntry(entry.id)}
+                              className="text-gray-400 hover:text-red-500 shrink-0 transition-colors p-1"
+                              aria-label="Remove"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Watch list */}
+                    <p className="text-xs text-gray-500 mb-2">
+                      {dayEntries.length > 0 ? 'Add another watch:' : 'Select a watch:'}
+                    </p>
+                    <div className="space-y-1">
+                      {watches.map((watch) => {
+                        const alreadyLogged = dayEntries.some((e) => e.photoId === watch.photoId)
+                        return (
+                          <button
+                            key={watch.photoId}
+                            type="button"
+                            onClick={() => !alreadyLogged && handleAddWatch(watch.photoId, selectedDate)}
+                            disabled={saving || alreadyLogged}
+                            className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${
+                              alreadyLogged
+                                ? 'opacity-40 cursor-default'
+                                : 'hover:bg-gray-50 active:bg-gray-100 cursor-pointer'
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={watch.thumbnailUrl || watch.url}
+                              alt={watch.brandName || 'Watch'}
+                              className="w-10 h-10 rounded-lg object-cover shrink-0"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {watch.brandName || 'Watch'}
+                              </p>
+                              {watch.modelName && (
+                                <p className="text-xs text-gray-500 truncate">{watch.modelName}</p>
+                              )}
+                            </div>
+                            {alreadyLogged && (
+                              <svg className="w-5 h-5 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </>
+              )
+            })()}
 
             {/* Right side — Stats + Donut chart */}
             <div className="lg:w-72 shrink-0 space-y-4">
