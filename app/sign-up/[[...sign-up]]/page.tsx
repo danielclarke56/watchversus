@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function SignUpPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <SignUp />
+      <SignUp forceRedirectUrl="/accept-terms" />
       <p className="mt-4 max-w-sm text-center text-xs text-gray-400 leading-relaxed">
         By creating an account, you agree to our{' '}
         <Link href="/terms" className="text-gray-500 underline hover:text-gray-700">
