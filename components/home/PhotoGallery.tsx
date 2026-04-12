@@ -1146,8 +1146,9 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               >
                 {/* Save / Like / Share — top-right of photo area */}
                 <div className="absolute top-2 right-2 z-30 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                  <SaveToBoard photoId={activeLightboxPhoto.id} variant="button" />
+                  <SaveToBoard key={`save-${activeLightboxPhoto.id}`} photoId={activeLightboxPhoto.id} variant="button" />
                   <SocialActions
+                    key={`social-${activeLightboxPhoto.id}`}
                     photoId={activeLightboxPhoto.id}
                     photoSlug={activeLightboxPhoto.slug ?? activeLightboxPhoto.id}
                     variant="lightbox"
