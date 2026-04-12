@@ -37,6 +37,15 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
     return () => window.removeEventListener('pointerdown', handler)
   }, [open])
 
+  // Check saved status on mount for signed-in users
+  useEffect(() => {
+    if (!isSignedIn) return
+    fetch(`/api/photo/${photoId}/saved`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.savedIn?.length) setSavedIn(new Set(data.savedIn)) })
+      .catch(() => {})
+  }, [photoId, isSignedIn])
+
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
@@ -63,7 +72,6 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
     e.preventDefault()
     e.stopPropagation()
     if (!isSignedIn) {
-      // Clerk's SignInButton would be ideal but we can redirect
       window.location.href = '/sign-in'
       return
     }
