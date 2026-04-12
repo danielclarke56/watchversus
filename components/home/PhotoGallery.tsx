@@ -1129,16 +1129,16 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
           {/* Main content */}
           <div
-            className="flex flex-1 flex-col md:flex-row min-h-0 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden"
+            className="flex flex-1 flex-col md:flex-row min-h-0 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-y-auto md:overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ── Left / main column ── */}
-            <div className={`flex flex-col min-h-0 min-w-0 w-full ${otherWatchRelated.length > 0 ? 'md:w-1/2' : ''} overflow-hidden`}>
+            <div className={`flex flex-col min-h-0 min-w-0 w-full ${otherWatchRelated.length > 0 ? 'md:w-1/2' : ''} md:overflow-hidden`}>
 
-              {/* Photo area */}
+              {/* Photo area — sticky on mobile so it stays visible while scrolling */}
               <div
                 ref={photoAreaRef}
-                className="relative flex-1 min-h-[80vh] md:min-h-0 flex items-center justify-center overflow-hidden p-4 pt-4 md:p-6"
+                className="relative sticky top-0 z-20 min-h-[55vh] md:min-h-0 md:flex-1 md:static flex items-center justify-center overflow-hidden p-4 pt-4 md:p-6 bg-white/95 md:bg-transparent"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
