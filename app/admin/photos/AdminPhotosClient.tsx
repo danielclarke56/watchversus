@@ -1017,6 +1017,51 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
+  /**
+   * Approve ALL pending groups from a single user — one API call, one email.
+   */
+  async function handleApproveAllFromUser(submitterUserId: string, groups: typeof pendingGroups) {
+    const allPhotoIds = groups.flatMap((g) => g.photos.map((p) => p.id))
+    setActing(`user-approve-${submitterUserId}`)
+
+    try {
+      // Save metadata for all groups first
+      await Promise.all(
+        groups.map((group) => {
+          const meta = watchMetaState[group.key]
+          if (!meta) return Promise.resolve()
+          return Promise.all(
+            group.photos.map((photo) =>
+              fetch('/api/admin/photos', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ photoId: photo.id, fields: { ...meta } }),
+              })
+            )
+          )
+        })
+      )
+
+      const res = await fetch('/api/admin/photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'user-approve', submitterUserId, photoIds: allPhotoIds }),
+      })
+
+      if (res.ok) {
+        const approvedSet = new Set(allPhotoIds)
+        const photosToApprove = pendingPhotos.filter((p) => approvedSet.has(p.id))
+        setPendingPhotos((prev) => prev.filter((p) => !approvedSet.has(p.id)))
+        setApprovedPhotos((prev) => [
+          ...photosToApprove.map((p) => ({ ...p, approved: true as const })),
+          ...prev,
+        ])
+        showToast(`✓ Approved ${photosToApprove.length} photo${photosToApprove.length !== 1 ? 's' : ''} — 1 email sent`)
+      }
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
   async function handleRejectGroup(groupKey: string, photoIds: string[]) {
     const watchId = watchIdFromKey(groupKey)
     setActing(`reject-${groupKey}`)
@@ -1369,29 +1414,72 @@ export default function AdminPhotosClient() {
                   <p className="text-textMuted text-sm">No watches match your search.</p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {filteredPendingGroups.map((group) => (
-                    <GroupedPhotoCard
-                      key={group.key}
-                      group={group}
-                      watchMeta={watchMetaState[group.key] ?? photoToWatchMeta(group.photos[0])}
-                      acting={acting}
-                      aiFillingGroup={aiFillingGroup}
-                      aiFilledGroupOk={aiFilledGroupOk}
-                      onUpdateWatchMeta={updateWatchMeta}
-                      onAiFillGroup={handleAiFillGroup}
-                      onApproveGroup={handleApproveGroup}
-                      onRejectGroup={handleRejectGroup}
-                      onDelete={(photo) => handleDeletePending(photo)}
-                      onSplitPhoto={handleSplitPhoto}
-                      splittingPhotoId={splittingPhotoId}
-                      onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
-                      onRevertCrop={handleRevertCrop}
-                      croppingPhotoId={croppingPhotoId}
-                      onReorder={handleReorderPending}
-                      isApproved={false}
-                    />
-                  ))}
+                <div className="space-y-6">
+                  {/* Group by submitter user */}
+                  {(() => {
+                    const byUser = new Map<string, { userId: string; userName: string; groups: typeof filteredPendingGroups }>()
+                    filteredPendingGroups.forEach((group) => {
+                      const uid = group.photos[0]?.userId ?? 'unknown'
+                      if (!byUser.has(uid)) {
+                        byUser.set(uid, { userId: uid, userName: group.submitterName, groups: [] })
+                      }
+                      byUser.get(uid)!.groups.push(group)
+                    })
+                    return Array.from(byUser.values()).map(({ userId: uid, userName, groups: userGroups }) => {
+                      const totalPhotos = userGroups.flatMap((g) => g.photos).length
+                      const isApprovingAll = acting === `user-approve-${uid}`
+                      return (
+                        <div key={uid}>
+                          {/* User section header */}
+                          <div className="flex items-center justify-between gap-3 mb-2 px-1">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-xs font-semibold text-textMuted truncate">{userName}</span>
+                              <span className="text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full shrink-0">
+                                {userGroups.length} watch{userGroups.length !== 1 ? 'es' : ''} · {totalPhotos} photo{totalPhotos !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            {userGroups.length > 1 && (
+                              <button
+                                onClick={() => handleApproveAllFromUser(uid, userGroups)}
+                                disabled={isApprovingAll || !!acting}
+                                className="shrink-0 text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                              >
+                                {isApprovingAll ? (
+                                  <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Approving…</>
+                                ) : (
+                                  `✓ Approve all (1 email)`
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          <div className="space-y-3">
+                            {userGroups.map((group) => (
+                              <GroupedPhotoCard
+                                key={group.key}
+                                group={group}
+                                watchMeta={watchMetaState[group.key] ?? photoToWatchMeta(group.photos[0])}
+                                acting={acting}
+                                aiFillingGroup={aiFillingGroup}
+                                aiFilledGroupOk={aiFilledGroupOk}
+                                onUpdateWatchMeta={updateWatchMeta}
+                                onAiFillGroup={handleAiFillGroup}
+                                onApproveGroup={handleApproveGroup}
+                                onRejectGroup={handleRejectGroup}
+                                onDelete={(photo) => handleDeletePending(photo)}
+                                onSplitPhoto={handleSplitPhoto}
+                                splittingPhotoId={splittingPhotoId}
+                                onCropPhoto={(photo) => setCropTarget({ photoId: photo.id, imageUrl: photo.url })}
+                                onRevertCrop={handleRevertCrop}
+                                croppingPhotoId={croppingPhotoId}
+                                onReorder={handleReorderPending}
+                                isApproved={false}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })
+                  })()}
                 </div>
               )}
             </>

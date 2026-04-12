@@ -102,20 +102,19 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const body = (await req.json()) as { action: 'approve' | 'bulk-approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string; photoIds?: string[] }
-  const { action, watchId, photoId, photoIds } = body
+  const body = (await req.json()) as { action: 'approve' | 'bulk-approve' | 'user-approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string; photoIds?: string[]; submitterUserId?: string }
+  const { action, watchId, photoId, photoIds, submitterUserId } = body
 
-  if (!['approve', 'bulk-approve', 'delete', 'reject', 'delete-approved', 'restore', 'delete-pending'].includes(action)) {
+  if (!['approve', 'bulk-approve', 'user-approve', 'delete', 'reject', 'delete-approved', 'restore', 'delete-pending'].includes(action)) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
 
-  // bulk-approve has its own validation path
+  // bulk-approve: all photos for a single watchId, one summary email
   if (action === 'bulk-approve') {
     if (!watchId || !isValidSlug(watchId)) return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
     if (!Array.isArray(photoIds) || photoIds.length === 0) return NextResponse.json({ error: 'Missing photoIds' }, { status: 400 })
 
     try {
-      // Fetch all pending photos in the batch to verify they exist
       const photoRecords = await db
         .select()
         .from(photos)
@@ -123,15 +122,13 @@ export async function POST(req: NextRequest) {
 
       if (photoRecords.length === 0) return NextResponse.json({ error: 'No pending photos found' }, { status: 404 })
 
-      // Approve all in one update
       await db.update(photos).set({ status: 'approved' }).where(inArray(photos.id, photoIds))
 
-      // Send one summary email (non-blocking)
-      const userId = photoRecords[0]?.userId
-      if (userId) {
+      const uid = photoRecords[0]?.userId
+      if (uid) {
         try {
           const clerk = await clerkClient()
-          const user = await clerk.users.getUser(userId)
+          const user = await clerk.users.getUser(uid)
           const email = user.emailAddresses?.[0]?.emailAddress
           if (email) {
             await sendPhotoBulkApprovedEmail(email, {
@@ -154,6 +151,48 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       console.error('Error bulk-approving photos:', error)
       return NextResponse.json({ error: 'Failed to bulk approve photos' }, { status: 500 })
+    }
+  }
+
+  // user-approve: approve ALL pending photos for a user across multiple watches, one email
+  if (action === 'user-approve') {
+    if (!submitterUserId) return NextResponse.json({ error: 'Missing submitterUserId' }, { status: 400 })
+    if (!Array.isArray(photoIds) || photoIds.length === 0) return NextResponse.json({ error: 'Missing photoIds' }, { status: 400 })
+
+    try {
+      const photoRecords = await db
+        .select()
+        .from(photos)
+        .where(and(inArray(photos.id, photoIds), eq(photos.userId, submitterUserId), eq(photos.status, 'pending')))
+
+      if (photoRecords.length === 0) return NextResponse.json({ error: 'No pending photos found' }, { status: 404 })
+
+      await db.update(photos).set({ status: 'approved' }).where(inArray(photos.id, photoRecords.map((p) => p.id)))
+
+      try {
+        const clerk = await clerkClient()
+        const user = await clerk.users.getUser(submitterUserId)
+        const email = user.emailAddresses?.[0]?.emailAddress
+        if (email) {
+          await sendPhotoBulkApprovedEmail(email, {
+            firstName: user.firstName ?? undefined,
+            photos: photoRecords.map((p) => ({
+              brandName: p.brandName ?? undefined,
+              modelName: p.modelName ?? undefined,
+              referenceNumber: p.referenceNumber ?? undefined,
+              slug: p.slug ?? undefined,
+              imageUrl: p.thumbnailUrl ?? p.url,
+            })),
+          })
+        }
+      } catch (emailError) {
+        console.error('[Resend] Failed to send user-approve email:', emailError)
+      }
+
+      return NextResponse.json({ success: true, approved: photoRecords.length })
+    } catch (error) {
+      console.error('Error user-approving photos:', error)
+      return NextResponse.json({ error: 'Failed to approve photos' }, { status: 500 })
     }
   }
 
