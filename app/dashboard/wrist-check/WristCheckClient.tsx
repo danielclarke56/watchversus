@@ -497,6 +497,36 @@ export default function WristCheckClient() {
                   </div>
                 </div>
               )}
+
+              {/* Unworn watches */}
+              {(() => {
+                const wornWatchIds = new Set(entries.map((e) => e.watchId))
+                const unworn = watches.filter((w) => !wornWatchIds.has(w.watchId))
+                if (unworn.length === 0) return null
+                return (
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                      Not Worn in {format(currentMonth, 'MMMM')}
+                    </p>
+                    <div className="space-y-2">
+                      {unworn.map((watch) => (
+                        <div key={watch.photoId} className="flex items-center gap-2">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={watch.thumbnailUrl || watch.url}
+                            alt={watch.brandName || 'Watch'}
+                            className="w-6 h-6 rounded-full object-cover shrink-0 opacity-50 grayscale"
+                          />
+                          <span className="text-xs text-gray-400 truncate">
+                            {[watch.brandName, watch.modelName].filter(Boolean).join(' ') || 'Watch'}
+                          </span>
+                          <span className="text-[10px] text-gray-300 shrink-0">0d</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
             </div>
           </>
