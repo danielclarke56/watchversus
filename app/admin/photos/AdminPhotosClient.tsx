@@ -929,18 +929,14 @@ export default function AdminPhotosClient() {
         )
       }
 
-      // Approve all photos in group
-      const approveResults = await Promise.all(
-        photoIds.map((photoId) =>
-          fetch('/api/admin/photos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'approve', watchId, photoId }),
-          })
-        )
-      )
+      // Approve all photos in group with a single request (sends one summary email)
+      const approveResult = await fetch('/api/admin/photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'bulk-approve', watchId, photoIds }),
+      })
 
-      if (approveResults.every((res) => res.ok)) {
+      if (approveResult.ok) {
         // Move all photos from pending to approved
         const photosToApprove = pendingPhotos.filter((p) => photoIds.includes(p.id))
         setPendingPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))

@@ -7,7 +7,7 @@ import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos, photoLikes, collectionItems } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
-import { sendPhotoApprovedEmail } from '@/lib/email'
+import { sendPhotoApprovedEmail, sendPhotoBulkApprovedEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 
@@ -102,14 +102,63 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const body = (await req.json()) as { action: 'approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string }
-  const { action, watchId, photoId } = body
+  const body = (await req.json()) as { action: 'approve' | 'bulk-approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string; photoIds?: string[] }
+  const { action, watchId, photoId, photoIds } = body
+
+  if (!['approve', 'bulk-approve', 'delete', 'reject', 'delete-approved', 'restore', 'delete-pending'].includes(action)) {
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+  }
+
+  // bulk-approve has its own validation path
+  if (action === 'bulk-approve') {
+    if (!watchId || !isValidSlug(watchId)) return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
+    if (!Array.isArray(photoIds) || photoIds.length === 0) return NextResponse.json({ error: 'Missing photoIds' }, { status: 400 })
+
+    try {
+      // Fetch all pending photos in the batch to verify they exist
+      const photoRecords = await db
+        .select()
+        .from(photos)
+        .where(and(inArray(photos.id, photoIds), eq(photos.status, 'pending')))
+
+      if (photoRecords.length === 0) return NextResponse.json({ error: 'No pending photos found' }, { status: 404 })
+
+      // Approve all in one update
+      await db.update(photos).set({ status: 'approved' }).where(inArray(photos.id, photoIds))
+
+      // Send one summary email (non-blocking)
+      const userId = photoRecords[0]?.userId
+      if (userId) {
+        try {
+          const clerk = await clerkClient()
+          const user = await clerk.users.getUser(userId)
+          const email = user.emailAddresses?.[0]?.emailAddress
+          if (email) {
+            await sendPhotoBulkApprovedEmail(email, {
+              firstName: user.firstName ?? undefined,
+              photos: photoRecords.map((p) => ({
+                brandName: p.brandName ?? undefined,
+                modelName: p.modelName ?? undefined,
+                referenceNumber: p.referenceNumber ?? undefined,
+                slug: p.slug ?? undefined,
+                imageUrl: p.thumbnailUrl ?? p.url,
+              })),
+            })
+          }
+        } catch (emailError) {
+          console.error('[Resend] Failed to send bulk approval email:', emailError)
+        }
+      }
+
+      return NextResponse.json({ success: true, approved: photoRecords.length })
+    } catch (error) {
+      console.error('Error bulk-approving photos:', error)
+      return NextResponse.json({ error: 'Failed to bulk approve photos' }, { status: 500 })
+    }
+  }
 
   if (!action || !watchId || !photoId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-  }
-  if (!['approve', 'delete', 'reject', 'delete-approved', 'restore', 'delete-pending'].includes(action)) {
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
   if (!isValidSlug(watchId)) {
     return NextResponse.json({ error: 'Invalid watch ID' }, { status: 400 })
