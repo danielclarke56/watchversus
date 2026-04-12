@@ -1148,7 +1148,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               {/* Photo area */}
               <div
                 ref={photoAreaRef}
-                className="relative flex-1 min-h-[40vh] md:min-h-0 flex items-center justify-center overflow-hidden p-4 pt-12 md:p-6 md:pt-14"
+                className="relative flex-1 min-h-[80vh] md:min-h-0 flex items-center justify-center overflow-hidden p-4 pt-12 md:p-6 md:pt-14"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
