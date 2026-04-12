@@ -1110,17 +1110,25 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           style={{ overscrollBehavior: 'contain' }}
           onClick={closeLightbox}
         >
-          {/* Close button — top-right, dark on light */}
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-            className="fixed top-4 right-4 z-[60] text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition-all border border-gray-200"
-            aria-label="Close"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </button>
+          {/* Top bar — save/like/share + close */}
+          <div className="fixed top-4 right-4 z-[60] flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <SaveToBoard photoId={activeLightboxPhoto.id} variant="button" />
+            <SocialActions
+              photoId={activeLightboxPhoto.id}
+              photoSlug={activeLightboxPhoto.slug ?? activeLightboxPhoto.id}
+              variant="lightbox"
+            />
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition-all border border-gray-200"
+              aria-label="Close"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
 
           {/* Main content */}
           <div
@@ -1239,8 +1247,8 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
 
                 return (
                   <div className="flex-shrink-0 md:flex-shrink-0 px-4 py-3 max-h-[45vh] md:max-h-none overflow-y-auto">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
+                    <div>
+                      <div className="min-w-0">
                         {(brand || model) && (
                           <p className="text-gray-900 font-semibold text-sm truncate">
                             {[brand, model].filter(Boolean).join(' ')}
@@ -1285,15 +1293,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             </div>
                           </>
                         )}
-                      </div>
-                      {/* Like / share / save */}
-                      <div className="flex-shrink-0 pt-0.5 flex items-center gap-2">
-                        <SaveToBoard photoId={activeLightboxPhoto.id} variant="button" />
-                        <SocialActions
-                          photoId={activeLightboxPhoto.id}
-                          photoSlug={activeLightboxPhoto.slug ?? activeLightboxPhoto.id}
-                          variant="lightbox"
-                        />
                       </div>
                     </div>
 
