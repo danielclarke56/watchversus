@@ -599,15 +599,19 @@ export default function UploadClient() {
 
   return (
     <main className="min-h-screen bg-surfaceAlt text-textPrimary">
-      <div className="max-w-[80rem] mx-auto px-4 py-8 sm:py-12">
-        <Link href="/" className="text-xs sm:text-sm text-textMuted hover:text-textPrimary mb-6 inline-block">
-          &larr; Back to home
-        </Link>
+      <div className={`max-w-[80rem] mx-auto px-4 ${success ? 'py-12 sm:py-16' : 'py-8 sm:py-12'}`}>
+        {!success && (
+          <>
+            <Link href="/" className="text-xs sm:text-sm text-textMuted hover:text-textPrimary mb-6 inline-block">
+              &larr; Back to home
+            </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Upload Your Watch Photos</h1>
-        <p className="text-textMuted mb-8 text-sm sm:text-base">
-          Share real wrist shots. Help others see how watches look in real life.
-        </p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Upload Your Watch Photos</h1>
+            <p className="text-textMuted mb-8 text-sm sm:text-base">
+              Share real wrist shots. Help others see how watches look in real life.
+            </p>
+          </>
+        )}
 
         {!isSignedIn ? (
           <div className="bg-surface border border-borderStrong rounded-xl p-6 sm:p-8 text-center shadow-sm">
