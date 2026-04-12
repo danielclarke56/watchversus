@@ -31,7 +31,7 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 bg-white border-r border-gray-200 min-h-[calc(100vh-4rem)]">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 bg-white border-r border-gray-200 sticky top-[3.5rem] h-[calc(100vh-3.5rem)] overflow-y-auto">
         {/* User info */}
         <div className="p-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
