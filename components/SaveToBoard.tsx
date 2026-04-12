@@ -154,7 +154,7 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
           className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
             isSavedAnywhere
               ? 'bg-blue-600 text-white shadow-md'
-              : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100'
+              : 'bg-black/40 text-white sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/60'
           }`}
           aria-label="Save to collection"
         >

@@ -1091,7 +1091,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 <PhotoCountBadge count={count} variant="badge" showIcon />
                 <PhotoCardOverlay label={watchDisplayName} alwaysVisible={hasActiveSearch} />
                 {/* Save + Like icons */}
-                <div className="absolute top-0 right-0 z-10 flex flex-col gap-1 m-1.5" onClick={(e) => e.stopPropagation()}>
+                <div className="absolute top-0 right-0 z-10 flex flex-col gap-1 m-1.5 pointer-events-none [&>*]:pointer-events-auto">
                   <SaveToBoard photoId={primary.id} variant="card" />
                   <LikeButton photoId={primary.id} variant="card" />
                 </div>
@@ -1115,17 +1115,27 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           style={{ overscrollBehavior: 'contain' }}
           onClick={closeLightbox}
         >
-          {/* Close button — top-right of modal */}
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-            className="fixed top-4 right-4 z-[60] text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition-all border border-gray-200"
-            aria-label="Close"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </button>
+          {/* Top bar — close + save/like/share */}
+          <div className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-3 py-2 md:px-4 md:py-3" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="text-gray-600 hover:text-gray-900 bg-white/80 hover:bg-gray-100 backdrop-blur-sm rounded-full w-9 h-9 flex items-center justify-center transition-all border border-gray-200"
+              aria-label="Close"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-1.5">
+              <SaveToBoard photoId={activeLightboxPhoto.id} variant="button" />
+              <SocialActions
+                photoId={activeLightboxPhoto.id}
+                photoSlug={activeLightboxPhoto.slug ?? activeLightboxPhoto.id}
+                variant="lightbox"
+              />
+            </div>
+          </div>
 
           {/* Main content */}
           <div
@@ -1138,7 +1148,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               {/* Photo area */}
               <div
                 ref={photoAreaRef}
-                className="group/photo relative flex-1 min-h-0 flex items-center justify-center overflow-hidden p-4 md:p-6"
+                className="relative flex-1 min-h-[40vh] md:min-h-0 flex items-center justify-center overflow-hidden p-4 pt-12 md:p-6 md:pt-14"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -1150,16 +1160,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                     <div className="w-10 h-10 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
                   </div>
                 )}
-
-                {/* Save / Like / Share — top-right of photo */}
-                <div className="absolute top-2 right-2 z-30 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                  <SaveToBoard photoId={activeLightboxPhoto.id} variant="button" />
-                  <SocialActions
-                    photoId={activeLightboxPhoto.id}
-                    photoSlug={activeLightboxPhoto.slug ?? activeLightboxPhoto.id}
-                    variant="lightbox"
-                  />
-                </div>
 
                 {/* Zoom level indicator */}
                 {zoom > 1 && (

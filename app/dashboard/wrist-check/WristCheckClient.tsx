@@ -38,6 +38,66 @@ interface UserWatch {
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+const DONUT_COLORS = [
+  '#3B82F6', // blue
+  '#10B981', // emerald
+  '#F59E0B', // amber
+  '#EF4444', // red
+  '#8B5CF6', // violet
+  '#EC4899', // pink
+  '#14B8A6', // teal
+  '#F97316', // orange
+]
+
+function DonutChart({ items, total }: { items: { count: number; name: string }[]; total: number }) {
+  const size = 160
+  const strokeWidth = 28
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const cx = size / 2
+  const cy = size / 2
+
+  let accumulated = 0
+
+  return (
+    <div className="flex justify-center">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {/* Background circle */}
+        <circle cx={cx} cy={cy} r={radius} fill="none" stroke="#f3f4f6" strokeWidth={strokeWidth} />
+        {/* Segments */}
+        {items.map((item, i) => {
+          const pct = total > 0 ? item.count / total : 0
+          const dashLength = pct * circumference
+          const dashOffset = circumference - accumulated * circumference
+          accumulated += pct
+          return (
+            <circle
+              key={item.name}
+              cx={cx}
+              cy={cy}
+              r={radius}
+              fill="none"
+              stroke={DONUT_COLORS[i % DONUT_COLORS.length]}
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${dashLength} ${circumference - dashLength}`}
+              strokeDashoffset={dashOffset}
+              strokeLinecap="butt"
+              transform={`rotate(-90 ${cx} ${cy})`}
+            />
+          )
+        })}
+        {/* Center text */}
+        <text x={cx} y={cy - 6} textAnchor="middle" className="fill-gray-900 text-2xl font-bold" fontSize="24">
+          {total}
+        </text>
+        <text x={cx} y={cy + 12} textAnchor="middle" className="fill-gray-500" fontSize="10">
+          checks
+        </text>
+      </svg>
+    </div>
+  )
+}
+
 export default function WristCheckClient() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [entries, setEntries] = useState<WristCheckEntry[]>([])
@@ -141,8 +201,6 @@ export default function WristCheckClient() {
     wearCountByWatch.get(key)!.count++
   }
   const wearList = Array.from(wearCountByWatch.values()).sort((a, b) => b.count - a.count)
-  const mostWorn = wearList[0] ?? null
-  const maxCount = mostWorn?.count ?? 1
 
   // Current streak
   let streak = 0
@@ -162,7 +220,7 @@ export default function WristCheckClient() {
 
   return (
     <div className="py-6 sm:py-8 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Wrist Check</h1>
         <p className="text-gray-600 text-sm mb-6">Track which watch you wear each day.</p>
 
@@ -181,8 +239,9 @@ export default function WristCheckClient() {
           </div>
         ) : (
           <>
+            <div className="flex flex-col lg:flex-row gap-6 mb-6">
             {/* Calendar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 mb-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 flex-1 min-w-0">
               {/* Month navigation */}
               <div className="flex items-center justify-between mb-4">
                 <button
@@ -384,59 +443,52 @@ export default function WristCheckClient() {
               )}
             </div>
 
-            {/* Stats */}
-            {entries.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-gray-900">
-                  {format(currentMonth, 'MMMM')} Stats
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                    <p className="text-2xl font-bold text-gray-900">{totalDaysWorn}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Days Worn</p>
-                  </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                    <p className="text-2xl font-bold text-gray-900">{entries.length}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Total Checks</p>
-                  </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                    <p className="text-2xl font-bold text-gray-900">{streak}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Day Streak</p>
+            {/* Right side — Stats + Donut chart */}
+            <div className="lg:w-72 shrink-0 space-y-4">
+              {/* Stats cards */}
+              <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
+                <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
+                  <p className="text-2xl font-bold text-gray-900">{totalDaysWorn}</p>
+                  <p className="text-xs text-gray-500">Days Worn</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
+                  <p className="text-2xl font-bold text-gray-900">{entries.length}</p>
+                  <p className="text-xs text-gray-500">Total Checks</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
+                  <p className="text-2xl font-bold text-gray-900">{streak}</p>
+                  <p className="text-xs text-gray-500">Day Streak</p>
+                </div>
+              </div>
+
+              {/* Donut chart */}
+              {wearList.length > 0 && (
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Wear Count</p>
+                  <DonutChart items={wearList} total={entries.length} />
+                  {/* Legend */}
+                  <div className="mt-4 space-y-2">
+                    {wearList.map((item, i) => (
+                      <div key={item.name} className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-full shrink-0"
+                          style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }}
+                        />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.thumb || ''}
+                          alt={item.name}
+                          className="w-5 h-5 rounded-full object-cover shrink-0"
+                        />
+                        <span className="text-xs text-gray-900 truncate flex-1">{item.name}</span>
+                        <span className="text-xs text-gray-500 shrink-0">{item.count}d</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
-                {/* Per-watch breakdown */}
-                {wearList.length > 0 && (
-                  <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Wear Count</p>
-                    <div className="space-y-2.5">
-                      {wearList.map((item) => (
-                        <div key={item.name} className="flex items-center gap-3">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={item.thumb || ''}
-                            alt={item.name}
-                            className="w-7 h-7 rounded-full object-cover shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-0.5">
-                              <p className="text-xs font-medium text-gray-900 truncate">{item.name}</p>
-                              <span className="text-xs text-gray-500 shrink-0 ml-2">{item.count}d</span>
-                            </div>
-                            <div className="w-full bg-gray-100 rounded-full h-1.5">
-                              <div
-                                className="bg-blue-500 rounded-full h-1.5 transition-all"
-                                style={{ width: `${(item.count / maxCount) * 100}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+            </div>
+            </div>
           </>
         )}
       </div>

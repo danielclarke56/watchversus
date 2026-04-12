@@ -70,7 +70,7 @@ export default function LikeButton({ photoId, variant = 'card' }: LikeButtonProp
         className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
           liked
             ? 'bg-red-500 text-white shadow-md'
-            : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-black/60'
+            : 'bg-black/40 text-white sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/60'
         } ${animating ? 'scale-125' : 'scale-100'}`}
         aria-label={liked ? 'Unlike' : 'Like'}
       >
