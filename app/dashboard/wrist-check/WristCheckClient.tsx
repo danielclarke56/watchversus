@@ -105,6 +105,7 @@ export default function WristCheckClient() {
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [streak, setStreak] = useState(0)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const monthKey = format(currentMonth, 'yyyy-MM')
@@ -112,9 +113,12 @@ export default function WristCheckClient() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const [entriesRes, watchesRes] = await Promise.all([
+      // Fetch current month entries, user watches, and previous month (for streak calculation)
+      const prevMonthKey = format(subMonths(new Date(monthKey + '-01'), 1), 'yyyy-MM')
+      const [entriesRes, watchesRes, prevRes] = await Promise.all([
         fetch(`/api/wrist-checks?month=${monthKey}`),
         fetch('/api/user/watches'),
+        fetch(`/api/wrist-checks?month=${prevMonthKey}`),
       ])
       if (entriesRes.ok) {
         const data = await entriesRes.json()
@@ -124,6 +128,32 @@ export default function WristCheckClient() {
         const data = await watchesRes.json()
         setWatches(data.watches)
       }
+
+      // Compute streak from both months' entries
+      const allDatesSet = new Set<string>()
+      if (entriesRes.ok) {
+        const data = await entriesRes.clone().json()
+        for (const e of data.entries) allDatesSet.add(e.date)
+      }
+      if (prevRes.ok) {
+        const data = await prevRes.json()
+        for (const e of data.entries) allDatesSet.add(e.date)
+      }
+
+      let s = 0
+      let day = new Date()
+      while (true) {
+        const ds = format(day, 'yyyy-MM-dd')
+        if (allDatesSet.has(ds)) {
+          s++
+          day = subDays(day, 1)
+        } else if (isToday(day)) {
+          day = subDays(day, 1)
+        } else {
+          break
+        }
+      }
+      setStreak(s)
     } catch (err) {
       console.error('Failed to fetch wrist check data:', err)
     } finally {
@@ -201,22 +231,6 @@ export default function WristCheckClient() {
     wearCountByWatch.get(key)!.count++
   }
   const wearList = Array.from(wearCountByWatch.values()).sort((a, b) => b.count - a.count)
-
-  // Current streak
-  let streak = 0
-  const today = new Date()
-  let checkDay = today
-  while (true) {
-    const dateStr = format(checkDay, 'yyyy-MM-dd')
-    if (entriesByDate.has(dateStr)) {
-      streak++
-      checkDay = subDays(checkDay, 1)
-    } else if (isToday(checkDay)) {
-      checkDay = subDays(checkDay, 1)
-    } else {
-      break
-    }
-  }
 
   return (
     <div className="py-6 sm:py-8 px-4 sm:px-6">
@@ -446,14 +460,10 @@ export default function WristCheckClient() {
             {/* Right side — Stats + Donut chart */}
             <div className="lg:w-72 shrink-0 space-y-4">
               {/* Stats cards */}
-              <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
                 <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
                   <p className="text-2xl font-bold text-gray-900">{totalDaysWorn}</p>
                   <p className="text-xs text-gray-500">Days Worn</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
-                  <p className="text-2xl font-bold text-gray-900">{entries.length}</p>
-                  <p className="text-xs text-gray-500">Total Checks</p>
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
                   <p className="text-2xl font-bold text-gray-900">{streak}</p>
