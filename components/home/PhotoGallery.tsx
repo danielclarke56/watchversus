@@ -1138,7 +1138,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
               {/* Photo area — sticky on mobile so it stays visible while scrolling */}
               <div
                 ref={photoAreaRef}
-                className="relative sticky top-0 z-20 min-h-[55vh] md:min-h-0 md:flex-1 md:static flex items-center justify-center overflow-hidden p-4 pt-4 md:p-6 bg-white/95 md:bg-transparent"
+                className="relative min-h-[55vh] md:min-h-0 md:flex-1 flex items-center justify-center overflow-hidden p-4 pt-4 md:p-6"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
