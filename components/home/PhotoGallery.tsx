@@ -1287,7 +1287,8 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                         )}
                       </div>
                       {/* Like / share / save */}
-                      <div className="flex-shrink-0 pt-0.5">
+                      <div className="flex-shrink-0 pt-0.5 flex items-center gap-2">
+                        <SaveToBoard photoId={activeLightboxPhoto.id} variant="button" />
                         <SocialActions
                           photoId={activeLightboxPhoto.id}
                           photoSlug={activeLightboxPhoto.slug ?? activeLightboxPhoto.id}

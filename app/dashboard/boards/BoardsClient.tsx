@@ -21,7 +21,7 @@ const SUGGESTED_BOARDS = [
   'Vintage Finds',
 ]
 
-export default function BoardsClient() {
+export default function CollectionsClient() {
   const [boards, setBoards] = useState<BoardSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -33,7 +33,7 @@ export default function BoardsClient() {
   const [saving, setSaving] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const fetchBoards = useCallback(async () => {
+  const fetchCollections = useCallback(async () => {
     try {
       const res = await fetch('/api/collections')
       if (res.ok) {
@@ -47,7 +47,7 @@ export default function BoardsClient() {
     }
   }, [])
 
-  useEffect(() => { fetchBoards() }, [fetchBoards])
+  useEffect(() => { fetchCollections() }, [fetchCollections])
 
   // Close menu on outside click
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function BoardsClient() {
       if (res.ok) {
         setNewName('')
         setShowCreate(false)
-        await fetchBoards()
+        await fetchCollections()
       }
     } catch (err) {
       console.error('Failed to create board:', err)
@@ -105,7 +105,7 @@ export default function BoardsClient() {
   }
 
   async function handleDelete(boardId: string) {
-    if (!confirm('Delete this board? Photos won\'t be deleted, only removed from the board.')) return
+    if (!confirm('Delete this collection? Photos won\'t be deleted, only removed from the collection.')) return
     try {
       await fetch(`/api/collections/${boardId}`, { method: 'DELETE' })
       setBoards((prev) => prev.filter((b) => b.id !== boardId))
@@ -123,7 +123,7 @@ export default function BoardsClient() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Boards</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Collections</h1>
             <p className="text-gray-600 text-sm mt-1">
               Save and organize watch photos into collections.
             </p>
@@ -133,7 +133,7 @@ export default function BoardsClient() {
             onClick={() => setShowCreate(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shrink-0 text-center w-full sm:w-auto"
           >
-            Create Board
+            Create Collection
           </button>
         </div>
 
@@ -145,7 +145,7 @@ export default function BoardsClient() {
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="Board name..."
+                placeholder="Collection name..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
                 maxLength={100}
                 autoFocus
@@ -172,7 +172,7 @@ export default function BoardsClient() {
             {/* Suggested boards */}
             {availableSuggestions.length > 0 && (
               <div className="mt-3 pt-3 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-2">Suggested boards:</p>
+                <p className="text-xs text-gray-500 mb-2">Suggestions:</p>
                 <div className="flex flex-wrap gap-2">
                   {availableSuggestions.map((suggestion) => (
                     <button
@@ -203,9 +203,9 @@ export default function BoardsClient() {
             <div className="p-4 sm:p-6">
               <EmptyState
                 icon="📋"
-                title="No boards yet"
-                message="Create a board to start saving watch photos you love. Browse the gallery and tap the bookmark icon to save photos."
-                actionText="Create Your First Board"
+                title="No collections yet"
+                message="Create a collection to start saving watch photos you love. Browse the gallery and tap the bookmark icon to save photos."
+                actionText="Create Your First Collection"
                 actionStyle="blue"
                 onAction={() => setShowCreate(true)}
               />
@@ -281,7 +281,7 @@ export default function BoardsClient() {
                           type="button"
                           onClick={(e) => { e.preventDefault(); setMenuOpen(menuOpen === board.id ? null : board.id) }}
                           className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
-                          aria-label="Board options"
+                          aria-label="Collection options"
                         >
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />

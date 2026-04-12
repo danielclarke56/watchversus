@@ -148,7 +148,7 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100'
           }`}
-          aria-label="Save to board"
+          aria-label="Save to collection"
         >
           {bookmarkIcon}
         </button>
@@ -172,7 +172,7 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
         <div className={`absolute z-50 bg-white rounded-lg shadow-lg border border-gray-200 w-56 py-2 ${
           variant === 'card' ? 'top-10 right-0' : 'top-full mt-2 right-0'
         }`}>
-          <p className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Save to board</p>
+          <p className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Save to collection</p>
 
           {loading ? (
             <div className="px-3 py-4 text-center text-sm text-gray-400">Loading...</div>
@@ -208,7 +208,7 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    placeholder="New board name..."
+                    placeholder="New collection name..."
                     className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-300"
                     maxLength={100}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate() }}

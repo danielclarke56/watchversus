@@ -90,7 +90,7 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
   }
 
   async function handleDeleteBoard() {
-    if (!confirm('Delete this board? Photos won\'t be deleted, only removed from the board.')) return
+    if (!confirm('Delete this collection? Photos won\'t be deleted, only removed from the collection.')) return
     setDeleting(true)
     try {
       await fetch(`/api/collections/${boardId}`, { method: 'DELETE' })
@@ -122,10 +122,10 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
         <div className="max-w-5xl mx-auto">
           <EmptyState
             icon="404"
-            title="Board not found"
-            message="This board doesn't exist or you don't have access."
+            title="Collection not found"
+            message="This collection doesn't exist or you don't have access."
             actionUrl="/dashboard/boards"
-            actionText="Back to Boards"
+            actionText="Back to Collections"
           />
         </div>
       </div>
@@ -143,7 +143,7 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          All Boards
+          All Collections
         </Link>
 
         {/* Header */}
@@ -183,7 +183,7 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
                   type="button"
                   onClick={() => setEditing(true)}
                   className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
-                  aria-label="Rename board"
+                  aria-label="Rename collection"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
@@ -201,7 +201,7 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
             disabled={deleting}
             className="text-sm text-red-500 hover:text-red-700 font-medium transition-colors shrink-0"
           >
-            {deleting ? 'Deleting...' : 'Delete Board'}
+            {deleting ? 'Deleting...' : 'Delete Collection'}
           </button>
         </div>
 
@@ -211,7 +211,7 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
             <div className="p-4 sm:p-6">
               <EmptyState
                 icon="📌"
-                title="This board is empty"
+                title="This collection is empty"
                 message="Save photos from the gallery by tapping the bookmark icon on any photo."
                 actionUrl="/"
                 actionText="Browse Gallery"
@@ -242,7 +242,7 @@ export default function BoardDetailClient({ boardId }: { boardId: string }) {
                     onClick={() => handleRemovePhoto(photo.id)}
                     disabled={removing === photo.id}
                     className="text-gray-300 hover:text-red-500 transition-colors shrink-0 opacity-0 group-hover:opacity-100"
-                    aria-label="Remove from board"
+                    aria-label="Remove from collection"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
 
@@ -27,10 +27,9 @@ interface Photo {
   createdAt: Date
 }
 
-// Group photos by watchId; oldest photo first per group
 interface WatchGroup {
   watchId: string
-  photos: Photo[]          // oldest → newest
+  photos: Photo[]
   dominantStatus: 'approved' | 'pending' | 'rejected'
 }
 
@@ -54,16 +53,12 @@ function groupByWatch(photos: Photo[]): WatchGroup[] {
   })
 }
 
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
-}
-
-function PhotoThumb({ url, alt, size = 'full' }: { url: string; alt: string; size?: 'full' | 'mini' }) {
+function PhotoThumb({ url, alt }: { url: string; alt: string }) {
   const [error, setError] = useState(false)
   if (error || !url || url.startsWith('/')) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-1 text-gray-400">
-        <span className={size === 'mini' ? 'text-base' : 'text-3xl'}>🖼️</span>
+        <span className="text-3xl">🖼️</span>
       </div>
     )
   }
@@ -73,16 +68,16 @@ function PhotoThumb({ url, alt, size = 'full' }: { url: string; alt: string; siz
       alt={alt}
       fill
       className="object-cover"
-      sizes={size === 'mini' ? '48px' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       onError={() => setError(true)}
     />
   )
 }
 
 const STATUS_BADGE: Record<string, { text: string; class: string }> = {
-  approved: { text: '✓ Approved', class: 'bg-green-100 text-green-800' },
-  pending:  { text: '⏳ Pending',  class: 'bg-yellow-100 text-yellow-800' },
-  rejected: { text: '✕ Rejected', class: 'bg-red-100 text-red-800' },
+  approved: { text: 'Live', class: 'bg-green-100 text-green-800' },
+  pending:  { text: 'Pending',  class: 'bg-yellow-100 text-yellow-800' },
+  rejected: { text: 'Rejected', class: 'bg-red-100 text-red-800' },
 }
 
 const FIELD_CONFIG = [
@@ -102,9 +97,7 @@ const FIELD_CONFIG = [
 
 type EditableKey = typeof FIELD_CONFIG[number]['key']
 
-// Build editable fields from the most data-complete photo in the group
 function groupToEditable(photos: Photo[]): Record<EditableKey, string> {
-  // Merge: for each field, take the first non-empty value across photos
   const fields: Record<EditableKey, string> = {
     brandName: '', modelName: '', referenceNumber: '', movement: '',
     caseSize: '', wristSize: '', estimatedPrice: '', productionYear: '',
@@ -123,23 +116,37 @@ function GroupCard({ group }: { group: WatchGroup }) {
   const primary = group.photos[0]
   const alt = [primary.brandName, primary.modelName].filter(Boolean).join(' ') || 'Watch'
 
-  const [editing, setEditing]       = useState(false)
-  const [fields, setFields]         = useState<Record<EditableKey, string>>(() => groupToEditable(group.photos))
-  const [saving, setSaving]         = useState(false)
-  const [saved, setSaved]           = useState(false)
-  const [editError, setEditError]   = useState<string | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [fields, setFields] = useState<Record<EditableKey, string>>(() => groupToEditable(group.photos))
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
 
-  const [addingPhoto, setAddingPhoto]   = useState(false)
+  const [addingPhoto, setAddingPhoto] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [uploading, setUploading]       = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [uploadSuccess, setUploadSuccess] = useState(false)
-  const [uploadError, setUploadError]   = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [deleting, setDeleting]        = useState(false)
-  const [deleteError, setDeleteError]  = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  // Save metadata to ALL photos in the group so the entire entry is consistent
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return
+    const handler = (e: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    window.addEventListener('pointerdown', handler)
+    return () => window.removeEventListener('pointerdown', handler)
+  }, [menuOpen])
+
   async function handleSave() {
     setSaving(true)
     setEditError(null)
@@ -193,7 +200,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
   }
 
   async function handleDeleteGroup() {
-    if (!confirm(`Delete all ${group.photos.length} photo(s) in this entry?`)) return
+    if (!confirm(`Delete all ${group.photos.length} photo(s) for this watch?`)) return
     setDeleting(true)
     setDeleteError(null)
     try {
@@ -212,50 +219,93 @@ function GroupCard({ group }: { group: WatchGroup }) {
   }
 
   const badge = STATUS_BADGE[group.dominantStatus] ?? STATUS_BADGE.pending
-  const extraCount = group.photos.length - 1
 
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm">
-      {/* Primary thumbnail */}
-      <div className="relative w-full h-48 bg-gray-100">
+    <div className={`rounded-xl border border-gray-200 bg-white ${deleting ? 'opacity-50 pointer-events-none' : ''}`}>
+      {/* Thumbnail */}
+      <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-t-xl overflow-hidden">
         <PhotoThumb url={primary.url} alt={alt} />
         <PhotoCountBadge count={group.photos.length} variant="badge" showIcon />
-        {/* Status badge */}
-        <div className={`absolute bottom-2 left-2 text-xs font-medium px-2 py-0.5 rounded-full ${badge.class}`}>
+        <div className={`absolute bottom-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${badge.class}`}>
           {badge.text}
         </div>
       </div>
 
-      {/* Additional photo strip */}
-      {group.photos.length > 1 && (
-        <div className="flex gap-1.5 px-3 pt-2 overflow-x-auto">
-          {group.photos.slice(1).map((photo) => (
-            <div key={photo.id} className="relative shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 border border-gray-200">
-              <PhotoThumb url={photo.url} alt="Photo" size="mini" />
-              <div className={`absolute inset-x-0 bottom-0 h-1 ${
-                photo.status === 'approved' ? 'bg-green-400' :
-                photo.status === 'rejected' ? 'bg-red-400' : 'bg-yellow-400'
-              }`} />
-            </div>
-          ))}
-          <p className="self-center text-xs text-gray-400 ml-1 shrink-0">+{extraCount} more</p>
-        </div>
-      )}
-
       {/* Card body */}
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-base font-semibold text-gray-900 leading-snug">{alt}</h3>
-          {saved && <span className="text-xs text-green-600 font-medium shrink-0">✓ Saved</span>}
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gray-900 truncate">{alt}</p>
+            {(fields.referenceNumber || primary.referenceNumber) && (
+              <p className="text-xs text-gray-500 truncate">Ref. {fields.referenceNumber || primary.referenceNumber}</p>
+            )}
+          </div>
+          {saved && <span className="text-xs text-green-600 font-medium shrink-0">Saved</span>}
+          {/* Three-dot menu */}
+          <div className="relative shrink-0" ref={menuRef}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
+              aria-label="Watch options"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); setEditing(true); setAddingPhoto(false) }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                  </svg>
+                  Edit Info
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); setAddingPhoto(true); setEditing(false) }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  Add Photo
+                </button>
+                {group.dominantStatus === 'approved' && (
+                  <Link
+                    href={`/photo/${primary.slug ?? primary.id}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                    View in Gallery
+                  </Link>
+                )}
+                <div className="border-t border-gray-100 my-1" />
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); handleDeleteGroup() }}
+                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        {(fields.referenceNumber || primary.referenceNumber) && (
-          <p className="text-sm text-gray-500 mb-1">Ref. {fields.referenceNumber || primary.referenceNumber}</p>
-        )}
-        <p className="text-xs text-gray-400 mb-3">First uploaded {formatDate(primary.createdAt)}</p>
 
         {/* Edit form */}
         {editing && (
-          <div className="mb-4 space-y-2">
+          <div className="mt-3 space-y-2">
             {group.photos.length > 1 && (
               <p className="text-xs text-blue-600 bg-blue-50 rounded px-2 py-1">
                 Editing info for all {group.photos.length} photos of this watch
@@ -279,7 +329,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
             <div className="flex gap-2 pt-1">
               <button onClick={handleSave} disabled={saving}
                 className="flex-1 bg-blue-600 text-white text-sm font-medium py-1.5 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors">
-                {saving ? 'Saving…' : 'Save'}
+                {saving ? 'Saving...' : 'Save'}
               </button>
               <button onClick={() => { setEditing(false); setFields(groupToEditable(group.photos)) }}
                 className="flex-1 border border-gray-300 text-gray-600 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors">
@@ -291,7 +341,7 @@ function GroupCard({ group }: { group: WatchGroup }) {
 
         {/* Inline add photo */}
         {addingPhoto && (
-          <div className="mb-4 rounded-md border border-dashed border-gray-300 bg-gray-50 p-3 space-y-2">
+          <div className="mt-3 rounded-md border border-dashed border-gray-300 bg-gray-50 p-3 space-y-2">
             <p className="text-xs text-gray-500 font-medium">Add another photo for this watch</p>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
@@ -300,11 +350,11 @@ function GroupCard({ group }: { group: WatchGroup }) {
               <p className="text-xs text-gray-500 truncate">Selected: {selectedFile.name}</p>
             )}
             {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
-            {uploadSuccess && <p className="text-xs text-green-600 font-medium">✓ Uploaded — pending review</p>}
+            {uploadSuccess && <p className="text-xs text-green-600 font-medium">Uploaded — pending review</p>}
             <div className="flex gap-2 pt-1">
               <button onClick={handleUpload} disabled={!selectedFile || uploading || uploadSuccess}
                 className="flex-1 bg-blue-600 text-white text-sm font-medium py-1.5 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors">
-                {uploading ? 'Uploading…' : 'Upload'}
+                {uploading ? 'Uploading...' : 'Upload'}
               </button>
               <button onClick={() => { setAddingPhoto(false); setSelectedFile(null); setUploadError(null); if (fileInputRef.current) fileInputRef.current.value = '' }}
                 className="flex-1 border border-gray-300 text-gray-600 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors">
@@ -314,88 +364,20 @@ function GroupCard({ group }: { group: WatchGroup }) {
           </div>
         )}
 
-        {/* Action row */}
-        <div className="flex gap-2 flex-wrap">
-          <button onClick={() => { setEditing((v) => !v); setAddingPhoto(false) }}
-            className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors">
-            {editing ? 'Close' : '✏️ Edit info'}
-          </button>
-          <button onClick={() => { setAddingPhoto((v) => !v); setEditing(false) }}
-            className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-1.5 rounded hover:bg-gray-50 transition-colors">
-            {addingPhoto ? 'Cancel' : '+ Add photo'}
-          </button>
-          {group.dominantStatus === 'rejected' && (
-            <button onClick={handleDeleteGroup} disabled={deleting}
-              className="flex-1 border border-red-300 text-red-600 text-sm font-medium py-1.5 rounded hover:bg-red-50 disabled:opacity-50 transition-colors">
-              {deleting ? 'Deleting…' : '🗑️ Delete'}
-            </button>
-          )}
-          {deleteError && <p className="w-full text-xs text-red-500 text-center">{deleteError}</p>}
-          {group.dominantStatus === 'approved' && (
-            <Link href={`/photo/${group.photos[0].slug ?? group.photos[0].id}`} className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium py-1.5 border-t border-gray-100 mt-1 block">
-              View in Gallery →
-            </Link>
-          )}
-        </div>
+        {deleteError && <p className="text-xs text-red-500 mt-2">{deleteError}</p>}
       </div>
     </div>
   )
 }
 
-type TabId = 'approved' | 'pending' | 'rejected'
-
-const TABS: { id: TabId; label: string; emptyText: string }[] = [
-  { id: 'approved', label: 'Approved',       emptyText: 'No approved photos yet.' },
-  { id: 'pending',  label: 'Pending Review', emptyText: 'No photos pending review.' },
-  { id: 'rejected', label: 'Rejected',       emptyText: 'No rejected photos.' },
-]
-
 export default function PhotoGrid({ photos }: { photos: Photo[] }) {
   const allGroups = groupByWatch(photos)
-  const tabGroups: Record<TabId, WatchGroup[]> = {
-    approved: allGroups.filter((g) => g.dominantStatus === 'approved'),
-    pending:  allGroups.filter((g) => g.dominantStatus === 'pending'),
-    rejected: allGroups.filter((g) => g.dominantStatus === 'rejected'),
-  }
-
-  // Default to first non-empty tab
-  const firstNonEmpty = (TABS.find((t) => tabGroups[t.id].length > 0)?.id ?? 'approved') as TabId
-  const [tab, setTab] = useState<TabId>(firstNonEmpty)
-  const visibleGroups = tabGroups[tab]
 
   return (
-    <div>
-      <div className="flex border-b border-gray-200 mb-6">
-        {TABS.map((t) => {
-          const count = tabGroups[t.id].length
-          const isActive = tab === t.id
-          return (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${
-                isActive ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}>
-              {t.label}
-              <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                isActive ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
-              }`}>
-                {count}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      {visibleGroups.length === 0 ? (
-        <p className="text-sm text-gray-400 italic py-6">
-          {TABS.find((t) => t.id === tab)?.emptyText}
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleGroups.map((group) => (
-            <GroupCard key={group.watchId} group={group} />
-          ))}
-        </div>
-      )}
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {allGroups.map((group) => (
+        <GroupCard key={group.watchId} group={group} />
+      ))}
     </div>
   )
 }
