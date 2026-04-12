@@ -134,7 +134,7 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
 
   const bookmarkIcon = (
     <svg
-      className={variant === 'card' ? 'w-5 h-5' : 'w-4 h-4'}
+      className={variant === 'card' ? 'w-3.5 h-3.5' : 'w-4 h-4'}
       fill={isSavedAnywhere ? 'currentColor' : 'none'}
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -151,7 +151,7 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
         <button
           type="button"
           onClick={handleOpen}
-          className={`m-2 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+          className={`m-1.5 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
             isSavedAnywhere
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100'
