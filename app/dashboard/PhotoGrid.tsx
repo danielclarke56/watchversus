@@ -111,7 +111,12 @@ function groupToEditable(photos: Photo[]): Record<EditableKey, string> {
   return fields
 }
 
-function GroupCard({ group }: { group: WatchGroup }) {
+interface PhotoStats {
+  likes: Record<string, number>
+  saves: Record<string, number>
+}
+
+function GroupCard({ group, stats }: { group: WatchGroup; stats: PhotoStats }) {
   const router = useRouter()
   const primary = group.photos[0]
   const alt = [primary.brandName, primary.modelName].filter(Boolean).join(' ') || 'Watch'
@@ -239,6 +244,28 @@ function GroupCard({ group }: { group: WatchGroup }) {
             {(fields.referenceNumber || primary.referenceNumber) && (
               <p className="text-xs text-gray-500 truncate">Ref. {fields.referenceNumber || primary.referenceNumber}</p>
             )}
+            {/* Community stats */}
+            {(() => {
+              const totalLikes = group.photos.reduce((sum, p) => sum + (stats.likes[p.id] || 0), 0)
+              const totalSaves = group.photos.reduce((sum, p) => sum + (stats.saves[p.id] || 0), 0)
+              if (totalLikes === 0 && totalSaves === 0) return null
+              return (
+                <div className="flex items-center gap-2.5 mt-1">
+                  {totalLikes > 0 && (
+                    <span className="flex items-center gap-0.5 text-[11px] text-gray-400">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+                      {totalLikes}
+                    </span>
+                  )}
+                  {totalSaves > 0 && (
+                    <span className="flex items-center gap-0.5 text-[11px] text-gray-400">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /></svg>
+                      {totalSaves}
+                    </span>
+                  )}
+                </div>
+              )
+            })()}
           </div>
           {saved && <span className="text-xs text-green-600 font-medium shrink-0">Saved</span>}
           {/* Three-dot menu */}
@@ -372,11 +399,19 @@ function GroupCard({ group }: { group: WatchGroup }) {
 
 export default function PhotoGrid({ photos }: { photos: Photo[] }) {
   const allGroups = groupByWatch(photos)
+  const [stats, setStats] = useState<PhotoStats>({ likes: {}, saves: {} })
+
+  useEffect(() => {
+    fetch('/api/user/photos/stats')
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data) setStats(data) })
+      .catch(() => {})
+  }, [])
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
       {allGroups.map((group) => (
-        <GroupCard key={group.watchId} group={group} />
+        <GroupCard key={group.watchId} group={group} stats={stats} />
       ))}
     </div>
   )
