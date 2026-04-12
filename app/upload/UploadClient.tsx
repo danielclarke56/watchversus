@@ -619,57 +619,51 @@ export default function UploadClient() {
             </SignInButton>
           </div>
         ) : success ? (
-          <div className="bg-surface border border-borderStrong rounded-xl p-6 sm:p-8 text-center shadow-sm">
+          <div className="max-w-lg mx-auto bg-surface border border-borderStrong rounded-2xl p-6 sm:p-8 text-center shadow-sm">
             {successPreviews.length > 0 && (
-              <div className="flex justify-center gap-2 sm:gap-3 mb-4 flex-wrap">
+              <div className="flex justify-center gap-2 sm:gap-3 mb-5 flex-wrap">
                 {successPreviews.map((src, i) => (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img key={i} src={src} className="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-xl" alt={`Submitted photo ${i + 1}`} />
+                  <img key={i} src={src} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl shadow-sm" alt={`Submitted photo ${i + 1}`} />
                 ))}
               </div>
             )}
-            <h2 className="text-xl sm:text-2xl font-bold text-textPrimary mb-2">
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-textPrimary mb-1.5">
               {successPreviews.length > 1 ? 'Photos submitted!' : 'Photo submitted!'}
             </h2>
-            <p className="text-textMuted mb-6 text-sm sm:text-base">
-              {successPreviews.length > 1
-                ? 'Your images are being reviewed and will be approved soon.'
-                : 'Your image is being reviewed and will be approved soon.'}
-              {' '}Thanks for contributing to the community.
+            <p className="text-textMuted mb-6 text-sm">
+              Your {successPreviews.length > 1 ? 'images are' : 'image is'} being reviewed and will be approved soon.
             </p>
 
-            {/* Dashboard feature CTAs */}
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-left">
-              <p className="text-sm font-semibold text-blue-900 mb-3">While you wait, explore your dashboard:</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white border border-blue-100 hover:border-blue-300 transition-colors group">
-                  <span className="text-lg">⌚</span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">My Watches</p>
-                    <p className="text-xs text-gray-500">See your approved and pending submissions</p>
-                  </div>
-                </Link>
-                <Link href="/dashboard/wrist-check" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white border border-blue-100 hover:border-blue-300 transition-colors group">
-                  <span className="text-lg">📅</span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">Wrist Check</p>
-                    <p className="text-xs text-gray-500">Log which watch you wore each day</p>
-                  </div>
-                </Link>
-                <Link href="/dashboard/boards" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white border border-blue-100 hover:border-blue-300 transition-colors group">
-                  <span className="text-lg">🗂️</span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">Collections</p>
-                    <p className="text-xs text-gray-500">Save and organise watches you love</p>
-                  </div>
-                </Link>
-              </div>
+            {/* Dashboard feature CTAs — 3-col grid */}
+            <p className="text-xs font-semibold text-textMuted uppercase tracking-wider mb-3">While you wait</p>
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <Link href="/dashboard" className="flex flex-col items-center gap-2 p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+                <span className="text-2xl">⌚</span>
+                <p className="text-xs font-semibold text-gray-800 group-hover:text-blue-700 leading-tight">My Watches</p>
+                <p className="text-[10px] text-gray-400 leading-tight">Your submissions</p>
+              </Link>
+              <Link href="/dashboard/wrist-check" className="flex flex-col items-center gap-2 p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+                <span className="text-2xl">📅</span>
+                <p className="text-xs font-semibold text-gray-800 group-hover:text-blue-700 leading-tight">Wrist Check</p>
+                <p className="text-[10px] text-gray-400 leading-tight">Daily wear log</p>
+              </Link>
+              <Link href="/dashboard/boards" className="flex flex-col items-center gap-2 p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+                <span className="text-2xl">🗂️</span>
+                <p className="text-xs font-semibold text-gray-800 group-hover:text-blue-700 leading-tight">Collections</p>
+                <p className="text-[10px] text-gray-400 leading-tight">Save & organise</p>
+              </Link>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <Link
                 href="/"
-                className="px-6 py-3 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors inline-block text-center"
+                className="px-6 py-2.5 bg-accent hover:bg-accentHover text-white rounded-lg font-medium transition-colors inline-block text-center text-sm"
               >
                 &larr; Back to home
               </Link>
@@ -683,7 +677,7 @@ export default function UploadClient() {
                   setPartialSuccess('')
                   filesById.current.clear()
                 }}
-                className="px-6 py-3 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 bg-neutral hover:bg-neutral/80 text-textPrimary rounded-lg font-medium transition-colors text-sm"
               >
                 Upload more
               </button>
