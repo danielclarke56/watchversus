@@ -193,14 +193,42 @@ export async function sendPhotoBulkApprovedEmail(
             <p style="margin:0 0 16px;text-align:center;font-size:15px;font-weight:600;color:#0f172a;">Explore your dashboard</p>
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 32px;">
               <tr>
-                <td align="center" style="padding:0 4px;">
-                  <a href="https://watchems.com/dashboard" target="_blank" style="display:inline-block;padding:10px 20px;border:2px solid #e2e8f0;border-radius:8px;color:#0f172a;font-size:13px;font-weight:600;text-decoration:none;">My Watches</a>
+                <td style="padding:0 0 10px;">
+                  <a href="https://watchems.com/dashboard" target="_blank" style="text-decoration:none;display:block;padding:16px 20px;border:1.5px solid #e2e8f0;border-radius:10px;background-color:#ffffff;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="width:44px;vertical-align:middle;"><div style="width:40px;height:40px;border-radius:8px;background-color:#f0f9ff;text-align:center;line-height:40px;font-size:20px;">🖼️</div></td>
+                        <td style="padding-left:14px;vertical-align:middle;"><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#0f172a;">My Watches</p><p style="margin:0;font-size:13px;color:#64748b;">See all the watches you've uploaded and their status.</p></td>
+                        <td style="width:20px;text-align:right;vertical-align:middle;font-size:16px;color:#94a3b8;">&#8594;</td>
+                      </tr>
+                    </table>
+                  </a>
                 </td>
-                <td align="center" style="padding:0 4px;">
-                  <a href="https://watchems.com/dashboard/wrist-check" target="_blank" style="display:inline-block;padding:10px 20px;border:2px solid #e2e8f0;border-radius:8px;color:#0f172a;font-size:13px;font-weight:600;text-decoration:none;">Wrist Check</a>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <a href="https://watchems.com/dashboard/wrist-check" target="_blank" style="text-decoration:none;display:block;padding:16px 20px;border:1.5px solid #e2e8f0;border-radius:10px;background-color:#ffffff;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="width:44px;vertical-align:middle;"><div style="width:40px;height:40px;border-radius:8px;background-color:#f0fdf4;text-align:center;line-height:40px;font-size:20px;">⌚</div></td>
+                        <td style="padding-left:14px;vertical-align:middle;"><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#0f172a;">Wrist Check</p><p style="margin:0;font-size:13px;color:#64748b;">Track what you're wearing and log daily wrist shots.</p></td>
+                        <td style="width:20px;text-align:right;vertical-align:middle;font-size:16px;color:#94a3b8;">&#8594;</td>
+                      </tr>
+                    </table>
+                  </a>
                 </td>
-                <td align="center" style="padding:0 4px;">
-                  <a href="https://watchems.com/dashboard/boards" target="_blank" style="display:inline-block;padding:10px 20px;border:2px solid #e2e8f0;border-radius:8px;color:#0f172a;font-size:13px;font-weight:600;text-decoration:none;">Collections</a>
+              </tr>
+              <tr>
+                <td style="padding:0;">
+                  <a href="https://watchems.com/dashboard/boards" target="_blank" style="text-decoration:none;display:block;padding:16px 20px;border:1.5px solid #e2e8f0;border-radius:10px;background-color:#ffffff;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="width:44px;vertical-align:middle;"><div style="width:40px;height:40px;border-radius:8px;background-color:#fefce8;text-align:center;line-height:40px;font-size:20px;">📋</div></td>
+                        <td style="padding-left:14px;vertical-align:middle;"><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#0f172a;">Collections</p><p style="margin:0;font-size:13px;color:#64748b;">Organise your favourite watches into themed boards.</p></td>
+                        <td style="width:20px;text-align:right;vertical-align:middle;font-size:16px;color:#94a3b8;">&#8594;</td>
+                      </tr>
+                    </table>
+                  </a>
                 </td>
               </tr>
             </table>
