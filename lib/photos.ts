@@ -25,10 +25,14 @@ export interface Photo {
 
 export interface PendingPhoto extends Photo {
   approved: false
+  likeCount?: number
+  saveCount?: number
 }
 
 export interface ApprovedPhoto extends Photo {
   approved: true
+  likeCount?: number
+  saveCount?: number
 }
 
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']

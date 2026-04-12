@@ -373,8 +373,20 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                 })}
               </p>
             </div>
-            <div className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full shrink-0">
-              {group.photos.length}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {isApproved && group.photos.reduce((s, p) => s + (p.likeCount ?? 0), 0) > 0 && (
+                <span className="text-xs font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full" title="Total likes">
+                  ♥ {group.photos.reduce((s, p) => s + (p.likeCount ?? 0), 0)}
+                </span>
+              )}
+              {isApproved && group.photos.reduce((s, p) => s + (p.saveCount ?? 0), 0) > 0 && (
+                <span className="text-xs font-semibold bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full" title="Total saves">
+                  🔖 {group.photos.reduce((s, p) => s + (p.saveCount ?? 0), 0)}
+                </span>
+              )}
+              <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                {group.photos.length}
+              </span>
             </div>
           </div>
         </div>

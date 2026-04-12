@@ -628,15 +628,44 @@ export default function UploadClient() {
                 ))}
               </div>
             )}
-            <h2 className="text-xl sm:text-2xl font-bold text-textPrimary mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-textPrimary mb-2">
               {successPreviews.length > 1 ? 'Photos submitted!' : 'Photo submitted!'}
             </h2>
-            <p className="text-textMuted mb-8 text-sm sm:text-base">
+            <p className="text-textMuted mb-6 text-sm sm:text-base">
               {successPreviews.length > 1
                 ? 'Your images are being reviewed and will be approved soon.'
                 : 'Your image is being reviewed and will be approved soon.'}
               {' '}Thanks for contributing to the community.
             </p>
+
+            {/* Dashboard feature CTAs */}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-left">
+              <p className="text-sm font-semibold text-blue-900 mb-3">While you wait, explore your dashboard:</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white border border-blue-100 hover:border-blue-300 transition-colors group">
+                  <span className="text-lg">⌚</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">My Watches</p>
+                    <p className="text-xs text-gray-500">See your approved and pending submissions</p>
+                  </div>
+                </Link>
+                <Link href="/dashboard/wrist-check" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white border border-blue-100 hover:border-blue-300 transition-colors group">
+                  <span className="text-lg">📅</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">Wrist Check</p>
+                    <p className="text-xs text-gray-500">Log which watch you wore each day</p>
+                  </div>
+                </Link>
+                <Link href="/dashboard/boards" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white border border-blue-100 hover:border-blue-300 transition-colors group">
+                  <span className="text-lg">🗂️</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">Collections</p>
+                    <p className="text-xs text-gray-500">Save and organise watches you love</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-3">
               <Link
                 href="/"

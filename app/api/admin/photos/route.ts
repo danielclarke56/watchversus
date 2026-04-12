@@ -5,7 +5,7 @@ import path from 'path'
 import { isValidSlug } from '@/lib/validation'
 import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
-import { photos } from '@/lib/db/schema'
+import { photos, photoLikes, collectionItems } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
 import { sendPhotoApprovedEmail } from '@/lib/email'
 
@@ -28,6 +28,29 @@ export async function GET(req: NextRequest) {
       .from(photos)
       .where(eq(photos.status, status))
       .orderBy((p) => p.createdAt)
+
+    // For approved photos, fetch engagement counts in one query each
+    let likeCounts: Record<string, number> = {}
+    let saveCounts: Record<string, number> = {}
+
+    if (rows.length > 0) {
+      const photoIds = rows.map((p) => p.id)
+
+      const likeRows = await db
+        .select({ photoId: photoLikes.photoId, count: sql<number>`count(*)` })
+        .from(photoLikes)
+        .where(inArray(photoLikes.photoId, photoIds))
+        .groupBy(photoLikes.photoId)
+
+      const saveRows = await db
+        .select({ photoId: collectionItems.photoId, count: sql<number>`count(*)` })
+        .from(collectionItems)
+        .where(inArray(collectionItems.photoId, photoIds))
+        .groupBy(collectionItems.photoId)
+
+      likeCounts = Object.fromEntries(likeRows.map((r) => [r.photoId, Number(r.count)]))
+      saveCounts = Object.fromEntries(saveRows.map((r) => [r.photoId, Number(r.count)]))
+    }
 
     const result = rows.map((p) => ({
       id: p.id,
@@ -56,6 +79,8 @@ export async function GET(req: NextRequest) {
       originalUrl: p.originalUrl ?? null,
       createdAt: p.createdAt.toISOString(),
       approved: status === 'approved',
+      likeCount: likeCounts[p.id] ?? 0,
+      saveCount: saveCounts[p.id] ?? 0,
     }))
 
     // Sort by sortOrder asc, then createdAt descending
