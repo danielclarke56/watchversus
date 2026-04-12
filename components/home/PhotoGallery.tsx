@@ -8,6 +8,7 @@ import { buildPhotoAltText } from '@/lib/photoAlt'
 import type { Watch } from '@/lib/types'
 import SocialActions from './SocialActions'
 import SaveToBoard from '@/components/SaveToBoard'
+import LikeButton from '@/components/LikeButton'
 import PhotoCountBadge from '@/components/ui/PhotoCountBadge'
 import PhotoCardOverlay from '@/components/ui/PhotoCardOverlay'
 import UserAttribution from '@/components/ui/UserAttribution'
@@ -1089,7 +1090,11 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 />
                 <PhotoCountBadge count={count} variant="badge" showIcon />
                 <PhotoCardOverlay label={watchDisplayName} alwaysVisible={hasActiveSearch} />
-                <SaveToBoard photoId={primary.id} variant="card" />
+                {/* Save + Like icons */}
+                <div className="absolute top-0 right-0 z-10 flex flex-col gap-1 m-1.5" onClick={(e) => e.stopPropagation()}>
+                  <SaveToBoard photoId={primary.id} variant="card" />
+                  <LikeButton photoId={primary.id} variant="card" />
+                </div>
               </div>
             )
           })}

@@ -145,13 +145,13 @@ export default function SaveToBoard({ photoId, variant = 'card' }: SaveToBoardPr
   )
 
   return (
-    <div ref={menuRef} className={variant === 'card' ? 'absolute top-0 right-0 z-10' : 'relative'} onClick={(e) => e.stopPropagation()}>
+    <div ref={menuRef} className="relative" onClick={(e) => e.stopPropagation()}>
       {/* Trigger button */}
       {variant === 'card' ? (
         <button
           type="button"
           onClick={handleOpen}
-          className={`m-1.5 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
             isSavedAnywhere
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100'
