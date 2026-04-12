@@ -99,7 +99,23 @@ function Shell({ children }: { children: React.ReactNode }) {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   if (hasClerk) {
     return (
-      <ClerkProvider>
+      <ClerkProvider
+        appearance={{
+          elements: {
+            footer: {
+              '&::after': {
+                content: '"By signing up, you agree to our Terms of Use and Privacy Policy."',
+                display: 'block',
+                fontSize: '11px',
+                color: '#aaa',
+                textAlign: 'center',
+                marginTop: '8px',
+                lineHeight: '1.4',
+              },
+            },
+          },
+        }}
+      >
         <Shell>{children}</Shell>
       </ClerkProvider>
     )
