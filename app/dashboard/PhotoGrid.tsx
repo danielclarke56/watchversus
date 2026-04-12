@@ -227,14 +227,16 @@ function GroupCard({ group, stats }: { group: WatchGroup; stats: PhotoStats }) {
 
   return (
     <div className={`rounded-xl border border-gray-200 bg-white ${deleting ? 'opacity-50 pointer-events-none' : ''}`}>
-      {/* Thumbnail */}
-      <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-t-xl overflow-hidden">
-        <PhotoThumb url={primary.url} alt={alt} />
-        <PhotoCountBadge count={group.photos.length} variant="badge" showIcon />
-        <div className={`absolute bottom-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${badge.class}`}>
-          {badge.text}
+      {/* Thumbnail — links to photo page if approved */}
+      <Link href={group.dominantStatus === 'approved' ? `/photo/${primary.slug ?? primary.id}` : '#'} className={group.dominantStatus !== 'approved' ? 'pointer-events-none' : ''}>
+        <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-t-xl overflow-hidden">
+          <PhotoThumb url={primary.url} alt={alt} />
+          <PhotoCountBadge count={group.photos.length} variant="badge" showIcon />
+          <div className={`absolute bottom-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${badge.class}`}>
+            {badge.text}
+          </div>
         </div>
-      </div>
+      </Link>
 
       {/* Card body */}
       <div className="p-3">
