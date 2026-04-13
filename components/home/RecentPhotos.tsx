@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ApprovedPhoto } from '@/lib/photos'
-import { watches } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 
 export function RecentPhotos() {
@@ -31,11 +30,6 @@ export function RecentPhotos() {
     return null
   }
 
-  function getWatchName(watchId: string): string {
-    const watch = watches.find((w) => w.slug === watchId)
-    return watch ? `${watch.brand} ${watch.name}` : watchId
-  }
-
   return (
     <section className="bg-surface border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -58,11 +52,11 @@ export function RecentPhotos() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {photos.map((photo) => {
-            const watchName = getWatchName(photo.watchId)
+            const watchName = [photo.brandName, photo.modelName].filter(Boolean).join(' ') || photo.watchId
             return (
               <Link
                 key={photo.id}
-                href={`/watches/${photo.watchId}`}
+                href={photo.slug ? `/photo/${photo.slug}` : `/photo/${photo.id}`}
                 className="group relative aspect-square bg-surfaceAlt rounded-sm overflow-hidden border border-border hover:border-borderStrong transition-colors"
               >
                 <Image

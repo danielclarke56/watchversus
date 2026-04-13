@@ -1,10 +1,9 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getWatchById, watches } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, lt, and, desc, or, ilike, inArray, sql as drizzleSql } from 'drizzle-orm'
+import { eq, lt, and, desc, or, ilike, sql as drizzleSql } from 'drizzle-orm'
 import { checkAdmin } from '@/lib/admin'
 import { checkReadRateLimit } from '@/lib/ratelimit'
 
@@ -39,21 +38,6 @@ export async function GET(req: NextRequest) {
   const filterStrapType = searchParams.get('strapType')?.toLowerCase() ?? ''
 
   try {
-    // Pre-filter static watch library by chip filters to get matching watchIds
-    let chipFilteredWatchIds: string[] | null = null
-    if (filterMovement || priceMin !== null || priceMax !== null || caseSizeMin !== null || caseSizeMax !== null || brand) {
-      const filtered = watches.filter((w) => {
-        if (brand && w.brand.toLowerCase() !== brand) return false
-        if (filterMovement && w.movement_type !== filterMovement) return false
-        if (priceMin !== null && w.price_new_usd.max < priceMin) return false
-        if (priceMax !== null && w.price_new_usd.min > priceMax) return false
-        if (caseSizeMin !== null && w.case_diameter_mm < caseSizeMin) return false
-        if (caseSizeMax !== null && w.case_diameter_mm > caseSizeMax) return false
-        return true
-      })
-      chipFilteredWatchIds = filtered.map((w) => w.id)
-    }
-
     // Build where condition
     const conditions = [eq(photos.status, 'approved')]
     if (cursor) {
@@ -73,35 +57,14 @@ export async function GET(req: NextRequest) {
     if (filterCaseMaterial) conditions.push(eq(photos.caseMaterial, filterCaseMaterial))
     if (filterStrapType) conditions.push(eq(photos.strapType, filterStrapType))
 
-    // Apply chip filters via watchId IN (...)
-    if (chipFilteredWatchIds !== null && !watchId) {
-      if (chipFilteredWatchIds.length === 0) {
-        // No watches match filters — return empty
-        return NextResponse.json(
-          { photos: [], nextCursor: null, totalCount: 0 },
-          { headers: { 'Cache-Control': 'no-store' } }
-        )
-      }
+    // Movement filter: match against DB movement field
+    if (filterMovement && !watchId) {
+      conditions.push(ilike(photos.movement, `%${filterMovement}%`))
+    }
 
-      // Also match photos whose DB-level fields match the filters (user-submitted photos
-      // that may not be in the static watch library)
-      const dbFilterConditions: ReturnType<typeof ilike>[] = []
-
-      if (filterMovement) {
-        dbFilterConditions.push(ilike(photos.movement, `%${filterMovement}%`))
-      }
-
-      // Combine static library match + DB field match
-      if (dbFilterConditions.length > 0) {
-        conditions.push(
-          or(
-            inArray(photos.watchId, chipFilteredWatchIds),
-            ...dbFilterConditions
-          )!
-        )
-      } else {
-        conditions.push(inArray(photos.watchId, chipFilteredWatchIds))
-      }
+    // Brand filter: match against DB brandName field
+    if (brand && !watchId) {
+      conditions.push(ilike(photos.brandName, `%${brand}%`))
     }
 
     // Push search query to DB level (fixes pagination + filter mismatch)
@@ -109,26 +72,7 @@ export async function GET(req: NextRequest) {
       // Split into tokens so "rolex sub 41" matches all three fields independently
       const tokens = q.split(/\s+/).filter(Boolean)
 
-      // Static watch library pre-filter: a watchId is included if ALL tokens match
-      // Also check movement_type, water_resistance_m, and price fields
-      const matchingWatchIds = watches
-        .filter((w) => {
-          const haystack = [
-            w.name,
-            w.brand,
-            w.reference,
-            w.id,
-            w.movement_type,
-            w.water_resistance_m ? `${w.water_resistance_m}m` : '',
-            w.case_diameter_mm ? `${w.case_diameter_mm}mm` : '',
-            w.primary_category,
-          ].join(' ').toLowerCase()
-          return tokens.every((t) => haystack.includes(t))
-        })
-        .map((w) => w.id)
-
-      // Similarity threshold for typo tolerance — 0.25 is permissive enough for
-      // "Rollex"→"Rolex" or "Submairner"→"Submariner" without too many false positives
+      // Similarity threshold for typo tolerance
       const SIMILARITY_THRESHOLD = 0.25
 
       // Each token must match at least one column (AND across tokens, OR across columns)
@@ -139,14 +83,12 @@ export async function GET(req: NextRequest) {
           ilike(photos.modelName, `%${token}%`),
           ilike(photos.referenceNumber, `%${token}%`),
           ilike(photos.watchId, `%${token}%`),
-          // Extend search to match specs
           ilike(photos.movement, `%${token}%`),
           ilike(photos.waterResistance, `%${token}%`),
           ilike(photos.estimatedPrice, `%${token}%`),
           ilike(photos.caseSize, `%${token}%`),
         ]
 
-        // Add similarity() fuzzy match for longer tokens (avoids noise on short ones like "41")
         if (token.length >= 4) {
           tokenConditions.push(
             drizzleSql`similarity(${photos.brandName}, ${token}) > ${SIMILARITY_THRESHOLD}` as ReturnType<typeof ilike>
@@ -156,9 +98,6 @@ export async function GET(req: NextRequest) {
           )
         }
 
-        if (matchingWatchIds.length > 0) {
-          tokenConditions.push(inArray(photos.watchId, matchingWatchIds) as unknown as ReturnType<typeof ilike>)
-        }
         conditions.push(or(...tokenConditions)!)
       }
     }
@@ -216,9 +155,8 @@ export async function GET(req: NextRequest) {
     const unslugify = (slug: string): string =>
       slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 
-    // Enrich photos with watch data
+    // Enrich photos with display fields
     const enriched = photoRecords.map((p) => {
-      const watch = getWatchById(p.watchId)
       return {
         id: p.id,
         watchId: p.watchId,
@@ -229,10 +167,10 @@ export async function GET(req: NextRequest) {
         thumbnailUrl: p.thumbnailUrl ?? null,
         createdAt: p.createdAt.toISOString(),
         approved: true,
-        watchSlug: watch?.slug ?? p.watchId,
-        watchName: watch?.name ?? unslugify(p.watchId),
-        watchBrand: watch?.brand ?? null,
-        watchReference: watch?.reference ?? null,
+        watchSlug: p.watchId,
+        watchName: [p.brandName, p.modelName].filter(Boolean).join(' ') || unslugify(p.watchId),
+        watchBrand: p.brandName ?? null,
+        watchReference: p.referenceNumber ?? null,
         brandName: p.brandName ?? null,
         modelName: p.modelName ?? null,
         referenceNumber: p.referenceNumber ?? null,

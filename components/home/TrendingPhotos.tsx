@@ -1,30 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ApprovedPhoto } from '@/lib/photos'
-import { watches } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import { Container } from '@/components/ui/Container'
-
-function getWatchName(watchId: string): string {
-  const watch = watches.find((w) => w.slug === watchId)
-  return watch ? `${watch.brand} ${watch.name}` : watchId
-}
-
-function getWatchRating(watchId: string): number | null {
-  const watch = watches.find((w) => w.slug === watchId)
-  return watch?.score ?? null
-}
-
-function StarRating({ rating }: { rating: number }) {
-  const stars = Math.round(rating / 2) // convert 10-scale to 5-scale
-  return (
-    <span className="text-yellow-400 text-xs">
-      {Array.from({ length: 5 }, (_, i) => (
-        <span key={i}>{i < stars ? '★' : '☆'}</span>
-      ))}
-    </span>
-  )
-}
 
 interface TrendingPhotosProps {
   photos: ApprovedPhoto[]
@@ -63,12 +41,11 @@ export default function TrendingPhotos({ photos }: TrendingPhotosProps) {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {photos.slice(0, 12).map((photo) => {
-            const watchName = getWatchName(photo.watchId)
-            const rating = getWatchRating(photo.watchId)
+            const watchName = [photo.brandName, photo.modelName].filter(Boolean).join(' ') || photo.watchId
             return (
               <Link
                 key={photo.id}
-                href={`/watches/${photo.watchId}`}
+                href={photo.slug ? `/photo/${photo.slug}` : `/photo/${photo.id}`}
                 className="group"
               >
                 <div className="relative aspect-square bg-surfaceAlt border border-border rounded-sm overflow-hidden">
@@ -84,7 +61,6 @@ export default function TrendingPhotos({ photos }: TrendingPhotosProps) {
                   <p className="text-xs font-semibold text-textPrimary truncate">
                     {watchName}
                   </p>
-                  {rating !== null && <StarRating rating={rating} />}
                 </div>
               </Link>
             )

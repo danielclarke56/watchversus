@@ -3,9 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { getWatchBySlug } from '@/lib/watches'
 import { buildPhotoAltText } from '@/lib/photoAlt'
-import type { Watch } from '@/lib/types'
 import SocialActions from './SocialActions'
 import SaveToBoard from '@/components/SaveToBoard'
 import LikeButton from '@/components/LikeButton'
@@ -351,8 +349,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
   // Lightbox state
   const [lightbox, setLightbox] = useState<{ groupIdx: number; photoIdx: number } | null>(null)
   const [lightboxImageLoading, setLightboxImageLoading] = useState(false)
-  const [lightboxWatch, setLightboxWatch] = useState<Watch | null>(null)
-
   // Load brand tags + visual characteristic chips from shared watches cache
   useEffect(() => {
     const apply = (data: { brands: BrandWithCount[]; dialColors: CharacteristicChip[]; watchStyles: CharacteristicChip[]; caseMaterials: CharacteristicChip[]; strapTypes: CharacteristicChip[] }) => {
@@ -641,21 +637,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
     setLightboxImageLoading(true)
     setShowMobileSpecs(false)
   }, [lightbox])
-
-  // Fetch watch metadata when lightbox photo changes
-  useEffect(() => {
-    if (lightbox === null) {
-      setLightboxWatch(null)
-      return
-    }
-    const group = groups[lightbox.groupIdx]
-    if (!group) {
-      setLightboxWatch(null)
-      return
-    }
-    const watch = getWatchBySlug(group.watchId)
-    setLightboxWatch(watch || null)
-  }, [lightbox, groups])
 
   // Lock body scroll when lightbox is open
   const savedScrollYRef = useRef(0)
@@ -991,11 +972,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
     touchStartYRef.current = null
   }, [currentFlatIdx, navigateToFlat])
 
-  const formatMovementType = (type: string | undefined): string => {
-    if (!type) return ''
-    return type.charAt(0).toUpperCase() + type.slice(1)
-  }
-
   const selectedWatchName = activeWatchId && photos.length > 0
     ? photos[0].watchBrand && photos[0].watchName
       ? `${photos[0].watchBrand} ${photos[0].watchName}`
@@ -1252,23 +1228,17 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 const brand = p.brandName || p.watchBrand || null
                 const model = p.modelName || p.watchName || null
                 const ref = p.referenceNumber || p.watchReference || null
-                const w = lightboxWatch
-
                 const specs: { label: string; value: string }[] = []
                 if (ref) specs.push({ label: 'Reference', value: ref })
-                const mv = p.movement || (w?.movement_type ? formatMovementType(w.movement_type) : null)
-                if (mv) specs.push({ label: 'Movement', value: mv })
-                const cs = p.caseSize || (w?.case_diameter_mm ? `${w.case_diameter_mm}mm` : null)
-                if (cs) specs.push({ label: 'Case', value: cs })
-                const wr = p.waterResistance || (w?.water_resistance_m ? `${w.water_resistance_m}m` : null)
-                if (wr) specs.push({ label: 'Water Resistance', value: wr })
+                if (p.movement) specs.push({ label: 'Movement', value: p.movement })
+                if (p.caseSize) specs.push({ label: 'Case', value: p.caseSize })
+                if (p.waterResistance) specs.push({ label: 'Water Resistance', value: p.waterResistance })
                 if (p.lugToLug) specs.push({ label: 'Lug to Lug', value: p.lugToLug })
                 if (p.betweenLugs) specs.push({ label: 'Lug Width', value: p.betweenLugs })
                 if (p.thickness) specs.push({ label: 'Thickness', value: p.thickness })
                 if (p.wristSize) specs.push({ label: 'Wrist Size', value: p.wristSize })
                 if (p.productionYear) specs.push({ label: 'Year', value: p.productionYear })
                 if (p.estimatedPrice) specs.push({ label: 'Price', value: p.estimatedPrice })
-                if (w?.case_material) specs.push({ label: 'Material', value: w.case_material })
 
                 return (
                   <div className="flex-shrink-0 md:flex-shrink-0 px-4 py-3 max-h-[45vh] md:max-h-none overflow-y-auto">

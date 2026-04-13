@@ -1,10 +1,9 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getWatchById } from '@/lib/watches'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and, inArray } from 'drizzle-orm'
 import { count } from 'drizzle-orm'
 import { checkReadRateLimit } from '@/lib/ratelimit'
 
@@ -34,19 +33,32 @@ export async function GET(req: NextRequest) {
     const unslugify = (slug: string): string =>
       slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 
-    // Enrich with watch data from static library
+    // Fetch representative photo per watch for brand/name metadata
+    const watchIds = photosByWatch.map((w) => w.watchId)
+    const repPhotos = watchIds.length > 0
+      ? await db
+          .select({ watchId: photos.watchId, brandName: photos.brandName, modelName: photos.modelName, referenceNumber: photos.referenceNumber })
+          .from(photos)
+          .where(and(eq(photos.status, 'approved'), inArray(photos.watchId, watchIds)))
+          .groupBy(photos.watchId, photos.brandName, photos.modelName, photos.referenceNumber)
+          .limit(watchIds.length)
+      : []
+
+    const repMap = new Map(repPhotos.map((p) => [p.watchId, p]))
+
     const enrichedWatches = photosByWatch
       .map((item) => {
-        const watch = getWatchById(item.watchId)
+        const rep = repMap.get(item.watchId)
+        const brand = rep?.brandName ?? null
+        const name = rep ? [rep.brandName, rep.modelName].filter(Boolean).join(' ') || unslugify(item.watchId) : unslugify(item.watchId)
         return {
           watchId: item.watchId,
-          watchName: watch?.name ?? unslugify(item.watchId),
-          watchBrand: watch?.brand ?? null,
-          watchReference: watch?.reference ?? null,
+          watchName: name,
+          watchBrand: brand,
+          watchReference: rep?.referenceNumber ?? null,
           count: item.photoCount,
         }
       })
-      // Sort by count descending (most-photographed first)
       .sort((a, b) => b.count - a.count)
 
     // Aggregate brands with photo counts (for filter chips)

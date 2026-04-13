@@ -1,7 +1,6 @@
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { getWatchById } from '@/lib/watches'
 import { checkAdmin } from '@/lib/admin'
 
 const PAGE_SIZE = 20
@@ -71,7 +70,6 @@ export async function getInitialPhotos(): Promise<InitialPhotosData> {
       .limit(PAGE_SIZE + 1)
 
     const enriched: InitialPhoto[] = photoRecords.map((p) => {
-      const watch = getWatchById(p.watchId)
       return {
         id: p.id,
         slug: p.slug ?? undefined,
@@ -81,10 +79,10 @@ export async function getInitialPhotos(): Promise<InitialPhotosData> {
         isOfficial: p.userId ? checkAdmin(p.userId) : false,
         url: p.url,
         createdAt: p.createdAt.toISOString(),
-        watchSlug: watch?.slug ?? p.watchId,
-        watchName: watch?.name ?? unslugify(p.watchId),
-        watchBrand: watch?.brand ?? undefined,
-        watchReference: watch?.reference ?? undefined,
+        watchSlug: p.watchId,
+        watchName: [p.brandName, p.modelName].filter(Boolean).join(' ') || unslugify(p.watchId),
+        watchBrand: p.brandName ?? undefined,
+        watchReference: p.referenceNumber ?? undefined,
         brandName: p.brandName ?? undefined,
         modelName: p.modelName ?? undefined,
         referenceNumber: p.referenceNumber ?? undefined,
