@@ -11,41 +11,53 @@ Read this before doing anything.
 
 ## Hard Rules
 - NO affiliate links, no affiliate URLs, no partner CTAs — anywhere in the codebase
-- Images: 
-  - **Press photos** (if available): Use official manufacturer press images. Currently 30 watches have JPGs. Keep these.
-  - **AI renders** (for gap-fill): For the 32 watches with SVG placeholders, generate AI renders via OpenAI gpt-image-1. Save as `/public/images/watches/{slug}.png`. Transparent background, no logos/text on dial.
-  - **User uploads** (future value): Users can submit their own watch photos via watch detail pages. Store in `/public/images/user-uploads/{slug}/`. Display in a "Community Photos" gallery below the main image.
-- Only add more press photos if the brand explicitly grants permission in writing.
-- TypeScript strict mode: no implicit any, movement_type must be `"automatic" | "manual" | "quartz"`
-- PowerShell environment: use `;` not `&&` between commands
+- NO social/community features — Watchems is a visual reference library, not a social platform
+- TypeScript strict mode: no implicit any
+- `data/watches.json` is DELETED — do not recreate it. Neon DB is the only source of truth.
 
 ## Architecture
-- `data/watches.json` — 50 watch records (no affiliate URL fields)
-- `lib/watches.ts` — watch lookup functions
-- `lib/types.ts` — Watch interface (no affiliate fields)
-- `app/compare/[slug]/page.tsx` — 121 static comparison pages with FAQ + JSON-LD
-- `app/watches/[slug]/page.tsx` — 50 static watch detail pages
-- Domain canonical: `https://watchems.com`
+- **Database**: Neon PostgreSQL via Drizzle ORM (`lib/db/`, `lib/db/schema.ts`)
+- **Schema**: `photos`, `photoLikes`, `collections`, `collectionItems`, `users`, `wristChecks`
+- **Auth**: Clerk (`@clerk/nextjs`)
+- **Storage**: Cloudflare R2 for photo files (`lib/r2.ts`)
+- **Email**: Resend for transactional emails (`lib/email.ts`)
+  - Templates stored as HTML files in `lib/email-templates/`
+  - `photo-approved.html` — single photo approval (uses `{{firstName}}`, `{{slug}}`, `{{imageUrl}}`, `{{brand}}`, `{{model}}`, `{{reference}}`)
+  - `photo-rejected.html` — rejection with reason
+  - Bulk approval (2+ photos) uses inline HTML in `sendPhotoBulkApprovedEmail()`
+- **AI**: Google Gemini for watch identification (`lib/gemini.ts` or similar)
+- **Rate limiting**: `lib/ratelimit.ts`
 
-## Current Status (2026-03-14)
-- Affiliate links fully removed (data + types + about page)
-- 121 comparison pages live with FAQ schema
-- SEO: canonical URLs, OG tags, JSON-LD structured data, sitemap
+## Key Pages
+- `/` — Photo gallery (infinite scroll, filters, lightbox)
+- `/photo/[id]` — Individual photo page
+- `/upload` — Photo submission flow
+- `/dashboard` — My Watches (user's submitted photos + stats)
+- `/dashboard/wrist-check` — Daily wear logging with calendar
+- `/dashboard/boards` — Collections (saved watches into themed boards)
+- `/dashboard/liked` — Liked photos
+- `/dashboard/profile` — Profile + avatar
+- `/admin/photos` — Photo moderation queue (approve/reject/crop/reorder)
+- `/admin/reviews` — Review moderation
+
+## Watch Identity
+There is NO watches table. A "watch" is identified by `watchId` (slug like `omega-seamaster-300m`) on the `photos` table. Watch metadata (brand, model, reference) lives on each photo record. When displaying watch name, derive from `[brandName, modelName].filter(Boolean).join(' ') || unslugify(watchId)`.
+
+## Photo Approval Flow
+- Admin approves a group of photos via `POST /api/admin/photos` with `action: 'bulk-approve'`
+- Sends ONE summary email regardless of how many photos are in the batch
+- Single photo batches use the `photo-approved.html` template
+- Multi-photo batches use inline HTML with a photo list + dashboard nav links
 
 ## Architecture Rules (Learned from bugs)
-
-- **Single source of truth**: Never maintain parallel arrays/lists that must be kept in sync. If a list exists in a data file (`guideData.ts`, `watches.json`, etc.), derive from it — never hardcode a copy elsewhere. (Root cause of guides index bug, 2026-03-18)
-- **Dynamic routing > static lists**: When Next.js supports dynamic slug routing, use it. Don't manually register pages that can be auto-discovered.
-- **Validate before deploying**: Run `npm run validate` (if exists) before `npm run build`. The validate script catches slug mismatches, broken references, and missing data entries.
-
-## Self-Improvement Logging
-
-After every task, log to `C:\Users\daniel\.openclaw\workspace\.learnings\`:
-- Unexpected errors → `ERRORS.md`
-- Bug patterns worth preventing → `LEARNINGS.md`
-- Better approaches discovered → `LEARNINGS.md`
+- **Single source of truth**: Neon DB only. Never recreate static JSON data files.
+- **Dynamic routing > static lists**: Use Next.js dynamic slug routing, don't manually register pages.
+- **No static watch catalogue**: Watch identity is derived from photo submissions, not a predefined list.
+- **`npm run validate` is removed** — the script that used watches.json is deleted.
 
 ## DO NOT
 - Ask about domain setup — already live at watchems.com
 - Re-suggest affiliate links
-- Create hardcoded lists that mirror data already in a TypeScript file
+- Recreate `data/watches.json` or `lib/watches.ts`
+- Add social feed, follower, or community engagement features
+- Create hardcoded lists that mirror data already in the DB
