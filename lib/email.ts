@@ -48,6 +48,7 @@ interface PhotoRejectionData {
   brandName?: string
   modelName?: string
   referenceNumber?: string
+  imageUrl?: string
   reasonLabel: string
   reasonDescription: string
   customNote?: string
@@ -77,6 +78,7 @@ export async function sendPhotoRejectedEmail(
     brand: data.brandName || '',
     model: data.modelName || '',
     reference: data.referenceNumber || '',
+    imageUrl: data.imageUrl || '',
     reasonLabel: data.reasonLabel,
     reasonDescription: data.reasonDescription || '',
     customNote: data.customNote || '',
