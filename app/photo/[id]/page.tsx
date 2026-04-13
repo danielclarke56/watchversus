@@ -129,9 +129,8 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
       name: p.userName,
     },
     about: {
-      '@type': 'Product',
+      '@type': 'Thing',
       name: `${brandName} ${modelName}`,
-      brand: { '@type': 'Brand', name: brandName },
     },
   }
 
