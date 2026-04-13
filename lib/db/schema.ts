@@ -30,6 +30,7 @@ export const photos = pgTable(
     strapType: text('strap_type'),
     watchStyle: text('watch_style'),
     status: text('status').default('pending').notNull(), // 'pending' | 'approved' | 'rejected'
+    rejectionReason: text('rejection_reason'), // set when status = 'rejected'
     sortOrder: integer('sort_order').default(0).notNull(),
     slug: text('slug').unique(), // SEO-friendly: {brand}-{model}-{first8charsOfUUID}
     createdAt: timestamp('created_at')

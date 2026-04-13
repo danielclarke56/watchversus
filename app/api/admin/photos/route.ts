@@ -7,7 +7,8 @@ import { checkAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { photos, photoLikes, collectionItems } from '@/lib/db/schema'
 import { eq, and, sql, inArray } from 'drizzle-orm'
-import { sendPhotoApprovedEmail, sendPhotoBulkApprovedEmail } from '@/lib/email'
+import { sendPhotoApprovedEmail, sendPhotoBulkApprovedEmail, sendPhotoRejectedEmail } from '@/lib/email'
+import { REJECTION_REASONS } from '@/lib/rejectionReasons'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,6 +82,7 @@ export async function GET(req: NextRequest) {
       approved: status === 'approved',
       likeCount: likeCounts[p.id] ?? 0,
       saveCount: saveCounts[p.id] ?? 0,
+      rejectionReason: p.rejectionReason ?? null,
     }))
 
     // Sort by sortOrder asc, then createdAt descending
@@ -102,8 +104,8 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!checkAdmin(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const body = (await req.json()) as { action: 'approve' | 'bulk-approve' | 'user-approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string; photoIds?: string[]; submitterUserId?: string }
-  const { action, watchId, photoId, photoIds, submitterUserId } = body
+  const body = (await req.json()) as { action: 'approve' | 'bulk-approve' | 'user-approve' | 'delete' | 'reject' | 'delete-approved' | 'restore' | 'delete-pending'; watchId: string; photoId: string; photoIds?: string[]; submitterUserId?: string; rejectionReasonId?: string; rejectionNote?: string }
+  const { action, watchId, photoId, photoIds, submitterUserId, rejectionReasonId, rejectionNote } = body
 
   if (!['approve', 'bulk-approve', 'user-approve', 'delete', 'reject', 'delete-approved', 'restore', 'delete-pending'].includes(action)) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
@@ -248,8 +250,37 @@ export async function POST(req: NextRequest) {
         }
       }
     } else if (action === 'reject') {
-      // Only update status to rejected - do NOT delete the file
-      await db.update(photos).set({ status: 'rejected' }).where(eq(photos.id, photoId))
+      const reason = REJECTION_REASONS.find((r) => r.id === rejectionReasonId)
+      const storedReason = reason
+        ? rejectionNote
+          ? `${reason.label}: ${rejectionNote}`
+          : reason.label
+        : rejectionNote || null
+
+      await db.update(photos)
+        .set({ status: 'rejected', rejectionReason: storedReason })
+        .where(eq(photos.id, photoId))
+
+      // Send rejection email (non-blocking)
+      if (photoRecord.userId && reason) {
+        try {
+          const clerk = await clerkClient()
+          const user = await clerk.users.getUser(photoRecord.userId)
+          const email = user.emailAddresses?.[0]?.emailAddress
+          if (email) {
+            await sendPhotoRejectedEmail(email, {
+              firstName: user.firstName ?? undefined,
+              brandName: photoRecord.brandName ?? undefined,
+              modelName: photoRecord.modelName ?? undefined,
+              reasonLabel: reason.label,
+              reasonDescription: reason.id !== 'other' ? reason.description : '',
+              customNote: rejectionNote,
+            })
+          }
+        } catch (emailError) {
+          console.error('[Resend] Failed to send rejection email:', emailError)
+        }
+      }
     } else if (action === 'restore') {
       // Restore a rejected photo back to pending
       await db.update(photos).set({ status: 'pending' }).where(eq(photos.id, photoId))

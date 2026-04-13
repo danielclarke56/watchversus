@@ -4,8 +4,92 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import type { PendingPhoto, ApprovedPhoto } from '@/lib/photos'
 import { generatePhotoSlug } from '@/lib/generatePhotoSlug'
+import { REJECTION_REASONS, type RejectionReasonId } from '@/lib/rejectionReasons'
 
 const CropModal = dynamic(() => import('@/app/upload/CropModal'), { ssr: false })
+
+/** Modal for picking a rejection reason before confirming reject */
+function RejectModal({
+  watchName,
+  onConfirm,
+  onCancel,
+}: {
+  watchName: string
+  onConfirm: (reasonId: RejectionReasonId, note: string) => void
+  onCancel: () => void
+}) {
+  const [selected, setSelected] = useState<RejectionReasonId>('not_original')
+  const [note, setNote] = useState('')
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+        <div className="px-5 py-4 border-b border-gray-100">
+          <h3 className="text-base font-bold text-gray-900">Reject submission</h3>
+          <p className="text-xs text-gray-500 mt-0.5 truncate">{watchName}</p>
+        </div>
+        <div className="px-5 py-4 space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Reason</p>
+          {REJECTION_REASONS.map((reason) => (
+            <label
+              key={reason.id}
+              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                selected === reason.id
+                  ? 'border-red-400 bg-red-50'
+                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <input
+                type="radio"
+                name="reject-reason"
+                value={reason.id}
+                checked={selected === reason.id}
+                onChange={() => setSelected(reason.id as RejectionReasonId)}
+                className="mt-0.5 accent-red-600 shrink-0"
+              />
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{reason.label}</p>
+                {reason.id !== 'other' && (
+                  <p className="text-xs text-gray-500 mt-0.5 leading-snug">{reason.description}</p>
+                )}
+              </div>
+            </label>
+          ))}
+          <div className="pt-1">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">
+              {selected === 'other' ? 'Note (required)' : 'Additional note (optional)'}
+            </label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Add a note for the user..."
+              rows={2}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-400 resize-none"
+            />
+          </div>
+        </div>
+        <div className="px-5 py-3 border-t border-gray-100 flex gap-2 justify-end">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              if (selected === 'other' && !note.trim()) return
+              onConfirm(selected, note.trim())
+            }}
+            disabled={selected === 'other' && !note.trim()}
+            className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50"
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 type Tab = 'pending' | 'approved' | 'rejected'
 
@@ -258,7 +342,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   isSavingMeta?: boolean
   savedMetaOk?: boolean
   onApproveGroup?: (watchId: string, photoIds: string[]) => void
-  onRejectGroup?: (watchId: string, photoIds: string[]) => void
+  onRejectGroup?: (watchId: string, photoIds: string[]) => void  // triggers modal in parent
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDeleteGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
@@ -762,6 +846,7 @@ export default function AdminPhotosClient() {
   const [error, setError] = useState<string>('')
   const [acting, setActing] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [rejectModal, setRejectModal] = useState<{ groupKey: string; watchName: string; photoIds: string[] } | null>(null)
 
   // Group-level watch metadata state (keyed by watchId)
   const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
@@ -1135,7 +1220,7 @@ export default function AdminPhotosClient() {
     setActing(null)
   }
 
-  async function handleRejectGroup(groupKey: string, photoIds: string[]) {
+  async function handleRejectGroup(groupKey: string, photoIds: string[], reasonId: RejectionReasonId, note: string) {
     const watchId = watchIdFromKey(groupKey)
     setActing(`reject-${groupKey}`)
     try {
@@ -1144,7 +1229,7 @@ export default function AdminPhotosClient() {
           fetch('/api/admin/photos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'reject', watchId, photoId }),
+            body: JSON.stringify({ action: 'reject', watchId, photoId, rejectionReasonId: reasonId, rejectionNote: note }),
           })
         )
       )
@@ -1541,7 +1626,7 @@ export default function AdminPhotosClient() {
                                 isSavingMeta={savingMetaGroup === group.key}
                                 savedMetaOk={savedMetaGroupOk === group.key}
                                 onApproveGroup={handleApproveGroup}
-                                onRejectGroup={handleRejectGroup}
+                                onRejectGroup={(groupKey, photoIds) => setRejectModal({ groupKey, watchName: [watchMetaState[groupKey]?.brandName, watchMetaState[groupKey]?.modelName].filter(Boolean).join(' ') || group.watchId, photoIds })}
                                 onDelete={(photo) => handleDeletePending(photo)}
                                 onSplitPhoto={handleSplitPhoto}
                                 splittingPhotoId={splittingPhotoId}
@@ -1658,6 +1743,18 @@ export default function AdminPhotosClient() {
           imageSrc={cropTarget.imageUrl}
           onConfirm={handleCropConfirm}
           onCancel={() => setCropTarget(null)}
+        />
+      )}
+
+      {/* Reject reason modal */}
+      {rejectModal && (
+        <RejectModal
+          watchName={rejectModal.watchName}
+          onConfirm={(reasonId, note) => {
+            handleRejectGroup(rejectModal.groupKey, rejectModal.photoIds, reasonId, note)
+            setRejectModal(null)
+          }}
+          onCancel={() => setRejectModal(null)}
         />
       )}
     </div>

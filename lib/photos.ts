@@ -27,6 +27,7 @@ export interface PendingPhoto extends Photo {
   approved: false
   likeCount?: number
   saveCount?: number
+  rejectionReason?: string | null
 }
 
 export interface ApprovedPhoto extends Photo {
