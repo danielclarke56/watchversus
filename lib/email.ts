@@ -9,25 +9,45 @@ function getResend(): Resend | null {
   return _resend
 }
 
-// Cache the local template HTML in memory (refreshed on cold start)
-let singleTemplateCache: string | null = null
+// Cache templates in memory (refreshed on cold start)
+const templateCache: Record<string, string> = {}
 
-function getSingleTemplateHtml(): string | null {
-  if (singleTemplateCache) return singleTemplateCache
+function getTemplateHtml(name: string): string | null {
+  if (templateCache[name]) return templateCache[name]
   try {
-    const filePath = path.join(process.cwd(), 'lib', 'email-templates', 'photo-approved.html')
+    const filePath = path.join(process.cwd(), 'lib', 'email-templates', `${name}.html`)
     const html = fs.readFileSync(filePath, 'utf-8')
-    singleTemplateCache = html
+    templateCache[name] = html
     return html
   } catch {
     return null
   }
 }
 
+/** Replace {{var}} placeholders and strip {{#var}}...{{/var}} blocks when var is empty */
+function renderTemplate(template: string, vars: Record<string, string>): string {
+  let html = template
+  // Conditional blocks: {{#var}}content{{/var}} — include only when var is non-empty
+  html = html.replace(/\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (_, key, content) => {
+    return vars[key] ? content : ''
+  })
+  // Simple substitution
+  for (const [key, val] of Object.entries(vars)) {
+    html = html.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val)
+  }
+  return html
+}
+
+// Keep old single-template getter for backward compat
+function getSingleTemplateHtml(): string | null {
+  return getTemplateHtml('photo-approved')
+}
+
 interface PhotoRejectionData {
   firstName?: string
   brandName?: string
   modelName?: string
+  referenceNumber?: string
   reasonLabel: string
   reasonDescription: string
   customNote?: string
@@ -43,84 +63,30 @@ export async function sendPhotoRejectedEmail(
     return { success: false, error: 'Resend not configured' }
   }
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
-  const firstName = data.firstName || 'there'
-  const watchName = [data.brandName, data.modelName].filter(Boolean).join(' ') || 'your photo'
-  const reasonText = data.customNote
-    ? `${data.reasonDescription} ${data.customNote}`.trim()
-    : data.reasonDescription || data.reasonLabel
+  const templateHtml = getTemplateHtml('photo-rejected')
+  if (!templateHtml) {
+    console.error('[Resend] Could not load photo-rejected.html template — skipping email')
+    return { success: false, error: 'Template not found' }
+  }
 
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your photo submission</title>
-</head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 20px;">
-    <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-        <tr>
-          <td style="background-color:#ffffff;padding:24px 32px;border-radius:12px 12px 0 0;border-bottom:1px solid #e2e8f0;" align="center">
-            <a href="https://watchems.com" target="_blank" style="text-decoration:none;">
-              <img src="https://www.watchems.com/logo.svg" alt="Watchems" width="160" height="26" style="display:block;border:0;outline:none;" />
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td style="background-color:#ffffff;padding:48px 40px;">
-            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
-              <tr>
-                <td align="center">
-                  <div style="width:64px;height:64px;border-radius:50%;background-color:#fee2e2;text-align:center;line-height:64px;font-size:32px;">✕</div>
-                </td>
-              </tr>
-            </table>
-            <h1 style="margin:0 0 8px;text-align:center;font-size:26px;font-weight:700;color:#0f172a;">Photo not approved</h1>
-            <p style="margin:0 0 32px;text-align:center;font-size:16px;color:#64748b;">Hey ${firstName},</p>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin:0 0 32px;">
-              <tr>
-                <td style="padding:20px 24px;">
-                  <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;">Reason</p>
-                  <p style="margin:0 0 8px;font-size:16px;font-weight:700;color:#0f172a;">${data.reasonLabel}</p>
-                  ${reasonText ? `<p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">${reasonText}</p>` : ''}
-                </td>
-              </tr>
-            </table>
-            <p style="margin:0 0 32px;text-align:center;font-size:16px;line-height:1.6;color:#475569;">
-              Your submission for <strong>${watchName}</strong> was not approved this time. You're welcome to submit a new photo that meets our guidelines.
-            </p>
-            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 40px;">
-              <tr>
-                <td align="center" style="background-color:#0f172a;border-radius:8px;">
-                  <a href="https://watchems.com/upload" target="_blank" style="display:inline-block;padding:14px 40px;color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;">Try Again &#8594;</a>
-                </td>
-              </tr>
-            </table>
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 24px;" />
-            <p style="margin:0;text-align:center;font-size:13px;color:#94a3b8;">Questions? Reply to this email and we'll help.</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="background-color:#f8fafc;padding:24px 40px;border-radius:0 0 12px 12px;border-top:1px solid #e2e8f0;">
-            <p style="margin:0;text-align:center;font-size:13px;color:#94a3b8;">&copy; 2026 Watchems. All rights reserved.</p>
-            <p style="margin:8px 0 0;text-align:center;font-size:13px;">
-              <a href="https://watchems.com" target="_blank" style="color:#64748b;text-decoration:none;">watchems.com</a>
-            </p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
+  const watchName = [data.brandName, data.modelName].filter(Boolean).join(' ') || 'your photo'
+
+  const html = renderTemplate(templateHtml, {
+    firstName: data.firstName || 'there',
+    brand: data.brandName || '',
+    model: data.modelName || '',
+    reference: data.referenceNumber || '',
+    reasonLabel: data.reasonLabel,
+    reasonDescription: data.reasonDescription || '',
+    customNote: data.customNote || '',
+  })
 
   try {
     const { error } = await resend.emails.send({
       from: fromEmail,
       to,
-      subject: `Your ${watchName} photo on Watchems`,
+      subject: `Your ${watchName} submission on Watchems`,
       html,
     })
     if (error) {
@@ -178,19 +144,14 @@ export async function sendPhotoApprovedEmail(
     return { success: false, error: 'Template not found' }
   }
 
-  const vars: Record<string, string> = {
+  const html = renderTemplate(templateHtml, {
     firstName: data.firstName || 'there',
     slug: data.slug || '',
     imageUrl: data.imageUrl || '',
     brand: data.brandName || '',
     model: data.modelName || '',
     reference: data.referenceNumber || '',
-  }
-
-  let html = templateHtml
-  for (const [key, val] of Object.entries(vars)) {
-    html = html.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val)
-  }
+  })
 
   try {
     const { error } = await resend.emails.send({

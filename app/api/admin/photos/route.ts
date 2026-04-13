@@ -272,6 +272,7 @@ export async function POST(req: NextRequest) {
               firstName: user.firstName ?? undefined,
               brandName: photoRecord.brandName ?? undefined,
               modelName: photoRecord.modelName ?? undefined,
+              referenceNumber: photoRecord.referenceNumber ?? undefined,
               reasonLabel: reason.label,
               reasonDescription: reason.id !== 'other' ? reason.description : '',
               customNote: rejectionNote,

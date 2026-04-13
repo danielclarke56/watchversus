@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your photo submission</title>
+  </head>
+  <body
+    style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;"
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color:#f1f5f9;padding:40px 20px;"
+    >
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+            <!-- Header with logo -->
+            <tr>
+              <td
+                style="background-color:#ffffff;padding:24px 32px;border-radius:12px 12px 0 0;border-bottom:1px solid #e2e8f0;"
+                align="center"
+              >
+                <a href="https://watchems.com" target="_blank" style="text-decoration:none;">
+                  <img
+                    src="https://www.watchems.com/logo.svg"
+                    alt="Watchems"
+                    width="160"
+                    height="26"
+                    style="display:block;border:0;outline:none;"
+                  />
+                </a>
+              </td>
+            </tr>
+            <!-- Body -->
+            <tr>
+              <td style="background-color:#ffffff;padding:48px 40px;">
+                <!-- Red X badge -->
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+                  <tr>
+                    <td align="center">
+                      <div
+                        style="width:64px;height:64px;border-radius:50%;background-color:#fee2e2;text-align:center;line-height:64px;font-size:28px;font-weight:700;color:#dc2626;"
+                      >
+                        &#10007;
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <!-- Headline -->
+                <h1 style="margin:0 0 8px;text-align:center;font-size:28px;font-weight:700;color:#0f172a;">
+                  Photo not approved
+                </h1>
+                <!-- Greeting -->
+                <p style="margin:0 0 32px;text-align:center;font-size:16px;color:#64748b;">
+                  Hey {{firstName}},
+                </p>
+                <!-- Watch details card -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin:0 0 24px;"
+                >
+                  <tr>
+                    <td style="padding:24px;">
+                      <p
+                        style="margin:0 0 4px;font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:1px;"
+                      >
+                        Submission
+                      </p>
+                      <p style="margin:0 0 4px;font-size:22px;font-weight:700;color:#0f172a;">{{brand}} {{model}}</p>
+                      {{#reference}}<p style="margin:0;font-size:14px;color:#94a3b8;">Ref. {{reference}}</p>{{/reference}}
+                    </td>
+                  </tr>
+                </table>
+                <!-- Reason card -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="background-color:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin:0 0 32px;"
+                >
+                  <tr>
+                    <td style="padding:20px 24px;">
+                      <p
+                        style="margin:0 0 6px;font-size:12px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1px;"
+                      >
+                        Reason for rejection
+                      </p>
+                      <p style="margin:0 0 8px;font-size:16px;font-weight:700;color:#0f172a;">{{reasonLabel}}</p>
+                      {{#reasonDescription}}<p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">{{reasonDescription}}</p>{{/reasonDescription}}
+                      {{#customNote}}<p style="margin:8px 0 0;font-size:14px;color:#475569;line-height:1.6;font-style:italic;">&ldquo;{{customNote}}&rdquo;</p>{{/customNote}}
+                    </td>
+                  </tr>
+                </table>
+                <!-- Description -->
+                <p style="margin:0 0 32px;text-align:center;font-size:16px;line-height:1.6;color:#475569;">
+                  Your submission wasn&rsquo;t approved this time, but you&rsquo;re welcome to try again with a new photo that meets our guidelines.
+                </p>
+                <!-- CTA Button -->
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 40px;">
+                  <tr>
+                    <td align="center" style="background-color:#0f172a;border-radius:8px;">
+                      <a
+                        href="https://watchems.com/upload"
+                        target="_blank"
+                        style="display:inline-block;padding:14px 40px;color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;"
+                        >Try Again &#8594;</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+                <!-- Divider -->
+                <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 32px;" />
+                <!-- Guidelines section -->
+                <p style="margin:0 0 16px;text-align:center;font-size:15px;font-weight:600;color:#0f172a;">
+                  Tips for a successful submission
+                </p>
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 32px;">
+                  <tr>
+                    <td style="padding:0 0 10px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1.5px solid #e2e8f0;border-radius:10px;background-color:#ffffff;">
+                        <tr>
+                          <td style="padding:14px 18px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                              <tr>
+                                <td style="width:36px;vertical-align:middle;">
+                                  <div style="width:32px;height:32px;border-radius:6px;background-color:#f0fdf4;text-align:center;line-height:32px;font-size:16px;">📸</div>
+                                </td>
+                                <td style="padding-left:12px;vertical-align:middle;">
+                                  <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#0f172a;">Use your own wrist shot</p>
+                                  <p style="margin:0;font-size:12px;color:#64748b;">A real photo you personally took, on or off the wrist.</p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0 0 10px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1.5px solid #e2e8f0;border-radius:10px;background-color:#ffffff;">
+                        <tr>
+                          <td style="padding:14px 18px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                              <tr>
+                                <td style="width:36px;vertical-align:middle;">
+                                  <div style="width:32px;height:32px;border-radius:6px;background-color:#f0f9ff;text-align:center;line-height:32px;font-size:16px;">💡</div>
+                                </td>
+                                <td style="padding-left:12px;vertical-align:middle;">
+                                  <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#0f172a;">Good lighting makes a difference</p>
+                                  <p style="margin:0;font-size:12px;color:#64748b;">Natural light or a well-lit room gives the best results.</p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1.5px solid #e2e8f0;border-radius:10px;background-color:#ffffff;">
+                        <tr>
+                          <td style="padding:14px 18px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                              <tr>
+                                <td style="width:36px;vertical-align:middle;">
+                                  <div style="width:32px;height:32px;border-radius:6px;background-color:#fefce8;text-align:center;line-height:32px;font-size:16px;">🔍</div>
+                                </td>
+                                <td style="padding-left:12px;vertical-align:middle;">
+                                  <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#0f172a;">Keep the watch in focus</p>
+                                  <p style="margin:0;font-size:12px;color:#64748b;">The dial and case should be clearly visible and sharp.</p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <!-- Reply note -->
+                <p style="margin:0;text-align:center;font-size:13px;color:#94a3b8;">
+                  Questions? Reply to this email and we&rsquo;ll be happy to help.
+                </p>
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td
+                style="background-color:#f8fafc;padding:24px 40px;border-radius:0 0 12px 12px;border-top:1px solid #e2e8f0;"
+              >
+                <p style="margin:0;text-align:center;font-size:13px;color:#94a3b8;">
+                  &copy; 2026 Watchems. All rights reserved.
+                </p>
+                <p style="margin:8px 0 0;text-align:center;font-size:13px;color:#94a3b8;">
+                  <a href="https://watchems.com" target="_blank" style="color:#64748b;text-decoration:none;"
+                    >watchems.com</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
