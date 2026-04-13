@@ -1424,10 +1424,9 @@ export default function AdminPhotosClient() {
 
       const { url, thumbnailUrl } = await res.json()
 
-      // Bust browser cache by appending a timestamp
-      const bust = `?v=${Date.now()}`
+      // URL already has a unique versioned key — no query-string bust needed
       const update = (p: PendingPhoto | ApprovedPhoto) =>
-        p.id === photoId ? { ...p, url: url + bust, thumbnailUrl: (thumbnailUrl || url) + bust } : p
+        p.id === photoId ? { ...p, url, thumbnailUrl: thumbnailUrl || url } : p
 
       setPendingPhotos((prev) => prev.map(update) as PendingPhoto[])
       setApprovedPhotos((prev) => prev.map(update) as ApprovedPhoto[])
@@ -1458,9 +1457,8 @@ export default function AdminPhotosClient() {
         return
       }
       const { url, thumbnailUrl } = await res.json()
-      const bust = `?v=${Date.now()}`
       const update = (p: PendingPhoto | ApprovedPhoto) =>
-        p.id === photo.id ? { ...p, url: url + bust, thumbnailUrl: (thumbnailUrl || url) + bust, originalUrl: null } : p
+        p.id === photo.id ? { ...p, url, thumbnailUrl: thumbnailUrl || url, originalUrl: null } : p
 
       setPendingPhotos((prev) => prev.map(update) as PendingPhoto[])
       setApprovedPhotos((prev) => prev.map(update) as ApprovedPhoto[])

@@ -44,13 +44,14 @@ export async function POST(req: NextRequest) {
         .toBuffer(),
     ])
 
-    // Re-upload to R2
-    const { uploadPhotoToR2, uploadThumbnailToR2, isR2Configured } = await import('@/lib/r2')
+    // Re-upload to R2 under a versioned key to bust CDN caches
+    const { uploadCroppedPhotoToR2, isR2Configured } = await import('@/lib/r2')
     if (!isR2Configured) return NextResponse.json({ error: 'R2 not configured' }, { status: 500 })
 
+    const version = Date.now()
     const [newUrl, newThumbUrl] = await Promise.all([
-      uploadPhotoToR2(photo.watchId, photo.id, cleanBuffer),
-      uploadThumbnailToR2(photo.watchId, photo.id, thumbBuffer),
+      uploadCroppedPhotoToR2(photo.watchId, photo.id, version, cleanBuffer, false),
+      uploadCroppedPhotoToR2(photo.watchId, photo.id, version, thumbBuffer, true),
     ])
 
     // Update DB: restore URLs, clear originalUrl

@@ -53,15 +53,16 @@ export async function POST(req: NextRequest) {
       await db.update(photos).set({ originalUrl: photo.url }).where(eq(photos.id, photoId))
     }
 
-    // Re-upload to R2 at the same keys
-    const { uploadPhotoToR2, uploadThumbnailToR2, isR2Configured } = await import('@/lib/r2')
+    // Upload to R2 under a versioned key so the URL changes and caches are busted
+    const { isR2Configured, uploadCroppedPhotoToR2 } = await import('@/lib/r2')
     if (!isR2Configured) {
       return NextResponse.json({ error: 'R2 not configured' }, { status: 500 })
     }
 
+    const version = Date.now()
     const [newUrl, newThumbUrl] = await Promise.all([
-      uploadPhotoToR2(photo.watchId, photo.id, cleanBuffer),
-      uploadThumbnailToR2(photo.watchId, photo.id, thumbBuffer),
+      uploadCroppedPhotoToR2(photo.watchId, photo.id, version, cleanBuffer),
+      uploadCroppedPhotoToR2(photo.watchId, photo.id, version, thumbBuffer, true),
     ])
 
     // Update DB URLs (in case watchId changed and keys differ)

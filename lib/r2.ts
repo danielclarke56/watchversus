@@ -92,6 +92,34 @@ export async function uploadThumbnailToR2(
 }
 
 /**
+ * Upload a cropped version of a photo to a versioned key so the URL changes
+ * and existing CDN/browser caches are automatically busted.
+ * Key format: user-photos/{watchId}/{photoId}-crop-{version}.webp
+ */
+export async function uploadCroppedPhotoToR2(
+  watchId: string,
+  photoId: string,
+  version: number,
+  buffer: Buffer,
+  isThumbnail = false
+): Promise<string> {
+  const suffix = isThumbnail ? `.thumb` : ''
+  const key = `user-photos/${watchId}/${photoId}-crop-${version}${suffix}.webp`
+  const client = getS3Client()
+
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET_NAME!,
+    Key: key,
+    Body: buffer,
+    ContentType: 'image/webp',
+    CacheControl: 'public, max-age=31536000, immutable',
+  })
+
+  await client.send(command)
+  return `${R2_PUBLIC_URL}/${key}`
+}
+
+/**
  * Delete a photo from Cloudflare R2 by URL
  */
 export async function deletePhotoFromR2(photoUrl: string): Promise<boolean> {
