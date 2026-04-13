@@ -267,20 +267,6 @@ function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
         </p>
       )}
 
-      {/* Did you mean */}
-      {suggestions.length > 0 && (
-        <div className="mb-6">
-          <p className="text-sm text-gray-500 mb-2">Did you mean:</p>
-          <div className="flex gap-2 justify-center flex-wrap">
-            {suggestions.map((s) => (
-              <button key={s} type="button" onClick={() => onSearch(s)} className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Upload CTA — main focus */}
       <div className="border-2 border-dashed border-gray-300 rounded-2xl px-10 py-12 max-w-md w-full mb-8">
         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-5">
@@ -304,6 +290,20 @@ function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
           Upload a photo
         </a>
       </div>
+
+      {/* Did you mean */}
+      {suggestions.length > 0 && (
+        <div className="mb-6">
+          <p className="text-sm text-gray-500 mb-2">Did you mean:</p>
+          <div className="flex gap-2 justify-center flex-wrap">
+            {suggestions.map((s) => (
+              <button key={s} type="button" onClick={() => onSearch(s)} className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Popular searches — secondary */}
       <div>
