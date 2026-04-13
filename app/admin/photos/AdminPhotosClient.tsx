@@ -271,6 +271,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   isApproved: boolean
   isRejected?: boolean
 }) {
+  const [expanded, setExpanded] = useState(false)
   const [lightbox, setLightbox] = useState<LightboxState>({
     isOpen: false,
     currentIndex: 0,
@@ -361,38 +362,89 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   return (
     <>
       <div className="border border-border rounded-lg overflow-hidden bg-surface">
-        {/* Header */}
-        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border bg-surfaceAlt">
-          <div className="flex items-start justify-between gap-2 mb-0.5">
+        {/* ── Collapsed header row — always visible ── */}
+        <div
+          className="px-3 py-2.5 sm:px-4 sm:py-3 bg-surfaceAlt cursor-pointer select-none"
+          onClick={() => setExpanded((v) => !v)}
+        >
+          <div className="flex items-center gap-2">
+            {/* Chevron */}
+            <svg
+              className={`w-4 h-4 shrink-0 text-textMuted transition-transform ${expanded ? 'rotate-90' : ''}`}
+              fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+
+            {/* Cover thumbnail */}
+            {group.photos[0] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={group.photos[0].url}
+                alt=""
+                className="w-9 h-9 rounded object-cover shrink-0 border border-border"
+              />
+            )}
+
+            {/* Title + meta */}
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm sm:text-base font-bold text-textPrimary truncate">{displayName || 'New Watch'}</h3>
-              <p className="text-xs text-textMuted mt-0.5">
-                {group.submitterName} ·{' '}
-                {new Date(group.submittedDate).toLocaleDateString('en-US', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                })}
+              <h3 className="text-sm font-bold text-textPrimary truncate leading-tight">
+                {displayName || 'New Watch'}
+                {isDirty && <span className="ml-1.5 text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">unsaved</span>}
+              </h3>
+              <p className="text-xs text-textMuted truncate">
+                {group.submitterName} · {new Date(group.submittedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                {' · '}{group.photos.length} photo{group.photos.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className="flex items-center gap-1.5 shrink-0">
+
+            {/* Status pills + quick actions */}
+            <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
               {isApproved && group.photos.reduce((s, p) => s + (p.likeCount ?? 0), 0) > 0 && (
-                <span className="text-xs font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full" title="Total likes">
+                <span className="text-xs font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
                   ♥ {group.photos.reduce((s, p) => s + (p.likeCount ?? 0), 0)}
                 </span>
               )}
               {isApproved && group.photos.reduce((s, p) => s + (p.saveCount ?? 0), 0) > 0 && (
-                <span className="text-xs font-semibold bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full" title="Total saves">
+                <span className="text-xs font-semibold bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full">
                   🔖 {group.photos.reduce((s, p) => s + (p.saveCount ?? 0), 0)}
                 </span>
               )}
-              <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                {group.photos.length}
-              </span>
+              {/* Quick approve/reject on collapsed header (pending only) */}
+              {!isApproved && !isRejected && onApproveGroup && (
+                <button
+                  onClick={() => onApproveGroup(group.key, group.photos.map((p) => p.id))}
+                  disabled={isApprovingGroup}
+                  className="text-xs bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 rounded font-semibold transition-colors disabled:opacity-50"
+                  title="Approve"
+                >
+                  {isApprovingGroup ? '…' : '✓ Approve'}
+                </button>
+              )}
+              {!isApproved && !isRejected && onRejectGroup && (
+                <button
+                  onClick={() => onRejectGroup(group.key, group.photos.map((p) => p.id))}
+                  disabled={isRejectingGroup}
+                  className="text-xs bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded font-semibold transition-colors disabled:opacity-50"
+                  title="Reject"
+                >
+                  {isRejectingGroup ? '…' : '✕'}
+                </button>
+              )}
+              {isApproved && (
+                <span className="text-xs font-semibold text-green-600">✓ Approved</span>
+              )}
+              {isRejected && (
+                <span className="text-xs font-semibold text-red-500">✗ Rejected</span>
+              )}
             </div>
           </div>
         </div>
 
+        {/* ── Expandable body ── */}
+        {expanded && <>
         {/* Watch metadata — compact grid */}
-        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-b border-border">
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3 border-t border-border">
           <p className="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-1.5">Watch Info</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
             <FieldInput label="Brand" value={watchMeta.brandName} onChange={(v) => onUpdateWatchMeta(group.key, 'brandName', v)} />
@@ -656,6 +708,7 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
             )}
           </div>
         </div>
+        </>}
       </div>
 
       {/* Lightbox modal */}
