@@ -258,16 +258,18 @@ function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
   }, [query, serverSuggestions])
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="text-5xl mb-4">🔍</div>
-      <h2 className="text-xl font-bold text-textPrimary mb-2">No results found</h2>
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      {/* Heading */}
+      <h2 className="text-xl font-bold text-textPrimary mb-1">No results found</h2>
       {query && (
-        <p className="text-textSecond mb-4">
+        <p className="text-sm text-textSecond mb-6">
           No photos match &lsquo;{query}&rsquo;
         </p>
       )}
+
+      {/* Did you mean */}
       {suggestions.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-6">
           <p className="text-sm text-gray-500 mb-2">Did you mean:</p>
           <div className="flex gap-2 justify-center flex-wrap">
             {suggestions.map((s) => (
@@ -278,8 +280,34 @@ function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
           </div>
         </div>
       )}
+
+      {/* Upload CTA — main focus */}
+      <div className="border-2 border-dashed border-gray-300 rounded-2xl px-10 py-12 max-w-md w-full mb-8">
+        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-5">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V19a1.5 1.5 0 001.5 1.5h15A1.5 1.5 0 0021 19v-2.5M16 8l-4-4-4 4M12 4v12" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-bold text-textPrimary mb-2">Own this watch?</h3>
+        <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+          {query
+            ? <>No one has shared a <span className="font-semibold text-textPrimary">{query}</span> yet. Be the first to add it to the community gallery.</>
+            : 'No one has shared this watch yet. Be the first to add it to the community gallery.'}
+        </p>
+        <a
+          href="/upload"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Upload a photo
+        </a>
+      </div>
+
+      {/* Popular searches — secondary */}
       <div>
-        <p className="text-sm text-gray-500 mb-2">Popular searches:</p>
+        <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide font-medium">Popular searches</p>
         <div className="flex gap-2 justify-center flex-wrap">
           {POPULAR_BRANDS.map((brand) => (
             <button
@@ -292,23 +320,6 @@ function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Upload CTA */}
-      <div className="mt-8 border border-dashed border-gray-300 rounded-xl px-6 py-6 max-w-sm w-full">
-        <p className="text-sm font-semibold text-textPrimary mb-1">Own this watch?</p>
-        <p className="text-sm text-gray-500 mb-4">
-          {query ? <>Be the first to share a photo of the <span className="font-medium text-textPrimary">{query}</span>.</> : 'Be the first to share a photo of this watch.'}
-        </p>
-        <a
-          href="/upload"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-lg transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Upload a photo
-        </a>
       </div>
     </div>
   )
