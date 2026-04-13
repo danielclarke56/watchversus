@@ -316,8 +316,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   isDirty,
   isSavingMeta,
   savedMetaOk,
-  onApproveGroup,
-  onRejectGroup,
   onRestoreGroup,
   onDeleteGroup,
   onDelete,
@@ -344,8 +342,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   isDirty?: boolean
   isSavingMeta?: boolean
   savedMetaOk?: boolean
-  onApproveGroup?: (watchId: string, photoIds: string[]) => void
-  onRejectGroup?: (watchId: string, photoIds: string[]) => void  // triggers modal in parent
   onRestoreGroup?: (watchId: string, photoIds: string[]) => void
   onDeleteGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
@@ -381,8 +377,6 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   const displayName = [watchMeta.brandName, watchMeta.modelName].filter(Boolean).join(' ') || group.watchId
   const isAiFillingGroup = aiFillingGroup === group.key
   const groupAiFilledOk = aiFilledGroupOk === group.key
-  const isApprovingGroup = acting === `group-${group.key}`
-  const isRejectingGroup = acting === `reject-${group.key}`
   const isRestoringGroup = acting === `restore-${group.key}`
   const isPending = !isApproved && !isRejected
 
@@ -1064,47 +1058,6 @@ export default function AdminPhotosClient() {
   /**
    * Approve entire watch group — all photos and metadata approved at once
    */
-  async function handleApproveGroup(groupKey: string, photoIds: string[]) {
-    const watchId = watchIdFromKey(groupKey)
-    setActing(`group-${groupKey}`)
-    try {
-      // Save all metadata first
-      const meta = watchMetaState[groupKey]
-      if (meta) {
-        await Promise.all(
-          photoIds.map((photoId) =>
-            fetch('/api/admin/photos', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                photoId,
-                fields: { ...meta },
-              }),
-            })
-          )
-        )
-      }
-
-      // Approve all photos in group with a single request (sends one summary email)
-      const approveResult = await fetch('/api/admin/photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'bulk-approve', watchId, photoIds }),
-      })
-
-      if (approveResult.ok) {
-        // Move all photos from pending to approved
-        const photosToApprove = pendingPhotos.filter((p) => photoIds.includes(p.id))
-        setPendingPhotos((prev) => prev.filter((p) => !photoIds.includes(p.id)))
-        setApprovedPhotos((prev) => [
-          ...photosToApprove.map((p) => ({ ...p, approved: true as const })),
-          ...prev,
-        ])
-      }
-    } catch { /* ignore */ }
-    setActing(null)
-  }
-
   async function handleReorder(
     groupKey: string,
     reorderedPhotos: (PendingPhoto | ApprovedPhoto)[]
@@ -1176,48 +1129,6 @@ export default function AdminPhotosClient() {
   /**
    * Approve ALL pending groups from a single user — one API call, one email.
    */
-  async function handleApproveAllFromUser(submitterUserId: string, groups: typeof pendingGroups) {
-    const allPhotoIds = groups.flatMap((g) => g.photos.map((p) => p.id))
-    setActing(`user-approve-${submitterUserId}`)
-
-    try {
-      // Save metadata for all groups first
-      await Promise.all(
-        groups.map((group) => {
-          const meta = watchMetaState[group.key]
-          if (!meta) return Promise.resolve()
-          return Promise.all(
-            group.photos.map((photo) =>
-              fetch('/api/admin/photos', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ photoId: photo.id, fields: { ...meta } }),
-              })
-            )
-          )
-        })
-      )
-
-      const res = await fetch('/api/admin/photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'user-approve', submitterUserId, photoIds: allPhotoIds }),
-      })
-
-      if (res.ok) {
-        const approvedSet = new Set(allPhotoIds)
-        const photosToApprove = pendingPhotos.filter((p) => approvedSet.has(p.id))
-        setPendingPhotos((prev) => prev.filter((p) => !approvedSet.has(p.id)))
-        setApprovedPhotos((prev) => [
-          ...photosToApprove.map((p) => ({ ...p, approved: true as const })),
-          ...prev,
-        ])
-        showToast(`✓ Approved ${photosToApprove.length} photo${photosToApprove.length !== 1 ? 's' : ''} — 1 email sent`)
-      }
-    } catch { /* ignore */ }
-    setActing(null)
-  }
-
   async function handleRejectGroup(groupKey: string, photoIds: string[], reasonId: RejectionReasonId, note: string) {
     const watchId = watchIdFromKey(groupKey)
     setActing(`reject-${groupKey}`)
@@ -1747,8 +1658,6 @@ export default function AdminPhotosClient() {
                                 isDirty={dirtyGroups.has(group.key)}
                                 isSavingMeta={savingMetaGroup === group.key}
                                 savedMetaOk={savedMetaGroupOk === group.key}
-                                onApproveGroup={handleApproveGroup}
-                                onRejectGroup={(groupKey, photoIds) => setRejectModal({ groupKey, watchName: [watchMetaState[groupKey]?.brandName, watchMetaState[groupKey]?.modelName].filter(Boolean).join(' ') || group.watchId, photoIds })}
                                 onDelete={(photo) => handleDeletePending(photo)}
                                 onSplitPhoto={handleSplitPhoto}
                                 splittingPhotoId={splittingPhotoId}
