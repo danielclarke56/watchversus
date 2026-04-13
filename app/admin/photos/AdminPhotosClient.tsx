@@ -329,6 +329,9 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onReorder,
   isApproved,
   isRejected,
+  selectedPhotoIds,
+  onTogglePhoto,
+  onToggleGroup,
 }: {
   group: PhotoGroup<T>
   watchMeta: WatchMetaFields
@@ -347,6 +350,9 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   onDeleteGroup?: (watchId: string, photoIds: string[]) => void
   onDelete?: (photo: T) => void
   onSplitPhoto?: (photo: T) => void
+  selectedPhotoIds?: Set<string>
+  onTogglePhoto?: (photoId: string) => void
+  onToggleGroup?: (photoIds: string[], allSelected: boolean) => void
   splittingPhotoId?: string | null
   onCropPhoto?: (photo: T) => void
   onRevertCrop?: (photo: T) => void
@@ -379,6 +385,11 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
   const isRejectingGroup = acting === `reject-${group.key}`
   const isRestoringGroup = acting === `restore-${group.key}`
   const isPending = !isApproved && !isRejected
+
+  const groupPhotoIds = group.photos.map((p) => p.id)
+  const selectedInGroup = selectedPhotoIds ? groupPhotoIds.filter((id) => selectedPhotoIds.has(id)) : []
+  const allGroupSelected = selectedInGroup.length === groupPhotoIds.length
+  const someGroupSelected = selectedInGroup.length > 0 && !allGroupSelected
 
   const openLightbox = useCallback((index: number) => {
     setLightbox({ isOpen: true, currentIndex: index, watchId: group.watchId })
@@ -452,6 +463,18 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
           onClick={() => setExpanded((v) => !v)}
         >
           <div className="flex items-center gap-2">
+            {/* Group select checkbox (pending only) */}
+            {isPending && onToggleGroup && (
+              <input
+                type="checkbox"
+                checked={allGroupSelected}
+                ref={(el) => { if (el) el.indeterminate = someGroupSelected }}
+                onChange={(e) => { e.stopPropagation(); onToggleGroup(groupPhotoIds, allGroupSelected) }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-4 h-4 shrink-0 accent-blue-600 cursor-pointer"
+                aria-label="Select all photos in group"
+              />
+            )}
             {/* Chevron */}
             <svg
               className={`w-4 h-4 shrink-0 text-textMuted transition-transform ${expanded ? 'rotate-90' : ''}`}
@@ -643,6 +666,22 @@ function GroupedPhotoCard<T extends PendingPhoto | ApprovedPhoto>({
                       >
                         {croppingPhotoId === photo.id ? '…' : '⬔'}
                       </button>
+                    </div>
+                  )}
+
+                  {/* Per-photo select checkbox (pending only) */}
+                  {isPending && onTogglePhoto && (
+                    <div
+                      className="absolute top-1 left-1 z-10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedPhotoIds?.has(photo.id) ?? false}
+                        onChange={() => onTogglePhoto(photo.id)}
+                        className="w-4 h-4 accent-blue-600 cursor-pointer rounded"
+                        aria-label="Select photo"
+                      />
                     </div>
                   )}
 
@@ -847,6 +886,7 @@ export default function AdminPhotosClient() {
   const [acting, setActing] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [rejectModal, setRejectModal] = useState<{ groupKey: string; watchName: string; photoIds: string[] } | null>(null)
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState<Set<string>>(new Set())
 
   // Group-level watch metadata state (keyed by watchId)
   const [watchMetaState, setWatchMetaState] = useState<Record<string, WatchMetaFields>>({})
@@ -1470,6 +1510,122 @@ export default function AdminPhotosClient() {
     setCroppingPhotoId(null)
   }
 
+  function togglePhotoSelection(photoId: string) {
+    setSelectedPhotoIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(photoId)) next.delete(photoId)
+      else next.add(photoId)
+      return next
+    })
+  }
+
+  function toggleGroupSelection(photoIds: string[], allSelected: boolean) {
+    setSelectedPhotoIds((prev) => {
+      const next = new Set(prev)
+      if (allSelected) photoIds.forEach((id) => next.delete(id))
+      else photoIds.forEach((id) => next.add(id))
+      return next
+    })
+  }
+
+  async function handleBulkApproveSelected() {
+    const ids = Array.from(selectedPhotoIds)
+    if (ids.length === 0) return
+
+    // Group selected IDs by userId so we send one email per user
+    const byUser = new Map<string, { userId: string; groups: typeof pendingGroups }>()
+    filteredPendingGroups.forEach((group) => {
+      const groupSelectedIds = group.photos.map((p) => p.id).filter((id) => ids.includes(id))
+      if (groupSelectedIds.length === 0) return
+      const uid = group.photos[0]?.userId ?? 'unknown'
+      if (!byUser.has(uid)) byUser.set(uid, { userId: uid, groups: [] })
+      byUser.get(uid)!.groups.push(group)
+    })
+
+    setActing('bulk-selected')
+    try {
+      for (const entry of Array.from(byUser.values())) {
+        const { userId: uid, groups: userGroups } = entry
+        const userSelectedIds = userGroups.flatMap((g: typeof pendingGroups[number]) => g.photos.map((p: PendingPhoto) => p.id).filter((id: string) => ids.includes(id)))
+        // Save metadata first
+        await Promise.all(
+          userGroups.map((group: typeof pendingGroups[number]) => {
+            const meta = watchMetaState[group.key]
+            if (!meta) return Promise.resolve()
+            const groupSelectedPhotoIds = group.photos.map((p: PendingPhoto) => p.id).filter((id: string) => ids.includes(id))
+            return Promise.all(
+              groupSelectedPhotoIds.map((photoId: string) =>
+                fetch('/api/admin/photos', {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ photoId, fields: { ...meta } }),
+                })
+              )
+            )
+          })
+        )
+        await fetch('/api/admin/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'user-approve', submitterUserId: uid, photoIds: userSelectedIds }),
+        })
+        const approvedSet = new Set(userSelectedIds)
+        const photosToApprove = pendingPhotos.filter((p) => approvedSet.has(p.id))
+        setPendingPhotos((prev) => prev.filter((p) => !approvedSet.has(p.id)))
+        setApprovedPhotos((prev) => [...photosToApprove.map((p) => ({ ...p, approved: true as const })), ...prev])
+      }
+      setSelectedPhotoIds(new Set())
+      showToast(`✓ Approved ${ids.length} photo${ids.length !== 1 ? 's' : ''}`)
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
+  function openBulkRejectModal() {
+    const ids = Array.from(selectedPhotoIds)
+    if (ids.length === 0) return
+    const names = filteredPendingGroups
+      .filter((g) => g.photos.some((p) => ids.includes(p.id)))
+      .map((g) => [watchMetaState[g.key]?.brandName, watchMetaState[g.key]?.modelName].filter(Boolean).join(' ') || g.watchId)
+    setRejectModal({
+      groupKey: '__bulk__',
+      watchName: ids.length === 1 ? (names[0] ?? '') : `${ids.length} photos`,
+      photoIds: ids,
+    })
+  }
+
+  async function handleBulkRejectSelected(reasonId: RejectionReasonId, note: string) {
+    const ids = Array.from(selectedPhotoIds)
+    // Group by group key so we pass the right watchId per photo
+    const photoGroupMap = new Map<string, string>() // photoId → groupKey
+    filteredPendingGroups.forEach((group) => {
+      group.photos.forEach((p) => {
+        if (ids.includes(p.id)) photoGroupMap.set(p.id, group.key)
+      })
+    })
+
+    setActing('bulk-reject-selected')
+    try {
+      await Promise.all(
+        ids.map((photoId) => {
+          const groupKey = photoGroupMap.get(photoId) ?? ''
+          const watchId = watchIdFromKey(groupKey)
+          return fetch('/api/admin/photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'reject', watchId, photoId, rejectionReasonId: reasonId, rejectionNote: note }),
+          })
+        })
+      )
+      const rejectedSet = new Set(ids)
+      const photosToReject = pendingPhotos.filter((p) => rejectedSet.has(p.id))
+      setPendingPhotos((prev) => prev.filter((p) => !rejectedSet.has(p.id)))
+      setRejectedPhotos((prev) => [...photosToReject, ...prev])
+      setSelectedPhotoIds(new Set())
+      showToast(`✗ Rejected ${ids.length} photo${ids.length !== 1 ? 's' : ''}`)
+    } catch { /* ignore */ }
+    setActing(null)
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-xl sm:text-2xl font-bold text-textPrimary mb-6">Photo Moderation</h1>
@@ -1633,6 +1789,9 @@ export default function AdminPhotosClient() {
                                 croppingPhotoId={croppingPhotoId}
                                 onReorder={handleReorderPending}
                                 isApproved={false}
+                                selectedPhotoIds={selectedPhotoIds}
+                                onTogglePhoto={togglePhotoSelection}
+                                onToggleGroup={toggleGroupSelection}
                               />
                             ))}
                           </div>
@@ -1728,6 +1887,36 @@ export default function AdminPhotosClient() {
         </>
       )}
 
+      {/* Bulk action bar — appears when photos are selected */}
+      {selectedPhotoIds.size > 0 && activeTab === 'pending' && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-full shadow-xl">
+          <span className="text-sm font-semibold mr-1">{selectedPhotoIds.size} selected</span>
+          <button
+            onClick={handleBulkApproveSelected}
+            disabled={acting === 'bulk-selected'}
+            className="text-xs bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-full font-semibold transition-colors disabled:opacity-50 flex items-center gap-1"
+          >
+            {acting === 'bulk-selected' ? (
+              <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Approving…</>
+            ) : `✓ Approve`}
+          </button>
+          <button
+            onClick={openBulkRejectModal}
+            disabled={acting === 'bulk-reject-selected'}
+            className="text-xs bg-red-500 hover:bg-red-400 text-white px-3 py-1.5 rounded-full font-semibold transition-colors disabled:opacity-50"
+          >
+            ✕ Reject
+          </button>
+          <button
+            onClick={() => setSelectedPhotoIds(new Set())}
+            className="text-xs text-gray-400 hover:text-white px-2 py-1.5 rounded-full transition-colors"
+            aria-label="Clear selection"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Toast notification */}
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2 rounded-full shadow-lg z-50 pointer-events-none">
@@ -1749,7 +1938,11 @@ export default function AdminPhotosClient() {
         <RejectModal
           watchName={rejectModal.watchName}
           onConfirm={(reasonId, note) => {
-            handleRejectGroup(rejectModal.groupKey, rejectModal.photoIds, reasonId, note)
+            if (rejectModal.groupKey === '__bulk__') {
+              handleBulkRejectSelected(reasonId, note)
+            } else {
+              handleRejectGroup(rejectModal.groupKey, rejectModal.photoIds, reasonId, note)
+            }
             setRejectModal(null)
           }}
           onCancel={() => setRejectModal(null)}
