@@ -295,6 +295,23 @@ function DidYouMean({ query, serverSuggestions, onSearch, onBrand }: {
           ))}
         </div>
       </div>
+
+      {/* Upload CTA */}
+      <div className="mt-8 border border-dashed border-gray-300 rounded-xl px-6 py-6 max-w-sm w-full">
+        <p className="text-sm font-semibold text-textPrimary mb-1">Own this watch?</p>
+        <p className="text-sm text-gray-500 mb-4">
+          {query ? <>Be the first to share a photo of the <span className="font-medium text-textPrimary">{query}</span>.</> : 'Be the first to share a photo of this watch.'}
+        </p>
+        <a
+          href="/upload"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-lg transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Upload a photo
+        </a>
+      </div>
     </div>
   )
 }
