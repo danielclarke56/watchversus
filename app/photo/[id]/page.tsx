@@ -156,6 +156,13 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
                 .join('. '),
             }
           : {}),
+        offers: {
+          '@type': 'Offer',
+          url: `https://watchems.com/photo/${slug}`,
+          priceCurrency: 'USD',
+          price: '0',
+          availability: 'https://schema.org/InStock',
+        },
       }
     : null
 
