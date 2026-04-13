@@ -21,7 +21,6 @@ interface AiFillResponse {
   waterResistance: string
   estimatedPrice: string
   wristSize: string
-  productionYear: string
   caseMaterial: string
 }
 
@@ -78,7 +77,6 @@ Return ONLY a JSON object with these exact keys (use empty string "" if genuinel
   "waterResistance": "",
   "estimatedPrice": "",
   "wristSize": "",
-  "productionYear": "",
   "caseMaterial": ""
 }
 
@@ -91,7 +89,6 @@ Field rules (strict — wrong format breaks the UI):
 - waterResistance: numeric meters only, no unit → e.g. "300"
 - estimatedPrice: numeric USD retail only, no symbol → e.g. "9500"
 - wristSize: leave empty string "" (we do not have this data)
-- productionYear: 4-digit year or range → e.g. "2020" or "2018-2023"
 - caseMaterial: material name only → e.g. "Stainless Steel", "Titanium", "Gold"
 
 No markdown, no explanation — JSON only.`
@@ -150,7 +147,6 @@ No markdown, no explanation — JSON only.`
       waterResistance: specs.waterResistance ?? '',
       estimatedPrice: specs.estimatedPrice ?? '',
       wristSize: specs.wristSize ?? '',
-      productionYear: specs.productionYear ?? '',
       caseMaterial: specs.caseMaterial ?? '',
     }
 

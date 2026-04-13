@@ -25,7 +25,6 @@ export interface InitialPhoto {
   caseSize: string | undefined
   wristSize: string | undefined
   estimatedPrice: string | undefined
-  productionYear: string | undefined
   lugToLug: string | undefined
   betweenLugs: string | undefined
   thickness: string | undefined
@@ -57,7 +56,6 @@ export async function getInitialPhotos(): Promise<InitialPhotosData> {
         caseSize: photos.caseSize,
         wristSize: photos.wristSize,
         estimatedPrice: photos.estimatedPrice,
-        productionYear: photos.productionYear,
         lugToLug: photos.lugToLug,
         betweenLugs: photos.betweenLugs,
         thickness: photos.thickness,
@@ -90,7 +88,6 @@ export async function getInitialPhotos(): Promise<InitialPhotosData> {
         caseSize: p.caseSize ?? undefined,
         wristSize: p.wristSize ?? undefined,
         estimatedPrice: p.estimatedPrice ?? undefined,
-        productionYear: p.productionYear ?? undefined,
         lugToLug: p.lugToLug ?? undefined,
         betweenLugs: p.betweenLugs ?? undefined,
         thickness: p.thickness ?? undefined,

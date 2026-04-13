@@ -31,7 +31,6 @@ const enrich = (p: PhotoRow) => ({
   caseSize: p.caseSize ?? null,
   wristSize: p.wristSize ?? null,
   estimatedPrice: p.estimatedPrice ?? null,
-  productionYear: p.productionYear ?? null,
   lugToLug: p.lugToLug ?? null,
   betweenLugs: p.betweenLugs ?? null,
   thickness: p.thickness ?? null,

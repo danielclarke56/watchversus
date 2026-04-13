@@ -13,7 +13,6 @@ const EDIT_FIELDS: { key: keyof Photo; label: string }[] = [
   { key: 'caseSize', label: 'Case Size' },
   { key: 'wristSize', label: 'Wrist Size' },
   { key: 'estimatedPrice', label: 'Est. Price' },
-  { key: 'productionYear', label: 'Year' },
   { key: 'lugToLug', label: 'Lug-to-Lug' },
   { key: 'betweenLugs', label: 'Between Lugs' },
   { key: 'thickness', label: 'Thickness' },

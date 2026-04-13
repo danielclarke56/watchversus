@@ -66,7 +66,6 @@ export async function PATCH(
     'caseSize',
     'wristSize',
     'estimatedPrice',
-    'productionYear',
     'lugToLug',
     'betweenLugs',
     'thickness',

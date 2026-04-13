@@ -18,7 +18,6 @@ interface Photo {
   caseSize: string | null
   wristSize: string | null
   estimatedPrice: string | null
-  productionYear: string | null
   lugToLug: string | null
   betweenLugs: string | null
   thickness: string | null
@@ -89,7 +88,6 @@ const FIELD_CONFIG = [
   { key: 'caseSize',        label: 'Case Size' },
   { key: 'wristSize',       label: 'Wrist Size' },
   { key: 'estimatedPrice',  label: 'Price (USD)' },
-  { key: 'productionYear',  label: 'Year' },
   { key: 'lugToLug',        label: 'Lug-to-Lug (mm)' },
   { key: 'betweenLugs',     label: 'Between Lugs (mm)' },
   { key: 'thickness',       label: 'Thickness (mm)' },
@@ -101,7 +99,7 @@ type EditableKey = typeof FIELD_CONFIG[number]['key']
 function groupToEditable(photos: Photo[]): Record<EditableKey, string> {
   const fields: Record<EditableKey, string> = {
     brandName: '', modelName: '', referenceNumber: '', movement: '',
-    caseSize: '', wristSize: '', estimatedPrice: '', productionYear: '',
+    caseSize: '', wristSize: '', estimatedPrice: '',
     lugToLug: '', betweenLugs: '', thickness: '', waterResistance: '',
   }
   for (const photo of photos) {

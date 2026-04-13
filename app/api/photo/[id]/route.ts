@@ -47,7 +47,6 @@ export async function GET(
       caseSize: p.caseSize ?? undefined,
       wristSize: p.wristSize ?? undefined,
       estimatedPrice: p.estimatedPrice ?? undefined,
-      productionYear: p.productionYear ?? undefined,
       lugToLug: p.lugToLug ?? undefined,
       betweenLugs: p.betweenLugs ?? undefined,
       thickness: p.thickness ?? undefined,

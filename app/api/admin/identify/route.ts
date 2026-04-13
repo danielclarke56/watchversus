@@ -50,7 +50,6 @@ Return ONLY a JSON object:
   "thickness": "numeric mm only or null",
   "waterResistance": "numeric meters only or null",
   "estimatedPrice": "numeric USD only or null",
-  "productionYear": "4-digit year or range or null",
   "dialColor": "dial color or null",
   "bezelColor": "bezel color or null",
   "caseMaterial": "material name or null",

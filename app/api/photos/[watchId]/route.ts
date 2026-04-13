@@ -63,7 +63,6 @@ export async function GET(
       caseSize: p.caseSize ?? undefined,
       wristSize: p.wristSize ?? undefined,
       estimatedPrice: p.estimatedPrice ?? undefined,
-      productionYear: p.productionYear ?? undefined,
       lugToLug: p.lugToLug ?? undefined,
       betweenLugs: p.betweenLugs ?? undefined,
       thickness: p.thickness ?? undefined,
@@ -247,7 +246,6 @@ export async function POST(
   const movement = formData.get('movement') as string | null
   const caseSize = formData.get('caseSize') as string | null
   const estimatedPrice = formData.get('estimatedPrice') as string | null
-  const productionYear = formData.get('productionYear') as string | null
   const lugToLug = formData.get('lugToLug') as string | null
   const betweenLugs = formData.get('betweenLugs') as string | null
   const thickness = formData.get('thickness') as string | null
@@ -275,7 +273,6 @@ export async function POST(
       caseSize: caseSize || undefined,
       wristSize: wristSize || undefined,
       estimatedPrice: estimatedPrice || undefined,
-      productionYear: productionYear || undefined,
       lugToLug: lugToLug || undefined,
       betweenLugs: betweenLugs || undefined,
       thickness: thickness || undefined,

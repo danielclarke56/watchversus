@@ -37,7 +37,6 @@ interface PhotoItem {
   caseSize?: string | null
   wristSize?: string | null
   estimatedPrice?: string | null
-  productionYear?: string | null
   lugToLug?: string | null
   betweenLugs?: string | null
   thickness?: string | null
@@ -1248,7 +1247,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                 if (p.betweenLugs) specs.push({ label: 'Lug Width', value: p.betweenLugs })
                 if (p.thickness) specs.push({ label: 'Thickness', value: p.thickness })
                 if (p.wristSize) specs.push({ label: 'Wrist Size', value: p.wristSize })
-                if (p.productionYear) specs.push({ label: 'Year', value: p.productionYear })
                 if (p.estimatedPrice) specs.push({ label: 'Price', value: p.estimatedPrice })
 
                 return (

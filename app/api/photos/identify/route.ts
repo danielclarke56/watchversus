@@ -94,7 +94,6 @@ STEP 4 — IDENTIFY, then RETURN JSON ONLY:
       "waterResistance": "numeric meters only, no unit (e.g. 300), or null",
       "estimatedPrice": "numeric USD only, no symbol (e.g. 9500), or null",
       "wristSize": null,
-      "productionYear": "4-digit year or range (e.g. 2020 or 2018-2023), or null",
       "dialColor": "dominant dial color as seen (e.g. black, white, blue, green, silver, champagne, gray), or null",
       "bezelColor": "bezel color/insert (e.g. black, blue, blue-red, black-green, silver, none), or null",
       "caseMaterial": "case material (e.g. stainless steel, titanium, gold, rose gold, ceramic, plastic), or null",

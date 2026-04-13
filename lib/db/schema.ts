@@ -18,7 +18,6 @@ export const photos = pgTable(
     caseSize: text('case_size'),
     wristSize: text('wrist_size'),
     estimatedPrice: text('estimated_price'),
-    productionYear: text('production_year'),
     lugToLug: text('lug_to_lug'),
     betweenLugs: text('between_lugs'),
     thickness: text('thickness'),
