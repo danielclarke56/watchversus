@@ -496,18 +496,6 @@ export default function WristCheckClient() {
 
             {/* Right side — Stats + Donut chart */}
             <div className="lg:w-72 shrink-0 space-y-4">
-              {/* Stats cards */}
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
-                <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
-                  <p className="text-2xl font-bold text-gray-900">{totalDaysWorn}</p>
-                  <p className="text-xs text-gray-500">Days Worn</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-3 text-center lg:text-left lg:flex lg:items-center lg:gap-3">
-                  <p className="text-2xl font-bold text-gray-900">{streak}</p>
-                  <p className="text-xs text-gray-500">Day Streak</p>
-                </div>
-              </div>
-
               {/* Donut chart */}
               {wearList.length > 0 && (
                 <div className="bg-white rounded-xl border border-gray-200 p-4">
