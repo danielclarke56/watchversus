@@ -12,40 +12,9 @@ function getResend(): Resend | null {
 // ---------------------------------------------------------------------------
 const TEMPLATES = {
   photoApproved: 'watch-photo-live',
-  // photoRejected: 'watch-photo-rejected', // create in Resend dashboard, then uncomment
+  photoRejected: 'photo-rejected',
 } as const
 
-// ---------------------------------------------------------------------------
-// Fallback: local HTML rendering (used for templates not yet in Resend)
-// ---------------------------------------------------------------------------
-import fs from 'fs'
-import path from 'path'
-
-const templateCache: Record<string, string> = {}
-
-function getTemplateHtml(name: string): string | null {
-  if (templateCache[name]) return templateCache[name]
-  try {
-    const filePath = path.join(process.cwd(), 'lib', 'email-templates', `${name}.html`)
-    const html = fs.readFileSync(filePath, 'utf-8')
-    templateCache[name] = html
-    return html
-  } catch {
-    return null
-  }
-}
-
-/** Replace {{var}} placeholders and strip {{#var}}...{{/var}} blocks when var is empty */
-function renderTemplate(template: string, vars: Record<string, string>): string {
-  let html = template
-  html = html.replace(/\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (_, key, content) => {
-    return vars[key] ? content : ''
-  })
-  for (const [key, val] of Object.entries(vars)) {
-    html = html.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val)
-  }
-  return html
-}
 
 // ---------------------------------------------------------------------------
 // Rejection email
@@ -75,31 +44,24 @@ export async function sendPhotoRejectedEmail(
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
   const watchName = [data.brandName, data.modelName].filter(Boolean).join(' ') || 'your photo'
 
-  // TODO: once 'watch-photo-rejected' template is created in Resend dashboard,
-  // switch to template: { id: 'watch-photo-rejected', variables: { ... } }
-  const templateHtml = getTemplateHtml('photo-rejected')
-  if (!templateHtml) {
-    console.error('[Resend] Could not load photo-rejected.html template — skipping email')
-    return { success: false, error: 'Template not found' }
-  }
-
-  const html = renderTemplate(templateHtml, {
-    firstName: data.firstName || 'there',
-    brand: data.brandName || '',
-    model: data.modelName || '',
-    reference: data.referenceNumber || '',
-    imageUrl: data.imageUrl || '',
-    reasonLabel: data.reasonLabel,
-    reasonDescription: data.reasonDescription || '',
-    customNote: data.customNote || '',
-  })
-
   try {
     const { error } = await resend.emails.send({
       from: fromEmail,
       to,
-      subject: `Your ${watchName} submission on Watchems`,
-      html,
+      subject: `Your ${watchName} photo wasn't approved`,
+      template: {
+        id: TEMPLATES.photoRejected,
+        variables: {
+          firstName: data.firstName || 'there',
+          brand: data.brandName || '',
+          model: data.modelName || '',
+          reference: data.referenceNumber || '',
+          imageUrl: data.imageUrl || '',
+          reasonLabel: data.reasonLabel,
+          reasonDescription: data.reasonDescription || '',
+          customNote: data.customNote || '',
+        },
+      },
     })
     if (error) {
       console.error(`[Resend] Failed to send rejection email to ${to}:`, error)
