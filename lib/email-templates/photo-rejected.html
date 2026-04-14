@@ -26,7 +26,7 @@
               >
                 <a href="https://watchems.com" target="_blank" style="text-decoration:none;">
                   <img
-                    src="https://www.watchems.com/logo.svg"
+                    src="https://www.watchems.com/logo.png"
                     alt="Watchems"
                     width="160"
                     height="26"
@@ -55,9 +55,10 @@
                   Photo not approved
                 </h1>
                 <!-- Greeting -->
-                <p style="margin:0 0 32px;text-align:center;font-size:16px;color:#64748b;">
+                <p style="margin:0 0 8px;text-align:center;font-size:16px;color:#64748b;">
                   Hey {{firstName}},
                 </p>
+                <p style="margin:0 0 32px;text-align:center;font-size:14px;color:#94a3b8;">{{photoCountNote}}</p>
                 <!-- Watch details card -->
                 <table
                   role="presentation"
@@ -67,9 +68,9 @@
                   style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin:0 0 24px;"
                 >
                   <tr>
-                    {{#imageUrl}}<td style="padding:16px 0 16px 20px;width:88px;vertical-align:middle;">
+                    <td style="padding:16px 0 16px 20px;width:88px;vertical-align:middle;">
                       <img src="{{imageUrl}}" alt="{{brand}} {{model}}" width="72" height="72" style="border-radius:8px;object-fit:cover;display:block;" />
-                    </td>{{/imageUrl}}
+                    </td>
                     <td style="padding:24px;">
                       <p
                         style="margin:0 0 4px;font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:1px;"
@@ -77,7 +78,7 @@
                         Submission
                       </p>
                       <p style="margin:0 0 4px;font-size:22px;font-weight:700;color:#0f172a;">{{brand}} {{model}}</p>
-                      {{#reference}}<p style="margin:0;font-size:14px;color:#94a3b8;">Ref. {{reference}}</p>{{/reference}}
+                      <p style="margin:0;font-size:14px;color:#94a3b8;">{{reference}}</p>
                     </td>
                   </tr>
                 </table>
@@ -97,8 +98,8 @@
                         Reason for rejection
                       </p>
                       <p style="margin:0 0 8px;font-size:16px;font-weight:700;color:#0f172a;">{{reasonLabel}}</p>
-                      {{#reasonDescription}}<p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">{{reasonDescription}}</p>{{/reasonDescription}}
-                      {{#customNote}}<p style="margin:8px 0 0;font-size:14px;color:#475569;line-height:1.6;font-style:italic;">&ldquo;{{customNote}}&rdquo;</p>{{/customNote}}
+                      <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">{{reasonDescription}}</p>
+                      <p style="margin:8px 0 0;font-size:14px;color:#475569;line-height:1.6;font-style:italic;">{{customNote}}</p>
                     </td>
                   </tr>
                 </table>

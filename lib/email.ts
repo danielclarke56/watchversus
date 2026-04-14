@@ -29,6 +29,8 @@ interface PhotoRejectionData {
   reasonLabel: string
   reasonDescription: string
   customNote?: string
+  /** Total number of photos the user submitted for this watch (used to show context in email) */
+  photoCount?: number
 }
 
 export async function sendPhotoRejectedEmail(
@@ -43,12 +45,16 @@ export async function sendPhotoRejectedEmail(
 
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'Watchems <onboarding@resend.dev>'
   const watchName = [data.brandName, data.modelName].filter(Boolean).join(' ') || 'your photo'
+  const count = data.photoCount ?? 1
+  const subject = count > 1
+    ? `One of your ${watchName} photos wasn't approved`
+    : `Your ${watchName} photo wasn't approved`
 
   try {
     const { error } = await resend.emails.send({
       from: fromEmail,
       to,
-      subject: `Your ${watchName} photo wasn't approved`,
+      subject,
       template: {
         id: TEMPLATES.photoRejected,
         variables: {
@@ -60,6 +66,7 @@ export async function sendPhotoRejectedEmail(
           reasonLabel: data.reasonLabel,
           reasonDescription: data.reasonDescription || '',
           customNote: data.customNote || '',
+          photoCountNote: count > 1 ? `1 of your ${count} ${watchName} photos was rejected.` : '',
         },
       },
     })
@@ -138,12 +145,14 @@ export async function sendPhotoApprovedEmail(
 
 interface BulkPhotoApprovalData {
   firstName?: string
+  // One entry per watch (grouped). photoCount = total photos approved for that watch.
   photos: Array<{
     brandName?: string
     modelName?: string
     referenceNumber?: string
     slug?: string
-    imageUrl?: string
+    imageUrl?: string   // first photo only
+    photoCount?: number
   }>
 }
 
@@ -175,15 +184,21 @@ export async function sendPhotoBulkApprovedEmail(
     .map((p) => {
       const name = [p.brandName, p.modelName].filter(Boolean).join(' ') || 'Watch'
       const link = p.slug ? `https://watchems.com/photo/${p.slug}` : 'https://watchems.com'
-      const thumb = p.imageUrl
-        ? `<img src="${p.imageUrl}" alt="${name}" width="60" height="60" style="border-radius:6px;object-fit:cover;display:block;" />`
+      const countBadge = (p.photoCount ?? 1) > 1
+        ? `<span style="display:inline-block;margin-left:8px;padding:1px 7px;background-color:#f0f9ff;color:#2563eb;font-size:11px;font-weight:700;border-radius:20px;">${p.photoCount} photos</span>`
         : ''
+      const thumb = p.imageUrl
+        ? `<div style="position:relative;width:68px;height:68px;">
+            <img src="${p.imageUrl}" alt="${name}" width="68" height="68" style="border-radius:8px;object-fit:cover;display:block;width:68px;height:68px;" />
+            ${(p.photoCount ?? 1) > 1 ? `<div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;">+${(p.photoCount ?? 1) - 1}</div>` : ''}
+           </div>`
+        : '<div style="width:68px;height:68px;background:#f1f5f9;border-radius:8px;"></div>'
       return `<tr>
-        <td style="padding:10px 0;width:68px;vertical-align:top;">${thumb}</td>
-        <td style="padding:10px 0 10px 14px;vertical-align:top;">
-          <a href="${link}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:15px;">${name}</a>
-          ${p.referenceNumber ? `<br/><span style="color:#94a3b8;font-size:13px;">${p.referenceNumber}</span>` : ''}
-          <br/><a href="${link}" style="color:#2563eb;font-size:13px;">View on Watchems &#8594;</a>
+        <td style="padding:12px 0;width:76px;vertical-align:top;">${thumb}</td>
+        <td style="padding:12px 0 12px 14px;vertical-align:top;">
+          <p style="margin:0 0 3px;font-size:15px;font-weight:700;color:#0f172a;">${name}${countBadge}</p>
+          ${p.referenceNumber ? `<p style="margin:0 0 6px;font-size:13px;color:#94a3b8;">${p.referenceNumber}</p>` : '<p style="margin:0 0 6px;"></p>'}
+          <a href="${link}" style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none;">View on Watchems &#8594;</a>
         </td>
       </tr>`
     })

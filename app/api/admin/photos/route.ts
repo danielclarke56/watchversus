@@ -12,6 +12,28 @@ import { REJECTION_REASONS } from '@/lib/rejectionReasons'
 
 export const dynamic = 'force-dynamic'
 
+/** Group photo records by watchId, returning one entry per watch with the first photo's image */
+function groupPhotosByWatch(records: { watchId: string; brandName: string | null; modelName: string | null; referenceNumber: string | null; slug: string | null; thumbnailUrl: string | null; url: string; sortOrder: number }[]) {
+  const map = new Map<string, { brandName?: string; modelName?: string; referenceNumber?: string; slug?: string; imageUrl?: string; photoCount: number }>()
+  // Sort by sortOrder so the first photo (sortOrder 0) is used as the thumbnail
+  const sorted = [...records].sort((a, b) => a.sortOrder - b.sortOrder)
+  for (const p of sorted) {
+    if (!map.has(p.watchId)) {
+      map.set(p.watchId, {
+        brandName: p.brandName ?? undefined,
+        modelName: p.modelName ?? undefined,
+        referenceNumber: p.referenceNumber ?? undefined,
+        slug: p.slug ?? undefined,
+        imageUrl: p.thumbnailUrl ?? p.url,
+        photoCount: 1,
+      })
+    } else {
+      map.get(p.watchId)!.photoCount++
+    }
+  }
+  return Array.from(map.values())
+}
+
 /** GET /api/admin/photos - list pending or approved photos (?status=pending|approved) */
 export async function GET(req: NextRequest) {
   const { userId } = await auth()
@@ -134,13 +156,7 @@ export async function POST(req: NextRequest) {
           if (email) {
             await sendPhotoBulkApprovedEmail(email, {
               firstName: user.firstName ?? undefined,
-              photos: photoRecords.map((p) => ({
-                brandName: p.brandName ?? undefined,
-                modelName: p.modelName ?? undefined,
-                referenceNumber: p.referenceNumber ?? undefined,
-                slug: p.slug ?? undefined,
-                imageUrl: p.thumbnailUrl ?? p.url,
-              })),
+              photos: groupPhotosByWatch(photoRecords),
             })
           }
         } catch (emailError) {
@@ -177,13 +193,7 @@ export async function POST(req: NextRequest) {
         if (email) {
           await sendPhotoBulkApprovedEmail(email, {
             firstName: user.firstName ?? undefined,
-            photos: photoRecords.map((p) => ({
-              brandName: p.brandName ?? undefined,
-              modelName: p.modelName ?? undefined,
-              referenceNumber: p.referenceNumber ?? undefined,
-              slug: p.slug ?? undefined,
-              imageUrl: p.thumbnailUrl ?? p.url,
-            })),
+            photos: groupPhotosByWatch(photoRecords),
           })
         }
       } catch (emailError) {
@@ -267,6 +277,13 @@ export async function POST(req: NextRequest) {
           const user = await clerk.users.getUser(photoRecord.userId)
           const email = user.emailAddresses?.[0]?.emailAddress
           if (email) {
+            // Count how many photos the user submitted for this watch (pending + just-rejected)
+            const siblingCount = await db
+              .select({ count: sql<number>`count(*)::int` })
+              .from(photos)
+              .where(and(eq(photos.watchId, photoRecord.watchId), eq(photos.userId, photoRecord.userId)))
+              .then((r) => Number(r[0]?.count ?? 1))
+
             await sendPhotoRejectedEmail(email, {
               firstName: user.firstName ?? undefined,
               brandName: photoRecord.brandName ?? undefined,
@@ -276,6 +293,7 @@ export async function POST(req: NextRequest) {
               reasonLabel: reason.label,
               reasonDescription: reason.id !== 'other' ? reason.description : '',
               customNote: rejectionNote,
+              photoCount: siblingCount,
             })
           }
         } catch (emailError) {
