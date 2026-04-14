@@ -128,6 +128,10 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
       '@type': 'Person',
       name: p.userName,
     },
+    creditText: p.userName,
+    copyrightNotice: `© ${p.userName}, shared on Watchems`,
+    license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+    acquireLicensePage: 'https://watchems.com/about',
     about: {
       '@type': 'Thing',
       name: `${brandName} ${modelName}`,
@@ -161,6 +165,38 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
           priceCurrency: 'USD',
           price: '0',
           availability: 'https://schema.org/InStock',
+          hasMerchantReturnPolicy: {
+            '@type': 'MerchantReturnPolicy',
+            applicableCountry: 'US',
+            returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+          },
+          shippingDetails: {
+            '@type': 'OfferShippingDetails',
+            shippingRate: {
+              '@type': 'MonetaryAmount',
+              value: '0',
+              currency: 'USD',
+            },
+            shippingDestination: {
+              '@type': 'DefinedRegion',
+              addressCountry: 'US',
+            },
+            deliveryTime: {
+              '@type': 'ShippingDeliveryTime',
+              handlingTime: {
+                '@type': 'QuantitativeValue',
+                minValue: 0,
+                maxValue: 0,
+                unitCode: 'DAY',
+              },
+              transitTime: {
+                '@type': 'QuantitativeValue',
+                minValue: 0,
+                maxValue: 0,
+                unitCode: 'DAY',
+              },
+            },
+          },
         },
       }
     : null
