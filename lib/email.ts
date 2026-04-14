@@ -219,7 +219,7 @@ export async function sendPhotoBulkApprovedEmail(
         <tr>
           <td style="background-color:#ffffff;padding:24px 32px;border-radius:12px 12px 0 0;border-bottom:1px solid #e2e8f0;" align="center">
             <a href="https://watchems.com" target="_blank" style="text-decoration:none;">
-              <img src="https://www.watchems.com/logo.svg" alt="Watchems" width="160" height="26" style="display:block;border:0;outline:none;" />
+              <img src="https://www.watchems.com/logo.png" alt="Watchems" width="160" height="26" style="display:block;border:0;outline:none;" />
             </a>
           </td>
         </tr>
