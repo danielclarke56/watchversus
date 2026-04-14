@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function HeroSearch() {
   return (
     <section>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 sm:pt-8 sm:pb-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5 sm:pt-8 sm:pb-6">
         <h1 className="!text-lg sm:!text-2xl font-semibold text-gray-800 text-center">
           Real watch photos from real owners
           <span className="mx-2 text-gray-300">·</span>
