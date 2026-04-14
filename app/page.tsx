@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import HeroSearch from '@/components/home/HeroSearch'
 import PhotoGallery from '@/components/home/PhotoGallery'
+import UploadNudge from '@/components/home/UploadNudge'
 import type { Metadata } from 'next'
 
 const faqItems = [
@@ -111,6 +112,7 @@ export default async function HomePage() {
           <PhotoGallery />
         </Suspense>
       </main>
+      <UploadNudge />
     </>
   )
 }
