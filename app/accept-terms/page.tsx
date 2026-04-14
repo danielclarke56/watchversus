@@ -61,7 +61,7 @@ export default function AcceptTermsPage() {
             </li>
             <li className="flex gap-2">
               <span className="text-green-500 shrink-0 mt-0.5">✓</span>
-              Watchems may display your photos in the gallery and feature them on social media with credit to you.
+              Watchems may display, resize, and feature your photos in the gallery and on social media — always with credit to you.
             </li>
             <li className="flex gap-2">
               <span className="text-green-500 shrink-0 mt-0.5">✓</span>

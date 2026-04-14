@@ -69,9 +69,10 @@ export default function TermsPage() {
           </p>
           <p>
             By submitting content to Watchems, you grant us a worldwide, non-exclusive,
-            royalty-free license to display, reproduce, and distribute your content solely
-            in connection with operating and promoting the platform — for example, showing
-            your photo in the public gallery, on the watch detail page, in our image
+            royalty-free, perpetual license to display, reproduce, distribute, and create
+            derivative versions (such as thumbnails and resized copies) of your content
+            solely in connection with operating and promoting the platform — for example,
+            showing your photo in the public gallery, on the watch detail page, in our image
             sitemap for search engines, and in site-related social media posts that credit
             you. This license exists only so we can actually show your photo on the site;
             it does not give us any other rights. You can request removal of your photos at
