@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     // Use Pro for better factual recall; enable Google Search grounding for live spec lookup
     const model = client.getGenerativeModel({
-      model: 'gemini-2.5-pro',
+      model: 'gemini-2.5-flash',
       tools: [{ googleSearchRetrieval: {} }],
     })
 
