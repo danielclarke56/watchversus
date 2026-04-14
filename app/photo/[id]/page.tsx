@@ -42,11 +42,26 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
   const description = `Real owner photo of the ${brandName} ${modelName}${p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''} submitted by ${p.userName} on Watchems.${p.caseSize ? ` Case size: ${p.caseSize}.` : ''}${p.movement ? ` Movement: ${p.movement}.` : ''}`
   const imageUrl = p.thumbnailUrl || p.url
 
+  // Find the primary photo in this user's carousel (lowest sortOrder, then earliest createdAt)
+  // Secondary carousel photos point their canonical to the primary
+  let canonicalSlug = slug
+  if (p.userId) {
+    const primaryPhoto = await db
+      .select({ id: photos.id, slug: photos.slug })
+      .from(photos)
+      .where(and(eq(photos.watchId, p.watchId), eq(photos.userId, p.userId), eq(photos.status, 'approved')))
+      .orderBy(asc(photos.sortOrder), asc(photos.createdAt))
+      .limit(1)
+    if (primaryPhoto.length > 0 && primaryPhoto[0].id !== p.id) {
+      canonicalSlug = primaryPhoto[0].slug ?? primaryPhoto[0].id
+    }
+  }
+
   return {
     title,
     description,
     alternates: {
-      canonical: `https://watchems.com/photo/${slug}`,
+      canonical: `https://watchems.com/photo/${canonicalSlug}`,
     },
     openGraph: {
       title,
