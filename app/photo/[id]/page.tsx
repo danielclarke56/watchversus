@@ -163,17 +163,14 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
         image: imageUrl,
         url: `https://watchems.com/photo/${slug}`,
         ...(p.referenceNumber && { mpn: p.referenceNumber }),
-        ...(p.movement || p.caseSize || p.waterResistance
-          ? {
-              description: [
-                p.movement && `Movement: ${p.movement}`,
-                p.caseSize && `Case size: ${p.caseSize}`,
-                p.waterResistance && `Water resistance: ${p.waterResistance}`,
-              ]
-                .filter(Boolean)
-                .join('. '),
-            }
-          : {}),
+        description: [
+          `${brandName} ${modelName}${p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''}.`,
+          p.movement && `Movement: ${p.movement}`,
+          p.caseSize && `Case size: ${p.caseSize}`,
+          p.waterResistance && `Water resistance: ${p.waterResistance}`,
+        ]
+          .filter(Boolean)
+          .join(' '),
         offers: {
           '@type': 'Offer',
           url: `https://watchems.com/photo/${slug}`,
