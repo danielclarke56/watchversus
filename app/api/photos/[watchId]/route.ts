@@ -14,6 +14,7 @@ import { checkRateLimit } from '@/lib/ratelimit'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql } from 'drizzle-orm'
+import { normalizeWatch } from '@/lib/normalizeWatch'
 
 function auditLog(event: string, data: Record<string, unknown>) {
   console.log(JSON.stringify({ ts: new Date().toISOString(), event, ...data }))
@@ -163,16 +164,25 @@ export async function POST(
 
   // Read metadata fields from formData early (needed for dedup)
   const wristSize = formData.get('wristSize') as string | null
-  const brandName = formData.get('brandName') as string | null
-  const modelName = formData.get('modelName') as string | null
+  const rawBrandName = formData.get('brandName') as string | null
+  const rawModelName = formData.get('modelName') as string | null
+
+  // Normalize brand + model server-side — fixes casing, diacritics, brand-in-model,
+  // and derives a canonical watchId regardless of what the client sent.
+  const normalized = (rawBrandName?.trim() && rawModelName?.trim())
+    ? normalizeWatch(rawBrandName.trim(), rawModelName.trim())
+    : null
+  const brandName = normalized?.brand ?? rawBrandName
+  const modelName = normalized?.model ?? rawModelName
+  const canonicalWatchId = normalized?.watchId ?? params.watchId
 
   // Resolve watchId:
   // 1. If this user already has a photo for this brand+model, reuse their watchId
   //    (groups multi-angle shots from the same user under one card).
-  // 2. Otherwise, if params.watchId already has photos from OTHER users, generate a
+  // 2. Otherwise, if the canonical watchId already has photos from OTHER users, generate a
   //    user-scoped watchId so this user gets their own separate card.
-  // 3. Otherwise use params.watchId as-is (first-ever submission for this watch).
-  let effectiveWatchId = params.watchId
+  // 3. Otherwise use the canonical watchId (first-ever submission for this watch).
+  let effectiveWatchId = canonicalWatchId
   try {
     // Step 1: same-user dedup
     if (brandName?.trim() && modelName?.trim()) {
@@ -192,13 +202,13 @@ export async function POST(
         // User has uploaded this watch before — add to their existing card
         effectiveWatchId = sameUserExisting[0].watchId
       } else {
-        // Step 2: check if the slug is already taken by another user
+        // Step 2: check if the canonical watchId is already taken by another user
         const otherUserPhoto = await db
           .select({ userId: photos.userId })
           .from(photos)
           .where(
             and(
-              eq(photos.watchId, params.watchId),
+              eq(photos.watchId, canonicalWatchId),
               sql`${photos.userId} != ${userId}`
             )
           )
@@ -208,7 +218,7 @@ export async function POST(
           // Slug is owned by another user — create a user-scoped watchId
           // Use a 6-char hash of the userId for a stable, short suffix
           const userHash = crypto.createHash('sha256').update(userId).digest('hex').slice(0, 6)
-          effectiveWatchId = `${params.watchId}-${userHash}`
+          effectiveWatchId = `${canonicalWatchId}-${userHash}`
         }
         // else: params.watchId is unclaimed — use it as-is
       }
