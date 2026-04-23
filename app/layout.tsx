@@ -50,24 +50,12 @@ export const metadata: Metadata = {
   },
 }
 
-const websiteJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Watchems',
-  url: 'https://watchems.com',
-  description: 'Community watch photo gallery featuring photos of watches at every price point.',
-}
-
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={dmSans.variable}>
       <head>
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.fontshare.com" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
         {/* Bootstrap dataLayer immediately so gtag() calls before the GA script
             loads are queued rather than lost — prevents (not set) attribution. */}
         <script
