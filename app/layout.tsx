@@ -68,6 +68,13 @@ function Shell({ children }: { children: React.ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
+        {/* Bootstrap dataLayer immediately so gtag() calls before the GA script
+            loads are queued rather than lost — prevents (not set) attribution. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-T077JWH4E5');`,
+          }}
+        />
       </head>
       <body className="bg-surfaceAlt text-textPrimary antialiased min-h-screen flex flex-col">
         {/* Load Satoshi font non-blocking — was render-blocking in <head> */}
@@ -78,14 +85,6 @@ function Shell({ children }: { children: React.ReactNode }) {
           src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
           strategy="afterInteractive"
         />
-        <Script id="ga4-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-T077JWH4E5');
-          `}
-        </Script>
         <Navigation />
         <main className="flex-1">{children}</main>
         <Footer />
