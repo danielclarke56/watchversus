@@ -101,9 +101,6 @@ export default async function WatchHubPage({ params }: WatchPageProps) {
   const watchName = [brand, model].filter(Boolean).join(' ')
   const ref = rep.referenceNumber ? ` (ref. ${rep.referenceNumber})` : ''
 
-  // Derive a canonical brand slug for the future brand hub link
-  const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-
   // Structured data
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
