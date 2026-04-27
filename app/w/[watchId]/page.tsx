@@ -85,6 +85,12 @@ export default async function WatchHubPage({ params }: WatchPageProps) {
       caseSize: photos.caseSize,
       movement: photos.movement,
       createdAt: photos.createdAt,
+      dialColor: photos.dialColor,
+      caseMaterial: photos.caseMaterial,
+      strapType: photos.strapType,
+      watchStyle: photos.watchStyle,
+      waterResistance: photos.waterResistance,
+      estimatedPrice: photos.estimatedPrice,
     })
     .from(photos)
     .where(and(eq(photos.watchId, params.watchId), eq(photos.status, 'approved')))
@@ -189,24 +195,29 @@ export default async function WatchHubPage({ params }: WatchPageProps) {
           ))}
         </div>
 
-        {/* Specs summary — derived from the most common non-null values */}
-        {(rep.movement || rep.caseSize) && (
+        {/* Specs summary — all available fields from representative photo */}
+        {(rep.movement || rep.caseSize || rep.caseMaterial || rep.dialColor ||
+          rep.strapType || rep.waterResistance || rep.estimatedPrice) && (
           <div className="mt-10 bg-white rounded-xl border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-700 mb-3">Key specs</h2>
             <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
-              {rep.movement && (
-                <>
-                  <dt className="text-gray-400">Movement</dt>
-                  <dd className="text-gray-700 col-span-1">{rep.movement}</dd>
-                </>
-              )}
-              {rep.caseSize && (
-                <>
-                  <dt className="text-gray-400">Case size</dt>
-                  <dd className="text-gray-700">{rep.caseSize}mm</dd>
-                </>
-              )}
+              {rep.movement && <><dt className="text-gray-400">Movement</dt><dd className="text-gray-700">{rep.movement}</dd></>}
+              {rep.caseSize && <><dt className="text-gray-400">Case size</dt><dd className="text-gray-700">{rep.caseSize}mm</dd></>}
+              {rep.caseMaterial && <><dt className="text-gray-400">Case material</dt><dd className="text-gray-700">{rep.caseMaterial}</dd></>}
+              {rep.dialColor && <><dt className="text-gray-400">Dial color</dt><dd className="text-gray-700">{rep.dialColor}</dd></>}
+              {rep.strapType && <><dt className="text-gray-400">Strap type</dt><dd className="text-gray-700">{rep.strapType}</dd></>}
+              {rep.waterResistance && <><dt className="text-gray-400">Water resistance</dt><dd className="text-gray-700">{rep.waterResistance}</dd></>}
+              {rep.estimatedPrice && <><dt className="text-gray-400">Est. price</dt><dd className="text-gray-700">{rep.estimatedPrice}</dd></>}
             </dl>
+            <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+              This gallery shows {allPhotos.length} real owner {allPhotos.length !== 1 ? 'photos' : 'photo'} of the {watchName}{ref}
+              {rep.watchStyle ? `, a ${rep.watchStyle.toLowerCase()} watch` : ''}.
+              {rep.caseMaterial ? ` The case is made of ${rep.caseMaterial.toLowerCase()}` : ''}
+              {rep.caseSize ? `${rep.caseMaterial ? ` measuring ${rep.caseSize}mm` : ` Case size: ${rep.caseSize}mm`}.` : rep.caseMaterial ? '.' : ''}
+              {rep.movement ? ` Powered by a ${rep.movement.toLowerCase()} movement.` : ''}
+              {rep.waterResistance ? ` Water resistant to ${rep.waterResistance}.` : ''}
+              {' '}All photos submitted by verified owners on Watchems.
+            </p>
           </div>
         )}
 

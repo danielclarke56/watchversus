@@ -239,14 +239,40 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
             </h1>
             <p className="text-gray-700 leading-relaxed">
               Real owner photo of the {brandName} {modelName}
-              {p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''}, worn on the wrist and
-              shared by {p.userName} on Watchems.
-              {p.caseSize ? ` Case size: ${p.caseSize}.` : ''}
+              {p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''}
+              {p.watchStyle ? `, a ${p.watchStyle.toLowerCase()} watch` : ''}
+              {', worn on the wrist and shared by '}
+              {p.userName} on Watchems.
+              {p.caseMaterial ? ` The case is made of ${p.caseMaterial.toLowerCase()}` : ''}
+              {p.caseSize ? `${p.caseMaterial ? ` measuring ${p.caseSize}mm` : ` Case size: ${p.caseSize}mm`}.` : p.caseMaterial ? '.' : ''}
+              {p.dialColor ? ` ${p.dialColor.charAt(0).toUpperCase() + p.dialColor.slice(1)} dial.` : ''}
+              {p.strapType ? ` Worn on a ${p.strapType.toLowerCase()} strap.` : ''}
               {p.movement ? ` Movement: ${p.movement}.` : ''}
               {p.waterResistance ? ` Water resistance: ${p.waterResistance}.` : ''}
               {p.wristSize ? ` Wrist size: ${p.wristSize}.` : ''}
             </p>
-            <div className="flex items-center justify-between mt-3">
+
+            {/* Specs table — all available fields */}
+            {(p.referenceNumber || p.movement || p.caseSize || p.caseMaterial || p.dialColor ||
+              p.strapType || p.waterResistance || p.lugToLug || p.betweenLugs || p.thickness ||
+              p.wristSize || p.estimatedPrice) && (
+              <dl className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm border-t border-gray-50 pt-4">
+                {p.referenceNumber && <><dt className="text-gray-400">Reference</dt><dd className="text-gray-700 font-medium">{p.referenceNumber}</dd></>}
+                {p.movement && <><dt className="text-gray-400">Movement</dt><dd className="text-gray-700 font-medium">{p.movement}</dd></>}
+                {p.caseSize && <><dt className="text-gray-400">Case diameter</dt><dd className="text-gray-700 font-medium">{p.caseSize}mm</dd></>}
+                {p.caseMaterial && <><dt className="text-gray-400">Case material</dt><dd className="text-gray-700 font-medium">{p.caseMaterial}</dd></>}
+                {p.dialColor && <><dt className="text-gray-400">Dial color</dt><dd className="text-gray-700 font-medium">{p.dialColor}</dd></>}
+                {p.strapType && <><dt className="text-gray-400">Strap type</dt><dd className="text-gray-700 font-medium">{p.strapType}</dd></>}
+                {p.waterResistance && <><dt className="text-gray-400">Water resistance</dt><dd className="text-gray-700 font-medium">{p.waterResistance}</dd></>}
+                {p.lugToLug && <><dt className="text-gray-400">Lug to lug</dt><dd className="text-gray-700 font-medium">{p.lugToLug}mm</dd></>}
+                {p.betweenLugs && <><dt className="text-gray-400">Lug width</dt><dd className="text-gray-700 font-medium">{p.betweenLugs}mm</dd></>}
+                {p.thickness && <><dt className="text-gray-400">Thickness</dt><dd className="text-gray-700 font-medium">{p.thickness}mm</dd></>}
+                {p.wristSize && <><dt className="text-gray-400">Wrist size</dt><dd className="text-gray-700 font-medium">{p.wristSize}mm</dd></>}
+                {p.estimatedPrice && <><dt className="text-gray-400">Est. price</dt><dd className="text-gray-700 font-medium">{p.estimatedPrice}</dd></>}
+              </dl>
+            )}
+
+            <div className="flex items-center justify-between mt-4">
               <p className="text-sm text-gray-500">
                 Submitted by <span className="font-medium text-gray-700">{p.userName}</span>
               </p>
