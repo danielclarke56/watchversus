@@ -665,9 +665,21 @@ export default function UploadClient() {
             <h2 className="text-xl sm:text-2xl font-bold text-textPrimary mb-1.5">
               {successPreviews.length > 1 ? 'Photos submitted!' : 'Photo submitted!'}
             </h2>
-            <p className="text-textMuted mb-6 text-sm">
+            <p className="text-textMuted mb-4 text-sm">
               Your {successPreviews.length > 1 ? 'images are' : 'image is'} being reviewed and will be approved soon.
             </p>
+            {meta.brandName && (
+              <p className="text-xs text-textMuted mb-6">
+                Once approved, your photo will appear on the{' '}
+                <Link
+                  href={`/brand/${encodeURIComponent(meta.brandName.toLowerCase())}`}
+                  className="underline underline-offset-2 hover:text-textPrimary transition-colors"
+                >
+                  {meta.brandName} page
+                </Link>
+                .
+              </p>
+            )}
 
             {/* Dashboard feature CTAs — 3-col grid */}
             <p className="text-xs font-semibold text-textMuted uppercase tracking-wider mb-3">While you wait</p>

@@ -9,7 +9,7 @@ export interface BrandData {
   country: string
   founded: number
   overview: string
-  watchBrand: string // exact string used in watches.json "brand" field
+  watchBrand: string // canonical brand name as it appears in the photos DB
   heroFact: string  // one punchy stat or claim
   faq: BrandFAQ[]
 }
