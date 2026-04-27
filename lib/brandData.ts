@@ -732,6 +732,157 @@ export const brands: BrandData[] = [
       },
     ],
   },
+  {
+    slug: 'alpina',
+    name: 'Alpina',
+    country: 'Switzerland',
+    founded: 1883,
+    watchBrand: 'Alpina',
+    heroFact: 'Founded in 1883, Alpina pioneered the concept of the modern sports watch — their 1938 Alpina 4 defined the specifications (steel case, anti-shock, anti-magnetic, waterproof) that the entire industry later adopted.',
+    overview: `Alpina was founded in 1883 in Geneva and holds a unique place in watch history: in 1938, the brand introduced the Alpina 4, a watch that established the four pillars of the modern sports watch — stainless steel case, anti-shock, anti-magnetic, and water resistance. These specifications were revolutionary, and the entire Swiss watch industry eventually adopted them as standard. Today Alpina produces in two main lines: the Alpiner collection (field and sports watches) and the Seastrong collection (dive watches), both carrying the brand's commitment to robust, practical tool watches. Alpina uses Swiss ETA-based movements and manufactures at its facility in Plan-les-Ouates, Geneva. At $800–2,500, Alpina sits between entry-level Swiss (Tissot, Mido) and luxury (Omega, IWC) — offering Swiss manufacture, clean design, and genuine sports capability without luxury premiums. For buyers who want real watch history behind their tool watch, Alpina's 1938 heritage is unmatched.`,
+    faq: [
+      {
+        question: 'What is the Alpina 4 and why does it matter?',
+        answer: 'The Alpina 4 (1938) defined the four requirements of the modern sports watch: stainless steel case, anti-shock protection, anti-magnetic resistance, and water resistance. Before Alpina, these features were rare or non-existent in combination. After the Alpina 4, the Swiss industry adopted these as standard specifications. Virtually every sports watch you own — Rolex Submariner, Omega Seamaster, Tudor Black Bay — owes its specification philosophy to Alpina\'s 1938 innovation.',
+      },
+      {
+        question: 'How does Alpina compare to Tissot or Mido?',
+        answer: 'All three are mid-range Swiss brands, but with different positioning. Tissot is the largest and most visible, with the broadest model range and strong marketing. Mido specializes in durability and field watch capability. Alpina is the most historically significant — the brand that invented the modern sports watch specification. At similar price points ($800–1,500), Alpina offers deeper heritage and a more focused product range oriented around field and dive watches. If history matters to you, Alpina. If design variety matters, Tissot.',
+      },
+      {
+        question: 'Are Alpina watches good value?',
+        answer: 'Yes. Alpina watches at $800–1,500 deliver Swiss manufacture, genuine sports capability (200–300m water resistance), ETA-based movements, and 140+ years of brand heritage. You\'re not paying for prestige like Rolex or Omega — you\'re paying for Swiss tool watch capability at a rational price. Resale value is moderate (60–70% of retail), typical for mid-range Swiss brands. Alpina is best purchased for daily wearing and use, not investment.',
+      },
+      {
+        question: 'Where can I buy Alpina?',
+        answer: 'Alpina watches are sold through authorized retailers worldwide, the Alpina website, and major watch specialists. Availability is generally good — no waitlists or scarcity. Alpina offers a two-year warranty and service through authorized service centers. Pre-owned watches are available through watch forums and specialist dealers at 60–70% of retail.',
+      },
+    ],
+  },
+  {
+    slug: 'laco',
+    name: 'Laco',
+    country: 'Germany',
+    founded: 1925,
+    watchBrand: 'Laco',
+    heroFact: 'One of only five brands approved by the German Luftwaffe to supply pilot watches in World War II — Laco\'s B-Uhr (observer\'s watch) design remains the defining reference for aviation watches.',
+    overview: `Laco was founded in 1925 in Pforzheim, Germany — the center of German watchmaking at the time. The brand became one of the five official suppliers of the German Luftwaffe B-Uhr (Beobachtungsuhr, or observer's watch) during World War II. These large-format (55mm) aviation watches with inner rotating bezels and onion-crown winding systems set the template for the modern pilot watch. Every significant pilot watch today — IWC Pilot, Longines HydroConquest, Bell & Ross BR01 — references the B-Uhr design specification that Laco helped establish. Today Laco produces direct re-editions of the original Luftwaffe specifications alongside modern interpretations in their Sport and Edition lines. The brand manufactures in-house in Pforzheim, using Swiss ETA movements in traditional German cases. At $500–1,500, Laco represents exceptional value for buyers seeking genuine aviation watch heritage without paying IWC or Breitling prices. For pilot watch enthusiasts, owning a Laco is owning a piece of the original reference.`,
+    faq: [
+      {
+        question: 'What is a B-Uhr and why does it matter?',
+        answer: 'B-Uhr stands for Beobachtungsuhr (observer\'s watch) — the specification the German Luftwaffe required for navigation watches in WWII. Requirements included: 55mm diameter (readable in cockpit gloves), oversized onion crown for gloved winding, subsidiary seconds dial, and exceptional legibility. Laco was one of five approved suppliers (alongside IWC, Lange, Stowa, and Wempe). The B-Uhr\'s design logic — uncluttered dial, oversized numerals, practical case — became the template for every aviation watch made since.',
+      },
+      {
+        question: 'How does Laco compare to IWC or Breitling for pilot watches?',
+        answer: 'Laco, IWC, and Breitling all produce pilot watches, but at very different price points and prestige levels. IWC Pilot watches are $4,000–20,000+, carrying brand prestige and modern manufacture. Breitling Navitimer is $5,000–8,000 with aerospace chronograph history. Laco pilots are $500–1,500 with deeper historical authenticity (actual WWII Luftwaffe supplier) at a fraction of the price. If you want pilot watch history at an honest price, Laco. If you want brand prestige, IWC or Breitling.',
+      },
+      {
+        question: 'Are Laco watches German-made?',
+        answer: 'Yes — Laco watches are designed and cased at their facility in Pforzheim, Germany. Movements are Swiss ETA calibers (industry standard). Case manufacturing, dial production, and final assembly all occur in Pforzheim. The brand is genuinely German in manufacture and heritage, unlike some brands that claim European heritage while outsourcing production. Pforzheim has a centuries-long jewelry and watchmaking tradition.',
+      },
+      {
+        question: 'Should I buy a Laco or a modern pilot watch from a bigger brand?',
+        answer: 'If authentic pilot watch heritage is your priority — Laco is the answer. You\'re buying one of the five original Luftwaffe-approved watch families. If brand prestige and contemporary complications matter more, IWC or Breitling. Laco\'s value proposition is unbeatable for the history: $800 for a direct descendant of the original B-Uhr specification, made in Pforzheim. No other brand can offer that combination at that price.',
+      },
+      {
+        question: 'Where can I buy Laco?',
+        answer: 'Laco watches are sold through authorized retailers in Europe and North America, and directly from the Laco website (laco.de). Availability is generally good. Laco offers a two-year warranty and service through authorized centers and directly from Pforzheim. Pre-owned watches are available through watch forums at 65–75% of retail.',
+      },
+    ],
+  },
+  {
+    slug: 'orient',
+    name: 'Orient',
+    country: 'Japan',
+    founded: 1950,
+    watchBrand: 'Orient',
+    heroFact: 'Orient manufactures its own movements entirely in-house — including the movement, case, dial, and bracelet — making it the only brand producing fully in-house watches at under $300.',
+    overview: `Orient was founded in 1950 in Tokyo and is today owned by Seiko Epson. The brand occupies a unique position in watchmaking: it produces fully in-house automatic movements at entry-level prices ($100–500). No other watchmaker — not Tissot, not Hamilton, not even entry-level Omega — manufactures the movement, case, dial, and bracelet entirely in-house at Orient's price point. This vertical integration produces remarkable value: an Orient Bambino or Mako at $150–200 contains a genuine Japanese in-house automatic movement, finished metal bracelet, and solid case — capabilities that would cost 3–5× more from a Swiss brand. Orient specializes in three families: Bambino (dress watches, open heart), Mako (dive watches, 200m), and Orient Star (elevated finishing, exhibition caseback). The brand represents the apex of value in mechanical watchmaking — a fully in-house automatic for the price of most quartz watches.`,
+    faq: [
+      {
+        question: 'Does Orient really make its own movements?',
+        answer: 'Yes. Orient manufactures its own automatic movements entirely in-house at its Tokyo facility — every component, from the mainspring to the rotor. This is exceptional at $150–300. By comparison, Tissot and Hamilton (Swiss, $300–800) use ETA/Sellita movements from external suppliers. Seiko, Orient\'s parent company, also manufactures in-house. This tradition of Japanese vertical integration produces movements that perform reliably for decades with basic maintenance.',
+      },
+      {
+        question: 'How does Orient compare to Seiko?',
+        answer: 'Both are Japanese in-house manufacturers. Seiko is larger, more prestigious, and covers a wider range ($100 SNK to $5,000+ Grand Seiko). Orient is positioned at the entry level of in-house manufacturing ($100–500). The Orient caliber F6922 (Mako) and F4750 (Bambino) are simpler than mid-range Seiko movements but offer comparable reliability. Orient is the best answer to "I want an in-house automatic on a budget." If you want more design variety or prestige, Seiko. If you want the most movement for the money, Orient.',
+      },
+      {
+        question: 'Are Orient watches reliable long-term?',
+        answer: 'Extremely. Orient movements are known for decade-spanning reliability with basic servicing (every 5–7 years). The in-house calibers are robust and well-proven — Orient has been making the same core movement families since the 1970s with incremental improvements. User reports of Orient watches running accurately after 20+ years without servicing are common, though not recommended practice. For daily beaters, Orient movements are among the most durable available.',
+      },
+      {
+        question: 'What is the best Orient watch for a first automatic?',
+        answer: 'The Orient Mako II (dive, $180) or Orient Bambino (dress, $150) are the classic starting points. Mako: 200m water resistance, solid bracelet, clear dial — a legitimate dive watch at entry price. Bambino: dress aesthetic, open heart option, curved case — a formal watch at casual prices. Both run Orient\'s in-house F6922 movement. For something elevated with exhibition caseback, Orient Star ($400–600) offers superior finishing and the same in-house reliability.',
+      },
+      {
+        question: 'Where can I buy Orient?',
+        answer: 'Orient watches are widely available through Amazon, authorized retailers, and watch specialists worldwide. Seiko/Orient authorized dealer networks are extensive. Prices are stable globally. Orient offers a two-year warranty and service through authorized centers. Pre-owned Orient watches are widely available at 50–70% of retail — the brand\'s accessibility makes secondary market prices competitive.',
+      },
+    ],
+  },
+  {
+    slug: 'bulova',
+    name: 'Bulova',
+    country: 'United States',
+    founded: 1875,
+    watchBrand: 'Bulova',
+    heroFact: 'Bulova\'s Accutron (1960) was the world\'s first fully electronic watch, using a vibrating tuning fork instead of a balance wheel — accurate to within one minute per month, 10× better than any mechanical watch of the era.',
+    overview: `Bulova was founded in New York City in 1875 by Joseph Bulova, a Czech immigrant. For most of the 20th century, Bulova was America's largest watch manufacturer — producing watches for the US military in both World Wars and setting broadcast history by airing the world's first television commercial in 1941. The brand's greatest technical achievement was the Accutron (1960): the first fully electronic watch, using a vibrating tuning fork at 360Hz to replace the traditional balance wheel. The Accutron was accurate to within one minute per month — 10× better than mechanical movements of the era — and was used in early spacecraft, including NASA Apollo missions. Today Bulova is owned by Citizen and produces across multiple lines: the Accutron revival (with updated electronic tuning fork movement), the Precisionist collection (ultra-high frequency quartz at 262kHz), and the classic Automatic line. Bulova occupies the sweet spot between accessible ($200–600) and heritage-rich — for buyers who want American watchmaking history at affordable prices.`,
+    faq: [
+      {
+        question: 'What is the Bulova Accutron and why is it significant?',
+        answer: 'The Accutron (1960) was the world\'s first fully electronic watch — it replaced the traditional balance wheel with an electronically driven tuning fork vibrating at 360Hz. This produced accuracy of ±1 minute per month, compared to ±1–2 minutes per day for mechanical watches. NASA used Accutron movements in instrumentation for early spacecraft. Bulova has revived the Accutron name with a modern electrostatic movement (not tuning fork), continuing the brand\'s legacy of electronic innovation. Owning an Accutron is owning American watch engineering history.',
+      },
+      {
+        question: 'What is the Bulova Precisionist?',
+        answer: 'The Precisionist uses a proprietary high-frequency quartz oscillator at 262kHz — 8× faster than standard quartz — producing accuracy of ±10 seconds per year (standard quartz: ±15 seconds/month). The sweep second hand moves 16 times per second, giving it the appearance of a continuous sweep rather than the tick of standard quartz. The Precisionist is Bulova\'s modern technical statement: American engineering producing Swiss-beating accuracy at $200–500. It\'s one of the most accurate non-radio-controlled watches available.',
+      },
+      {
+        question: 'Is Bulova considered a luxury brand?',
+        answer: 'No — Bulova is a premium American brand, not a luxury brand. Price points ($200–700) and ownership structure (Citizen-owned) position Bulova as a step above mass-market (Seiko entry, Casio) but well below Swiss luxury (Omega, IWC). However, Bulova\'s American heritage (1875), military history, and technical innovations (Accutron, Precisionist) give it a historical significance that pure price comparison misses. You\'re not buying prestige — you\'re buying 150 years of American watchmaking.',
+      },
+      {
+        question: 'How does Bulova compare to Seiko at similar prices?',
+        answer: 'At $200–400, Bulova and Seiko are direct competitors. Seiko offers in-house automatic movements and Japanese manufacturing tradition. Bulova offers American heritage, the Precisionist\'s technical superiority in quartz, and the Accutron revival\'s unique electronic movement. For automatic watches, Seiko wins on movement quality at similar prices. For quartz accuracy and American heritage, Bulova Precisionist is unmatched. Both are excellent values — choose based on movement preference (automatic vs. high-frequency quartz) and heritage interest.',
+      },
+      {
+        question: 'Where can I buy Bulova?',
+        answer: 'Bulova watches are widely available through department stores, authorized retailers, and major online platforms. Prices are stable. Bulova offers a two-year warranty and service through Citizen (parent company) authorized centers. Pre-owned Bulova watches are widely available at 40–60% of retail — the brand\'s accessibility and heritage models (vintage Accutron) have strong collector interest.',
+      },
+    ],
+  },
+  {
+    slug: 'zodiac',
+    name: 'Zodiac',
+    country: 'Switzerland',
+    founded: 1882,
+    watchBrand: 'Zodiac',
+    heroFact: 'Zodiac produced the Sea Wolf in 1953 — one of the world\'s first purpose-built dive watches, preceding the Rolex Submariner by one year and setting the standard for modern dive watch design.',
+    overview: `Zodiac was founded in Le Locle, Switzerland in 1882 and occupies a quietly significant place in watch history. The brand introduced the Sea Wolf in 1953 — one of the world's first purpose-built diving watches, with 200m water resistance and a rotating inner bezel, predating the Rolex Submariner (1954) by a year. Zodiac also produced the Sea Dragon in 1960, which featured a helium escape valve — another innovation later associated with other dive watch brands. Today Zodiac is owned by Fossil Group and focuses on vintage-revival design: modern re-editions of the Sea Wolf and Super Sea Wolf, capturing the aesthetic of 1960s–70s Swiss dive watches at $400–800. Zodiac does not manufacture in-house — Swiss ETA movements power modern references — but the design authenticity and historical legitimacy are genuine. For buyers who want vintage dive watch aesthetics with verified historical roots and without the $5,000+ premium of collector pieces, Zodiac occupies a unique position.`,
+    faq: [
+      {
+        question: 'Is Zodiac the original dive watch brand?',
+        answer: 'One of the original three. Blancpain Fifty Fathoms (1953), Rolex Submariner (1954), and Zodiac Sea Wolf (1953) were the first purpose-built dive watches. The Sea Wolf predates the Submariner by approximately one year and was the first production watch with a rotating inner bezel for dive timing. Zodiac\'s contribution to dive watch history is historically documented and legitimate — not a marketing claim.',
+      },
+      {
+        question: 'How does Zodiac compare to modern dive watch brands?',
+        answer: 'Zodiac is positioned as a vintage-revival brand at entry-to-mid pricing ($400–800). Modern dive watches from Seiko (SKX, Turtle), Orient (Mako), and Citizen (Promaster) offer comparable capability at similar prices with stronger movement credentials (in-house for Seiko/Orient). Omega Seamaster and Rolex Submariner carry far more prestige at much higher prices. Zodiac\'s unique value is historical authenticity — if you want to wear a brand that genuinely invented modern dive watch design, Zodiac is the answer. If movement quality is the priority, Seiko at similar prices.',
+      },
+      {
+        question: 'Are Zodiac watches made in Switzerland?',
+        answer: 'Zodiac uses Swiss ETA movements (meeting Swiss Made standards), but the brand is owned by Fossil Group (American). Case manufacturing and final assembly specifics vary by collection. The "Swiss Made" designation on Zodiac watches is legitimate (movement assembled in Switzerland), but the brand is not independently Swiss-owned. For buyers who care about ownership structure vs. manufacturing origin, this distinction matters.',
+      },
+      {
+        question: 'Does Zodiac hold its value?',
+        answer: 'Moderately — typically 55–70% of retail after a few years. Zodiac doesn\'t have the collector following of Rolex or Omega, and Fossil Group ownership limits prestige. However, original vintage Zodiac Sea Wolf models (1950s–70s) have strong collector interest and appreciate significantly. Modern re-editions are less collected but retain reasonable secondary market demand. Zodiac is purchased for design appreciation and historical interest, not investment.',
+      },
+      {
+        question: 'Where can I buy Zodiac?',
+        answer: 'Zodiac watches are sold through authorized retailers, department stores, and the Zodiac website (zodiacwatches.com). Availability is generally good. Zodiac offers a two-year warranty and service through Fossil Group authorized centers. Pre-owned modern Zodiac watches are available at 55–70% of retail; vintage Sea Wolf models command collector premiums.',
+      },
+    ],
+  },
 ]
 
 

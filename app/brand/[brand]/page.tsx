@@ -9,6 +9,7 @@ import { photos } from '@/lib/db/schema'
 import { eq, and, asc, desc, sql, isNotNull, ilike } from 'drizzle-orm'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 import { brands as brandDataList } from '@/lib/brandData'
+import { toWatchSlug } from '@/lib/normalizeWatch'
 
 interface BrandPageProps {
   params: { brand: string }
@@ -122,7 +123,9 @@ export default async function BrandPage({ params }: BrandPageProps) {
     .limit(12)
 
   // Editorial content from brandData if available
-  const brandData = brandDataList.find((b) => b.slug === brand) ?? null
+  // Normalize the URL param (strip diacritics, spaces→hyphens) before matching
+  const normalizedBrandSlug = toWatchSlug(brand)
+  const brandData = brandDataList.find((b) => b.slug === normalizedBrandSlug) ?? null
 
   // Structured data
   const breadcrumbJsonLd = {
