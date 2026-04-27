@@ -164,6 +164,8 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
   }
 
   // Structured data — Product (only when we have brand + model)
+  // No Offer block — this is a photo gallery, not a commerce page.
+  // Product without Offer is valid schema.org and avoids GSC Merchant Listings errors.
   const productJsonLd = p.brandName && p.modelName
     ? {
         '@context': 'https://schema.org',
@@ -175,51 +177,14 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
         ...(p.referenceNumber && { mpn: p.referenceNumber }),
         description: [
           `${brandName} ${modelName}${p.referenceNumber ? ` (ref. ${p.referenceNumber})` : ''}.`,
-          p.movement && `Movement: ${p.movement}`,
-          p.caseSize && `Case size: ${p.caseSize}`,
-          p.waterResistance && `Water resistance: ${p.waterResistance}`,
+          p.movement && `Movement: ${p.movement}.`,
+          p.caseSize && `Case size: ${p.caseSize}mm.`,
+          p.dialColor && `Dial: ${p.dialColor}.`,
+          p.caseMaterial && `Case: ${p.caseMaterial}.`,
+          p.waterResistance && `Water resistance: ${p.waterResistance}.`,
         ]
           .filter(Boolean)
           .join(' '),
-        offers: {
-          '@type': 'Offer',
-          url: `https://watchems.com/photo/${slug}`,
-          priceCurrency: 'USD',
-          price: '0',
-          availability: 'https://schema.org/InStock',
-          hasMerchantReturnPolicy: {
-            '@type': 'MerchantReturnPolicy',
-            applicableCountry: 'US',
-            returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
-          },
-          shippingDetails: {
-            '@type': 'OfferShippingDetails',
-            shippingRate: {
-              '@type': 'MonetaryAmount',
-              value: '0',
-              currency: 'USD',
-            },
-            shippingDestination: {
-              '@type': 'DefinedRegion',
-              addressCountry: 'US',
-            },
-            deliveryTime: {
-              '@type': 'ShippingDeliveryTime',
-              handlingTime: {
-                '@type': 'QuantitativeValue',
-                minValue: 0,
-                maxValue: 0,
-                unitCode: 'DAY',
-              },
-              transitTime: {
-                '@type': 'QuantitativeValue',
-                minValue: 0,
-                maxValue: 0,
-                unitCode: 'DAY',
-              },
-            },
-          },
-        },
       }
     : null
 
@@ -229,7 +194,12 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchems.com' },
-      { '@type': 'ListItem', position: 2, name: 'Photos', item: 'https://watchems.com' },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: brandName,
+        item: `https://watchems.com/brand/${encodeURIComponent(brandName.toLowerCase())}`,
+      },
       {
         '@type': 'ListItem',
         position: 3,

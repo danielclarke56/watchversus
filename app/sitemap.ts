@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, desc, sql } from 'drizzle-orm'
+import { eq, desc, sql, isNotNull, and } from 'drizzle-orm'
 
 const MIN_PHOTOS_FOR_HUB = 3
 
@@ -71,5 +71,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...watchPages, ...photoPages]
+  // Brand hub pages — one per distinct brand with approved photos
+  const brandGroups = await db
+    .select({
+      brandName: photos.brandName,
+      lastModified: sql<Date>`max(${photos.createdAt})`,
+    })
+    .from(photos)
+    .where(and(eq(photos.status, 'approved'), isNotNull(photos.brandName)))
+    .groupBy(photos.brandName)
+
+  const brandPages: MetadataRoute.Sitemap = brandGroups
+    .filter((b) => b.brandName)
+    .map((b) => ({
+      url: `${base}/brand/${encodeURIComponent(b.brandName!.toLowerCase())}`,
+      lastModified: b.lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+
+  // Brands index
+  const brandsIndex: MetadataRoute.Sitemap = [
+    {
+      url: `${base}/brands`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+  ]
+
+  return [...staticPages, ...brandsIndex, ...brandPages, ...watchPages, ...photoPages]
 }
