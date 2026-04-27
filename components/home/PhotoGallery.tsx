@@ -1348,7 +1348,18 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                     {/* Mobile: Pinterest-style related photos grid (grouped by watch+user) */}
                     {otherWatchRelated.length > 0 && (
                       <div className="mt-4 md:hidden">
-                        <SectionLabel className="mb-3">More like this</SectionLabel>
+                        <div className="flex items-center justify-between mb-3">
+                          <SectionLabel>More like this</SectionLabel>
+                          {activeLightboxPhoto?.watchId && sameModelGroups.length > 0 && (
+                            <a
+                              href={`/w/${activeLightboxPhoto.watchId}`}
+                              className="text-xs text-gray-400 hover:text-gray-700 underline underline-offset-2 transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              See all →
+                            </a>
+                          )}
+                        </div>
                         <div className="columns-2 gap-2.5">
                           {groupByWatchUser(otherWatchRelated).map((g) => (
                             <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="masonry" />
@@ -1375,9 +1386,20 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                     <>
                       {sameModelGroups.length > 0 && (
                         <div>
-                          <SectionLabel className="mb-2">
-                            More {currentModelName ?? 'like this'}
-                          </SectionLabel>
+                          <div className="flex items-center justify-between mb-2">
+                            <SectionLabel>
+                              More {currentModelName ?? 'like this'}
+                            </SectionLabel>
+                            {activeLightboxPhoto?.watchId && (
+                              <a
+                                href={`/w/${activeLightboxPhoto.watchId}`}
+                                className="text-xs text-gray-400 hover:text-gray-700 underline underline-offset-2 transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                See all →
+                              </a>
+                            )}
+                          </div>
                           <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-1.5">
                             {sameModelGroups.map((g) => (
                               <RelatedPhotoCard key={g.key} group={g} onClick={openRelatedPhoto} variant="grid" />
