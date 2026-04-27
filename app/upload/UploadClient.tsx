@@ -5,6 +5,7 @@ import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import imageCompression from 'browser-image-compression'
 import CropModal from './CropModal'
+import { trackEvent } from '@/lib/gtag'
 
 function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -253,6 +254,13 @@ export default function UploadClient() {
           aiConfirmedFields: {},
         })
 
+        trackEvent('upload_ai_identified', {
+          brand: c.brand ?? null,
+          model: c.model ?? null,
+          confidence: c.confidence ?? null,
+          fields_filled: filled.size,
+        })
+
         // Silently capture visual characteristics (not shown to user)
         hiddenAiFieldsRef.current = {
           dialColor: c.dialColor ?? '',
@@ -314,6 +322,10 @@ export default function UploadClient() {
     )
 
     // No longer auto-identify — user triggers via button
+    const readyCount = placeholders.length
+    if (readyCount > 0) {
+      trackEvent('upload_file_selected', { photo_count: readyCount })
+    }
   }
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -540,6 +552,13 @@ export default function UploadClient() {
     let successCount = 0
     let failCount = 0
 
+    trackEvent('upload_submitted', {
+      photo_count: readyItems.length,
+      brand: meta.brandName || null,
+      model: meta.modelName || null,
+      ai_assisted: meta.aiIdentified,
+    })
+
     for (const item of readyItems) {
       try {
         await uploadItem(item)
@@ -557,6 +576,12 @@ export default function UploadClient() {
     if (successCount > 0 && failCount === 0) {
       setSuccessPreviews(readyItems.map((i) => i.preview))
       setSuccess(true)
+      trackEvent('upload_success', {
+        photo_count: successCount,
+        brand: meta.brandName || null,
+        model: meta.modelName || null,
+        ai_assisted: meta.aiIdentified,
+      })
     } else if (successCount > 0 && failCount > 0) {
       setPartialSuccess(
         `${successCount} photo${successCount !== 1 ? 's' : ''} uploaded. ${failCount} failed — fix errors and retry.`
