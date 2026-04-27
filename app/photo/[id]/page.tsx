@@ -293,6 +293,20 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
             </div>
           )}
 
+          {/* Brand hub link — passes PageRank up the hierarchy */}
+          {p.brandName && (
+            <p className="mt-6 text-sm text-gray-500">
+              Browse all{' '}
+              <Link
+                href={`/brand/${encodeURIComponent(brandName.toLowerCase())}`}
+                className="underline underline-offset-2 hover:text-gray-800 transition-colors"
+              >
+                {brandName} wrist photos
+              </Link>{' '}
+              on Watchems.
+            </p>
+          )}
+
         </section>
       </main>
     </>

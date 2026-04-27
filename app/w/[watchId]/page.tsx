@@ -107,7 +107,7 @@ export default async function WatchHubPage({ params }: WatchPageProps) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchems.com' },
-      { '@type': 'ListItem', position: 2, name: brand, item: `https://watchems.com/?brand=${encodeURIComponent(brand.toLowerCase())}` },
+      { '@type': 'ListItem', position: 2, name: brand, item: `https://watchems.com/brand/${encodeURIComponent(brand.toLowerCase())}` },
       { '@type': 'ListItem', position: 3, name: watchName, item: `https://watchems.com/w/${params.watchId}` },
     ],
   }
@@ -140,7 +140,7 @@ export default async function WatchHubPage({ params }: WatchPageProps) {
           <Link href="/" className="hover:text-gray-600 transition-colors">Home</Link>
           <span>/</span>
           <Link
-            href={`/?brand=${encodeURIComponent(brand.toLowerCase())}`}
+            href={`/brand/${encodeURIComponent(brand.toLowerCase())}`}
             className="hover:text-gray-600 transition-colors"
           >
             {brand}
@@ -213,7 +213,7 @@ export default async function WatchHubPage({ params }: WatchPageProps) {
         {/* CTA */}
         <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Link
-            href={`/?brand=${encodeURIComponent(brand.toLowerCase())}`}
+            href={`/brand/${encodeURIComponent(brand.toLowerCase())}`}
             className="text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
           >
             More {brand} photos →
