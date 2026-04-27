@@ -1279,7 +1279,17 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                       <div className="min-w-0">
                         {(brand || model) && (
                           <p className="text-gray-900 font-semibold text-sm truncate">
-                            {[brand, model].filter(Boolean).join(' ')}
+                            {brand ? (
+                              <a
+                                href={`/brand/${encodeURIComponent(brand.toLowerCase())}`}
+                                className="hover:underline underline-offset-2"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {brand}
+                              </a>
+                            ) : null}
+                            {brand && model ? ' ' : null}
+                            {model ?? null}
                           </p>
                         )}
                         <UserAttribution userName={p.userName} userId={p.userId} isOfficial={p.isOfficial} className="text-gray-400 text-xs mt-0.5" onClick={(e) => e.stopPropagation()} />
