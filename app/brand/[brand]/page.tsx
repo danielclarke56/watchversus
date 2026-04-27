@@ -4,6 +4,7 @@ export const revalidate = 0
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, asc, desc, sql, isNotNull, ilike } from 'drizzle-orm'
@@ -224,13 +225,13 @@ export default async function BrandPage({ params }: BrandPageProps) {
                   href={`/w/${watch.watchId}`}
                   className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
                 >
-                  <div className="aspect-square bg-gray-50 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="aspect-square bg-gray-50 overflow-hidden relative">
+                    <Image
                       src={watch.thumbnailUrl || watch.url}
                       alt={`${canonicalBrandName} ${watch.modelName || ''} wrist photo`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                   </div>
                   <div className="px-2.5 py-2">
@@ -256,13 +257,13 @@ export default async function BrandPage({ params }: BrandPageProps) {
                   href={`/photo/${photo.slug ?? photo.id}`}
                   className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
                 >
-                  <div className="aspect-square bg-gray-50 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="aspect-square bg-gray-50 overflow-hidden relative">
+                    <Image
                       src={photo.thumbnailUrl || photo.url}
                       alt={buildPhotoAltText(photo)}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                   </div>
                   <div className="px-2.5 py-2">

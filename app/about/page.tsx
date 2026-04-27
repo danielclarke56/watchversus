@@ -15,8 +15,22 @@ export const metadata: Metadata = {
   },
 }
 
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchems.com' },
+    { '@type': 'ListItem', position: 2, name: 'About', item: 'https://watchems.com/about' },
+  ],
+}
+
 export default function AboutPage() {
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <div className="mb-10">
         <h1 className="text-3xl sm:text-4xl font-bold text-textPrimary mb-3">About Watchems</h1>
@@ -33,8 +47,16 @@ export default function AboutPage() {
           <div className="text-textSecond space-y-3 leading-relaxed">
             <p>
               Watchems is a community photo gallery for watch enthusiasts. Browse real photos of
-              watches worn in real life — from affordable Seikos to luxury Rolexes. No affiliate links,
-              no sponsored content, just real watches from real owners.
+              watches worn in real life — from affordable{' '}
+              <Link href="/brand/seiko" className="underline underline-offset-2 hover:text-textPrimary transition-colors">Seikos</Link>
+              {' '}to luxury{' '}
+              <Link href="/brand/rolex" className="underline underline-offset-2 hover:text-textPrimary transition-colors">Rolexes</Link>
+              . No affiliate links, no sponsored content, just real watches from real owners.
+            </p>
+            <p>
+              Browse photos by{' '}
+              <Link href="/brands" className="underline underline-offset-2 hover:text-textPrimary transition-colors">watch brand</Link>
+              , or explore individual models to see how they look on a real wrist before you buy.
             </p>
           </div>
         </section>
@@ -96,8 +118,10 @@ export default function AboutPage() {
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/upload" className="btn-gold">Upload a Photo</Link>
           <Link href="/" className="btn-outline">Browse Gallery</Link>
+          <Link href="/brands" className="btn-outline">Browse by Brand</Link>
         </div>
       </div>
     </div>
+    </>
   )
 }

@@ -3,6 +3,7 @@ export const revalidate = 0
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql, isNotNull } from 'drizzle-orm'
@@ -103,13 +104,13 @@ export default async function BrandsPage() {
                 href={`/brand/${encodeURIComponent(slug)}`}
                 className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
               >
-                <div className="aspect-square bg-gray-50 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <div className="aspect-square bg-gray-50 overflow-hidden relative">
+                  <Image
                     src={coverImg}
                     alt={`${brand.brandName} wrist photo`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 </div>
                 <div className="px-2.5 py-2">

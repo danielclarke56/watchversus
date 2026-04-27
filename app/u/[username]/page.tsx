@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { clerkClient } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, asc } from 'drizzle-orm'
 import { sql } from 'drizzle-orm'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -54,6 +54,14 @@ export default async function PublicProfilePage({ params }: { params: { username
     .select({ photoCount: sql<number>`count(*)::int` })
     .from(photos)
     .where(and(eq(photos.userId, user.id), eq(photos.status, 'approved')))
+
+  // Distinct brands this user has submitted — for server-rendered links into brand hierarchy
+  const userBrands = await db
+    .selectDistinct({ brandName: photos.brandName })
+    .from(photos)
+    .where(and(eq(photos.userId, user.id), eq(photos.status, 'approved')))
+    .orderBy(asc(photos.brandName))
+    .then((rows) => rows.map((r) => r.brandName).filter(Boolean) as string[])
 
   const displayName = user.firstName
     ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
@@ -116,6 +124,19 @@ export default async function PublicProfilePage({ params }: { params: { username
                   </span>
                 </div>
               </div>
+              {userBrands.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2 justify-center sm:justify-start">
+                  {userBrands.map((brand) => (
+                    <Link
+                      key={brand}
+                      href={`/brand/${encodeURIComponent(brand.toLowerCase())}`}
+                      className="text-xs px-2.5 py-1 rounded-full border border-borderStrong text-textMuted hover:text-textPrimary hover:border-accent transition-colors"
+                    >
+                      {brand}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
