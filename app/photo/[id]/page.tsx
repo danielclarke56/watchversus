@@ -277,9 +277,20 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
           {/* Related photos — same watch model */}
           {relatedByWatch.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                More {brandName} {modelName} photos
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  More {brandName} {modelName} photos
+                </h2>
+                {/* Link to hub page once there are enough photos (current + related >= 3) */}
+                {relatedByWatch.length >= 2 && p.brandName && p.modelName && (
+                  <Link
+                    href={`/w/${p.watchId}`}
+                    className="text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
+                  >
+                    See all →
+                  </Link>
+                )}
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {relatedByWatch.map((photo) => (
                   <Link
