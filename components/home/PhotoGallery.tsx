@@ -15,6 +15,7 @@ import SectionLabel from '@/components/ui/SectionLabel'
 import EmptyState from '@/components/ui/EmptyState'
 import { getWatchesCacheSync, getWatchesData } from '@/lib/watchesCache'
 import type { BrandWithCount, CharacteristicChip } from '@/lib/watchesCache'
+import { trackEvent } from '@/lib/gtag'
 
 interface PhotoItem {
   id: string
@@ -596,6 +597,22 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
           setTotalCount(data.totalCount)
           setSuggestions(data.suggestions)
           setLoading(false)
+
+          // Track search/filter interactions — only when user has applied something
+          const hasFilter = !!(activeQuery || activeWatchId || activeBrand || activeMovement || activePriceMin || activePriceMax || activeCaseSizeMin || activeCaseSizeMax || activeDialColor || activeWatchStyle || activeCaseMaterial || activeStrapType)
+          if (hasFilter) {
+            trackEvent('search', {
+              search_term: activeQuery ?? activeWatchId ?? activeBrand ?? null,
+              brand: activeBrand ?? null,
+              watch_id: activeWatchId ?? null,
+              movement: activeMovement ?? null,
+              dial_color: activeDialColor ?? null,
+              watch_style: activeWatchStyle ?? null,
+              case_material: activeCaseMaterial ?? null,
+              strap_type: activeStrapType ?? null,
+              result_count: data.totalCount ?? data.photos.length,
+            })
+          }
         }
       }).catch((err) => {
         if (err instanceof DOMException && err.name === 'AbortError') return
@@ -690,6 +707,13 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
       setPhotoOverride(null)
       setLightboxImageLoading(true)
       setLightbox({ groupIdx, photoIdx })
+
+      trackEvent('photo_view', {
+        watch_id: photo.watchId,
+        brand: photo.brandName ?? photo.watchBrand ?? null,
+        model: photo.modelName ?? photo.watchName ?? null,
+        photo_id: photo.id,
+      })
     }
   }, [])
 
