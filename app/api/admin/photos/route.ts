@@ -307,8 +307,8 @@ export async function POST(req: NextRequest) {
       // Delete rejected photo entry only — do NOT remove images from R2
       await db.delete(photos).where(eq(photos.id, photoId))
     } else if (action === 'delete-pending') {
-      // Delete pending photo entry — do NOT remove images from R2
-      await db.delete(photos).where(eq(photos.id, photoId))
+      // Soft-delete pending photo — was never indexed, but keeps row for audit
+      await db.update(photos).set({ status: 'deleted' }).where(eq(photos.id, photoId))
     } else if (action === 'delete-approved') {
       // For approved photos, check if this is the last photo
       const approvedPhotoCount = await db
@@ -346,7 +346,8 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      await db.delete(photos).where(eq(photos.id, photoId))
+      // Soft-delete — keeps the row so /photo/[id] can return 410 Gone to Google
+      await db.update(photos).set({ status: 'deleted' }).where(eq(photos.id, photoId))
     }
 
     return NextResponse.json({ success: true })

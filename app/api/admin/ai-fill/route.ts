@@ -50,11 +50,14 @@ export async function POST(req: NextRequest) {
   try {
     const client = new GoogleGenerativeAI(apiKey)
 
-    // Use Pro for better factual recall; enable Google Search grounding for live spec lookup
-    const model = client.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      tools: [{ googleSearchRetrieval: {} }],
-    })
+    // When images are present, grounding tools cannot be combined with inlineData —
+    // the API throws. Use vision-only model for image requests, grounded model otherwise.
+    const hasImages = imageUrls && imageUrls.length > 0
+    const model = client.getGenerativeModel(
+      hasImages
+        ? { model: 'gemini-2.5-flash' }
+        : { model: 'gemini-2.5-flash', tools: [{ googleSearchRetrieval: {} }] }
+    )
 
     const watchDescription = referenceNumber
       ? `${brandName} ${modelName} (ref. ${referenceNumber})`
@@ -150,10 +153,11 @@ No markdown, no explanation — JSON only.`
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('Error calling Gemini API:', error)
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('Error calling Gemini API:', msg)
     if (error instanceof SyntaxError) {
       return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
     }
-    return NextResponse.json({ error: 'Failed to generate specs' }, { status: 500 })
+    return NextResponse.json({ error: `Failed to generate specs: ${msg}` }, { status: 500 })
   }
 }

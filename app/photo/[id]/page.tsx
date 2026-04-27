@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 import { notFound, redirect } from 'next/navigation'
+import { NextResponse } from 'next/server'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import Link from 'next/link'
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
     .where(isUUID ? eq(photos.id, param) : or(eq(photos.slug, param), eq(photos.id, param))!)
     .limit(1)
 
-  if (photoRecord.length === 0 || photoRecord[0].status !== 'approved') {
+  if (photoRecord.length === 0 || !['approved'].includes(photoRecord[0].status)) {
     return { title: 'Photo Not Found | Watchems' }
   }
 
@@ -97,11 +98,20 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
     .where(isUUID ? eq(photos.id, param) : or(eq(photos.slug, param), eq(photos.id, param))!)
     .limit(1)
 
-  if (photoRecord.length === 0 || photoRecord[0].status !== 'approved') {
+  if (photoRecord.length === 0) {
     notFound()
   }
 
   const p = photoRecord[0]
+
+  // Soft-deleted photos get 410 Gone — tells Google to drop from index immediately
+  if (p.status === 'deleted') {
+    return NextResponse.json(null, { status: 410 }) as never
+  }
+
+  if (p.status !== 'approved') {
+    notFound()
+  }
 
   // UUID accessed directly — 301 redirect to slug URL
   if (isUUID && p.slug) {
