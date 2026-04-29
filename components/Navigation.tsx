@@ -47,10 +47,12 @@ export default function Navigation() {
   const isHomePage = pathname === '/'
   const [searchExpanded, setSearchExpanded] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [browseOpen, setBrowseOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const browseRef = useRef<HTMLDivElement>(null)
   const handleExpandChange = useCallback((expanded: boolean) => setSearchExpanded(expanded), [])
 
-  // Close menu on outside click
+  // Close mobile menu on outside click
   useEffect(() => {
     if (!menuOpen) return
     const handler = (e: PointerEvent) => {
@@ -62,8 +64,20 @@ export default function Navigation() {
     return () => window.removeEventListener('pointerdown', handler)
   }, [menuOpen])
 
-  // Close menu on route change
-  useEffect(() => { setMenuOpen(false) }, [pathname])
+  // Close browse dropdown on outside click
+  useEffect(() => {
+    if (!browseOpen) return
+    const handler = (e: PointerEvent) => {
+      if (browseRef.current && !browseRef.current.contains(e.target as Node)) {
+        setBrowseOpen(false)
+      }
+    }
+    window.addEventListener('pointerdown', handler)
+    return () => window.removeEventListener('pointerdown', handler)
+  }, [browseOpen])
+
+  // Close both menus on route change
+  useEffect(() => { setMenuOpen(false); setBrowseOpen(false) }, [pathname])
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
@@ -90,6 +104,55 @@ export default function Navigation() {
 
         {/* Desktop: full buttons */}
         <div className="hidden sm:flex items-center gap-4 shrink-0">
+
+          {/* Browse dropdown */}
+          <div ref={browseRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setBrowseOpen(!browseOpen)}
+              className="flex items-center gap-1 text-sm text-textSecond hover:text-accent transition-colors font-medium"
+            >
+              Browse
+              <svg xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 transition-transform ${browseOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {browseOpen && (
+              <div className="absolute left-0 top-full mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1.5 z-50">
+                <Link
+                  href="/brands"
+                  className="flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setBrowseOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                  By Brand
+                </Link>
+                <Link
+                  href="/styles"
+                  className="flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setBrowseOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  By Style
+                </Link>
+                <Link
+                  href="/watches"
+                  className="flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setBrowseOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Watch Models
+                </Link>
+              </div>
+            )}
+          </div>
+
           <Link
             href="/upload"
             className="btn-gold text-sm px-5 h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
@@ -150,6 +213,16 @@ export default function Navigation() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
                 Browse by Style
+              </Link>
+              <Link
+                href="/watches"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Watch Models
               </Link>
               <Link
                 href="/about"

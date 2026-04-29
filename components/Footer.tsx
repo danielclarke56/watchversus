@@ -41,6 +41,11 @@ export default function Footer() {
                   Browse by Style
                 </Link>
               </li>
+              <li>
+                <Link href="/watches" className="text-textSecond hover:text-accent text-sm transition-colors">
+                  Watch Models
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

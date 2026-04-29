@@ -102,6 +102,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
+  // Watches index
+  const watchesIndex: MetadataRoute.Sitemap = [
+    {
+      url: `${base}/watches`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+  ]
+
   // Style hub pages
   const styleHubGroups = await db
     .select({
@@ -132,5 +142,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...staticPages, ...brandsIndex, ...brandPages, ...stylesIndex, ...stylePages, ...watchPages, ...photoPages]
+  return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...watchPages, ...photoPages]
 }
