@@ -112,13 +112,13 @@ export default function Navigation() {
               onClick={() => setBrowseOpen(!browseOpen)}
               className="flex items-center gap-1 text-sm text-textSecond hover:text-accent transition-colors font-medium"
             >
-              Browse
+              Explore
               <svg xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 transition-transform ${browseOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {browseOpen && (
-              <div className="absolute left-0 top-full mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1.5 z-50">
+              <div className="absolute left-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1.5 z-50">
                 <Link
                   href="/brands"
                   className="flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -148,6 +148,17 @@ export default function Navigation() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Watch Models
+                </Link>
+                <div className="border-t border-gray-100 my-1" />
+                <Link
+                  href="/identify"
+                  className="flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setBrowseOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z" />
+                  </svg>
+                  Identify a Watch
                 </Link>
               </div>
             )}
@@ -217,6 +228,16 @@ export default function Navigation() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 About
+              </Link>
+              <Link
+                href="/identify"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z" />
+                </svg>
+                Identify a Watch
               </Link>
               <div className="border-t border-gray-100 my-1" />
               <div className="px-4 py-2.5">

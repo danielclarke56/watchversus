@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import imageCompression from 'browser-image-compression'
 import CropModal from './CropModal'
 import { trackEvent } from '@/lib/gtag'
@@ -143,8 +144,18 @@ const MAX_PHOTOS = 20
 
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
+  const searchParams = useSearchParams()
   const [items, setItems] = useState<PhotoItem[]>([])
-  const [meta, setMeta] = useState<WatchMeta>(defaultMeta())
+  const [meta, setMeta] = useState<WatchMeta>(() => ({
+    ...defaultMeta(),
+    brandName: searchParams.get('brand') ?? '',
+    modelName: searchParams.get('model') ?? '',
+    referenceNumber: searchParams.get('reference') ?? '',
+    movement: searchParams.get('movement') ?? '',
+    caseSize: searchParams.get('caseSize') ?? '',
+    waterResistance: searchParams.get('waterResistance') ?? '',
+    estimatedPrice: searchParams.get('estimatedPrice') ?? '',
+  }))
   const hiddenAiFieldsRef = useRef<HiddenAiFields>({ dialColor: '', bezelColor: '', caseMaterial: '', strapType: '', watchStyle: '' })
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -1179,8 +1190,22 @@ export default function UploadClient() {
                       </div>
                     </div>
                   </div>
-                </div>
+
+                {/* Terms */}
+                <label className="flex items-start gap-3 pt-1 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-borderStrong accent-accent flex-shrink-0"
+                  />
+                  <span className="text-xs text-textSecond leading-relaxed">
+                    I confirm I own the rights to this photo and grant Watchems a non-exclusive licence to display it on the website. The photo is not AI-generated and has not been digitally altered to misrepresent the watch.
+                  </span>
+                </label>
               </div>
+
+            </div>
 
             <input
               ref={fileRef}
@@ -1191,23 +1216,9 @@ export default function UploadClient() {
               className="hidden"
             />
 
-            {/* Terms + sticky submit bar */}
+            {/* Sticky submit bar */}
             {hasItems && (
-              <div className="sticky bottom-4 z-10 space-y-2">
-                {/* Terms checkbox */}
-                <label className="flex items-start gap-3 bg-surface border border-borderStrong rounded-xl px-4 py-3 shadow-lg cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-borderStrong accent-accent flex-shrink-0"
-                  />
-                  <span className="text-xs text-textSecond leading-relaxed">
-                    I confirm I own the rights to this photo and grant Watchems a non-exclusive licence to display it on the website. I have not submitted AI-generated images and the photo has not been digitally altered to misrepresent the watch.
-                  </span>
-                </label>
-
-                {/* Submit row */}
+              <div className="sticky bottom-4 z-10">
                 <div className="bg-surface border border-borderStrong rounded-xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div className="text-sm text-textSecond text-center sm:text-left">
                     {readyCount === 0 ? (
@@ -1215,7 +1226,7 @@ export default function UploadClient() {
                     ) : !meta.brandName.trim() ? (
                       <span className="text-textMuted">Enter a brand name to submit</span>
                     ) : !termsAccepted ? (
-                      <span className="text-textMuted">Accept the terms above to submit</span>
+                      <span className="text-textMuted">Confirm the terms in the form to submit</span>
                     ) : (
                       <span>
                         <span className="font-semibold text-textPrimary">{readyCount}</span>{' '}
