@@ -7,8 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and, asc, desc, sql, isNotNull, ilike } from 'drizzle-orm'
-import { buildPhotoAltText } from '@/lib/photoAlt'
+import { eq, and, asc, sql, isNotNull, ilike } from 'drizzle-orm'
 import { brands as brandDataList } from '@/lib/brandData'
 import { toWatchSlug } from '@/lib/normalizeWatch'
 
@@ -38,8 +37,21 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   const canonicalBrandName = repPhoto?.brandName || brand
   const imageUrl = repPhoto?.thumbnailUrl || repPhoto?.url || ''
 
-  const title = `${canonicalBrandName} Watch Photos on the Wrist | Watchems`
-  const description = `Browse ${stats.photoCount} real owner photos of ${canonicalBrandName} watches worn on the wrist. Community-submitted wrist shots — no affiliate links, just real ${canonicalBrandName} watches on real wrists.`
+  // Top 3 model names for richer description
+  const topModelsForMeta = await db
+    .select({ modelName: photos.modelName })
+    .from(photos)
+    .where(and(eq(photos.status, 'approved'), ilike(photos.brandName, brand), isNotNull(photos.modelName)))
+    .groupBy(photos.modelName)
+    .orderBy(sql`count(*) DESC`)
+    .limit(3)
+
+  const modelList = topModelsForMeta.map((m) => m.modelName).filter(Boolean).join(', ')
+
+  const title = `${canonicalBrandName} Watches — Real Wrist Photos & Models | Watchems`
+  const description = modelList
+    ? `Browse ${stats.photoCount} real owner wrist photos of ${canonicalBrandName} watches including the ${modelList}. Community-submitted, no affiliate links — just real ${canonicalBrandName} watches on real wrists.`
+    : `Browse ${stats.photoCount} real owner wrist photos of ${canonicalBrandName} watches worn on the wrist. Community-submitted, no affiliate links.`
 
   return {
     title,
@@ -90,8 +102,8 @@ export default async function BrandPage({ params }: BrandPageProps) {
   const canonicalBrandName = repPhoto.brandName || brand
   const imageUrl = repPhoto.thumbnailUrl || repPhoto.url
 
-  // Watch model hubs for this brand (3+ photos each)
-  const watchGroups = await db
+  // Top 8 watch models by photo count (no minimum threshold)
+  const topModels = await db
     .select({
       watchId: photos.watchId,
       modelName: photos.modelName,
@@ -102,31 +114,14 @@ export default async function BrandPage({ params }: BrandPageProps) {
     .from(photos)
     .where(and(eq(photos.status, 'approved'), ilike(photos.brandName, brand), isNotNull(photos.watchId)))
     .groupBy(photos.watchId, photos.modelName)
-    .having(sql`count(*) >= 3`)
     .orderBy(sql`count(*) DESC`)
-
-  // Recent photos (all, for the recent grid)
-  const recentPhotos = await db
-    .select({
-      id: photos.id,
-      slug: photos.slug,
-      url: photos.url,
-      thumbnailUrl: photos.thumbnailUrl,
-      brandName: photos.brandName,
-      modelName: photos.modelName,
-      userName: photos.userName,
-      referenceNumber: photos.referenceNumber,
-      caseSize: photos.caseSize,
-    })
-    .from(photos)
-    .where(and(eq(photos.status, 'approved'), ilike(photos.brandName, brand)))
-    .orderBy(desc(photos.createdAt))
-    .limit(12)
+    .limit(8)
 
   // Editorial content from brandData if available
-  // Normalize the URL param (strip diacritics, spaces→hyphens) before matching
   const normalizedBrandSlug = toWatchSlug(brand)
   const brandData = brandDataList.find((b) => b.slug === normalizedBrandSlug) ?? null
+
+  const pageTitle = `${canonicalBrandName} Watches — Real Wrist Photos & Models | Watchems`
 
   // Structured data
   const breadcrumbJsonLd = {
@@ -161,6 +156,28 @@ export default async function BrandPage({ params }: BrandPageProps) {
       }
     : null
 
+  const speakableJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: pageTitle,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', '.brand-hero-fact', '.brand-overview', '.faq-answer'],
+    },
+  }
+
+  const organisationJsonLd = brandData
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: canonicalBrandName,
+        foundingDate: String(brandData.founded),
+        foundingLocation: { '@type': 'Place', name: brandData.country },
+        description: brandData.overview.slice(0, 300),
+        url: `https://watchems.com/brand/${brand}`,
+      }
+    : null
+
   return (
     <>
       <script
@@ -175,6 +192,16 @@ export default async function BrandPage({ params }: BrandPageProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableJsonLd) }}
+      />
+      {organisationJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationJsonLd) }}
         />
       )}
 
@@ -192,7 +219,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
-            {canonicalBrandName} Watch Photos
+            {canonicalBrandName} Watches
           </h1>
           <p className="text-sm text-gray-500 mt-2">
             {stats.photoCount} real owner photo{stats.photoCount !== 1 ? 's' : ''} on the wrist
@@ -203,77 +230,48 @@ export default async function BrandPage({ params }: BrandPageProps) {
         {brandData && (
           <div className="bg-gray-50 rounded-xl border border-gray-100 p-5 mb-8">
             {brandData.heroFact && (
-              <p className="text-sm font-medium text-gray-700 mb-3 italic">
+              <p className="brand-hero-fact text-sm font-medium text-gray-700 mb-3 italic">
                 &ldquo;{brandData.heroFact}&rdquo;
               </p>
             )}
-            <p className="text-sm text-gray-600 leading-relaxed">{brandData.overview}</p>
+            <p className="brand-overview text-sm text-gray-600 leading-relaxed">{brandData.overview}</p>
             <p className="text-xs text-gray-400 mt-3">Founded {brandData.founded} · {brandData.country}</p>
           </div>
         )}
 
-        {/* Watch model hubs */}
-        {watchGroups.length > 0 && (
+        {/* Top models grid — 4×2 */}
+        {topModels.length > 0 && (
           <div className="mb-10">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               {canonicalBrandName} models
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {watchGroups.map((watch) => (
-                <Link
-                  key={watch.watchId}
-                  href={`/w/${watch.watchId}`}
-                  className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
-                >
-                  <div className="aspect-square bg-gray-50 overflow-hidden relative">
-                    <Image
-                      src={watch.thumbnailUrl || watch.url}
-                      alt={`${canonicalBrandName} ${watch.modelName || ''} wrist photo`}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-                  <div className="px-2.5 py-2">
-                    <p className="text-xs font-medium text-gray-700 truncate">{watch.modelName || 'Unknown model'}</p>
-                    <p className="text-xs text-gray-400">{watch.photoCount} photo{watch.photoCount !== 1 ? 's' : ''}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Recent photos */}
-        {recentPhotos.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Recent {canonicalBrandName} photos
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {recentPhotos.map((photo) => (
-                <Link
-                  key={photo.id}
-                  href={`/photo/${photo.slug ?? photo.id}`}
-                  className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
-                >
-                  <div className="aspect-square bg-gray-50 overflow-hidden relative">
-                    <Image
-                      src={photo.thumbnailUrl || photo.url}
-                      alt={buildPhotoAltText(photo)}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-                  <div className="px-2.5 py-2">
-                    <p className="text-xs text-gray-500 truncate">by {photo.userName}</p>
-                    {photo.caseSize && (
-                      <p className="text-xs text-gray-400">{photo.caseSize}mm</p>
-                    )}
-                  </div>
-                </Link>
-              ))}
+              {topModels.map((watch) => {
+                const href = watch.photoCount >= 3
+                  ? `/w/${watch.watchId}`
+                  : `/?watch=${encodeURIComponent(watch.watchId)}`
+                return (
+                  <Link
+                    key={watch.watchId}
+                    href={href}
+                    className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
+                  >
+                    <div className="aspect-square bg-gray-50 overflow-hidden relative">
+                      <Image
+                        src={watch.thumbnailUrl ?? watch.url}
+                        alt={`${canonicalBrandName} ${watch.modelName ?? ''} wrist photo`}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                    </div>
+                    <div className="px-2.5 py-2">
+                      <p className="text-xs font-medium text-gray-700 truncate">{watch.modelName ?? 'Unknown model'}</p>
+                      <p className="text-xs text-gray-400">{watch.photoCount} photo{watch.photoCount !== 1 ? 's' : ''}</p>
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}
@@ -288,7 +286,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
               {brandData.faq.map((item, i) => (
                 <div key={i} className="bg-white rounded-xl border border-gray-100 p-5">
                   <h3 className="text-sm font-semibold text-gray-800 mb-2">{item.question}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{item.answer}</p>
+                  <p className="faq-answer text-sm text-gray-600 leading-relaxed">{item.answer}</p>
                 </div>
               ))}
             </div>
