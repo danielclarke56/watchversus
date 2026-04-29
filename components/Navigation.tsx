@@ -153,12 +153,6 @@ export default function Navigation() {
             )}
           </div>
 
-          <Link
-            href="/upload"
-            className="btn-gold text-sm px-5 h-10 rounded-lg font-semibold flex items-center whitespace-nowrap"
-          >
-            Upload a Photo
-          </Link>
           <ClerkAuth avatarSize="w-7 h-7" />
         </div>
 
@@ -184,16 +178,6 @@ export default function Navigation() {
           {/* Dropdown */}
           {menuOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-              <Link
-                href="/upload"
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Upload a Photo
-              </Link>
               <Link
                 href="/brands"
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
