@@ -3,10 +3,10 @@ export const revalidate = 0
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, and, sql, isNotNull } from 'drizzle-orm'
+import BrandList from './BrandList'
 
 export const metadata: Metadata = {
   title: 'Watch Brands — Wrist Photo Gallery | Watchems',
@@ -35,13 +35,11 @@ export default async function BrandsPage() {
     .select({
       brandName: photos.brandName,
       photoCount: sql<number>`count(*)::int`,
-      thumbnailUrl: sql<string | null>`min(${photos.thumbnailUrl})`,
-      url: sql<string>`min(${photos.url})`,
     })
     .from(photos)
     .where(and(eq(photos.status, 'approved'), isNotNull(photos.brandName)))
     .groupBy(photos.brandName)
-    .orderBy(sql`count(*) DESC`)
+    .orderBy(photos.brandName)
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -93,34 +91,7 @@ export default async function BrandsPage() {
           </p>
         </div>
 
-        {/* Brand grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {brandGroups.map((brand) => {
-            const slug = brand.brandName!.toLowerCase()
-            const coverImg = brand.thumbnailUrl || brand.url
-            return (
-              <Link
-                key={brand.brandName}
-                href={`/brand/${encodeURIComponent(slug)}`}
-                className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
-              >
-                <div className="aspect-square bg-gray-50 overflow-hidden relative">
-                  <Image
-                    src={coverImg}
-                    alt={`${brand.brandName} wrist photo`}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  />
-                </div>
-                <div className="px-2.5 py-2">
-                  <p className="text-xs font-semibold text-gray-800 truncate">{brand.brandName}</p>
-                  <p className="text-xs text-gray-400">{brand.photoCount} photo{brand.photoCount !== 1 ? 's' : ''}</p>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+        <BrandList brands={brandGroups.map((b) => ({ brandName: b.brandName!, photoCount: b.photoCount }))} />
 
       </main>
     </>
