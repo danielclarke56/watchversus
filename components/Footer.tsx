@@ -36,6 +36,11 @@ export default function Footer() {
                   Browse by Brand
                 </Link>
               </li>
+              <li>
+                <Link href="/styles" className="text-textSecond hover:text-accent text-sm transition-colors">
+                  Browse by Style
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

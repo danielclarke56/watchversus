@@ -2,8 +2,10 @@ import { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc, sql, isNotNull, and } from 'drizzle-orm'
+import { getStyleByDbValue } from '@/lib/styleData'
 
 const MIN_PHOTOS_FOR_HUB = 3
+const MIN_PHOTOS_FOR_STYLE_HUB = 5
 
 export const dynamic = 'force-dynamic'
 
@@ -100,5 +102,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...staticPages, ...brandsIndex, ...brandPages, ...watchPages, ...photoPages]
+  // Style hub pages
+  const styleHubGroups = await db
+    .select({
+      watchStyle: photos.watchStyle,
+      lastModified: sql<Date>`max(${photos.createdAt})`,
+    })
+    .from(photos)
+    .where(and(eq(photos.status, 'approved'), isNotNull(photos.watchStyle)))
+    .groupBy(photos.watchStyle)
+    .having(sql`count(*) >= ${MIN_PHOTOS_FOR_STYLE_HUB}`)
+
+  const stylePages: MetadataRoute.Sitemap = styleHubGroups
+    .filter((s) => s.watchStyle && getStyleByDbValue(s.watchStyle))
+    .map((s) => ({
+      url: `${base}/style/${getStyleByDbValue(s.watchStyle!)!.slug}`,
+      lastModified: s.lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    }))
+
+  // Styles index
+  const stylesIndex: MetadataRoute.Sitemap = [
+    {
+      url: `${base}/styles`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+    },
+  ]
+
+  return [...staticPages, ...brandsIndex, ...brandPages, ...stylesIndex, ...stylePages, ...watchPages, ...photoPages]
 }

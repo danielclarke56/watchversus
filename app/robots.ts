@@ -11,6 +11,8 @@ export default function robots(): MetadataRoute.Robots {
           '/w/',
           '/brand/',
           '/brands',
+          '/style/',
+          '/styles',
           '/upload',
           '/about',
           '/profile',
