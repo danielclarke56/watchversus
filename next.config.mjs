@@ -65,17 +65,6 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      // Focus on photo gallery only — unpublish all other sections
-      {
-        source: '/watches',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/watches/:slug*',
-        destination: '/',
-        permanent: true,
-      },
       {
         source: '/compare',
         destination: '/',

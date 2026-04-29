@@ -26,7 +26,6 @@ export default function robots(): MetadataRoute.Robots {
           '/sign-up',
           '/_next',
           '/private',
-          '/watches/*',
           '/quiz',
         ],
       },
