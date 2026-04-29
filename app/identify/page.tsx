@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import IdentifyClient from './IdentifyClient'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Identify a Watch | Watchems',
@@ -10,5 +13,9 @@ export const metadata: Metadata = {
 }
 
 export default function IdentifyPage() {
-  return <IdentifyClient />
+  return (
+    <Suspense>
+      <IdentifyClient />
+    </Suspense>
+  )
 }

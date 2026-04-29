@@ -213,7 +213,7 @@ export default function IdentifyClient() {
                   <img src={preview} alt="Watch to identify" className="w-full h-full object-contain" />
                   {status === 'processing' && (
                     <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-3">
-                      <span className="animate-spin inline-block w-8 h-8 border-3 border-white border-t-transparent rounded-full" />
+                      <span className="animate-spin inline-block w-8 h-8 border-2 border-white border-t-transparent rounded-full" />
                       <span className="text-white text-sm font-medium">Identifying watch...</span>
                     </div>
                   )}
