@@ -146,6 +146,7 @@ export default function UploadClient() {
   const [items, setItems] = useState<PhotoItem[]>([])
   const [meta, setMeta] = useState<WatchMeta>(defaultMeta())
   const hiddenAiFieldsRef = useRef<HiddenAiFields>({ dialColor: '', bezelColor: '', caseMaterial: '', strapType: '', watchStyle: '' })
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [globalError, setGlobalError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -388,16 +389,8 @@ export default function UploadClient() {
   function handleCropConfirm(croppedFile: File, croppedDataUrl: string) {
     if (!pendingCrop) return
     const { id } = pendingCrop
-    const wasPrimary = items.length > 0 && items[0].id === id
     filesById.current.set(id, croppedFile)
     patchItem(id, { file: croppedFile, preview: croppedDataUrl })
-    if (wasPrimary) {
-      patchMeta({
-        identifyStatus: 'idle', aiIdentified: false,
-        aiFilledFields: new Set(), aiConfirmedFields: {},
-        isWatch: null, aiGenerated: null,
-      })
-    }
     setPendingCrop(null)
   }
 
@@ -407,19 +400,14 @@ export default function UploadClient() {
 
   // ── Form field helpers ─────────────────────────────────────────────────────
 
-  function metaChange(field: string, aiField: AiConfirmField | null, value: string) {
-    const patch: Partial<WatchMeta> = { [field]: value } as Partial<WatchMeta>
-    if (aiField && meta.aiFilledFields.has(aiField)) {
-      patch.aiConfirmedFields = { ...meta.aiConfirmedFields, [aiField]: true }
-    }
-    patchMeta(patch)
+  function metaChange(field: string, value: string) {
+    patchMeta({ [field]: value } as Partial<WatchMeta>)
   }
 
   function confirmField(field: AiConfirmField) {
     patchMeta({ aiConfirmedFields: { ...meta.aiConfirmedFields, [field]: true } })
   }
 
-  // Maps an AI confirm field to its corresponding WatchMeta key (most match 1:1).
   const AI_TO_META_KEY: Record<AiConfirmField, keyof WatchMeta> = {
     brand: 'brandName',
     model: 'modelName',
@@ -491,11 +479,6 @@ export default function UploadClient() {
     return null
   }
 
-  const allAiFieldsConfirmed =
-    !meta.aiIdentified ||
-    meta.aiFilledFields.size === 0 ||
-    Array.from(meta.aiFilledFields).every((f) => !!meta.aiConfirmedFields[f])
-
   const aiFilledCount = meta.aiFilledFields.size
   const aiConfirmedCount = AI_CONFIRM_FIELDS.filter(
     (f) => meta.aiFilledFields.has(f) && meta.aiConfirmedFields[f]
@@ -507,7 +490,8 @@ export default function UploadClient() {
     if (items.filter((i) => i.status === 'ready').length === 0) return false
     if (!meta.brandName.trim()) return false
     if (meta.isWatch === false) return false
-    return allAiFieldsConfirmed
+    if (!termsAccepted) return false
+    return true
   }
 
   async function uploadItem(item: PhotoItem): Promise<void> {
@@ -980,7 +964,7 @@ export default function UploadClient() {
                   <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                        AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''}
+                        AI filled {aiFilledCount} field{aiFilledCount !== 1 ? 's' : ''} — verify each one
                       </span>
                       <span className="text-xs text-blue-700 dark:text-blue-300 tabular-nums">
                         {aiConfirmedCount}/{aiFilledCount}
@@ -992,11 +976,9 @@ export default function UploadClient() {
                         style={{ width: `${(aiConfirmedCount / aiFilledCount) * 100}%` }}
                       />
                     </div>
-                    {!allAiFieldsConfirmed && (
-                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5">
-                        Click ✓ on highlighted fields to confirm each AI suggestion.
-                      </p>
-                    )}
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5">
+                      Click ✓ to keep or ✕ to clear each highlighted field.
+                    </p>
                   </div>
                 )}
 
@@ -1009,7 +991,7 @@ export default function UploadClient() {
                     <input
                       type="text"
                       value={meta.brandName}
-                      onChange={(e) => metaChange('brandName', 'brand', e.target.value)}
+                      onChange={(e) => metaChange('brandName', e.target.value)}
                       placeholder="e.g. Rolex"
                       maxLength={80}
                       className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('brand')} ${inputPrClass('brand')}`}
@@ -1027,7 +1009,7 @@ export default function UploadClient() {
                     <input
                       type="text"
                       value={meta.modelName}
-                      onChange={(e) => metaChange('modelName', 'model', e.target.value)}
+                      onChange={(e) => metaChange('modelName', e.target.value)}
                       placeholder="e.g. Submariner"
                       maxLength={100}
                       className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm transition-colors border ${fieldBorderClass('model')} ${inputPrClass('model')}`}
@@ -1045,7 +1027,7 @@ export default function UploadClient() {
                         <input
                           type="text"
                           value={meta.referenceNumber}
-                          onChange={(e) => metaChange('referenceNumber', 'reference', e.target.value)}
+                          onChange={(e) => metaChange('referenceNumber', e.target.value)}
                           placeholder="e.g. 126610LN"
                           maxLength={60}
                           className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('reference')} ${inputPrClass('reference')}`}
@@ -1061,7 +1043,7 @@ export default function UploadClient() {
                         <input
                           type="text"
                           value={meta.movement}
-                          onChange={(e) => metaChange('movement', 'movement', e.target.value)}
+                          onChange={(e) => metaChange('movement', e.target.value)}
                           placeholder="e.g. Automatic"
                           maxLength={60}
                           className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('movement')} ${inputPrClass('movement')}`}
@@ -1079,7 +1061,7 @@ export default function UploadClient() {
                             <input
                               type="text"
                               value={meta.caseSize}
-                              onChange={(e) => metaChange('caseSize', 'caseSize', e.target.value)}
+                              onChange={(e) => metaChange('caseSize', e.target.value)}
                               placeholder="Case"
                               maxLength={20}
                               className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('caseSize')} ${inputPrClass('caseSize')}`}
@@ -1093,7 +1075,7 @@ export default function UploadClient() {
                             <input
                               type="text"
                               value={meta.lugToLug}
-                              onChange={(e) => metaChange('lugToLug', 'lugToLug', e.target.value)}
+                              onChange={(e) => metaChange('lugToLug', e.target.value)}
                               placeholder="Lug-to-lug"
                               maxLength={20}
                               className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('lugToLug')} ${inputPrClass('lugToLug')}`}
@@ -1107,7 +1089,7 @@ export default function UploadClient() {
                             <input
                               type="text"
                               value={meta.betweenLugs}
-                              onChange={(e) => metaChange('betweenLugs', 'betweenLugs', e.target.value)}
+                              onChange={(e) => metaChange('betweenLugs', e.target.value)}
                               placeholder="Lug width"
                               maxLength={20}
                               className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('betweenLugs')} ${inputPrClass('betweenLugs')}`}
@@ -1121,7 +1103,7 @@ export default function UploadClient() {
                             <input
                               type="text"
                               value={meta.thickness}
-                              onChange={(e) => metaChange('thickness', 'thickness', e.target.value)}
+                              onChange={(e) => metaChange('thickness', e.target.value)}
                               placeholder="Thickness"
                               maxLength={20}
                               className={`w-full bg-surfaceAlt rounded-md px-2.5 py-2 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('thickness')} ${inputPrClass('thickness')}`}
@@ -1140,7 +1122,7 @@ export default function UploadClient() {
                         <input
                           type="text"
                           value={meta.waterResistance}
-                          onChange={(e) => metaChange('waterResistance', 'waterResistance', e.target.value)}
+                          onChange={(e) => metaChange('waterResistance', e.target.value)}
                           placeholder="e.g. 300m / 1000ft"
                           maxLength={40}
                           className={`w-full bg-surfaceAlt rounded-md px-3 py-2.5 text-sm text-textPrimary placeholder-textMuted focus:outline-none shadow-sm border ${fieldBorderClass('waterResistance')} ${inputPrClass('waterResistance')}`}
@@ -1158,7 +1140,7 @@ export default function UploadClient() {
                             type="text"
                             inputMode="decimal"
                             value={meta.wristSize}
-                            onChange={(e) => metaChange('wristSize', 'wristSize', e.target.value)}
+                            onChange={(e) => metaChange('wristSize', e.target.value)}
                             placeholder='e.g. 7.25"'
                             className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2.5 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('wristSize')}`}
                           />
@@ -1178,7 +1160,7 @@ export default function UploadClient() {
                         <div className="flex gap-1 items-center">
                           <select
                             value={meta.estimatedPrice}
-                            onChange={(e) => metaChange('estimatedPrice', 'estimatedPrice', e.target.value)}
+                            onChange={(e) => metaChange('estimatedPrice', e.target.value)}
                             className={`flex-1 min-w-0 bg-surfaceAlt rounded-md px-2 py-2.5 text-sm text-textPrimary focus:outline-none shadow-sm border ${fieldBorderClass('estimatedPrice')}`}
                           >
                             <option value="">Select...</option>
@@ -1209,17 +1191,31 @@ export default function UploadClient() {
               className="hidden"
             />
 
-            {/* Sticky submit bar */}
+            {/* Terms + sticky submit bar */}
             {hasItems && (
-              <div className="sticky bottom-4 z-10">
+              <div className="sticky bottom-4 z-10 space-y-2">
+                {/* Terms checkbox */}
+                <label className="flex items-start gap-3 bg-surface border border-borderStrong rounded-xl px-4 py-3 shadow-lg cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-borderStrong accent-accent flex-shrink-0"
+                  />
+                  <span className="text-xs text-textSecond leading-relaxed">
+                    I confirm I own the rights to this photo and grant Watchems a non-exclusive licence to display it on the website. I have not submitted AI-generated images and the photo has not been digitally altered to misrepresent the watch.
+                  </span>
+                </label>
+
+                {/* Submit row */}
                 <div className="bg-surface border border-borderStrong rounded-xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div className="text-sm text-textSecond text-center sm:text-left">
                     {readyCount === 0 ? (
                       <span className="text-textMuted">All photos uploaded</span>
                     ) : !meta.brandName.trim() ? (
                       <span className="text-textMuted">Enter a brand name to submit</span>
-                    ) : !allAiFieldsConfirmed ? (
-                      <span className="text-amber-600">Confirm AI-filled fields to submit</span>
+                    ) : !termsAccepted ? (
+                      <span className="text-textMuted">Accept the terms above to submit</span>
                     ) : (
                       <span>
                         <span className="font-semibold text-textPrimary">{readyCount}</span>{' '}

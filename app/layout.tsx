@@ -57,10 +57,12 @@ function Shell({ children }: { children: React.ReactNode }) {
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.fontshare.com" />
         {/* Bootstrap dataLayer immediately so gtag() calls before the GA script
-            loads are queued rather than lost — prevents (not set) attribution. */}
+            loads are queued rather than lost — prevents (not set) attribution.
+            Do NOT call gtag('config') here — the Script tag below handles that
+            when the library loads, avoiding a duplicate page_view. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-T077JWH4E5');`,
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());`,
           }}
         />
       </head>
@@ -73,6 +75,9 @@ function Shell({ children }: { children: React.ReactNode }) {
           src="https://www.googletagmanager.com/gtag/js?id=G-T077JWH4E5"
           strategy="afterInteractive"
         />
+        <Script id="ga4-config" strategy="afterInteractive">
+          {`gtag('config','G-T077JWH4E5');`}
+        </Script>
         <Navigation />
         <main className="flex-1">{children}</main>
         <Footer />
