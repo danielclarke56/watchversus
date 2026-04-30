@@ -1,6 +1,6 @@
 export interface PriceModel {
   name: string
-  brandName: string // used for DB fallback query
+  brandName: string       // used for DB fallback query
   price: string           // e.g. "~$230"
   caseSize: string        // e.g. "42mm"
   waterResistance: string // e.g. "100m"
