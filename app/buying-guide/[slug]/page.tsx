@@ -50,7 +50,6 @@ export default async function BuyingGuidePage({ params }: Props) {
   const entry = getPriceBySlug(params.slug)
   if (!entry) notFound()
 
-  // 1. Try photos matching any of the notable model brand names in this tier
   const brandNames = Array.from(new Set(entry.notableModels.map((m) => m.brandName)))
   const brandConditions = brandNames.map((b) => ilike(photos.brandName, b))
 
@@ -69,7 +68,6 @@ export default async function BuyingGuidePage({ params }: Props) {
     .orderBy(desc(photos.createdAt))
     .limit(8)
 
-  // 2. Fallback: any photo tagged with this price tier
   if (communityPhotos.length < 4) {
     communityPhotos = await db
       .select({
@@ -87,7 +85,6 @@ export default async function BuyingGuidePage({ params }: Props) {
       .limit(8)
   }
 
-  // Schema
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -155,39 +152,44 @@ export default async function BuyingGuidePage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableJsonLd) }} />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Breadcrumb */}
-        <nav className="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
+        <nav className="text-xs text-gray-400 mb-8 flex items-center gap-1.5">
           <Link href="/" className="hover:text-gray-600 transition-colors">Home</Link>
-          <span>/</span>
+          <span className="text-gray-300">/</span>
           <Link href="/buying-guides" className="hover:text-gray-600 transition-colors">Buying Guides</Link>
-          <span>/</span>
-          <span className="text-gray-600">{entry.name}</span>
+          <span className="text-gray-300">/</span>
+          <span className="text-gray-500">{entry.shortLabel}</span>
         </nav>
 
-        {/* H1 + last updated */}
-        <div className="mb-3">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+        {/* Header */}
+        <div className="mb-6">
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-3">Buying Guide</p>
+          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight leading-tight mb-3">
             {entry.name}
           </h1>
-          <p className="text-xs text-gray-400 mt-1.5">Last updated: {entry.lastUpdated}</p>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400">Updated {entry.lastUpdated}</span>
+            <span className="w-1 h-1 rounded-full bg-gray-300 inline-block" />
+            <span className="text-xs text-gray-400">{entry.notableModels.length} picks</span>
+          </div>
         </div>
 
-        {/* Intro — who is this for */}
-        <p className="guide-intro text-sm text-gray-600 leading-relaxed mb-8">
+        {/* Intro */}
+        <p className="guide-intro text-base text-gray-600 leading-relaxed mb-8 border-l-2 border-gray-200 pl-4">
           {entry.intro}
         </p>
 
-        {/* Hero fact — speakable */}
-        <div className="bg-gray-50 rounded-xl border border-gray-100 p-5 mb-8">
-          <p className="price-hero-fact text-sm font-medium text-gray-700 italic leading-relaxed">
+        {/* Hero fact */}
+        <div className="bg-gray-900 rounded-xl p-6 mb-10">
+          <p className="price-hero-fact text-sm font-medium text-gray-100 leading-relaxed italic">
             &ldquo;{entry.heroFact}&rdquo;
           </p>
         </div>
 
-        {/* Overview prose — speakable */}
-        <div className="price-overview mb-10 space-y-4">
+        {/* Overview */}
+        <div className="price-overview mb-12 space-y-4">
           {entry.overview.split('\n\n').map((para, i) => (
             <p key={i} className="text-sm text-gray-600 leading-relaxed">
               {para.trim()}
@@ -195,23 +197,31 @@ export default async function BuyingGuidePage({ params }: Props) {
           ))}
         </div>
 
+        {/* Divider */}
+        <hr className="border-gray-100 mb-12" />
+
         {/* Pick by use case */}
         {entry.pickByUseCase && entry.pickByUseCase.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Pick by use case</h2>
+          <div className="mb-12">
+            <h2 className="text-base font-semibold text-gray-900 mb-4 uppercase tracking-wide text-xs text-gray-500">
+              Quick picks
+            </h2>
             <div className="rounded-xl border border-gray-100 overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
-                  <tr>
-                    <th className="px-4 py-2.5 text-left font-medium">I want…</th>
-                    <th className="px-4 py-2.5 text-left font-medium">Best pick</th>
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wide">I want&hellip;</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wide">Best pick</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {entry.pickByUseCase.map((row) => (
-                    <tr key={row.useCase} className="bg-white hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-2.5 text-gray-600">{row.useCase}</td>
-                      <td className="px-4 py-2.5 font-medium text-gray-900">{row.model}</td>
+                <tbody>
+                  {entry.pickByUseCase.map((row, i) => (
+                    <tr
+                      key={row.useCase}
+                      className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0`}
+                    >
+                      <td className="px-4 py-3 text-sm text-gray-500">{row.useCase}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{row.model}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -221,33 +231,36 @@ export default async function BuyingGuidePage({ params }: Props) {
         )}
 
         {/* Comparison table */}
-        <div className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Quick comparison
+        <div className="mb-12">
+          <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-4">
+            Side-by-side comparison
           </h2>
           <div className="comparison-table overflow-x-auto rounded-xl border border-gray-100">
             <table className="w-full text-xs text-left">
-              <thead className="bg-gray-50 text-gray-500 uppercase tracking-wide">
-                <tr>
-                  <th className="px-3 py-2.5 font-medium">Model</th>
-                  <th className="px-3 py-2.5 font-medium">Price</th>
-                  <th className="px-3 py-2.5 font-medium hidden sm:table-cell">Case</th>
-                  <th className="px-3 py-2.5 font-medium hidden sm:table-cell">WR</th>
-                  <th className="px-3 py-2.5 font-medium hidden md:table-cell">Crystal</th>
-                  <th className="px-3 py-2.5 font-medium hidden md:table-cell">Movement</th>
-                  <th className="px-3 py-2.5 font-medium">Best for</th>
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap">Model</th>
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap">Price</th>
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap hidden sm:table-cell">Case</th>
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap hidden sm:table-cell">WR</th>
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap hidden md:table-cell">Crystal</th>
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap hidden md:table-cell">Movement</th>
+                  <th className="px-3 py-3 font-medium text-gray-400 uppercase tracking-wide whitespace-nowrap">Best for</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {entry.notableModels.map((model) => (
-                  <tr key={model.name} className="bg-white hover:bg-gray-50 transition-colors">
-                    <td className="px-3 py-2.5 font-medium text-gray-900 whitespace-nowrap">{model.name}</td>
-                    <td className="px-3 py-2.5 text-gray-600 whitespace-nowrap">{model.price}</td>
-                    <td className="px-3 py-2.5 text-gray-600 hidden sm:table-cell whitespace-nowrap">{model.caseSize}</td>
-                    <td className="px-3 py-2.5 text-gray-600 hidden sm:table-cell whitespace-nowrap">{model.waterResistance}</td>
-                    <td className="px-3 py-2.5 text-gray-600 hidden md:table-cell whitespace-nowrap">{model.crystal}</td>
-                    <td className="px-3 py-2.5 text-gray-600 hidden md:table-cell whitespace-nowrap">{model.movement}</td>
-                    <td className="px-3 py-2.5 text-gray-500 whitespace-nowrap">{model.bestFor}</td>
+              <tbody>
+                {entry.notableModels.map((model, i) => (
+                  <tr
+                    key={model.name}
+                    className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'} hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0`}
+                  >
+                    <td className="px-3 py-3 font-medium text-gray-900 whitespace-nowrap">{model.name}</td>
+                    <td className="px-3 py-3 font-semibold text-gray-900 whitespace-nowrap">{model.price}</td>
+                    <td className="px-3 py-3 text-gray-500 hidden sm:table-cell whitespace-nowrap">{model.caseSize}</td>
+                    <td className="px-3 py-3 text-gray-500 hidden sm:table-cell whitespace-nowrap">{model.waterResistance}</td>
+                    <td className="px-3 py-3 text-gray-500 hidden md:table-cell whitespace-nowrap">{model.crystal}</td>
+                    <td className="px-3 py-3 text-gray-500 hidden md:table-cell whitespace-nowrap">{model.movement}</td>
+                    <td className="px-3 py-3 text-gray-400 whitespace-nowrap">{model.bestFor}</td>
                   </tr>
                 ))}
               </tbody>
@@ -257,29 +270,31 @@ export default async function BuyingGuidePage({ params }: Props) {
 
         {/* Community wrist shots */}
         {communityPhotos.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">
-              Wrist shots from the community
-            </h2>
-            <p className="text-xs text-gray-400 mb-4">Real owner photos of watches in this price range — submitted by Watchems members</p>
+          <div className="mb-12">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                From the community
+              </h2>
+              <span className="text-xs text-gray-300">Real wrist shots</span>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {communityPhotos.map((photo) => (
                 <Link
                   key={photo.id}
                   href={`/photo/${photo.slug ?? photo.id}`}
-                  className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
+                  className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-all hover:shadow-sm"
                 >
                   <div className="aspect-square bg-gray-50 overflow-hidden relative">
                     <Image
                       src={photo.thumbnailUrl ?? photo.url}
                       alt={buildPhotoAltText(photo)}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 640px) 50vw, 25vw"
                     />
                   </div>
-                  <div className="px-2 py-1.5">
-                    <p className="text-xs text-gray-500 truncate">
+                  <div className="px-2.5 py-2">
+                    <p className="text-xs text-gray-400 truncate">
                       {[photo.brandName, photo.modelName].filter(Boolean).join(' ') || 'Unknown'}
                     </p>
                   </div>
@@ -289,38 +304,51 @@ export default async function BuyingGuidePage({ params }: Props) {
           </div>
         )}
 
-        {/* Notable models — AEO named list, speakable */}
+        {/* Divider */}
+        <hr className="border-gray-100 mb-12" />
+
+        {/* Notable models */}
         {entry.notableModels.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="mb-12">
+            <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-6">
               Our picks — explained
             </h2>
-            <ul className="notable-models-list space-y-4">
-              {entry.notableModels.map((model) => (
-                <li key={model.name} className="rounded-xl border border-gray-100 p-4">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <strong className="text-sm font-semibold text-gray-900">{model.name}</strong>
-                    <span className="text-xs font-medium text-gray-500 shrink-0">{model.price}</span>
+            <ul className="notable-models-list space-y-3">
+              {entry.notableModels.map((model, i) => (
+                <li key={model.name} className="group rounded-xl border border-gray-100 hover:border-gray-200 transition-colors p-5">
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs font-medium text-gray-300 mt-0.5 w-4 shrink-0 tabular-nums">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <div>
+                        <strong className="text-sm font-semibold text-gray-900 block leading-snug">{model.name}</strong>
+                        <span className="text-xs text-gray-400 mt-0.5 block">{model.bestFor}</span>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-gray-900 shrink-0 tabular-nums">{model.price}</span>
                   </div>
-                  <p className="text-xs text-gray-400 mb-2">{model.bestFor}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">{model.reason}</p>
+                  <p className="text-sm text-gray-500 leading-relaxed pl-7">{model.reason}</p>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* FAQ — speakable */}
+        {/* Divider */}
+        <hr className="border-gray-100 mb-12" />
+
+        {/* FAQ */}
         {entry.faq.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="mb-12">
+            <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-6">
               Common questions
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-0 border border-gray-100 rounded-xl overflow-hidden divide-y divide-gray-100">
               {entry.faq.map((item, i) => (
-                <div key={i} className="bg-white rounded-xl border border-gray-100 p-5">
-                  <h3 className="text-sm font-semibold text-gray-800 mb-2">{item.question}</h3>
-                  <p className="faq-answer text-sm text-gray-600 leading-relaxed">{item.answer}</p>
+                <div key={i} className="p-5 bg-white hover:bg-gray-50/50 transition-colors">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-2 leading-snug">{item.question}</h3>
+                  <p className="faq-answer text-sm text-gray-500 leading-relaxed">{item.answer}</p>
                 </div>
               ))}
             </div>
@@ -329,16 +357,16 @@ export default async function BuyingGuidePage({ params }: Props) {
 
         {/* Internal links */}
         {entry.internalLinks.length > 0 && (
-          <div className="mb-10 rounded-xl border border-gray-100 p-5">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Explore on Watchems</p>
+          <div className="mb-10">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Explore on Watchems</p>
             <div className="flex flex-wrap gap-2">
               {entry.internalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 transition-colors"
+                  className="text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 transition-colors"
                 >
-                  {link.label} →
+                  {link.label}
                 </Link>
               ))}
             </div>
@@ -348,15 +376,15 @@ export default async function BuyingGuidePage({ params }: Props) {
         {/* Sources */}
         {entry.sources && entry.sources.length > 0 && (
           <div className="mb-10 pt-6 border-t border-gray-100">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Sources</p>
+            <p className="text-xs font-medium text-gray-300 uppercase tracking-wide mb-3">Sources</p>
             <ul className="space-y-1.5">
               {entry.sources.map((source, i) => (
-                <li key={i} className="text-xs text-gray-400">
+                <li key={i}>
                   <a
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-gray-600 underline underline-offset-2 transition-colors"
+                    className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2 transition-colors"
                   >
                     {source.label}
                   </a>
@@ -366,21 +394,26 @@ export default async function BuyingGuidePage({ params }: Props) {
           </div>
         )}
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <Link
-            href="/buying-guides"
-            className="text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
-          >
-            ← All buying guides
-          </Link>
+        {/* Upload CTA */}
+        <div className="rounded-xl border border-gray-100 bg-gray-50 p-6 mb-8">
+          <p className="text-sm font-semibold text-gray-900 mb-1">Own one of these?</p>
+          <p className="text-sm text-gray-500 mb-4">Show the community how it looks on your wrist. Real photos help buyers decide.</p>
           <Link
             href="/upload"
-            className="text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 px-4 py-2.5 rounded-lg transition-colors"
           >
-            Own one of these? Upload your wrist shot
+            Upload your wrist shot
           </Link>
         </div>
+
+        {/* Back link */}
+        <Link
+          href="/buying-guides"
+          className="text-sm text-gray-400 hover:text-gray-700 transition-colors flex items-center gap-1.5"
+        >
+          <span>←</span>
+          <span>All buying guides</span>
+        </Link>
 
       </main>
     </>
