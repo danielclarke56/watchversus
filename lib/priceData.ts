@@ -1,5 +1,6 @@
 export interface PriceModel {
   name: string
+  brandName: string   // used for DB fallback query
   reason: string
 }
 
@@ -12,6 +13,7 @@ export interface PriceData {
   slug: string
   name: string
   shortLabel: string
+  dbValue: string     // exact photos.estimatedPrice value for DB photo fallback
   heroFact: string
   overview: string
   notableModels: PriceModel[]
@@ -23,6 +25,7 @@ export const prices: PriceData[] = [
     slug: 'under-500',
     name: 'Best Watches Under $500',
     shortLabel: 'Under $500',
+    dbValue: 'Under $500',
     heroFact: 'The Seiko 5 Sports has shipped over 100 million units since 1963 — Japan\'s most enduring automatic watch — and remains under $300 at retail today.',
     overview: `The sub-$500 tier has undergone a quiet revolution. A decade ago, spending less than $500 on a watch meant accepting plastic crystals, low-beat movements, and poor finishing. That is no longer true. Japanese and Swiss manufacturers now compete aggressively at this price point, and the result is extraordinary value for buyers willing to look beyond brand names.
 
@@ -36,26 +39,32 @@ The honest trade-off at this price point is movement finishing and case polish. 
     notableModels: [
       {
         name: 'Seiko 5 Sports SRPD',
+        brandName: 'Seiko',
         reason: 'Best-value automatic — in-house 4R36, 100m water resistance, day/date, wide variety of colourways under $250.',
       },
       {
         name: 'Orient Kamasu',
+        brandName: 'Orient',
         reason: 'Sapphire crystal, 200m dive spec, ceramic bezel insert, in-house automatic — one of the best-specified divers under $200.',
       },
       {
         name: 'Tissot PRX Powermatic 80',
+        brandName: 'Tissot',
         reason: 'Integrated bracelet design, 80-hour power reserve, Swiss Made — best finishing and bracelet quality in the tier, under $500.',
       },
       {
         name: 'Hamilton Khaki Field Mechanical',
+        brandName: 'Hamilton',
         reason: 'Manual-wind H-50 movement, 80-hour power reserve, sapphire crystal, field-watch heritage — under $450.',
       },
       {
         name: 'Casio G-Shock GA-2100',
+        brandName: 'Casio',
         reason: 'Carbon Core Guard construction, solar power, Bluetooth time sync, shock and water resistant — the most durable under $120.',
       },
       {
         name: 'Citizen Promaster Diver NY0040',
+        brandName: 'Citizen',
         reason: 'ISO 6425 certified dive spec, sapphire crystal, automatic movement, full bracelet — a genuine diver under $300.',
       },
     ],

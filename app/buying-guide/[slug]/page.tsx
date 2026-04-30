@@ -1,7 +1,14 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPriceBySlug, prices } from '@/lib/priceData'
+import { db } from '@/lib/db'
+import { photos } from '@/lib/db/schema'
+import { eq, and, ilike, or, desc, sql } from 'drizzle-orm'
+import { buildPhotoAltText } from '@/lib/photoAlt'
 
 interface Props {
   params: { slug: string }
@@ -39,9 +46,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function BuyingGuidePage({ params }: Props) {
+export default async function BuyingGuidePage({ params }: Props) {
   const entry = getPriceBySlug(params.slug)
   if (!entry) notFound()
+
+  // 1. Try photos matching any of the notable model brand names in this tier
+  const brandNames = Array.from(new Set(entry.notableModels.map((m) => m.brandName)))
+  const brandConditions = brandNames.map((b) => ilike(photos.brandName, b))
+
+  let communityPhotos = await db
+    .select({
+      id: photos.id,
+      slug: photos.slug,
+      url: photos.url,
+      thumbnailUrl: photos.thumbnailUrl,
+      brandName: photos.brandName,
+      modelName: photos.modelName,
+      userName: photos.userName,
+    })
+    .from(photos)
+    .where(and(eq(photos.status, 'approved'), or(...brandConditions)))
+    .orderBy(desc(photos.createdAt))
+    .limit(8)
+
+  // 2. Fallback: any photo tagged with this price tier
+  if (communityPhotos.length < 4) {
+    communityPhotos = await db
+      .select({
+        id: photos.id,
+        slug: photos.slug,
+        url: photos.url,
+        thumbnailUrl: photos.thumbnailUrl,
+        brandName: photos.brandName,
+        modelName: photos.modelName,
+        userName: photos.userName,
+      })
+      .from(photos)
+      .where(and(eq(photos.status, 'approved'), eq(photos.estimatedPrice, entry.dbValue)))
+      .orderBy(desc(photos.createdAt))
+      .limit(8)
+  }
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -120,6 +164,40 @@ export default function BuyingGuidePage({ params }: Props) {
             </p>
           ))}
         </div>
+
+        {/* Community wrist shots */}
+        {communityPhotos.length > 0 && (
+          <div className="mb-10">
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+              From the community
+            </h2>
+            <p className="text-xs text-gray-400 mb-4">Real wrist shots submitted by Watchems members</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {communityPhotos.map((photo) => (
+                <Link
+                  key={photo.id}
+                  href={`/photo/${photo.slug ?? photo.id}`}
+                  className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-colors"
+                >
+                  <div className="aspect-square bg-gray-50 overflow-hidden relative">
+                    <Image
+                      src={photo.thumbnailUrl ?? photo.url}
+                      alt={buildPhotoAltText(photo)}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div className="px-2 py-1.5">
+                    <p className="text-xs text-gray-500 truncate">
+                      {[photo.brandName, photo.modelName].filter(Boolean).join(' ') || 'Unknown'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Notable models — AEO named list, speakable */}
         {entry.notableModels.length > 0 && (
