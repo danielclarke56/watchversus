@@ -105,10 +105,16 @@ export default async function BuyingGuidePage({ params }: Props) {
     description: entry.intro,
     url: `https://watchems.com/buying-guide/${entry.slug}`,
     dateModified: new Date().toISOString(),
+    author: {
+      '@type': 'Organization',
+      name: 'Watchems Editorial',
+      url: 'https://watchems.com',
+    },
     publisher: {
       '@type': 'Organization',
       name: 'Watchems',
       url: 'https://watchems.com',
+      logo: { '@type': 'ImageObject', url: 'https://watchems.com/logo.svg' },
     },
   }
 
@@ -188,6 +194,31 @@ export default async function BuyingGuidePage({ params }: Props) {
             </p>
           ))}
         </div>
+
+        {/* Pick by use case */}
+        {entry.pickByUseCase && entry.pickByUseCase.length > 0 && (
+          <div className="mb-10">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Pick by use case</h2>
+            <div className="rounded-xl border border-gray-100 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                  <tr>
+                    <th className="px-4 py-2.5 text-left font-medium">I want…</th>
+                    <th className="px-4 py-2.5 text-left font-medium">Best pick</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {entry.pickByUseCase.map((row) => (
+                    <tr key={row.useCase} className="bg-white hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-2.5 text-gray-600">{row.useCase}</td>
+                      <td className="px-4 py-2.5 font-medium text-gray-900">{row.model}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Comparison table */}
         <div className="mb-10">
@@ -314,6 +345,27 @@ export default async function BuyingGuidePage({ params }: Props) {
           </div>
         )}
 
+        {/* Sources */}
+        {entry.sources && entry.sources.length > 0 && (
+          <div className="mb-10 pt-6 border-t border-gray-100">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Sources</p>
+            <ul className="space-y-1.5">
+              {entry.sources.map((source, i) => (
+                <li key={i} className="text-xs text-gray-400">
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gray-600 underline underline-offset-2 transition-colors"
+                  >
+                    {source.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Link
@@ -326,7 +378,7 @@ export default async function BuyingGuidePage({ params }: Props) {
             href="/upload"
             className="text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors"
           >
-            Upload your watch
+            Own one of these? Upload your wrist shot
           </Link>
         </div>
 

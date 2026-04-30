@@ -50,10 +50,24 @@ export const metadata: Metadata = {
   },
 }
 
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Watchems',
+  url: 'https://watchems.com',
+  logo: 'https://watchems.com/logo.svg',
+  description: 'Community watch photo gallery. Real wrist shots from real owners — browse by brand, style, and price.',
+  sameAs: [],
+}
+
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={dmSans.variable}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.fontshare.com" />
         {/* Bootstrap dataLayer immediately so gtag() calls before the GA script

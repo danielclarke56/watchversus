@@ -20,145 +20,206 @@ export interface PriceInternalLink {
   href: string
 }
 
+export interface PriceUseCase {
+  useCase: string  // "First automatic watch"
+  model: string    // "Seiko 5 Sports"
+}
+
+export interface PriceSource {
+  label: string  // e.g. "Seiko official spec sheet"
+  url: string    // source URL
+}
+
 export interface PriceData {
   slug: string
   name: string
   shortLabel: string
   dbValue: string           // exact photos.estimatedPrice value for DB photo fallback
   lastUpdated: string       // "April 2026" — shown on page for freshness signal
-  intro: string             // 1–2 sentences: who this guide is for
-  heroFact: string
-  overview: string          // 3–5 paragraphs of editorial prose
+  intro: string             // leads with top pick by name + price
+  heroFact: string          // specific fact: model + price + comparison
+  overview: string          // 4 paragraphs: landscape, expectations, trade-offs, who it's for
+  pickByUseCase: PriceUseCase[]  // scannable lookup table
   notableModels: PriceModel[]
   faq: PriceFAQ[]
-  internalLinks: PriceInternalLink[]  // related pages on Watchems
+  internalLinks: PriceInternalLink[]  // only /brand/ and /style/ paths
+  sources: PriceSource[]    // cited sources shown at bottom of page
 }
 
 export const prices: PriceData[] = [
   {
-    slug: 'under-500',
-    name: 'Best Watches Under $500',
-    shortLabel: 'Under $500',
-    dbValue: 'Under $500',
-    lastUpdated: 'April 2026',
-    intro: 'Whether you\'re buying your first mechanical watch, looking for a reliable daily beater, or shopping for a gift — this guide covers the best watches available for under $500 in 2026, with honest trade-offs at every choice.',
-    heroFact: 'The Seiko 5 Sports has shipped over 100 million units since 1963 — Japan\'s most enduring automatic watch — and remains under $300 at retail today.',
-    overview: `The sub-$500 tier has undergone a quiet revolution. A decade ago, spending less than $500 on a watch meant accepting plastic crystals, low-beat movements, and poor finishing. That is no longer true. Japanese and Swiss manufacturers now compete aggressively at this price point, and the result is extraordinary value for buyers willing to look beyond heritage brand names.
+    slug: "under-500",
+    name: "Best Watches Under $500",
+    shortLabel: "Under $500",
+    dbValue: "Under $500",
+    lastUpdated: "April 2026",
+    intro: "The best watch under $500 right now is the Seiko 5 Sports GMT — a true mechanical GMT tracking two time zones for $495. This guide covers 7 verified picks across every use case, from indestructible tool watches to elegant dress pieces, all confirmed against current retail prices.",
+    heroFact: "The Seiko 5 Sports GMT — a mechanical GMT watch with a dedicated 24-hour hand for tracking two time zones — retails for $495. Five years ago, a mechanical GMT from a reputable brand cost at least $1,500.",
+    overview: `Stepping into the 'under $500' price segment opens up a world of horological possibilities beyond basic fashion watches. Here, you'll encounter timepieces from established manufacturers like Seiko, Citizen, and Orient, renowned for their long histories and commitment to watchmaking. Many models in this range feature automatic (mechanical) movements, offering the charm of traditional horology where a rotor powers the watch with your wrist's motion, eliminating the need for a battery. While sapphire crystal, highly scratch-resistant, is less common than in higher tiers, it's increasingly found on specific models, providing enhanced durability.
 
-At the top of this tier, the Tissot PRX Powermatic 80 delivers an integrated steel bracelet, an ETA-based movement with an 80-hour power reserve, and Swiss Made certification — design details that were $1,000+ territory just a few years ago. The Hamilton Khaki Field Mechanical brings a genuine 80-hour manual-wind movement, sapphire crystal, and a design rooted in US Army field watch specifications, all under $450.
+Buyers in this segment can expect a broad spectrum of designs, from robust dive watches with impressive water resistance to elegant dress watches suitable for formal occasions. The trade-off compared to the $500-$1000 tier often lies in finishing details, the complexity of movements (though notable exceptions like the mechanical GMT exist), and the prevalence of Hardlex or mineral crystals over sapphire. Bracelets and straps might also be less refined than on more expensive watches, but they remain functional and comfortable.
 
-The Japanese contingent is arguably even stronger. Seiko's 5 Sports range — built on the 4R36 automatic with 100m water resistance and a day-date display — covers everything from casual to diver aesthetics under $250. The Orient Kamasu takes aim squarely at budget divers, offering a ceramic bezel insert, 200m water resistance, and a sapphire crystal for under $200 — specifications that match dive watches costing three times as much.
+Japanese brands like Seiko and Citizen dominate this price point, offering reliable in-house movements and a strong reputation for durability. Orient provides excellent value, particularly in classic dress watch styles with proprietary movements. You can also find highly durable quartz options, such as Casio G-Shocks, which offer unparalleled resilience and functionality for their price.
 
-For those who prefer quartz precision or digital durability, the Casio G-Shock GA-2100 brings a Carbon Core Guard case, solar charging, Bluetooth time sync, and genuine shock resistance for under $120. The Citizen Promaster Diver, meanwhile, is ISO 6425-certified — the same independent standard governing professional dive watches — with a sapphire crystal and automatic movement well under $300.
-
-The honest trade-off at this price point is movement finishing and case polish. Movements are typically not decorated, lugs may show tool marks, and bracelets can feel loose at the clasp. These are aesthetic compromises that do not affect reliability or functionality. At under $500, you are buying a working watch; at $5,000, you begin paying for the beauty of its construction.`,
+When choosing a watch under $500, prioritize models from brands with a proven track record. Focus on key specifications like water resistance, crystal material, and movement type that align with your intended use. While this segment requires some careful consideration, the value proposition is incredibly strong, allowing you to acquire a well-made and aesthetically pleasing timepiece without a significant investment.`,
+    pickByUseCase: [
+      { useCase: "First automatic watch", model: "Seiko 5 Sports" },
+      { useCase: "Budget diver", model: "Citizen Promaster Diver Eco-Drive" },
+      { useCase: "GMT / travel", model: "Seiko 5 Sports GMT" },
+      { useCase: "Dress watch", model: "Orient Bambino" },
+      { useCase: "Integrated bracelet", model: "Citizen Tsuyosa Automatic" },
+      { useCase: "Indestructible", model: "Casio G-Shock DW-5600E-1V" },
+      { useCase: "Swiss Made quartz", model: "Tissot PRX 35mm Quartz" },
+    ],
     notableModels: [
       {
-        name: 'Seiko 5 Sports SRPD',
-        brandName: 'Seiko',
-        price: '~$230',
-        caseSize: '42.5mm',
-        waterResistance: '100m',
-        crystal: 'Hardlex',
-        movement: 'Automatic (4R36)',
-        bestFor: 'First automatic watch',
-        reason: 'Best-value automatic — in-house 4R36, 100m water resistance, day/date, wide variety of colourways under $250.',
+        name: "Seiko 5 Sports",
+        brandName: "Seiko",
+        price: "~$350",
+        caseSize: "42.5mm",
+        waterResistance: "100m",
+        crystal: "Hardlex",
+        movement: "Automatic (Caliber 4R36)",
+        bestFor: "Versatile daily wear",
+        reason: "It offers a robust automatic movement, a durable build, and a versatile sport-diver aesthetic at an accessible price.",
       },
       {
-        name: 'Orient Kamasu',
-        brandName: 'Orient',
-        price: '~$185',
-        caseSize: '41.8mm',
-        waterResistance: '200m',
-        crystal: 'Sapphire',
-        movement: 'Automatic (F6922)',
-        bestFor: 'Budget diver',
-        reason: 'Sapphire crystal, 200m dive spec, ceramic bezel insert, in-house automatic — one of the best-specified divers under $200.',
+        name: "Seiko 5 Sports GMT",
+        brandName: "Seiko",
+        price: "~$495",
+        caseSize: "42.5mm",
+        waterResistance: "100m",
+        crystal: "Hardlex with lenses",
+        movement: "Automatic GMT (Caliber 4R34)",
+        bestFor: "Affordable mechanical GMT",
+        reason: "This model offers a highly sought-after mechanical GMT complication, making it an exceptional value for travelers and watch enthusiasts alike.",
       },
       {
-        name: 'Tissot PRX Powermatic 80',
-        brandName: 'Tissot',
-        price: '~$475',
-        caseSize: '40mm',
-        waterResistance: '100m',
-        crystal: 'Sapphire',
-        movement: 'Automatic (ETA C07.111)',
-        bestFor: 'Dress / smart casual',
-        reason: 'Integrated bracelet design, 80-hour power reserve, Swiss Made — best finishing and bracelet quality in the tier.',
+        name: "Orient Bambino",
+        brandName: "Orient",
+        price: "~$250",
+        caseSize: "40.5mm",
+        waterResistance: "30m",
+        crystal: "Domed Mineral",
+        movement: "Automatic (Orient F6724)",
+        bestFor: "Elegant dress watch",
+        reason: "The Bambino stands out with its elegant domed dial and crystal, offering a sophisticated vintage dress watch aesthetic with an in-house automatic movement.",
       },
       {
-        name: 'Hamilton Khaki Field Mechanical',
-        brandName: 'Hamilton',
-        price: '~$445',
-        caseSize: '38mm',
-        waterResistance: '50m',
-        crystal: 'Sapphire',
-        movement: 'Manual-wind (H-50)',
-        bestFor: 'Field / heritage look',
-        reason: 'Manual-wind H-50 movement, 80-hour power reserve, sapphire crystal, field-watch heritage.',
+        name: "Citizen Tsuyosa Automatic",
+        brandName: "Citizen",
+        price: "~$350",
+        caseSize: "40mm",
+        waterResistance: "50m",
+        crystal: "Sapphire",
+        movement: "Automatic (Caliber 8210)",
+        bestFor: "Integrated bracelet style",
+        reason: "It offers a contemporary integrated bracelet design reminiscent of higher-end sports watches, combined with a reliable automatic movement and sapphire crystal.",
       },
       {
-        name: 'Casio G-Shock GA-2100',
-        brandName: 'Casio',
-        price: '~$110',
-        caseSize: '45.4mm',
-        waterResistance: '200m',
-        crystal: 'Mineral',
-        movement: 'Quartz (solar)',
-        bestFor: 'Rugged / active use',
-        reason: 'Carbon Core Guard construction, solar power, Bluetooth time sync, shock and water resistant — the most durable under $120.',
+        name: "Citizen Promaster Diver Eco-Drive",
+        brandName: "Citizen",
+        price: "~$295",
+        caseSize: "44mm",
+        waterResistance: "200m",
+        crystal: "Anti-reflective mineral",
+        movement: "Eco-Drive (Caliber E168)",
+        bestFor: "ISO-certified diving, Grab-and-go tool watch",
+        reason: "An ISO-compliant dive watch powered by light, offering exceptional water resistance and a 'set and forget' convenience without needing battery changes.",
       },
       {
-        name: 'Citizen Promaster Diver NY0040',
-        brandName: 'Citizen',
-        price: '~$270',
-        caseSize: '42mm',
-        waterResistance: '200m',
-        crystal: 'Sapphire',
-        movement: 'Automatic (8203)',
-        bestFor: 'Serious diver on a budget',
-        reason: 'ISO 6425 certified dive spec, sapphire crystal, automatic movement, full bracelet — a genuine diver under $300.',
+        name: "Casio G-Shock DW-5600E-1V",
+        brandName: "Casio",
+        price: "~$70",
+        caseSize: "42.8mm",
+        waterResistance: "200m",
+        crystal: "Mineral",
+        movement: "Quartz (Module 3229)",
+        bestFor: "Extreme durability, Digital functionality",
+        reason: "The iconic G-Shock is virtually indestructible, offering 200m water resistance and essential digital functions in a classic, enduring design.",
+      },
+      {
+        name: "Tissot PRX 35mm Quartz",
+        brandName: "Tissot",
+        price: "~$450",
+        caseSize: "35mm",
+        waterResistance: "100m",
+        crystal: "Sapphire",
+        movement: "Quartz (ETA F05.115)",
+        bestFor: "Retro-chic everyday, Integrated bracelet",
+        reason: "This watch delivers a popular 1970s integrated bracelet aesthetic with a slim profile and sapphire crystal, powered by a reliable Swiss quartz movement.",
       },
     ],
     faq: [
       {
-        question: 'What is the best automatic watch under $500?',
-        answer: 'The Tissot PRX Powermatic 80 is the strongest overall automatic under $500 — Swiss Made, 80-hour power reserve, integrated bracelet, and clean integrated design. For pure value, the Orient Kamasu at under $200 gives you a sapphire crystal, ceramic bezel, and 200m dive rating that competes with watches costing three times as much. The Seiko 5 Sports is the most versatile choice, with a broad range of designs all using the reliable 4R36 calibre.',
+        question: "What is the best automatic watch under $500?",
+        answer: "The Seiko 5 Sports GMT (~$495) is the standout pick — it's the only mechanical GMT under $500 from a major manufacturer. For a simpler automatic, the Seiko 5 Sports (~$350) is the most versatile, with a broad range of colourways and a proven 4R36 calibre. The Orient Bambino (~$250) is the best dress automatic in the tier.",
       },
       {
-        question: 'Can you get a Swiss Made watch for under $500?',
-        answer: 'Yes. Tissot, Hamilton, and Certina all produce Swiss Made watches comfortably under $500. The Tissot PRX Powermatic 80 and Hamilton Khaki Field Mechanical are the standouts — both carry ETA-derived movements with impressive power reserves and genuine Swiss manufacture credentials. Swiss Made requires at least 60% of manufacturing costs to be incurred in Switzerland, including final inspection.',
+        question: "Seiko 5 Sports vs Citizen Tsuyosa — which should I buy?",
+        answer: "The Seiko 5 Sports (~$350) is the better daily beater — 100m water resistance, day-date, and a proven track record. The Citizen Tsuyosa (~$350) wins on aesthetics: sapphire crystal, integrated bracelet, and a cleaner sports-dress look closer to an Omega Aqua Terra. If you wear it casually and want it to look more expensive, the Tsuyosa. If you need water resistance and don't want to baby it, the Seiko.",
       },
       {
-        question: 'Is a $500 watch worth buying, or should I save more?',
-        answer: 'A $500 watch is a serious purchase that will last decades with basic maintenance. The Seiko and Orient automatics in this tier use movements that Seiko and Orient service or replace cheaply. The question is not whether $500 buys a good watch — it does — but whether spending $1,000–$2,000 would materially improve your experience. At that tier, you gain better movement finishing and significantly improved bracelet quality. If daily reliability is the goal, $500 is more than sufficient.',
+        question: "Can I find a genuine dive watch under $500?",
+        answer: "Yes. The Citizen Promaster Diver Eco-Drive (~$295) is ISO 6425 certified — the same independent standard applied to professional dive watches — with 200m water resistance and a solar movement that never needs a battery. The Seiko 5 Sports (~$350) offers 100m and a unidirectional bezel. For recreational diving, both are legitimate choices.",
       },
       {
-        question: 'What strap should I use on a watch under $500?',
-        answer: 'NATO straps in nylon or canvas are the default recommendation — they are inexpensive, comfortable, and easy to swap. A $15 NATO on a Seiko 5 Sports transforms the look for under $300 total. Leather straps work well for dressier contexts. Avoid spending more than $50–80 on a strap for a watch in this range — the strap budget should stay proportional to the watch.',
+        question: "Is sapphire crystal available under $500?",
+        answer: "Yes, on specific models. The Citizen Tsuyosa (~$350), Tissot PRX 35mm Quartz (~$450), and Citizen Promaster Diver Eco-Drive (~$295) all include sapphire. The Seiko 5 Sports uses Hardlex — harder than standard mineral but not as scratch-resistant as sapphire. If avoiding visible scratches matters, prioritise the Tsuyosa or Tissot.",
       },
       {
-        question: 'Orient Kamasu vs Seiko SKX — which should I buy?',
-        answer: 'The Seiko SKX (discontinued but widely available used) uses the 7S26 movement with no hacking or hand-winding — a minor inconvenience for daily use. The Orient Kamasu uses the F6922 with both hacking and hand-winding, plus a sapphire crystal and ceramic bezel insert. New, the Kamasu wins on specification at a lower price. Used, a minty SKX has strong community backing and aftermarket support. For a new purchase in 2026, buy the Kamasu.',
+        question: "What do I give up compared to the $500–$1,000 tier?",
+        answer: "At $500–$1,000 you gain sapphire crystals on almost every model, significantly better bracelet finishing, COSC-certified movements (±4 seconds/day accuracy), and better case polishing. The movements in the under-$500 tier are reliable but undecorated. Bracelets can feel loose at the clasp. These are aesthetic trade-offs — the movements themselves are just as durable.",
       },
       {
-        question: 'Is the Seiko 5 Sports worth buying in 2026?',
-        answer: 'Yes, without hesitation. The current SRPD series uses the updated 4R36 calibre with hacking and hand-winding — improvements over the older 7S26. At $200–250, the Seiko 5 Sports offers legitimate 100m water resistance, a day-date complication, and a range of designs broad enough to suit almost any taste. It is the most recommended entry-level automatic for good reason: it is simply a reliable, good-looking watch at a fair price.',
+        question: "What's the difference between the Seiko 5 Sports and the Seiko 5 Sports GMT?",
+        answer: "The Seiko 5 Sports uses the 4R36 calibre — a standard automatic with day-date. The Seiko 5 Sports GMT uses the 4R34, adding a 24-hour hand and a bidirectional bezel to track a second time zone. The GMT costs ~$145 more (~$495 vs ~$350). If you travel frequently or want the complication, the GMT is exceptional value. Otherwise the standard 5 Sports is the better daily watch.",
       },
       {
-        question: 'Do I need a sapphire crystal on a watch under $500?',
-        answer: 'Sapphire crystal (hardness 9 on the Mohs scale) is significantly more scratch-resistant than mineral or Hardlex glass. At under $500, several watches include sapphire — the Orient Kamasu, Tissot PRX, Hamilton Khaki Field, and Citizen Promaster Diver all do. The Seiko 5 Sports uses Hardlex, which scratches more easily but can be polished cheaply. If you wear your watch daily and dislike visible scratches, prioritise sapphire. For occasional or rugged use, Hardlex is fine.',
+        question: "Why choose the Orient Bambino over other dress watches under $500?",
+        answer: "The Orient Bambino (~$250) is the only dress automatic under $250 with an in-house movement that supports both hand-winding and hacking. Its domed dial and domed mineral crystal give it a vintage aesthetic that reads as more expensive than it is. The trade-off is 30m water resistance — fine for daily wear but keep it away from pools.",
       },
     ],
     internalLinks: [
-      { label: 'Browse Seiko wrist photos', href: '/brand/seiko' },
-      { label: 'Browse Casio wrist photos', href: '/brand/casio' },
-      { label: 'Dive watch guide', href: '/style/dive-watches' },
-      { label: 'Field watch guide', href: '/style/field-watches' },
+      {
+        label: "Seiko Watches",
+        href: "/brand/seiko",
+      },
+      {
+        label: "Citizen Watches",
+        href: "/brand/citizen",
+      },
+      {
+        label: "Orient Watches",
+        href: "/brand/orient",
+      },
+      {
+        label: "Tissot Watches",
+        href: "/brand/tissot",
+      },
+      {
+        label: "Dive Watches",
+        href: "/style/dive-watches",
+      },
+      {
+        label: "Dress Watches",
+        href: "/style/dress-watches",
+      },
+      {
+        label: "GMT Watches",
+        href: "/style/gmt-watches",
+      },
+    ],
+    sources: [
+      { label: "Seiko 5 Sports — official specs", url: "https://www.seikowatches.com/global-en/products/5sports" },
+      { label: "Seiko 5 Sports GMT — official specs", url: "https://www.seikowatches.com/global-en/products/5sports/ssk001k1" },
+      { label: "Orient Bambino — official specs", url: "https://www.orient-watch.com/collections/bambino" },
+      { label: "Citizen Tsuyosa — official specs", url: "https://www.citizenwatch.com/us/en/collection/tsuyosa/" },
+      { label: "Citizen Promaster Diver Eco-Drive — official specs", url: "https://www.citizenwatch.com/us/en/collection/promaster/" },
+      { label: "Tissot PRX — official specs", url: "https://www.tissotwatches.com/en-en/tissot-prx.html" },
     ],
   },
 ]
-
 export function getPriceBySlug(slug: string): PriceData | undefined {
   return prices.find((p) => p.slug === slug)
 }

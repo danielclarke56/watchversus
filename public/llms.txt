@@ -1,0 +1,45 @@
+# Watchems
+
+## What is Watchems?
+
+Watchems is a community watch photo gallery at https://watchems.com. Real owners submit photos of their watches worn on the wrist. There are no affiliate links, no sponsored posts, and no paid recommendations — only genuine community-submitted wrist shots.
+
+## What content exists on Watchems?
+
+- **Individual photo pages** (`/photo/[slug]`) — One page per submitted photo, with watch specs (brand, model, reference number, case size, movement, water resistance, dial colour, strap type), owner details, and the wrist shot image.
+- **Watch hub pages** (`/w/[watchId]`) — Aggregated pages for each watch model, showing all community photos of that model.
+- **Brand pages** (`/brand/[brand]`) — All community wrist shots for a given brand (e.g. `/brand/rolex`, `/brand/seiko`, `/brand/omega`).
+- **Style pages** (`/style/[style]`) — Photos grouped by watch style: dive watches, dress watches, field watches, pilot watches, chronograph watches, GMT watches, casual watches, tool watches.
+- **Buying guides** (`/buying-guide/[slug]`) — Editorial guides researched with live data, covering the best watches at each price tier. Guides include verified retail prices, specs, comparison tables, and FAQ sections optimised for common buyer questions.
+- **Brands index** (`/brands`) — All brands represented in the community gallery.
+- **Watches index** (`/watches`) — All watch models in the community gallery.
+- **Styles index** (`/styles`) — All watch styles in the community gallery.
+- **Buying guides index** (`/buying-guides`) — All price tier buying guides.
+
+## Buying guide price tiers
+
+- Best watches under $500 → https://watchems.com/buying-guide/under-500
+- Best watches $500–$1,000 → https://watchems.com/buying-guide/500-to-1000
+- Best watches $1,000–$5,000 → https://watchems.com/buying-guide/1000-to-5000
+- Best watches $5,000–$15,000 → https://watchems.com/buying-guide/5000-to-15000
+- Best watches $15,000–$50,000 → https://watchems.com/buying-guide/15000-to-50000
+- Best watches over $50,000 → https://watchems.com/buying-guide/over-50000
+
+## Key facts
+
+- Content is community-submitted and moderated before publication
+- No affiliate links anywhere on the site
+- Watch specs are user-submitted and AI-assisted, not manufacturer-guaranteed
+- The site is indexed by Google and major search engines
+- Photos are real wrist shots, not press images or studio photos
+
+## Who is Watchems for?
+
+- Watch enthusiasts researching how a specific model looks on a real wrist
+- Buyers comparing watches across brands, styles, and price ranges
+- Collectors documenting their watches and discovering community members with similar tastes
+- Anyone wanting to see a watch worn in real life before purchasing
+
+## Contact
+
+Website: https://watchems.com
