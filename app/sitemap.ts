@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc, sql, isNotNull, and } from 'drizzle-orm'
 import { getStyleByDbValue } from '@/lib/styleData'
-import { prices } from '@/lib/priceData'
+import { buyingGuides } from '@/lib/buyingGuideData'
 
 const MIN_PHOTOS_FOR_HUB = 3
 const MIN_PHOTOS_FOR_STYLE_HUB = 5
@@ -50,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const photoPages: MetadataRoute.Sitemap = allPhotos.map((photo) => ({
     url: `${base}/photo/${photo.slug ?? photo.id}`,
-    lastModified: photo.createdAt,
+    lastModified: new Date(photo.createdAt),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
@@ -69,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const watchPages: MetadataRoute.Sitemap = watchGroups.map((w) => ({
     url: `${base}/w/${w.watchId}`,
-    lastModified: w.lastModified,
+    lastModified: new Date(w.lastModified),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
@@ -88,7 +88,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((b) => b.brandName)
     .map((b) => ({
       url: `${base}/brand/${encodeURIComponent(b.brandName!.toLowerCase())}`,
-      lastModified: b.lastModified,
+      lastModified: new Date(b.lastModified),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     }))
@@ -128,7 +128,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((s) => s.watchStyle && getStyleByDbValue(s.watchStyle))
     .map((s) => ({
       url: `${base}/style/${getStyleByDbValue(s.watchStyle!)!.slug}`,
-      lastModified: s.lastModified,
+      lastModified: new Date(s.lastModified),
       changeFrequency: 'weekly' as const,
       priority: 0.75,
     }))
@@ -153,7 +153,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  const buyingGuidePages: MetadataRoute.Sitemap = prices.map((p) => ({
+  const buyingGuidePages: MetadataRoute.Sitemap = buyingGuides.map((p) => ({
     url: `${base}/buying-guide/${p.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
