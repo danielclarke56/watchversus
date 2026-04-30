@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useUser, SignInButton } from '@clerk/nextjs'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import imageCompression from 'browser-image-compression'
 import CropModal from './CropModal'
 import { trackEvent } from '@/lib/gtag'
@@ -144,18 +143,8 @@ const MAX_PHOTOS = 20
 
 export default function UploadClient() {
   const { isSignedIn, isLoaded } = useUser()
-  const searchParams = useSearchParams()
   const [items, setItems] = useState<PhotoItem[]>([])
-  const [meta, setMeta] = useState<WatchMeta>(() => ({
-    ...defaultMeta(),
-    brandName: searchParams.get('brand') ?? '',
-    modelName: searchParams.get('model') ?? '',
-    referenceNumber: searchParams.get('reference') ?? '',
-    movement: searchParams.get('movement') ?? '',
-    caseSize: searchParams.get('caseSize') ?? '',
-    waterResistance: searchParams.get('waterResistance') ?? '',
-    estimatedPrice: searchParams.get('estimatedPrice') ?? '',
-  }))
+  const [meta, setMeta] = useState<WatchMeta>(defaultMeta())
   const hiddenAiFieldsRef = useRef<HiddenAiFields>({ dialColor: '', bezelColor: '', caseMaterial: '', strapType: '', watchStyle: '' })
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [isDragging, setIsDragging] = useState(false)

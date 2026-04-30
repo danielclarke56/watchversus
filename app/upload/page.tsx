@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { ensureTermsAccepted } from '@/lib/requireTerms'
 import UploadClient from './UploadClient'
@@ -22,9 +21,5 @@ export default async function UploadPage() {
   const { userId } = await auth()
   if (userId) await ensureTermsAccepted(userId)
 
-  return (
-    <Suspense>
-      <UploadClient />
-    </Suspense>
-  )
+  return <UploadClient />
 }
