@@ -87,6 +87,7 @@ export default async function BuyingGuidePage({ params }: Props) {
       .limit(8)
   }
 
+  // Schema
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -101,13 +102,27 @@ export default async function BuyingGuidePage({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: entry.name,
-    description: `A guide to the best watches ${entry.shortLabel.toLowerCase()}.`,
+    description: entry.intro,
     url: `https://watchems.com/buying-guide/${entry.slug}`,
+    dateModified: new Date().toISOString(),
     publisher: {
       '@type': 'Organization',
       name: 'Watchems',
       url: 'https://watchems.com',
     },
+  }
+
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Notable watches ${entry.shortLabel.toLowerCase()}`,
+    numberOfItems: entry.notableModels.length,
+    itemListElement: entry.notableModels.map((m, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: m.name,
+      description: m.reason,
+    })),
   }
 
   const faqJsonLd = {
@@ -123,13 +138,14 @@ export default async function BuyingGuidePage({ params }: Props) {
   const speakableJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SpeakableSpecification',
-    cssSelector: ['h1', '.price-hero-fact', '.price-overview', '.notable-models-list', '.faq-answer'],
+    cssSelector: ['h1', '.guide-intro', '.price-hero-fact', '.price-overview', '.comparison-table', '.notable-models-list', '.faq-answer'],
   }
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableJsonLd) }} />
 
@@ -144,10 +160,18 @@ export default async function BuyingGuidePage({ params }: Props) {
           <span className="text-gray-600">{entry.name}</span>
         </nav>
 
-        {/* H1 */}
-        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-6">
-          {entry.name}
-        </h1>
+        {/* H1 + last updated */}
+        <div className="mb-3">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+            {entry.name}
+          </h1>
+          <p className="text-xs text-gray-400 mt-1.5">Last updated: {entry.lastUpdated}</p>
+        </div>
+
+        {/* Intro — who is this for */}
+        <p className="guide-intro text-sm text-gray-600 leading-relaxed mb-8">
+          {entry.intro}
+        </p>
 
         {/* Hero fact — speakable */}
         <div className="bg-gray-50 rounded-xl border border-gray-100 p-5 mb-8">
@@ -165,13 +189,48 @@ export default async function BuyingGuidePage({ params }: Props) {
           ))}
         </div>
 
+        {/* Comparison table */}
+        <div className="mb-10">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Quick comparison
+          </h2>
+          <div className="comparison-table overflow-x-auto rounded-xl border border-gray-100">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-gray-50 text-gray-500 uppercase tracking-wide">
+                <tr>
+                  <th className="px-3 py-2.5 font-medium">Model</th>
+                  <th className="px-3 py-2.5 font-medium">Price</th>
+                  <th className="px-3 py-2.5 font-medium hidden sm:table-cell">Case</th>
+                  <th className="px-3 py-2.5 font-medium hidden sm:table-cell">WR</th>
+                  <th className="px-3 py-2.5 font-medium hidden md:table-cell">Crystal</th>
+                  <th className="px-3 py-2.5 font-medium hidden md:table-cell">Movement</th>
+                  <th className="px-3 py-2.5 font-medium">Best for</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {entry.notableModels.map((model) => (
+                  <tr key={model.name} className="bg-white hover:bg-gray-50 transition-colors">
+                    <td className="px-3 py-2.5 font-medium text-gray-900 whitespace-nowrap">{model.name}</td>
+                    <td className="px-3 py-2.5 text-gray-600 whitespace-nowrap">{model.price}</td>
+                    <td className="px-3 py-2.5 text-gray-600 hidden sm:table-cell whitespace-nowrap">{model.caseSize}</td>
+                    <td className="px-3 py-2.5 text-gray-600 hidden sm:table-cell whitespace-nowrap">{model.waterResistance}</td>
+                    <td className="px-3 py-2.5 text-gray-600 hidden md:table-cell whitespace-nowrap">{model.crystal}</td>
+                    <td className="px-3 py-2.5 text-gray-600 hidden md:table-cell whitespace-nowrap">{model.movement}</td>
+                    <td className="px-3 py-2.5 text-gray-500 whitespace-nowrap">{model.bestFor}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         {/* Community wrist shots */}
         {communityPhotos.length > 0 && (
           <div className="mb-10">
             <h2 className="text-lg font-semibold text-gray-900 mb-1">
-              From the community
+              Wrist shots from the community
             </h2>
-            <p className="text-xs text-gray-400 mb-4">Real wrist shots submitted by Watchems members</p>
+            <p className="text-xs text-gray-400 mb-4">Real owner photos of watches in this price range — submitted by Watchems members</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {communityPhotos.map((photo) => (
                 <Link
@@ -203,17 +262,17 @@ export default async function BuyingGuidePage({ params }: Props) {
         {entry.notableModels.length > 0 && (
           <div className="mb-10">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Notable watches in this range
+              Our picks — explained
             </h2>
-            <ul className="notable-models-list space-y-3">
+            <ul className="notable-models-list space-y-4">
               {entry.notableModels.map((model) => (
-                <li key={model.name} className="flex gap-3 text-sm">
-                  <span className="text-gray-300 shrink-0 mt-0.5">—</span>
-                  <span className="text-gray-700">
-                    <strong className="font-semibold text-gray-900">{model.name}</strong>
-                    {' '}&mdash;{' '}
-                    {model.reason}
-                  </span>
+                <li key={model.name} className="rounded-xl border border-gray-100 p-4">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <strong className="text-sm font-semibold text-gray-900">{model.name}</strong>
+                    <span className="text-xs font-medium text-gray-500 shrink-0">{model.price}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-2">{model.bestFor}</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{model.reason}</p>
                 </li>
               ))}
             </ul>
@@ -224,7 +283,7 @@ export default async function BuyingGuidePage({ params }: Props) {
         {entry.faq.length > 0 && (
           <div className="mb-10">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              {entry.name} — common questions
+              Common questions
             </h2>
             <div className="space-y-4">
               {entry.faq.map((item, i) => (
@@ -232,6 +291,24 @@ export default async function BuyingGuidePage({ params }: Props) {
                   <h3 className="text-sm font-semibold text-gray-800 mb-2">{item.question}</h3>
                   <p className="faq-answer text-sm text-gray-600 leading-relaxed">{item.answer}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Internal links */}
+        {entry.internalLinks.length > 0 && (
+          <div className="mb-10 rounded-xl border border-gray-100 p-5">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Explore on Watchems</p>
+            <div className="flex flex-wrap gap-2">
+              {entry.internalLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 transition-colors"
+                >
+                  {link.label} →
+                </Link>
               ))}
             </div>
           </div>
