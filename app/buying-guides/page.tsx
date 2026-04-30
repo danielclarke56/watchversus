@@ -6,24 +6,24 @@ export const metadata: Metadata = {
   title: 'Watch Buying Guides by Price | Watchems',
   description: 'Expert buying guides for watches at every price point — from the best watches under $500 to luxury pieces over $50,000.',
   alternates: {
-    canonical: 'https://watchems.com/prices',
+    canonical: 'https://watchems.com/buying-guides',
   },
   openGraph: {
     title: 'Watch Buying Guides by Price | Watchems',
     description: 'Expert buying guides for watches at every price point — from the best watches under $500 to luxury pieces over $50,000.',
-    url: 'https://watchems.com/prices',
+    url: 'https://watchems.com/buying-guides',
     type: 'website',
     siteName: 'Watchems',
   },
 }
 
-export default function PricesPage() {
+export default function BuyingGuidesPage() {
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchems.com' },
-      { '@type': 'ListItem', position: 2, name: 'Price Guides', item: 'https://watchems.com/prices' },
+      { '@type': 'ListItem', position: 2, name: 'Buying Guides', item: 'https://watchems.com/buying-guides' },
     ],
   }
 
@@ -35,7 +35,7 @@ export default function PricesPage() {
       '@type': 'ListItem',
       position: i + 1,
       name: p.name,
-      url: `https://watchems.com/price/${p.slug}`,
+      url: `https://watchems.com/buying-guide/${p.slug}`,
     })),
   }
 
@@ -50,12 +50,12 @@ export default function PricesPage() {
         <nav className="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
           <Link href="/" className="hover:text-gray-600 transition-colors">Home</Link>
           <span>/</span>
-          <span className="text-gray-600">Price Guides</span>
+          <span className="text-gray-600">Buying Guides</span>
         </nav>
 
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
-            Watch Buying Guides by Price
+            Watch Buying Guides
           </h1>
           <p className="text-sm text-gray-500 mt-2">
             What to expect, which models stand out, and honest trade-offs — at every budget.
@@ -66,7 +66,7 @@ export default function PricesPage() {
           {prices.map((entry) => (
             <Link
               key={entry.slug}
-              href={`/price/${entry.slug}`}
+              href={`/buying-guide/${entry.slug}`}
               className="group block rounded-xl border border-gray-100 hover:border-gray-300 bg-white p-5 transition-colors"
             >
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">

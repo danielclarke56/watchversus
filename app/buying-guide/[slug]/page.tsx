@@ -22,12 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: {
-      canonical: `https://watchems.com/price/${entry.slug}`,
+      canonical: `https://watchems.com/buying-guide/${entry.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://watchems.com/price/${entry.slug}`,
+      url: `https://watchems.com/buying-guide/${entry.slug}`,
       type: 'article',
       siteName: 'Watchems',
     },
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function PricePage({ params }: Props) {
+export default function BuyingGuidePage({ params }: Props) {
   const entry = getPriceBySlug(params.slug)
   if (!entry) notFound()
 
@@ -48,8 +48,8 @@ export default function PricePage({ params }: Props) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://watchems.com' },
-      { '@type': 'ListItem', position: 2, name: 'Price Guides', item: 'https://watchems.com/prices' },
-      { '@type': 'ListItem', position: 3, name: entry.name, item: `https://watchems.com/price/${entry.slug}` },
+      { '@type': 'ListItem', position: 2, name: 'Buying Guides', item: 'https://watchems.com/buying-guides' },
+      { '@type': 'ListItem', position: 3, name: entry.name, item: `https://watchems.com/buying-guide/${entry.slug}` },
     ],
   }
 
@@ -58,7 +58,7 @@ export default function PricePage({ params }: Props) {
     '@type': 'Article',
     headline: entry.name,
     description: `A guide to the best watches ${entry.shortLabel.toLowerCase()}.`,
-    url: `https://watchems.com/price/${entry.slug}`,
+    url: `https://watchems.com/buying-guide/${entry.slug}`,
     publisher: {
       '@type': 'Organization',
       name: 'Watchems',
@@ -95,7 +95,7 @@ export default function PricePage({ params }: Props) {
         <nav className="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
           <Link href="/" className="hover:text-gray-600 transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/prices" className="hover:text-gray-600 transition-colors">Price Guides</Link>
+          <Link href="/buying-guides" className="hover:text-gray-600 transition-colors">Buying Guides</Link>
           <span>/</span>
           <span className="text-gray-600">{entry.name}</span>
         </nav>
@@ -162,10 +162,10 @@ export default function PricePage({ params }: Props) {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Link
-            href="/prices"
+            href="/buying-guides"
             className="text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
           >
-            ← All price guides
+            ← All buying guides
           </Link>
           <Link
             href="/upload"

@@ -143,22 +143,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Price guide pages — static, no DB query needed
-  const pricesIndex: MetadataRoute.Sitemap = [
+  // Buying guide pages — static, no DB query needed
+  const buyingGuidesIndex: MetadataRoute.Sitemap = [
     {
-      url: `${base}/prices`,
+      url: `${base}/buying-guides`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.85,
     },
   ]
 
-  const pricePages: MetadataRoute.Sitemap = prices.map((p) => ({
-    url: `${base}/price/${p.slug}`,
+  const buyingGuidePages: MetadataRoute.Sitemap = prices.map((p) => ({
+    url: `${base}/buying-guide/${p.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.80,
   }))
 
-  return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...pricesIndex, ...pricePages, ...watchPages, ...photoPages]
+  return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...buyingGuidesIndex, ...buyingGuidePages, ...watchPages, ...photoPages]
 }
