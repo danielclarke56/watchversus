@@ -15,7 +15,7 @@ jobs:
     env:
       # Real secrets are not needed for a build check — stubs prevent
       # "missing env var" crashes in next.config.mjs and lib/ imports.
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_stub
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       CLERK_SECRET_KEY: sk_test_stub
       DATABASE_URL: postgresql://stub:stub@stub/stub
       GEMINI_API_KEY: stub
