@@ -55,13 +55,13 @@ export const prices: PriceData[] = [
     lastUpdated: "April 2026",
     intro: "The best watch under $500 right now is the Seiko 5 Sports GMT — a true mechanical GMT tracking two time zones for $495. This guide covers 7 verified picks across every use case, from indestructible tool watches to elegant dress pieces, all confirmed against current retail prices.",
     heroFact: "The Seiko 5 Sports GMT — a mechanical GMT watch with a dedicated 24-hour hand for tracking two time zones — retails for $495. Five years ago, a mechanical GMT from a reputable brand cost at least $1,500.",
-    overview: `Stepping into the 'under $500' price segment opens up a world of horological possibilities beyond basic fashion watches. Here, you'll encounter timepieces from established manufacturers like Seiko, Citizen, and Orient, renowned for their long histories and commitment to watchmaking. Many models in this range feature automatic (mechanical) movements, offering the charm of traditional horology where a rotor powers the watch with your wrist's motion, eliminating the need for a battery. While sapphire crystal, highly scratch-resistant, is less common than in higher tiers, it's increasingly found on specific models, providing enhanced durability.
+    overview: `Under $500 is where serious watchmaking starts. Seiko, Citizen, and Orient — brands with decades of manufacture experience — dominate this tier with automatic movements, genuine tool watch specs, and in some cases sapphire crystal. Most models here run on mechanical movements powered by your wrist's motion, no battery required. Sapphire crystal is less common than in higher tiers but available on specific picks in this guide.
 
-Buyers in this segment can expect a broad spectrum of designs, from robust dive watches with impressive water resistance to elegant dress watches suitable for formal occasions. The trade-off compared to the $500-$1000 tier often lies in finishing details, the complexity of movements (though notable exceptions like the mechanical GMT exist), and the prevalence of Hardlex or mineral crystals over sapphire. Bracelets and straps might also be less refined than on more expensive watches, but they remain functional and comfortable.
+Buyers can expect a broad range: robust dive watches with 200m water resistance, dress automatics with domed crystals, and sport watches with integrated bracelets. The trade-off versus the $500–$1,000 tier is finishing — bracelets can feel loose at the clasp, case edges are less crisp, and movements are reliable but undecorated. These are aesthetic differences, not durability ones.
 
-Japanese brands like Seiko and Citizen dominate this price point, offering reliable in-house movements and a strong reputation for durability. Orient provides excellent value, particularly in classic dress watch styles with proprietary movements. You can also find highly durable quartz options, such as Casio G-Shocks, which offer unparalleled resilience and functionality for their price.
+Japanese brands set the benchmark here. Seiko's in-house calibres offer hand-winding and hacking at prices Swiss brands can't touch. Citizen's Eco-Drive solar technology eliminates batteries entirely. Orient delivers genuine dress automatics under $250. For pure resilience, Casio's G-Shock lineup is in a category of its own. Switzerland appears at the top of this tier via Tissot, whose PRX brings a Swiss Made movement and sapphire crystal for under $500.
 
-When choosing a watch under $500, prioritize models from brands with a proven track record. Focus on key specifications like water resistance, crystal material, and movement type that align with your intended use. While this segment requires some careful consideration, the value proposition is incredibly strong, allowing you to acquire a well-made and aesthetically pleasing timepiece without a significant investment.`,
+The under-$500 tier rewards research. The right pick here will outlast fashion trends, handle daily wear without babying, and hold its own next to watches that cost twice as much.`,
     pickByUseCase: [
       { useCase: "First automatic watch", model: "Seiko 5 Sports" },
       { useCase: "Budget diver", model: "Citizen Promaster Diver Eco-Drive" },
@@ -81,7 +81,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Hardlex",
         movement: "Automatic (Caliber 4R36)",
         bestFor: "Versatile daily wear",
-        reason: "It offers a robust automatic movement, a durable build, and a versatile sport-diver aesthetic at an accessible price.",
+        reason: "The 4R36 calibre gives you day/date, hand-winding, and hacking at ~$350 — more functionality than most automatics twice the price. 100m water resistance and Hardlex crystal handle genuine daily use.",
       },
       {
         name: "Seiko 5 Sports GMT",
@@ -92,7 +92,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Hardlex with lenses",
         movement: "Automatic GMT (Caliber 4R34)",
         bestFor: "Affordable mechanical GMT",
-        reason: "This model offers a highly sought-after mechanical GMT complication, making it an exceptional value for travelers and watch enthusiasts alike.",
+        reason: "The only mechanical GMT under $500 from a major manufacturer. The 4R34 calibre adds a 24-hour hand and bidirectional bezel to track a second time zone — a complication that costs $1,500+ anywhere else.",
       },
       {
         name: "Orient Bambino",
@@ -103,7 +103,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Domed Mineral",
         movement: "Automatic (Orient F6724)",
         bestFor: "Elegant dress watch",
-        reason: "The Bambino stands out with its elegant domed dial and crystal, offering a sophisticated vintage dress watch aesthetic with an in-house automatic movement.",
+        reason: "The only dress automatic under $250 with an in-house movement that hand-winds and hacks. The domed dial and domed crystal read as far more expensive than $250 — the trade-off is 30m water resistance.",
       },
       {
         name: "Citizen Tsuyosa Automatic",
@@ -114,7 +114,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Sapphire",
         movement: "Automatic (Caliber 8210)",
         bestFor: "Integrated bracelet style",
-        reason: "It offers a contemporary integrated bracelet design reminiscent of higher-end sports watches, combined with a reliable automatic movement and sapphire crystal.",
+        reason: "Sapphire crystal and an integrated bracelet at ~$350 — a combination you'd expect to pay $800+ for. The Caliber 8210 runs to ±10 seconds/day accuracy. 50m water resistance is the one limitation.",
       },
       {
         name: "Citizen Promaster Diver Eco-Drive",
@@ -125,7 +125,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Anti-reflective mineral",
         movement: "Eco-Drive (Caliber E168)",
         bestFor: "ISO-certified diving, Grab-and-go tool watch",
-        reason: "An ISO-compliant dive watch powered by light, offering exceptional water resistance and a 'set and forget' convenience without needing battery changes.",
+        reason: "ISO 6425 certified — the same standard applied to professional dive watches — with 200m water resistance and a solar movement that never needs a battery. At ~$295 it's the most capable tool watch in this guide.",
       },
       {
         name: "Casio G-Shock DW-5600E-1V",
@@ -136,7 +136,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Mineral",
         movement: "Quartz (Module 3229)",
         bestFor: "Extreme durability, Digital functionality",
-        reason: "The iconic G-Shock is virtually indestructible, offering 200m water resistance and essential digital functions in a classic, enduring design.",
+        reason: "At ~$70 it's shock-resistant, 200m water resistant, and runs for years on a single battery. Nothing else in any price tier matches it for pure resilience.",
       },
       {
         name: "Tissot PRX 35mm Quartz",
@@ -147,7 +147,7 @@ When choosing a watch under $500, prioritize models from brands with a proven tr
         crystal: "Sapphire",
         movement: "Quartz (ETA F05.115)",
         bestFor: "Retro-chic everyday, Integrated bracelet",
-        reason: "This watch delivers a popular 1970s integrated bracelet aesthetic with a slim profile and sapphire crystal, powered by a reliable Swiss quartz movement.",
+        reason: "Swiss Made, sapphire crystal, and a true 1970s integrated bracelet profile — all for ~$450. The ETA F05.115 quartz movement keeps ±0.07 seconds/day accuracy. The thinnest watch in this guide at 9.9mm.",
       },
     ],
     faq: [
