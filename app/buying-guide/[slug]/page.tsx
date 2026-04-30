@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { getPriceBySlug, prices } from '@/lib/priceData'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, and, ilike, or, desc, sql } from 'drizzle-orm'
+import { eq, and, ilike, or, desc } from 'drizzle-orm'
 import { buildPhotoAltText } from '@/lib/photoAlt'
 
 interface Props {
