@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc, sql, isNotNull, and } from 'drizzle-orm'
 import { getStyleByDbValue } from '@/lib/styleData'
+import { prices } from '@/lib/priceData'
 
 const MIN_PHOTOS_FOR_HUB = 3
 const MIN_PHOTOS_FOR_STYLE_HUB = 5
@@ -142,5 +143,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...watchPages, ...photoPages]
+  // Price guide pages — static, no DB query needed
+  const pricesIndex: MetadataRoute.Sitemap = [
+    {
+      url: `${base}/prices`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.85,
+    },
+  ]
+
+  const pricePages: MetadataRoute.Sitemap = prices.map((p) => ({
+    url: `${base}/price/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.80,
+  }))
+
+  return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...pricesIndex, ...pricePages, ...watchPages, ...photoPages]
 }
