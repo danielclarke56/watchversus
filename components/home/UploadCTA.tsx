@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Button } from '@/components/ui/Button'
+import { CTAButton } from '@/components/CTAButton'
 import { Container } from '@/components/ui/Container'
 import type { ApprovedPhoto } from '@/lib/photos'
 
@@ -44,9 +44,9 @@ export default function UploadCTA({ photos }: UploadCTAProps) {
                 ))}
           </div>
 
-          <Button href="/upload" variant="primary" size="lg">
+          <CTAButton href="/upload" priority="primary" size="lg">
             Upload Your Watch Photo
-          </Button>
+          </CTAButton>
         </div>
       </Container>
     </section>
