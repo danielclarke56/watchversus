@@ -7,10 +7,12 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:fresh": "rm -rf .next && next dev",
     "dev:auto": "node scripts/dev-auto.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "monitor:cwv": "curl https://watchems.com/api/cron/core-web-vitals",
     "monitor:gsc": "curl https://watchems.com/api/cron/gsc-metrics",
     "test:cwv-local": "node -e \"import('./app/api/cron/core-web-vitals/route.ts')\""

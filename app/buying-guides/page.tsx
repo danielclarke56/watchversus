@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { prices } from '@/lib/priceData'
+import { buyingGuides } from '@/lib/buyingGuideData'
 
 export const metadata: Metadata = {
   title: 'Watch Buying Guides by Price | Watchems',
@@ -31,7 +31,7 @@ export default function BuyingGuidesPage() {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Watch Buying Guides by Price',
-    itemListElement: prices.map((p, i) => ({
+    itemListElement: buyingGuides.map((p, i) => ({
       '@type': 'ListItem',
       position: i + 1,
       name: p.name,
@@ -63,7 +63,7 @@ export default function BuyingGuidesPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {prices.map((entry) => (
+          {buyingGuides.map((entry) => (
             <Link
               key={entry.slug}
               href={`/buying-guide/${entry.slug}`}
