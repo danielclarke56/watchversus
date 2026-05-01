@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { buyingGuides } from '@/lib/buyingGuideData'
+import { getAllGuides } from '@/lib/buyingGuides'
+
+const buyingGuides = getAllGuides()
 
 export const metadata: Metadata = {
   title: 'Watch Buying Guides by Price | Watchems',
@@ -76,7 +78,7 @@ export default function BuyingGuidesPage() {
                 {entry.name}
               </h2>
               <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">
-                {entry.overview.split('\n\n')[0].trim()}
+                {entry.overviewMdx.replace(/^##.*$/gm, '').replace(/\n+/g, ' ').trim().slice(0, 200)}
               </p>
               <p className="text-xs font-medium text-gray-400 mt-3 group-hover:text-gray-600 transition-colors">
                 Read guide →

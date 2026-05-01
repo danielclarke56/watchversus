@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc, sql, isNotNull, and } from 'drizzle-orm'
 import { getStyleByDbValue } from '@/lib/styleData'
-import { buyingGuides } from '@/lib/buyingGuideData'
+import { getAllGuides } from '@/lib/buyingGuides'
 
 const MIN_PHOTOS_FOR_HUB = 3
 const MIN_PHOTOS_FOR_STYLE_HUB = 5
@@ -153,7 +153,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  const buyingGuidePages: MetadataRoute.Sitemap = buyingGuides.map((p) => ({
+  const buyingGuidePages: MetadataRoute.Sitemap = getAllGuides().map((p) => ({
     url: `${base}/buying-guide/${p.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,

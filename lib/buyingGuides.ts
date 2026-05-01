@@ -11,9 +11,10 @@ export interface GuideModel {
   waterResistance: string
   crystal: string
   movement: string
-  bestFor: string
-  reason: string
-  communitySignal?: string
+  bestFor: string       // one-line positioning
+  reason: string        // 2-sentence value explanation
+  tradeoff: string      // 1-sentence trade-off
+  communitySignal?: string  // 1-sentence social proof
   imageUrl?: string
 }
 
