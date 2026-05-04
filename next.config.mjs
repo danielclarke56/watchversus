@@ -71,6 +71,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/buying-guide/under-500-v2',
+        destination: '/buying-guide/under-500',
+        permanent: true,
+      },
+      {
         source: '/compare',
         destination: '/',
         permanent: true,

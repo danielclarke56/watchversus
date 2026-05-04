@@ -1,6 +1,6 @@
 /**
- * EXPERIMENTAL V2 — /buying-guide/under-500-v2
- * Comparison prototype. Do NOT replace the original until reviewed side-by-side.
+ * Best Watches Under $500 — buying guide
+ * Route: /buying-guide/under-500
  */
 
 export const dynamic = 'force-dynamic'
@@ -86,9 +86,9 @@ const MANUFACTURER_URLS: Record<string, string> = {
 
 
 export const metadata: Metadata = {
-  title: 'Watches Under $500 — What the Community Actually Buys | Watchems',
-  description: 'What watch buyers actually recommend under $500 — community consensus across every use case, with specs and real trade-offs.',
-  robots: { index: false, follow: false },
+  title: 'Best Watches Under $500 — Community Ranking & Buying Guide | Watchems',
+  description: 'The 50 most recommended watches under $500, ranked by community research across r/Watches, WatchUSeek, and 17 other sources. Specs, FAQs, and honest trade-offs.',
+  alternates: { canonical: 'https://watchems.com/buying-guide/under-500' },
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -331,14 +331,6 @@ export default async function BuyingGuideV2Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
-      {/* DEV BANNER */}
-      <div className="bg-textPrimary text-white text-xs font-medium text-center py-2 px-4">
-        Prototype — v2 layout.{' '}
-        <Link href="/buying-guide/under-500" className="underline underline-offset-2 opacity-70 hover:opacity-100">
-          View current version →
-        </Link>
-      </div>
-
       <main>
         <article>
 
@@ -347,8 +339,9 @@ export default async function BuyingGuideV2Page() {
           ════════════════════════════════════════ */}
           <header>
             <div className="relative w-full h-[60vh] min-h-72 max-h-[520px] overflow-hidden bg-surfaceAlt">
-              <Image src={entry.images.hero} alt={entry.name} fill priority className="object-cover" sizes="100vw" />
+              <Image src="/images/guides/under-500-hero.png" alt="Assorted automatic watches under $500 — illustrative image" fill priority className="object-cover" sizes="100vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+              <p className="absolute bottom-2 right-3 text-white/30 text-[10px] leading-none">Illustrative image — AI generated</p>
               <div className="absolute inset-0 flex flex-col justify-end">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-12 w-full">
                   <nav aria-label="Breadcrumb" className="text-white/50 text-xs mb-5 flex items-center gap-1.5">
