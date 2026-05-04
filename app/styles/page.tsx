@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: 'Watch Styles — Dive, Dress, Field, Pilot & More | Watchems',
   description:
     'Browse real owner wrist photos by watch style. Dive watches, dress watches, field watches, pilot watches, chronographs, GMT watches, and more — community-submitted on Watchems.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://watchems.com/styles',
   },

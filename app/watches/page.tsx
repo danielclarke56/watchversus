@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'Watch Models — Wrist Photo Gallery | Watchems',
   description:
     'Browse real owner wrist photos by watch model. Rolex Submariner, Omega Speedmaster, Seiko Prospex and more — community-submitted photos on Watchems.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://watchems.com/watches',
   },
