@@ -10,9 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/photo/',
-          '/w/',
-          '/brand/',
-          '/brands',
           '/style/',
           '/styles',
           '/buying-guide/',
@@ -31,6 +28,9 @@ export default function robots(): MetadataRoute.Robots {
           '/_next',
           '/private',
           '/quiz',
+          '/w/',
+          '/brand/',
+          '/brands',
         ],
       },
       // AI training bots (explicit allow for key content)

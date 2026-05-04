@@ -56,6 +56,7 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   return {
     title,
     description,
+    robots: { index: false, follow: false },
     alternates: {
       canonical: `https://watchems.com/brand/${brand}`,
     },

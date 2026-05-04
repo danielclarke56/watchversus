@@ -1280,13 +1280,7 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                         {(brand || model) && (
                           <p className="text-gray-900 font-semibold text-sm truncate">
                             {brand ? (
-                              <a
-                                href={`/brand/${encodeURIComponent(brand.toLowerCase())}`}
-                                className="hover:underline underline-offset-2"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {brand}
-                              </a>
+                              <span>{brand}</span>
                             ) : null}
                             {brand && model ? ' ' : null}
                             {model ?? null}
@@ -1360,15 +1354,6 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                       <div className="mt-4 md:hidden">
                         <div className="flex items-center justify-between mb-3">
                           <SectionLabel>More like this</SectionLabel>
-                          {activeLightboxPhoto?.watchId && sameModelGroups.length > 0 && (
-                            <a
-                              href={`/w/${activeLightboxPhoto.watchId}`}
-                              className="text-xs text-gray-400 hover:text-gray-700 underline underline-offset-2 transition-colors"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              See all →
-                            </a>
-                          )}
                         </div>
                         <div className="columns-2 gap-2.5">
                           {groupByWatchUser(otherWatchRelated).map((g) => (
@@ -1400,9 +1385,9 @@ function PhotoGalleryContent({ initialPhotoSlug, userId }: { initialPhotoSlug?: 
                             <SectionLabel>
                               More {currentModelName ?? 'like this'}
                             </SectionLabel>
-                            {activeLightboxPhoto?.watchId && (
+                            {false && (
                               <a
-                                href={`/w/${activeLightboxPhoto.watchId}`}
+                                href="#"
                                 className="text-xs text-gray-400 hover:text-gray-700 underline underline-offset-2 transition-colors"
                                 onClick={(e) => e.stopPropagation()}
                               >

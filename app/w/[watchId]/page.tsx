@@ -50,6 +50,7 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
   return {
     title,
     description,
+    robots: { index: false, follow: false },
     alternates: {
       canonical: `https://watchems.com/w/${params.watchId}`,
     },
