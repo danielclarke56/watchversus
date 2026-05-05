@@ -10,7 +10,7 @@ Read this before doing anything.
 - **Do NOT auto-commit or push.** Make changes locally, let the user test, then commit only when asked.
 
 ## Hard Rules
-- NO affiliate links, no affiliate URLs, no partner CTAs — anywhere in the codebase
+- Affiliate links are allowed and encouraged — any affiliate network is permitted anywhere appropriate (buying guides, watch pages, brand pages, CTAs)
 - NO social/community features — Watchems is a visual reference library, not a social platform
 - TypeScript strict mode: no implicit any
 - `data/watches.json` is DELETED — do not recreate it. Neon DB is the only source of truth.
@@ -69,12 +69,12 @@ There is NO watches table. A "watch" is identified by `watchId` (slug like `omeg
 - Guide data lives in `lib/buyingGuideData.ts` — NOT in the DB
 - Use `scripts/generate-guide.mjs` + `scripts/guide-instructions.md` to generate new guide entries
 - `lib/priceData.ts` is DELETED — `lib/buyingGuideData.ts` is the replacement
-- Internal links in guides must only point to `/brand/` or `/style/` paths — no affiliate links
+- Internal links in guides can point to `/brand/` or `/style/` paths, or to affiliate URLs
 - `images.hero` and `images.mid` in guide data are full URLs (Cloudflare R2 or external)
 
 ## DO NOT
 - Ask about domain setup — already live at watchems.com
-- Re-suggest affiliate links
+- Avoid adding affiliate links without a real URL — use placeholders only if explicitly asked
 - Recreate `data/watches.json`, `lib/watches.ts`, or `lib/priceData.ts`
 - Add social feed, follower, or community engagement features
 - Create hardcoded lists that mirror data already in the DB
