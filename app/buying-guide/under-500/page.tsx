@@ -6,7 +6,7 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
-import BuyingGuideTemplate, { type BuyingGuideConfig, type RankEntry, type FaqEntry } from '@/components/guide/BuyingGuideTemplate'
+import BuyingGuideTemplate, { type BuyingGuideConfig, type RankEntry } from '@/components/guide/BuyingGuideTemplate'
 
 export const metadata: Metadata = {
   title: 'Best Watches Under $500 — Community Ranking & Buying Guide | Watchems',
