@@ -164,7 +164,7 @@ export default function BuyingGuideUnder100Page() {
           ════════════════════════════════════════ */}
           <header>
             <div className="relative w-full h-[60vh] min-h-72 max-h-[520px] overflow-hidden bg-surfaceAlt">
-              <Image src="/images/guides/under-500-hero.png" alt="Collection of budget watches under $100 — illustrative image" fill priority className="object-cover" sizes="100vw" />
+              <Image src="/images/guides/under-100-hero.png" alt="Collection of budget watches under $100 — illustrative image" fill priority className="object-cover" sizes="100vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
               <p className="absolute bottom-2 right-3 text-white/30 text-[10px] leading-none">Illustrative image — AI generated</p>
               <div className="absolute inset-0 flex flex-col justify-end">
