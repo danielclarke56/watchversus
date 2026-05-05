@@ -153,12 +153,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  const buyingGuidePages: MetadataRoute.Sitemap = getAllGuides().map((p) => ({
-    url: `${base}/buying-guide/${p.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.80,
-  }))
+  const buyingGuidePages: MetadataRoute.Sitemap = [
+    ...getAllGuides().map((p) => ({
+      url: `${base}/buying-guide/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.80,
+    })),
+    {
+      url: `${base}/buying-guide/under-100`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.80,
+    },
+  ]
 
   return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...buyingGuidesIndex, ...buyingGuidePages, ...watchPages, ...photoPages]
 }

@@ -2,7 +2,21 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getAllGuides } from '@/lib/buyingGuides'
 
-const buyingGuides = getAllGuides()
+const registeredGuides = getAllGuides()
+
+const staticGuides = [
+  {
+    slug: 'under-100',
+    name: 'Best Watches Under $100',
+    shortLabel: 'Under $100',
+    overviewMdx: 'The most recommended watches under $100 — Casio G-Shock, Timex Weekender, Vostok Amphibia, and more. Community-researched specs, trade-offs, and honest answers.',
+  },
+]
+
+const buyingGuides = [
+  ...registeredGuides,
+  ...staticGuides.filter((s) => !registeredGuides.some((r) => r.slug === s.slug)),
+]
 
 export const metadata: Metadata = {
   title: 'Watch Buying Guides by Price | Watchems',
