@@ -9,8 +9,8 @@ import type { Metadata } from 'next'
 import BuyingGuideTemplate, { type BuyingGuideConfig, type RankEntry } from '@/components/guide/BuyingGuideTemplate'
 
 export const metadata: Metadata = {
-  title: 'Best Watches Under $500 — Community Ranking & Buying Guide | Watchems',
-  description: 'The 20 most recommended watches under $500, ranked by community research across r/Watches, WatchUSeek, and 17 other sources. Specs, FAQs, and honest trade-offs.',
+  title: 'Best Watches Under $500 (2026) — 20 Picks, Ranked | Watchems',
+  description: 'The 20 most recommended watches under $500, ranked by community consensus across r/Watches, WatchUSeek, and 17 sources. Verified prices, full specs, honest trade-offs.',
   alternates: { canonical: 'https://watchems.com/buying-guide/under-500' },
 }
 
@@ -19,26 +19,26 @@ export const metadata: Metadata = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const RANKING: RankEntry[] = [
-  { rank: 1,  brand: 'Seiko',    model: 'Seiko 5 Sports SRPD55',              price: '~$300', caseSize: '42.5mm', thickness: '13mm',    movement: 'Auto (4R36)',        crystal: 'Hardlex',  wr: '100m',  url: 'https://www.seikowatches.com/global-en/products/5sports' },
-  { rank: 2,  brand: 'Orient',   model: 'Orient Bambino (V1–V6)',             price: '~$250', caseSize: '38–42mm', thickness: '11mm',   movement: 'Auto (F6724)',        crystal: 'Mineral',  wr: '30m',   url: 'https://orient-watch.com/en/orient/collection/classic/' },
-  { rank: 3,  brand: 'Orient',   model: 'Orient Kamasu',                      price: '~$375', caseSize: '41.8mm', thickness: '12.5mm',  movement: 'Auto (F6922)',        crystal: 'Sapphire', wr: '200m',  url: 'https://orient-watch.com/en/orient/collection/sports/' },
-  { rank: 4,  brand: 'Seiko',    model: 'Seiko Presage Cocktail Time SRPE41', price: '~$450', caseSize: '40.5mm', thickness: '12.5mm',  movement: 'Auto (4R35)',         crystal: 'Sapphire', wr: '50m',   url: 'https://www.seikowatches.com/global-en/products/presage' },
-  { rank: 5,  brand: 'Casio',    model: 'Casio G-Shock DW-5600E',             price: '~$100', caseSize: '42.8mm', thickness: '13.4mm',  movement: 'Quartz (3232)',       crystal: 'Mineral',  wr: '200m',  url: 'https://www.casio.com/intl/watches/gshock/' },
-  { rank: 6,  brand: 'Tissot',   model: 'Tissot PRX Quartz',                  price: '~$450', caseSize: '40mm',   thickness: '10.5mm',  movement: 'Quartz (ETA F06)',    crystal: 'Sapphire', wr: '100m',  url: 'https://www.tissotwatches.com/en-en/tissot-prx.html' },
-  { rank: 7,  brand: 'Seiko',    model: 'Seiko 5 SNK809',                     price: '~$200', caseSize: '37mm',   thickness: '11mm',    movement: 'Auto (7S26)',         crystal: 'Hardlex',  wr: '30m',   url: 'https://www.seikowatches.com/global-en/products/5sports' },
-  { rank: 8,  brand: 'Citizen',  model: 'Citizen Promaster Diver BN0150',     price: '~$295', caseSize: '44mm',   thickness: '14mm',    movement: 'Solar (E168)',        crystal: 'Mineral',  wr: '200m',  url: 'https://www.citizenwatch-global.com/collection/promaster/' },
-  { rank: 9,  brand: 'Orient',   model: 'Orient Mako II',                     price: '~$285', caseSize: '41.5mm', thickness: '13mm',    movement: 'Auto (F6922)',        crystal: 'Mineral',  wr: '200m',  url: 'https://orient-watch.com/en/orient/collection/sports/' },
-  { rank: 10, brand: 'Casio',    model: 'Casio G-Shock GA-2100 CasiOak',      price: '~$110',  caseSize: '45.4mm', thickness: '11.8mm',  movement: 'Ana-digi quartz',     crystal: 'Mineral',  wr: '200m',  url: 'https://www.casio.com/intl/watches/gshock/' },
-  { rank: 11, brand: 'Seiko',    model: 'Seiko Prospex Solar SNE549',         price: '~$425', caseSize: '38.5mm', thickness: '12mm',    movement: 'Solar (V157)',        crystal: 'Sapphire', wr: '200m',  url: 'https://www.seikowatches.com/global-en/products/prospex' },
-  { rank: 12, brand: 'Timex',    model: 'Timex Marlin Automatic',             price: '~$220', caseSize: '40mm',   thickness: '11mm',    movement: 'Auto (Miyota 8215)',  crystal: 'Acrylic',  wr: '30m',   url: 'https://www.timex.com/collections/marlin' },
-  { rank: 13, brand: 'Vostok',   model: 'Vostok Amphibia',                    price: '~$90',  caseSize: '40mm',   thickness: '13mm',    movement: 'Auto (2416B)',        crystal: 'Acrylic',  wr: '200m',  url: 'https://vostok-watches.ru/en/catalog/amphibia/' },
-  { rank: 14, brand: 'Citizen',  model: 'Citizen Tsuyosa',             price: '~$350', caseSize: '40mm',   thickness: '11.8mm',  movement: 'Auto (Miyota 8210)',  crystal: 'Sapphire', wr: '100m',  url: 'https://www.citizenwatch-global.com/collection/tsuyosa/' },
-  { rank: 15, brand: 'Seiko',    model: 'Seiko 5 Sports GMT SSK001',          price: '~$495', caseSize: '42.5mm', thickness: '14mm',    movement: 'Auto GMT (4R34)',     crystal: 'Hardlex',  wr: '100m',  url: 'https://www.seikowatches.com/global-en/products/5sports' },
-  { rank: 16, brand: 'Seiko',    model: 'Seiko Prospex Samurai SRPB51',       price: '~$395', caseSize: '43.8mm', thickness: '13mm',    movement: 'Auto (4R35)',         crystal: 'Hardlex',  wr: '200m',  url: 'https://www.seikowatches.com/global-en/products/prospex' },
-  { rank: 17, brand: 'Orient',   model: 'Orient Sun and Moon RA-AK0001S',     price: '~$450', caseSize: '42mm',   thickness: '13mm',    movement: 'Auto (F6B24)',        crystal: 'Mineral',  wr: '50m',   url: 'https://orient-watch.com/en/orient/collection/classic/' },
-  { rank: 18, brand: 'Baltic',   model: 'Baltic HMS 002',                     price: '~$420', caseSize: '36.5mm', thickness: '10.5mm',  movement: 'Auto (Miyota 8215)',  crystal: 'Sapphire', wr: '50m',   url: 'https://baltic-watches.com/en/collections/hms' },
-  { rank: 19, brand: 'Timex',    model: 'Q Timex GMT',                        price: '~$199', caseSize: '38mm',   thickness: '11mm',    movement: 'Quartz GMT',          crystal: 'Acrylic',  wr: '50m',   url: 'https://www.timex.com/collections/q-timex' },
-  { rank: 20, brand: 'Orient',   model: 'Orient Ray II',                      price: '~$160', caseSize: '41.5mm', thickness: '12.5mm',  movement: 'Auto (F6922)',        crystal: 'Mineral',  wr: '200m',  url: 'https://orient-watch.com/en/orient/collection/sports/' },
+  { rank: 1,  brand: 'Seiko',    model: '5 Sports',                   price: '~$300', caseSize: '42.5mm', thickness: '13mm',    movement: 'Auto (4R36)',        crystal: 'Hardlex',  wr: '100m',  url: 'https://www.seikowatches.com/global-en/products/5sports' },
+  { rank: 2,  brand: 'Orient',   model: 'Bambino',                    price: '~$250', caseSize: '38–42mm', thickness: '11mm',   movement: 'Auto (F6724)',        crystal: 'Mineral',  wr: '30m',   url: 'https://orient-watch.com/en/orient/collection/classic/' },
+  { rank: 3,  brand: 'Orient',   model: 'Kamasu',                     price: '~$375', caseSize: '41.8mm', thickness: '12.5mm',  movement: 'Auto (F6922)',        crystal: 'Sapphire', wr: '200m',  url: 'https://orient-watch.com/en/orient/collection/sports/' },
+  { rank: 4,  brand: 'Seiko',    model: 'Presage Cocktail Time',      price: '~$450', caseSize: '40.5mm', thickness: '12.5mm',  movement: 'Auto (4R35)',         crystal: 'Sapphire', wr: '50m',   url: 'https://www.seikowatches.com/global-en/products/presage' },
+  { rank: 5,  brand: 'Casio',    model: 'G-Shock DW-5600E',           price: '~$100', caseSize: '42.8mm', thickness: '13.4mm',  movement: 'Quartz (3232)',       crystal: 'Mineral',  wr: '200m',  url: 'https://www.casio.com/intl/watches/gshock/' },
+  { rank: 6,  brand: 'Tissot',   model: 'PRX Quartz',                 price: '~$450', caseSize: '40mm',   thickness: '10.5mm',  movement: 'Quartz (ETA F06)',    crystal: 'Sapphire', wr: '100m',  url: 'https://www.tissotwatches.com/en-en/tissot-prx.html' },
+  { rank: 7,  brand: 'Seiko',    model: '5 Sports (37mm)',            price: '~$200', caseSize: '37mm',   thickness: '11mm',    movement: 'Auto (7S26)',         crystal: 'Hardlex',  wr: '30m',   url: 'https://www.seikowatches.com/global-en/products/5sports' },
+  { rank: 8,  brand: 'Citizen',  model: 'Promaster Diver',            price: '~$295', caseSize: '44mm',   thickness: '14mm',    movement: 'Solar (E168)',        crystal: 'Mineral',  wr: '200m',  url: 'https://www.citizenwatch-global.com/collection/promaster/' },
+  { rank: 9,  brand: 'Orient',   model: 'Mako II',                    price: '~$285', caseSize: '41.5mm', thickness: '13mm',    movement: 'Auto (F6922)',        crystal: 'Mineral',  wr: '200m',  url: 'https://orient-watch.com/en/orient/collection/sports/' },
+  { rank: 10, brand: 'Casio',    model: 'G-Shock GA-2100 CasiOak',   price: '~$110', caseSize: '45.4mm', thickness: '11.8mm',  movement: 'Ana-digi quartz',     crystal: 'Mineral',  wr: '200m',  url: 'https://www.casio.com/intl/watches/gshock/' },
+  { rank: 11, brand: 'Seiko',    model: 'Prospex Solar Diver',        price: '~$425', caseSize: '38.5mm', thickness: '12mm',    movement: 'Solar (V157)',        crystal: 'Sapphire', wr: '200m',  url: 'https://www.seikowatches.com/global-en/products/prospex' },
+  { rank: 12, brand: 'Timex',    model: 'Marlin Automatic',           price: '~$220', caseSize: '40mm',   thickness: '11mm',    movement: 'Auto (Miyota 8215)',  crystal: 'Acrylic',  wr: '30m',   url: 'https://www.timex.com/collections/marlin' },
+  { rank: 13, brand: 'Vostok',   model: 'Amphibia',                   price: '~$90',  caseSize: '40mm',   thickness: '13mm',    movement: 'Auto (2416B)',        crystal: 'Acrylic',  wr: '200m',  url: 'https://vostok-watches.ru/en/catalog/amphibia/' },
+  { rank: 14, brand: 'Citizen',  model: 'Tsuyosa',                    price: '~$350', caseSize: '40mm',   thickness: '11.8mm',  movement: 'Auto (Miyota 8210)',  crystal: 'Sapphire', wr: '100m',  url: 'https://www.citizenwatch-global.com/collection/tsuyosa/' },
+  { rank: 15, brand: 'Seiko',    model: '5 Sports GMT',               price: '~$495', caseSize: '42.5mm', thickness: '14mm',    movement: 'Auto GMT (4R34)',     crystal: 'Hardlex',  wr: '100m',  url: 'https://www.seikowatches.com/global-en/products/5sports' },
+  { rank: 16, brand: 'Seiko',    model: 'Prospex Samurai',            price: '~$395', caseSize: '43.8mm', thickness: '13mm',    movement: 'Auto (4R35)',         crystal: 'Hardlex',  wr: '200m',  url: 'https://www.seikowatches.com/global-en/products/prospex' },
+  { rank: 17, brand: 'Orient',   model: 'Sun and Moon',               price: '~$450', caseSize: '42mm',   thickness: '13mm',    movement: 'Auto (F6B24)',        crystal: 'Mineral',  wr: '50m',   url: 'https://orient-watch.com/en/orient/collection/classic/' },
+  { rank: 18, brand: 'Baltic',   model: 'HMS 002',                    price: '~$420', caseSize: '36.5mm', thickness: '10.5mm',  movement: 'Auto (Miyota 8215)',  crystal: 'Sapphire', wr: '50m',   url: 'https://baltic-watches.com/en/collections/hms' },
+  { rank: 19, brand: 'Timex',    model: 'Q GMT',                      price: '~$199', caseSize: '38mm',   thickness: '11mm',    movement: 'Quartz GMT',          crystal: 'Acrylic',  wr: '50m',   url: 'https://www.timex.com/collections/q-timex' },
+  { rank: 20, brand: 'Orient',   model: 'Ray II',                     price: '~$160', caseSize: '41.5mm', thickness: '12.5mm',  movement: 'Auto (F6922)',        crystal: 'Mineral',  wr: '200m',  url: 'https://orient-watch.com/en/orient/collection/sports/' },
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -173,7 +173,8 @@ const config: BuyingGuideConfig = {
   ranking: RANKING,
   faq: EXTENDED_FAQ,
   galleryBrands: ['Seiko', 'Orient', 'Citizen', 'Tissot', 'Timex', 'Casio', 'Vostok', 'Baltic', 'Hamilton'],
-  nextGuide: { href: '/buying-guide/under-100', label: 'Best under $100' },
+  prevGuide: { href: '/buying-guide/under-100', label: 'Best under $100' },
+  nextGuide: { href: '/buying-guide/under-1000', label: 'Best under $1,000' },
   articleJsonLd: {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',

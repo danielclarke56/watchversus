@@ -9,8 +9,8 @@ import type { Metadata } from 'next'
 import BuyingGuideTemplate, { type BuyingGuideConfig, type RankEntry, type FaqEntry } from '@/components/guide/BuyingGuideTemplate'
 
 export const metadata: Metadata = {
-  title: 'Best Watches Under $100 — Community Ranking & Buying Guide | Watchems',
-  description: 'The 20 most recommended watches under $100, ranked by community research across r/Watches, WatchUSeek, and enthusiast forums. Specs, FAQs, and honest trade-offs.',
+  title: 'Best Watches Under $100 (2026) — 20 Picks, Ranked | Watchems',
+  description: 'The 20 most recommended watches under $100, ranked by community consensus across r/Watches, WatchUSeek, and enthusiast forums. Verified prices, full specs, honest trade-offs.',
   alternates: { canonical: 'https://watchems.com/buying-guide/under-100' },
 }
 
@@ -19,26 +19,26 @@ export const metadata: Metadata = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const RANKING: RankEntry[] = [
-  { rank: 1,  brand: 'Casio',   model: 'Casio F-91W-1',                    price: '~$23',  caseSize: '38.5mm', thickness: '8.5mm',  movement: 'Quartz (2747)',        crystal: 'Mineral',  wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.F-91W-1/' },
-  { rank: 2,  brand: 'Casio',   model: 'Casio MDV-106-1AV Duro',           price: '~$85',  caseSize: '44.5mm', thickness: '12.3mm', movement: 'Quartz',               crystal: 'Mineral',  wr: '200m', url: 'https://www.casio.com/intl/watches/casio/product.MDV-106-1AV/' },
-  { rank: 3,  brand: 'Casio',   model: 'Casio AE-1200WHD-1AV',             price: '~$40',  caseSize: '45mm',   thickness: '11.7mm', movement: 'Quartz (3199)',        crystal: 'Mineral',  wr: '100m', url: 'https://www.casio.com/intl/watches/casio/product.AE-1200WHD-1AV/' },
-  { rank: 4,  brand: 'Timex',   model: 'Timex Weekender 38mm',             price: '~$77',  caseSize: '38mm',   thickness: '10mm',   movement: 'Quartz (Indiglo)',      crystal: 'Acrylic',  wr: '30m',  url: 'https://www.timex.com/collections/weekender' },
-  { rank: 5,  brand: 'Casio',   model: 'Casio G-Shock DW-5600E-1V',        price: '~$99',  caseSize: '42.8mm', thickness: '13.4mm', movement: 'Quartz (3229)',        crystal: 'Mineral',  wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/product.DW-5600E-1V/' },
-  { rank: 6,  brand: 'Casio',   model: 'Casio A158WA-1',                   price: '~$29',  caseSize: '33.5mm', thickness: '7mm',    movement: 'Quartz (2747)',        crystal: 'Mineral',  wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.A158WA-1/' },
-  { rank: 7,  brand: 'Timex',   model: 'Timex Expedition Scout 40mm',      price: '~$65',  caseSize: '40mm',   thickness: '11mm',   movement: 'Quartz (Indiglo)',      crystal: 'Mineral',  wr: '50m',  url: 'https://www.timex.com/collections/expedition' },
-  { rank: 8,  brand: 'Vostok',  model: 'Vostok Amphibia 120811',           price: '~$85',  caseSize: '40mm',   thickness: '13mm',   movement: 'Auto (2416B)',         crystal: 'Acrylic',  wr: '200m', url: 'https://vostok-watches.ru/en/catalog/amphibia/' },
-  { rank: 9,  brand: 'Timex',   model: 'Timex Easy Reader T20501',         price: '~$69',  caseSize: '35mm',   thickness: '8mm',    movement: 'Quartz (Indiglo)',      crystal: 'Mineral',  wr: '30m',  url: 'https://www.timex.com/collections/easy-reader' },
-  { rank: 10, brand: 'Casio',   model: 'Casio MTP-1302D-1A1V',             price: '~$35',  caseSize: '41.5mm', thickness: '8.6mm',  movement: 'Quartz',               crystal: 'Mineral',  wr: '50m',  url: 'https://www.casio.com/us/watches/casio/product.MTP-1302D-1A1V/' },
-  { rank: 11, brand: 'Casio',   model: 'Casio G-Shock GW-M5610U-1',        price: '~$99',  caseSize: '43.2mm', thickness: '12.7mm', movement: 'Solar/Multiband quartz', crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/product.GW-M5610U-1/' },
-  { rank: 12, brand: 'Casio',   model: 'Casio G-Shock DW-9052-1V',         price: '~$60',  caseSize: '48.9mm', thickness: '15.1mm', movement: 'Quartz (3232)',        crystal: 'Mineral',  wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/' },
-  { rank: 13, brand: 'Casio',   model: 'Casio A100WEF-1AEF',               price: '~$60',  caseSize: '34.9mm', thickness: '8.2mm',  movement: 'Quartz',               crystal: 'Mineral',  wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/' },
-  { rank: 14, brand: 'Timex',   model: 'Timex Ironman Classic 30',         price: '~$80',  caseSize: '43mm',   thickness: '14mm',   movement: 'Quartz (Indiglo)',      crystal: 'Mineral',  wr: '100m', url: 'https://www.timex.com/collections/ironman' },
-  { rank: 15, brand: 'Casio',   model: 'Casio CA-53W-1',                   price: '~$40',  caseSize: '36.3mm', thickness: '8.3mm',  movement: 'Quartz (calculator)',  crystal: 'Mineral',  wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.CA-53W-1/' },
-  { rank: 16, brand: 'Casio',   model: 'Casio MTP-V001D-1B',               price: '~$40',  caseSize: '37mm',   thickness: '9mm',    movement: 'Quartz',               crystal: 'Mineral',  wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.MTP-V001D-1B/' },
-  { rank: 17, brand: 'Timex',   model: 'Timex MK1 Aluminum 40mm',          price: '~$60',  caseSize: '40mm',   thickness: '11mm',   movement: 'Quartz (Indiglo)',      crystal: 'Mineral',  wr: '30m',  url: 'https://www.timex.com/collections/mk1' },
-  { rank: 18, brand: 'Casio',   model: 'Casio G-Shock GA-700-1B',          price: '~$99',  caseSize: '51.6mm', thickness: '16.9mm', movement: 'Ana-digi quartz',      crystal: 'Mineral',  wr: '200m', url: 'https://www.casio.com/us/watches/gshock/product.GA-700-1B/' },
-  { rank: 19, brand: 'Casio',   model: 'Casio MTP-VD01D-1BV',              price: '~$25',  caseSize: '42mm',   thickness: '10mm',   movement: 'Quartz',               crystal: 'Mineral',  wr: '50m',  url: 'https://www.casio.com/us/watches/casio/product.MTP-VD01D-1BV/' },
-  { rank: 20, brand: 'Casio',   model: 'Casio G-Shock GD-350-1B',          price: '~$85',  caseSize: '55mm',   thickness: '16.4mm', movement: 'Quartz',               crystal: 'Mineral',  wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/' },
+  { rank: 1,  brand: 'Casio',   model: 'F-91W',                    price: '~$23',  caseSize: '38.5mm', thickness: '8.5mm',  movement: 'Quartz (2747)',          crystal: 'Mineral', wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.F-91W-1/' },
+  { rank: 2,  brand: 'Casio',   model: 'MDV-106 Duro',             price: '~$85',  caseSize: '44.5mm', thickness: '12.3mm', movement: 'Quartz',                 crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/intl/watches/casio/product.MDV-106-1AV/' },
+  { rank: 3,  brand: 'Casio',   model: 'AE-1200 World Time',       price: '~$40',  caseSize: '45mm',   thickness: '11.7mm', movement: 'Quartz (3199)',          crystal: 'Mineral', wr: '100m', url: 'https://www.casio.com/intl/watches/casio/product.AE-1200WHD-1AV/' },
+  { rank: 4,  brand: 'Timex',   model: 'Weekender',                price: '~$77',  caseSize: '38mm',   thickness: '10mm',   movement: 'Quartz (Indiglo)',        crystal: 'Acrylic', wr: '30m',  url: 'https://www.timex.com/collections/weekender' },
+  { rank: 5,  brand: 'Casio',   model: 'G-Shock DW-5600E',         price: '~$99',  caseSize: '42.8mm', thickness: '13.4mm', movement: 'Quartz (3229)',          crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/product.DW-5600E-1V/' },
+  { rank: 6,  brand: 'Casio',   model: 'A158WA Stainless',         price: '~$29',  caseSize: '33.5mm', thickness: '7mm',    movement: 'Quartz (2747)',          crystal: 'Mineral', wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.A158WA-1/' },
+  { rank: 7,  brand: 'Timex',   model: 'Expedition Scout',         price: '~$65',  caseSize: '40mm',   thickness: '11mm',   movement: 'Quartz (Indiglo)',        crystal: 'Mineral', wr: '50m',  url: 'https://www.timex.com/collections/expedition' },
+  { rank: 8,  brand: 'Vostok',  model: 'Amphibia',                 price: '~$85',  caseSize: '40mm',   thickness: '13mm',   movement: 'Auto (2416B)',           crystal: 'Acrylic', wr: '200m', url: 'https://vostok-watches.ru/en/catalog/amphibia/' },
+  { rank: 9,  brand: 'Timex',   model: 'Easy Reader',              price: '~$69',  caseSize: '35mm',   thickness: '8mm',    movement: 'Quartz (Indiglo)',        crystal: 'Mineral', wr: '30m',  url: 'https://www.timex.com/collections/easy-reader' },
+  { rank: 10, brand: 'Casio',   model: 'MTP-1302 Analog',          price: '~$35',  caseSize: '41.5mm', thickness: '8.6mm',  movement: 'Quartz',                 crystal: 'Mineral', wr: '50m',  url: 'https://www.casio.com/us/watches/casio/product.MTP-1302D-1A1V/' },
+  { rank: 11, brand: 'Casio',   model: 'G-Shock GW-M5610 Solar',   price: '~$99',  caseSize: '43.2mm', thickness: '12.7mm', movement: 'Solar/Multiband quartz', crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/product.GW-M5610U-1/' },
+  { rank: 12, brand: 'Casio',   model: 'G-Shock DW-9052',          price: '~$60',  caseSize: '48.9mm', thickness: '15.1mm', movement: 'Quartz (3232)',          crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/' },
+  { rank: 13, brand: 'Casio',   model: 'A100 Gold',                price: '~$60',  caseSize: '34.9mm', thickness: '8.2mm',  movement: 'Quartz',                 crystal: 'Mineral', wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/' },
+  { rank: 14, brand: 'Timex',   model: 'Ironman Classic 30',       price: '~$80',  caseSize: '43mm',   thickness: '14mm',   movement: 'Quartz (Indiglo)',        crystal: 'Mineral', wr: '100m', url: 'https://www.timex.com/collections/ironman' },
+  { rank: 15, brand: 'Casio',   model: 'CA-53W Calculator',        price: '~$40',  caseSize: '36.3mm', thickness: '8.3mm',  movement: 'Quartz (calculator)',    crystal: 'Mineral', wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.CA-53W-1/' },
+  { rank: 16, brand: 'Casio',   model: 'MTP-V001 Dress',           price: '~$40',  caseSize: '37mm',   thickness: '9mm',    movement: 'Quartz',                 crystal: 'Mineral', wr: '30m',  url: 'https://www.casio.com/intl/watches/casio/product.MTP-V001D-1B/' },
+  { rank: 17, brand: 'Timex',   model: 'MK1 Aluminum',             price: '~$60',  caseSize: '40mm',   thickness: '11mm',   movement: 'Quartz (Indiglo)',        crystal: 'Mineral', wr: '30m',  url: 'https://www.timex.com/collections/mk1' },
+  { rank: 18, brand: 'Casio',   model: 'G-Shock GA-700',           price: '~$99',  caseSize: '51.6mm', thickness: '16.9mm', movement: 'Ana-digi quartz',        crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/us/watches/gshock/product.GA-700-1B/' },
+  { rank: 19, brand: 'Casio',   model: 'MTP-VD01 Analog',          price: '~$25',  caseSize: '42mm',   thickness: '10mm',   movement: 'Quartz',                 crystal: 'Mineral', wr: '50m',  url: 'https://www.casio.com/us/watches/casio/product.MTP-VD01D-1BV/' },
+  { rank: 20, brand: 'Casio',   model: 'G-Shock GD-350',           price: '~$85',  caseSize: '55mm',   thickness: '16.4mm', movement: 'Quartz',                 crystal: 'Mineral', wr: '200m', url: 'https://www.casio.com/intl/watches/gshock/' },
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────

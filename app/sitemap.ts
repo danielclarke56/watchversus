@@ -166,6 +166,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.80,
     },
+    {
+      url: `${base}/buying-guide/under-1000`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.80,
+    },
   ]
 
   return [...staticPages, ...brandsIndex, ...watchesIndex, ...brandPages, ...stylesIndex, ...stylePages, ...buyingGuidesIndex, ...buyingGuidePages, ...watchPages, ...photoPages]

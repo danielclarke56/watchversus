@@ -11,6 +11,12 @@ const staticGuides = [
     shortLabel: 'Under $100',
     overviewMdx: 'The most recommended watches under $100 — Casio G-Shock, Timex Weekender, Vostok Amphibia, and more. Community-researched specs, trade-offs, and honest answers.',
   },
+  {
+    slug: 'under-1000',
+    name: 'Best Watches Under $1,000',
+    shortLabel: 'Under $1,000',
+    overviewMdx: 'The most recommended watches between $500 and $1,000 — Hamilton Khaki Field, Tissot PRX, Seiko Prospex Alpinist, Certina DS Action Diver, and more. Swiss automatics, verified prices.',
+  },
 ]
 
 const buyingGuides = [

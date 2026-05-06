@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
 import { eq, desc, or, ilike, and } from 'drizzle-orm'
 import { FaqAccordion } from '@/components/guide/FaqAccordion'
-import { RankingTable } from '@/components/guide/RankingTable'
+import { VotableRankingTable } from '@/components/guide/VotableRankingTable'
 import { t } from '@/lib/styles'
 
 export interface RankEntry {
@@ -64,6 +64,7 @@ export default async function BuyingGuideTemplate({ config }: { config: BuyingGu
   const ALL_GUIDES = [
     { slug: 'under-100', shortLabel: 'Under $100', name: 'Best Watches Under $100' },
     { slug: 'under-500', shortLabel: 'Under $500', name: 'Best Watches Under $500' },
+    { slug: 'under-1000', shortLabel: 'Under $1,000', name: 'Best Watches Under $1,000' },
   ]
   const otherGuides = ALL_GUIDES.filter((g) => g.slug !== config.slug)
 
@@ -136,7 +137,7 @@ export default async function BuyingGuideTemplate({ config }: { config: BuyingGu
                 <h2 className={t.h2} id="ranking-heading">{config.rankingHeading}</h2>
                 <p className="text-sm text-textMuted mt-1">{config.rankingSubtitle}</p>
               </div>
-              <RankingTable rows={config.ranking} initialCount={config.ranking.length} />
+              <VotableRankingTable rows={config.ranking} guideSlug={config.slug} initialCount={config.ranking.length} />
               <div className="mt-4 flex items-start gap-4 flex-wrap">
                 <p className="text-xs text-textMuted leading-relaxed">Specs and prices are approximate — verify before purchase. No sponsored picks.</p>
                 <details className="group shrink-0">

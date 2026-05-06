@@ -67,7 +67,7 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   )
 }
 
-function CopyCell({ brand, model }: { brand: string; model: string }) {
+export function CopyCell({ brand, model }: { brand: string; model: string }) {
   const [copied, setCopied] = useState(false)
 
   function handleCopy() {

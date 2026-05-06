@@ -126,3 +126,21 @@ export const wristChecks = pgTable(
 )
 
 export type WristCheck = typeof wristChecks.$inferSelect
+
+export const guideVotes = pgTable(
+  'guide_votes',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    guideSlug: text('guide_slug').notNull(),
+    watchKey: text('watch_key').notNull(), // "{brand}:{model}" lowercased
+    createdAt: timestamp('created_at').default(sql`now()`).notNull(),
+  },
+  (table) => ({
+    userGuideUnique: unique().on(table.userId, table.guideSlug),
+    guideSlugIdx: index('guide_votes_guide_slug_idx').on(table.guideSlug),
+    userIdIdx: index('guide_votes_user_id_idx').on(table.userId),
+  })
+)
+
+export type GuideVote = typeof guideVotes.$inferSelect
