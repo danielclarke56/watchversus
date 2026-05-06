@@ -70,7 +70,8 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
 export function CopyCell({ brand, model }: { brand: string; model: string }) {
   const [copied, setCopied] = useState(false)
 
-  function handleCopy() {
+  function handleCopy(e: React.MouseEvent) {
+    e.stopPropagation()
     navigator.clipboard.writeText(model).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)

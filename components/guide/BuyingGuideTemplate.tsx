@@ -172,16 +172,6 @@ export default async function BuyingGuideTemplate({ config }: { config: BuyingGu
           </div>
 
           {/* ════════════════════════════════════════
-              FAQ
-          ════════════════════════════════════════ */}
-          <section id="faq" aria-labelledby="faq-heading" className="py-16 border-b border-border [scroll-margin-top:108px]">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6">
-              <h2 className={`${t.h2} mb-8`} id="faq-heading">Common questions</h2>
-              <FaqAccordion items={config.faq} />
-            </div>
-          </section>
-
-          {/* ════════════════════════════════════════
               WATCH GALLERY
           ════════════════════════════════════════ */}
           {galleryPhotos.length > 0 && (
@@ -234,6 +224,16 @@ export default async function BuyingGuideTemplate({ config }: { config: BuyingGu
               </div>
             </section>
           )}
+
+          {/* ════════════════════════════════════════
+              FAQ
+          ════════════════════════════════════════ */}
+          <section id="faq" aria-labelledby="faq-heading" className="py-16 border-b border-border [scroll-margin-top:108px]">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6">
+              <h2 className={`${t.h2} mb-8`} id="faq-heading">Common questions</h2>
+              <FaqAccordion items={config.faq} />
+            </div>
+          </section>
 
           {/* ════════════════════════════════════════
               MORE BUYING GUIDES
