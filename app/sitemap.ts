@@ -1,12 +1,8 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { photos } from '@/lib/db/schema'
-import { eq, desc, sql, isNotNull, and } from 'drizzle-orm'
-import { getStyleByDbValue } from '@/lib/styleData'
+import { eq, desc } from 'drizzle-orm'
 import { getAllGuides } from '@/lib/buyingGuides'
-
-const MIN_PHOTOS_FOR_HUB = 3
-const MIN_PHOTOS_FOR_STYLE_HUB = 5
 
 export const dynamic = 'force-dynamic'
 
@@ -55,93 +51,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // Watch hub pages — only those with enough photos to be useful
-  const watchGroups = await db
-    .select({
-      watchId: photos.watchId,
-      photoCount: sql<number>`count(*)::int`,
-      lastModified: sql<Date>`max(${photos.createdAt})`,
-    })
-    .from(photos)
-    .where(eq(photos.status, 'approved'))
-    .groupBy(photos.watchId)
-    .having(sql`count(*) >= ${MIN_PHOTOS_FOR_HUB}`)
-
-  const watchPages: MetadataRoute.Sitemap = watchGroups.map((w) => ({
-    url: `${base}/w/${w.watchId}`,
-    lastModified: new Date(w.lastModified),
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
-
-  // Brand hub pages — one per distinct brand with approved photos
-  const brandGroups = await db
-    .select({
-      brandName: photos.brandName,
-      lastModified: sql<Date>`max(${photos.createdAt})`,
-    })
-    .from(photos)
-    .where(and(eq(photos.status, 'approved'), isNotNull(photos.brandName)))
-    .groupBy(photos.brandName)
-
-  const brandPages: MetadataRoute.Sitemap = brandGroups
-    .filter((b) => b.brandName)
-    .map((b) => ({
-      url: `${base}/brand/${encodeURIComponent(b.brandName!.toLowerCase())}`,
-      lastModified: new Date(b.lastModified),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }))
-
-  // Brands index
-  const brandsIndex: MetadataRoute.Sitemap = [
-    {
-      url: `${base}/brands`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.9,
-    },
-  ]
-
-  // Watches index
-  const watchesIndex: MetadataRoute.Sitemap = [
-    {
-      url: `${base}/watches`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.9,
-    },
-  ]
-
-  // Style hub pages
-  const styleHubGroups = await db
-    .select({
-      watchStyle: photos.watchStyle,
-      lastModified: sql<Date>`max(${photos.createdAt})`,
-    })
-    .from(photos)
-    .where(and(eq(photos.status, 'approved'), isNotNull(photos.watchStyle)))
-    .groupBy(photos.watchStyle)
-    .having(sql`count(*) >= ${MIN_PHOTOS_FOR_STYLE_HUB}`)
-
-  const stylePages: MetadataRoute.Sitemap = styleHubGroups
-    .filter((s) => s.watchStyle && getStyleByDbValue(s.watchStyle))
-    .map((s) => ({
-      url: `${base}/style/${getStyleByDbValue(s.watchStyle!)!.slug}`,
-      lastModified: new Date(s.lastModified),
-      changeFrequency: 'weekly' as const,
-      priority: 0.75,
-    }))
-
-  // Styles index
-  const stylesIndex: MetadataRoute.Sitemap = [
-    {
-      url: `${base}/styles`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.85,
-    },
-  ]
+  // Excluded from sitemap — all disallowed in robots.txt
+  const brandsIndex: MetadataRoute.Sitemap = []
+  const brandPages: MetadataRoute.Sitemap = []
+  const watchesIndex: MetadataRoute.Sitemap = []
+  const watchPages: MetadataRoute.Sitemap = []
+  const stylesIndex: MetadataRoute.Sitemap = []
+  const stylePages: MetadataRoute.Sitemap = []
 
   // Buying guide pages — static, no DB query needed
   const buyingGuidesIndex: MetadataRoute.Sitemap = [
